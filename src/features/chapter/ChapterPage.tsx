@@ -44,10 +44,14 @@ export default function ChapterPage(){
      {showSettings&&<GameSettingsDialog onClose={()=>setShowSettings(false)}/>}
    </div>;
  }
- if(s.mode==='home')return <div className="chapter-conclusion"><section className="chapter-hero"><span className="eyebrow">STORY / CHAPTER 01</span><h1>失蹤的倉庫員工</h1><p>那座舊物流站的燈還亮著。上一次的記憶，也許能幫我找到新的突破口。</p></section><button className="primary-button primary-button--full" onClick={()=>dispatch({type:'START_ATTEMPT'})}>{s.attempt>0?'再次進入倉庫':'開始第一次調查'}<ArrowRight size={17}/></button></div>;
+ if(s.mode==='home')return <div className="chapter-conclusion"><section className="chapter-hero"><span className="eyebrow">STORY / CHAPTER 01</span><h1>失蹤的倉庫員工</h1><p>那座舊物流站的燈還亮著。進去之前，我還是先整理攻擊牌與隨身工具。</p></section><NavLink className="primary-button primary-button--full" to="/preparation">前往事前準備 <ArrowRight size={17}/></NavLink></div>;
  return <div className="chapter-live">
   <div className="chapter-kicker"><span>CHAPTER 01 · {scene.label} · {worldPhase(s.world.minute)}</span><div className="chapter-kicker__controls"><button type="button" onClick={()=>setShowStory(true)}><BookOpenText size={15}/>全文</button><button type="button" onClick={()=>setShowSettings(true)} aria-label="遊戲設定"><Settings2 size={16}/>設定</button></div></div>
   <Hud/>
+  {s.sceneId==='confrontation'&&<div className="enemy-hud" aria-label="敵人生命值">
+    <div className="enemy-hud__top"><span>ENEMY / {s.enemy.name}</span><strong>{s.enemy.health} / {s.enemy.maxHealth} HP</strong></div>
+    <div className="enemy-hud__track" role="progressbar" aria-label="敵人生命" aria-valuemin={0} aria-valuemax={s.enemy.maxHealth} aria-valuenow={s.enemy.health}><i style={{width:`${s.enemy.health/s.enemy.maxHealth*100}%`}}/></div>
+  </div>}
   <section className={`scene-art scene-art--${s.sceneId}`} aria-label={`${scene.location}的環境場景`}><div className="scene-art__halo"/><div className="scene-art__atmosphere"/><div className="scene-art__warehouse"><div className="scene-art__building"><span>舊物流站</span><div className="scene-art__windows"><i/><i/><i/></div></div><div className="scene-art__door"/></div><div className="scene-art__person scene-art__person--shadow"><span/></div><div className="scene-art__floor"/><div className="scene-art__caption"><span className="scene-art__pin"/> {scene.location}<span> · 第 {s.attempt} 次來訪</span></div></section>
   <section className="story-panel story-panel--compact"><div className="story-panel__top"><span className="eyebrow">SCENE / {scene.label}</span><span>{s.npc.met>1?'對方記得我':'初次接觸'}</span></div>
    <p className="story-panel__thought">{scene.narration}</p>

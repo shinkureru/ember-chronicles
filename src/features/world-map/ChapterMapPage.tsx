@@ -3,7 +3,6 @@ import { ArrowLeft, ArrowRight, Archive, Clock3, Landmark, Layers3, LockKeyhole,
 import { Link, useNavigate } from 'react-router-dom';
 import { useGame } from '../../app/GameContext';
 import { CHAPTER_ONE } from '../../game/data/maps/ch01';
-import { PROFESSIONS } from '../../game/data/professions';
 import { worldClock, worldPhase } from '../../game/engine/rules';
 import { playCue } from '../../audio/sound';
 

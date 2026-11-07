@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, AlertTriangle, BookOpenText, Footprints, Layers3, Search, Settings2, ShieldAlert, Sparkles, X } from 'lucide-react';
+import { ArrowRight, BookOpenText, Search, Settings2, ShieldAlert, Sparkles, X } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useGame } from '../../app/GameContext';
 import Hud from '../../components/Hud';
 import { getSceneContent, getVisibleActions, calculateActionPreview, worldPhase, bagWeight, isSkillCompatible } from '../../game/engine/rules';
 import type { ActionChoice } from '../../game/types';
-import ActionCard from './ActionCard';
+import ActionDecision from './ActionDecision';
 import SkillHand from './SkillHand';
 import SkillComparison from './SkillComparison';
 import RetreatDialog from './RetreatDialog';
@@ -22,12 +22,12 @@ export default function ChapterPage(){
  const [showHand,setShowHand]=useState(false);
  const [thoughtPage,setThoughtPage]=useState(0);
  const [showSettings,setShowSettings]=useState(false);
+ const [handOpenCount,setHandOpenCount]=useState(0);
  const scene=getSceneContent(s), actions=getVisibleActions(s);
  const ambientLines=useMemo(()=>getAmbientThoughts(s.sceneId,s.attempt,s.world.minute,6),[s.sceneId,s.attempt,Math.floor(s.world.minute/60)]);
  const current:ActionChoice|null=actions.find(a=>a.id===chosenId)??null;
- const preview=useMemo(()=>current?calculateActionPreview(s,current,skillId):null,[s,current,skillId]);
+ const preview=current?calculateActionPreview(s,current,skillId):null;
  const usableSkillCount=current?s.hand.filter(id=>{const card=CARDS[id];return !!card&&isSkillCompatible(current,card)&&s.player.resource>=card.resourceCost}).length:0;
- const shouldGlow=!!current&&!skillId&&usableSkillCount>0;
  useEffect(()=>{setChosenId(null);setSkillId(null);setThoughtPage(0);setShowHand(false);},[s.sceneId,s.attempt]);
  useEffect(()=>{if(showStory||showHand||showSettings||showRetreat)return;const timer=window.setInterval(()=>setThoughtPage(p=>(p+1)%ambientLines.length),5500);return()=>window.clearInterval(timer);},[s.sceneId,s.attempt,ambientLines.length,showStory,showHand,showSettings,showRetreat]);
  if(!s.profession)return <div className="page-stack"><section className="surface-card"><h2>先選擇你的職業</h2><p>到第一章地圖完成角色建立後，即可開始調查。</p><NavLink to="/" className="primary-button">前往地圖 <ArrowRight size={16}/></NavLink></section></div>;
@@ -55,16 +55,20 @@ export default function ChapterPage(){
    <div className="ambient-carousel" aria-label="場景內心獨白"><div className="ambient-carousel__heading"><span>我的心聲</span><span>{thoughtPage+1} / {ambientLines.length}</span></div><p key={`${s.sceneId}-${thoughtPage}`} className="ambient-carousel__line" aria-live="off">「{ambientLines[thoughtPage]??ambientLines[0]}」</p></div>
    {s.sceneId==='loot'&&<div className="story-panel__hint"><Search size={12}/>搜刮會推進世界時間</div>}
   </section>
-  <section className="actions-section actions-section--viewport">
-    <div className="section-heading"><div><span className="eyebrow">WHAT WILL I DO?</span><h3>我接下來要怎麼做？</h3></div><span className="action-scroll-hint">左右滑動選牌</span></div>
-    <div className="action-stack action-stack--viewport" role="group" aria-label="可左右滑動的行動卡">{actions.map((a,index)=><ActionCard key={a.id} choice={a} index={index} selected={chosenId===a.id} preview={calculateActionPreview(s,a,chosenId===a.id?skillId:null)} onClick={()=>{setChosenId(a.id);setSkillId(null);playCue('select')}}/>)}</div>
-  </section>
-  <div className="live-controls">
-    <div className="live-controls__summary"><span>{current?`已選：${current.title}`:'請先選擇一項行動'}</span><strong>{preview?`${preview.chance}%`:'—'}</strong></div>
-    <div className="live-controls__cost">{preview?<><span>體力 -{preview.staminaCost}</span><span>膽量 {preview.courageDelta>0?'+':''}{preview.courageDelta}</span><span>資源 {preview.resourceCost<=0?`+${-preview.resourceCost}`:`-${preview.resourceCost}`}</span>{preview.warnings.length>0&&<button type="button" onClick={()=>setShowStory(true)}><AlertTriangle size={12}/>警告 {preview.warnings.length}</button>}</>:<span className="live-controls__placeholder">選擇行動後預覽實際代價</span>}</div>
-    <div className="live-controls__buttons"><button className="secondary-button" onClick={()=>setShowRetreat(true)}><Footprints size={15}/>撤退</button><button className={`secondary-button ${shouldGlow?'skill-attach--glow':''}`} disabled={!current} onClick={()=>setShowHand(true)}><Layers3 size={15}/>{skillId&&CARDS[skillId]?CARDS[skillId]!.name:shouldGlow?`附加技能 (${usableSkillCount})`:'附加技能'}</button><button className="primary-button" disabled={!current} onClick={()=>{if(!current)return;dispatch({type:'CHOOSE',choiceId:current.id,skillId});playCue('confirm');setChosenId(null);setSkillId(null)}}>執行 <ArrowRight size={16}/></button></div>
-  </div>
-  {showHand&&<div className="game-sheet-backdrop" role="presentation" onClick={()=>setShowHand(false)}><div className="game-sheet" role="dialog" aria-label="附加技能卡" aria-modal="true" onClick={e=>e.stopPropagation()}><div className="game-sheet__top"><h3>附加技能卡</h3><button type="button" aria-label="關閉技能面板" onClick={()=>setShowHand(false)}><X size={20}/></button></div><SkillHand choice={current} skillId={skillId} onChange={(id)=>{setSkillId(id);playCue('card')}}/>{current&&<SkillComparison choice={current} skillId={skillId}/>} {current&&<button className="primary-button primary-button--full" onClick={()=>setShowHand(false)}>確認附加 · 返回行動卡</button>}</div></div>}
+  <ActionDecision actions={actions} state={s} selected={current} skillId={skillId} skillCount={usableSkillCount}
+    onSelect={action=>{setChosenId(action.id);setSkillId(null);playCue('select')}}
+    onBack={()=>{setChosenId(null);setSkillId(null);playCue('open')}}
+    onShowSkills={()=>{setHandOpenCount(n=>n+1);setShowHand(true);playCue('open')}}
+    onExecute={()=>{if(!current)return;dispatch({type:'CHOOSE',choiceId:current.id,skillId});playCue('confirm');setChosenId(null);setSkillId(null)}}
+    onRetreat={()=>setShowRetreat(true)}/>
+  {showHand&&current&&<div className="game-sheet-backdrop game-sheet-backdrop--ritual" role="presentation" onClick={()=>setShowHand(false)}>
+    <div className="game-sheet game-sheet--ritual" role="dialog" aria-label="附加技能卡" aria-modal="true" onClick={e=>e.stopPropagation()}>
+      <div className="game-sheet__top"><h3>附加技能卡 <small>SKILL / ATTACHMENT</small></h3><button type="button" aria-label="關閉技能面板" onClick={()=>setShowHand(false)}><X size={20}/></button></div>
+      <SkillComparison choice={current} skillId={skillId}/>
+      <SkillHand choice={current} skillId={skillId} layoutSeed={handOpenCount} onChange={id=>{setSkillId(id);playCue('card')}}/>
+      <button className="primary-button primary-button--full game-sheet__confirm" onClick={()=>{setShowHand(false);playCue('confirm')}}>確認附加 · 返回行動卡</button>
+    </div>
+  </div>}
   {showStory&&<div className="game-sheet-backdrop" role="presentation" onClick={()=>setShowStory(false)}><div className="game-story-modal" role="dialog" aria-label="劇情與警告詳情" aria-modal="true" onClick={e=>e.stopPropagation()}><div className="game-sheet__top"><h3><BookOpenText size={17}/>劇情紀錄</h3><button onClick={()=>setShowStory(false)} aria-label="關閉劇情詳情"><X size={19}/></button></div><p>{scene.narration}</p>{scene.npcText&&<blockquote>阿忠：{scene.npcText}</blockquote>}{s.lastEvent&&<p>{s.lastEvent}</p>}{current&&<section className="story-action-details"><h4>目前選擇：{current.title}</h4><p>{current.thought}</p><p>{current.detail}</p></section>}<h4>場景心聲</h4>{ambientLines.map((line,i)=><p key={i}>「{line}」</p>)}{preview?.warnings.map(w=><div className="warning-panel" key={w.title}><ShieldAlert size={17}/><div><strong>{w.title}</strong><p>{w.detail}</p><small>恢復：{w.remedy}</small></div></div>)}{s.clues.length>0&&<p className="story-clues"><Sparkles size={14}/>已掌握 {s.clues.length} 條線索</p>}</div></div>}
   {showRetreat&&<RetreatDialog onClose={()=>setShowRetreat(false)}/>}
   {showSettings&&<GameSettingsDialog onClose={()=>setShowSettings(false)}/>}

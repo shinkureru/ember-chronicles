@@ -20,7 +20,7 @@ export const loadGame=():GameState=>{
     const warehouse={...old.warehouse};
     if(!Array.isArray(old.attackDeck)){
       const starter=old.profession==='courier'?{wrench:1,screwdriver:1}:{pen:1,notebook:1};
-      for(const [id,count] of Object.entries(starter))if(!(old.bag[id]>0)&&!(warehouse[id]>0))warehouse[id]=count;
+      for(const [id,count] of Object.entries(starter))if(!((old.bag[id]??0)>0)&&!((warehouse[id]??0)>0))warehouse[id]=count;
     }
     return { ...old, attackDeck,enemy:old.enemy??makeInitialEnemy(),ownedCards,warehouse,
       chapterProgress: old.chapterProgress ?? { completed: old.npc?.remembers?.includes('player_victory')?[1]:[], unlocked:old.npc?.remembers?.includes('player_victory')?2:1 },

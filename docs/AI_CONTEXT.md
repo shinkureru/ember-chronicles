@@ -60,3 +60,10 @@
 - 使用 `src/game/engine/skillComparison.ts` 與 `calculateActionPreview()` 共享計算，未經驗證的技能不可虛報加成。
 - 新的敵人 HP、攻擊型主動卡分類、事前準備及最多 5 張攻擊牌、物品／武器檢查與自動入背包等需求留到 v0.6，不在 v0.5 偷渡部分未完成系統。
 - QA 清單參見 `docs/V05_IMPLEMENTATION.md`。
+
+
+### v0.6 最新進度：視覺選牌流程
+- 修正任務右上角按鈕的 v0.5.1 hotfix：PR #3。
+- 關卡選項改成無框線的斜體粗字、相對危險選項弱雜訊提示；點選後進入左側不規則 SVG 卡牌、右側文字確認與 ECG 動畫。附加技能以不對齊的水平滑動浮卡呈現，數值／資源在上方。
+- 核心結算仍使用 `calculateActionPreview`、`getSkillComparison`；不影響原本存檔、NPC 判定。
+- 詳見 `docs/V06_SELECTION_UI.md`。敵人 HP／攻擊牌組仍保留至 v0.7。

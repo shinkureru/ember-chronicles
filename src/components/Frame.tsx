@@ -35,7 +35,7 @@ export default function Frame({children}:{children:ReactNode}){
         <NavLink to="/settings" className="app-header__settings" aria-label="設定"><Settings2 size={19}/></NavLink>
       </header>}
       <main key={location.pathname} className={`app-main ${inMission?'app-main--mission':''}`} id="main">{children}</main>
-      {!inMission&&!onMap&&<nav className="bottom-nav" aria-label="主要導覽">
+      {!inMission&&!onMap&&location.pathname!=='/preparation'&&<nav className="bottom-nav" aria-label="主要導覽">
         {MENU.map(({to,label,Icon})=><NavLink key={to} to={to} onClick={()=>playCue('select')} className={({isActive}:{isActive:boolean})=>`bottom-nav__link ${isActive?'is-active':''}`}><Icon size={19} strokeWidth={1.8}/><span>{label}</span></NavLink>)}
       </nav>}
       {!inMission&&import.meta.env.DEV&&<div className="dev-shortcut"><NavLink to="/dev">DEV · 測試工具</NavLink></div>}

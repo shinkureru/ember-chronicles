@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Archive, Clock3, Landmark, Layers3, LockKeyhole, MapPinned, Play, Skull, Store, UserRound, Settings2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Archive, Clock3, Landmark, Layers3, LockKeyhole, MapPinned, Play, Skull, Store, UserRound, Settings2, Swords } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useGame } from '../../app/GameContext';
 import { CHAPTER_ONE } from '../../game/data/maps/ch01';
@@ -8,6 +8,7 @@ import { playCue } from '../../audio/sound';
 
 const connections = CHAPTER_ONE.stages.map(s=>`${s.x},${s.y}`).join(' ');
 const HUB_ACTIONS=[
+  {label:'事前準備',Icon:Swords,to:'/preparation'},
   {label:'城鎮',Icon:Landmark,to:'/town'},
   {label:'黑市',Icon:Store,to:'/black-market'},
   {label:'倉庫',Icon:Archive,to:'/warehouse'},
@@ -17,7 +18,7 @@ const HUB_ACTIONS=[
 ];
 
 export default function ChapterMapPage(){
-  const {state:s,dispatch}=useGame();const navigate=useNavigate();
+  const {state:s}=useGame();const navigate=useNavigate();
   const map=useRef<HTMLDivElement|null>(null);
   const drag=useRef({active:false,startX:0,scrollStart:0});
   const [selected,setSelected]=useState(1);
@@ -39,8 +40,8 @@ export default function ChapterMapPage(){
   const handleStart=()=>{
     if(!unlocked||!playable)return;
     playCue('confirm');
-    if(s.mode!=='adventure'&&s.mode!=='result')dispatch({type:'START_ATTEMPT'});
-    navigate('/chapter');
+    if(s.mode==='home')navigate('/preparation');
+    else navigate('/chapter');
   };
   const pan=(delta:number)=>map.current?.scrollBy({left:delta,behavior:'smooth'});
   return <div className="world-map-page page-stack">
@@ -96,7 +97,7 @@ export default function ChapterMapPage(){
     <section className="map-stage-detail" aria-live="polite">
       <div className="map-stage-detail__meta"><span>MISSION {String(stage.sequence).padStart(2,'0')} / 12</span><span>{cleared?'已通關':!unlocked?'未解鎖':!playable?'製作中':'可進入'}</span></div>
       <h2>{stage.name}</h2><p>{stage.subtitle}</p>
-      <div className="map-stage-detail__action-slot">{unlocked ? playable ? <button type="button" className="primary-button primary-button--full" onClick={handleStart}><Play size={16}/>{s.mode==='adventure'?'繼續調查':s.mode==='result'?'查看上次結果':cleared?'再次挑戰':'進入關卡'}<ArrowRight size={17}/></button> : <div className="map-stage-detail__notice"><Clock3 size={15}/> 已依序解鎖；本關尚未加入原型，後續會實作。</div> : <div className="map-stage-detail__notice"><LockKeyhole size={15}/> 需要先通過第 {stage.sequence-1} 關，才能解鎖本關。</div>}</div>
+      <div className="map-stage-detail__action-slot">{unlocked ? playable ? <button type="button" className="primary-button primary-button--full" onClick={handleStart}><Play size={16}/>{s.mode==='adventure'?'繼續調查':s.mode==='result'?'查看上次結果':cleared?'準備再次挑戰':'事前準備並進關'}<ArrowRight size={17}/></button> : <div className="map-stage-detail__notice"><Clock3 size={15}/> 已依序解鎖；本關尚未加入原型，後續會實作。</div> : <div className="map-stage-detail__notice"><LockKeyhole size={15}/> 需要先通過第 {stage.sequence-1} 關，才能解鎖本關。</div>}</div>
     </section>
   </div>;
 }

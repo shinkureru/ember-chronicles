@@ -20,6 +20,8 @@ export const ITEMS: Record<string, ItemDef> = {
   batteries:{id:'batteries',name:'備用電池',emoji:'🔋',type:'tool',weight:0.18,description:'可用於一般電池設備。'},
   screwdriver:{id:'screwdriver',name:'十字螺絲起子',emoji:'🪛',type:'tool',weight:0.22,description:'一般維修工具。'},
   wrench:{id:'wrench',name:'小型活動扳手',emoji:'🔧',type:'tool',weight:0.52,description:'處理簡單機械零件。'},
+  card_pen:{id:'card_pen',name:'卡牌碎頁・鋼筆突刺',emoji:'🃏',type:'card',weight:0.01,description:'用於提升鋼筆突刺的卡牌複本。'},
+  card_wrench:{id:'card_wrench',name:'卡牌碎頁・扳手重擊',emoji:'🃏',type:'card',weight:0.01,description:'用於提升扳手重擊的卡牌複本。'},
   card_question:{id:'card_question',name:'卡牌碎頁・追問破綻',emoji:'🃏',type:'card',weight:0.01,description:'可作為技能卡升級素材。'},
   card_route:{id:'card_route',name:'卡牌碎頁・路線預判',emoji:'🃏',type:'card',weight:0.01,description:'可作為技能卡升級素材。'},
   memorychip:{id:'memorychip',name:'損壞的記憶卡',emoji:'💾',type:'misc',weight:0.02,description:'可能藏有重要檔案。'},
@@ -30,8 +32,8 @@ export const ITEMS: Record<string, ItemDef> = {
   rope:{id:'rope',name:'捆貨繩索',emoji:'🪢',type:'tool',weight:0.6,description:'倉庫常見的貨物固定工具。'},
 };
 export const LOOT_POOLS: Record<string, string[]> = {
-  desk:['notes','badge','receipt','batteries','card_question','memorychip','pen','notebook','metal_ruler'],
-  shelves:['biscuit','water','canned','tape','gloves','rope','firstaid','handwarm','wrench','screwdriver'],
+  desk:['notes','badge','receipt','batteries','card_question','memorychip','pen','notebook','metal_ruler','card_pen'],
+  shelves:['biscuit','water','canned','tape','gloves','rope','firstaid','handwarm','wrench','screwdriver','card_wrench'],
   pockets:['keyring','notes','receipt','bandage','card_route','radio','pen'],
 };
 export const INITIAL_NPC_GEAR=['flashlight','vest','radio'];

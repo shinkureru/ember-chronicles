@@ -32,7 +32,7 @@ export const ITEMS: Record<string, ItemDef> = {
   rope:{id:'rope',name:'捆貨繩索',emoji:'🪢',type:'tool',weight:0.6,description:'倉庫常見的貨物固定工具。'},
 };
 export const LOOT_POOLS: Record<string, string[]> = {
-  desk:['notes','badge','receipt','batteries','card_question','memorychip','pen','notebook','metal_ruler','card_pen'],
+  desk:['notes','badge','receipt','batteries','card_question','memorychip','pen','notebook','metal_ruler','camera','card_pen'],
   shelves:['biscuit','water','canned','tape','gloves','rope','firstaid','handwarm','wrench','screwdriver','card_wrench'],
   pockets:['keyring','notes','receipt','bandage','card_route','radio','pen'],
 };

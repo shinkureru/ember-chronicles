@@ -1,0 +1,24 @@
+import { INITIAL_ATTRIBUTES } from '../data/attributes';
+import { STARTER_CARDS } from '../data/cards';
+import { INITIAL_NPC_GEAR, WAREHOUSE_CAPACITY_KG } from '../data/items';
+import type { GameState, ProfessionId } from '../types';
+
+export const makeInitialState=(profession:ProfessionId|null=null):GameState=>{
+  const deck=profession?STARTER_CARDS[profession]:[];
+  return {
+    version:1,mode:'home',profession,
+    player:{health:100,maxHealth:100,stamina:80,maxStamina:80,courage:55,hunger:20,fatigue:12,temperature:36.5,resource:6,maxResource:6,attributes:{...INITIAL_ATTRIBUTES}},
+    world:{minute:16*60+20,day:1,weather:'clear'},
+    npc:{hostility:18,trust:15,met:0,adaptations:{},remembers:[],stolenGear:[]},
+    attempt:0,sceneId:'gate',flags:[],searchedSources:[],clues:[],insightBonus:0,
+    bag:{biscuit:2,water:1},warehouse:{},warehouseCapacity:WAREHOUSE_CAPACITY_KG,
+    protectedItems:[],
+    ownedCards:Object.fromEntries(deck.map(id=>[id,{copies:0,level:1}])),
+    activeDeck:[...deck],hand:[],drawPile:[],discardPile:[],
+    log:[],lastEvent:null,lastLoot:null,outcome:null,rngSeed:123456789,hasSeenIntro:false,
+    chapterProgress:{completed:[],unlocked:1},
+    economy:{coins:120,blackMarketFavor:0,marketPurchases:0},
+    equipment:{head:null,body:null,hands:null,mainHand:null,utility:null,accessory:null},
+  };
+};
+export const starterGear=[...INITIAL_NPC_GEAR];

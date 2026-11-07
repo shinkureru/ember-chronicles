@@ -1,0 +1,243 @@
+/* v0.3 viewport-first design; the document itself never scrolls vertically. */
+:root{font-family:'Inter','Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif;--bg:#060608;--surface:#121216;--surface2:#1c191e;--surface3:#292128;--ink:#e3ddda;--soft:#aea4a1;--muted:#8f8582;--border:rgba(161,139,136,.28);--accent:#b89891;--accent-dark:#1e171b;--gold:#ad8a78;--danger:#da797a}
+html,body,#root{width:100%;height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
+body{background:#050506;color:var(--ink)}
+.desktop-world{height:100dvh;min-height:0;overflow:hidden;background:radial-gradient(circle at 17% 26%,#21181d,transparent 37%),radial-gradient(circle at 85% 78%,#221518,transparent 34%),#050506}
+.game-frame{height:100dvh;min-height:0;max-height:100dvh;overflow:hidden;background:linear-gradient(160deg,#111015,#09090c 72%,#060608)}
+.app-header{height:54px;flex:none;position:relative;padding:0 14px}
+.bottom-nav{height:54px;flex:none;position:relative;padding-bottom:env(safe-area-inset-bottom)}
+.bottom-nav__link{gap:1px;font-size:9px}
+.app-main{display:flex;flex-direction:column;flex:1;min-height:0;padding:10px 11px 12px;overflow:hidden;animation:none}
+.app-main>.page-stack,.app-main>.world-map-page,.app-main>.chapter-live,.app-main>.chapter-conclusion{width:100%;height:100%;min-height:0}
+/* Dense setup pages can scroll inside their content pane, without scrolling the game/document. */
+.app-main>.page-stack:not(.world-map-page){overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#5a4144 transparent;padding-right:1px}
+.page-heading h1,.map-intro h1,.chapter-hero h1,.app-header__brand strong{font-family:'Noto Serif TC',serif}
+.eyebrow{font-family:Inter,sans-serif;letter-spacing:.13em}
+/* Compact chapter map: all 12 nodes remain horizontally pannable, without page vertical scrolling. */
+.world-map-page{display:flex;flex-direction:column;gap:7px;overflow:hidden}
+.world-map-page .map-intro{flex:none;padding:11px 13px 8px}
+.world-map-page .map-intro__heading{margin-top:3px}
+.world-map-page .map-intro h1{font-size:21px}
+.world-map-page .map-intro__number{font-size:24px}
+.world-map-page .map-intro__thought{margin:3px 0 5px;font-size:10px;line-height:1.4;max-height:2.8em;overflow:hidden}
+.world-map-page .map-intro__progress{margin-top:4px}
+.world-map-page .chapter-map-section{display:flex;flex-direction:column;flex:1;min-height:0}
+.world-map-page .map-toolbar{flex:none;height:32px}
+.world-map-page .map-viewport{flex:1;min-height:0;overflow-x:auto;overflow-y:hidden;height:auto;touch-action:pan-x}
+.world-map-page .map-canvas{zoom:.7}
+.world-map-page .map-scroll-hint{flex:none;padding:5px 10px}
+.world-map-page .map-stage-detail{flex:none;padding:9px 12px}
+.world-map-page .map-stage-detail h2{font-size:17px;margin:3px 0}
+.world-map-page .map-stage-detail p{font-size:10px;line-height:1.3;margin:2px 0 6px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.world-map-page .map-stage-detail .primary-button{padding:8px 10px;min-height:34px}
+.world-map-page .map-quick-actions,.world-map-page .map-footnote,.world-map-page .map-last-event,.world-map-page .map-player-summary{display:none}
+/* Full-viewport mission: no app header, menu or vertical page scrollbar. */
+.app-main--mission{padding:8px 9px calc(8px + env(safe-area-inset-bottom));overflow:hidden}
+.chapter-live{display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden}
+.chapter-live .chapter-kicker{flex:none;height:21px;font-size:10px;color:#b9a2a0}
+.chapter-live .chapter-kicker button{color:#d1aaa3}
+.chapter-live .hud{flex:none;padding:6px 8px;border-radius:7px}
+.chapter-live .hud__top{margin-bottom:4px;font-size:9px}
+.chapter-live .hud__bars{gap:8px}
+.chapter-live .statbar__label{font-size:9px;margin-bottom:2px}
+.chapter-live .statbar__track{height:5px}
+.chapter-live .hud__chips{margin-top:5px;gap:3px;flex-wrap:nowrap;overflow:hidden}
+.chapter-live .hud__chips span{padding:1px 3px;font-size:8px;white-space:nowrap;gap:2px}
+.chapter-live .hud__chips svg{width:10px;height:10px}
+.chapter-live .scene-art{flex:none;height:clamp(72px,18dvh,152px);border-radius:8px}
+.chapter-live .scene-art__warehouse{transform:scale(.77);transform-origin:bottom center}
+.chapter-live .scene-art__caption{padding:3px 8px;font-size:9px}
+.chapter-live .story-panel--compact{flex:none;padding:8px 10px;max-height:clamp(76px,15dvh,119px);overflow:hidden;border-radius:7px}
+.chapter-live .story-panel__top{font-size:9px;margin-bottom:3px}
+.chapter-live .story-panel__thought{font-size:11px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.story-panel__compact-npc{margin-top:4px;font-size:10px;line-height:1.3;color:#d2aaa2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.story-panel__hint{display:flex;align-items:center;gap:3px;font-size:9px;color:#d6b09e}
+.chapter-live .actions-section--viewport{flex:1;min-height:0;gap:5px;display:flex;flex-direction:column}
+.chapter-live .section-heading{flex:none;min-height:23px;align-items:center}
+.chapter-live .section-heading h3{font-size:12px;margin:0}
+.chapter-live .section-heading .eyebrow{display:none}
+.action-pagination{display:flex;align-items:center;gap:6px;font-size:10px;color:#bda7a1}
+.action-pagination button{display:grid;place-items:center;height:24px;width:27px;color:#d9c8c2;border:1px solid #6d5757;border-radius:4px;background:#231b20}
+.action-pagination button:disabled{opacity:.32}
+.chapter-live .action-stack--viewport{display:grid;flex:1;grid-template-rows:repeat(3,minmax(0,1fr));gap:5px;min-height:0}
+.chapter-live .action-card{height:100%;min-height:0;overflow:hidden;padding:6px 8px;border-radius:7px;background:#19171b!important}
+.chapter-live .action-card--active{border-color:#b57c7b!important;background:#2a1d24!important}
+.chapter-live .action-card__top{align-items:center;gap:7px}
+.chapter-live .action-card__index{min-width:21px;height:21px;border-radius:4px;font-size:10px;background:#3c2b31}
+.chapter-live .action-card__title strong{font-size:11px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chapter-live .action-card__title p{font-size:9px;line-height:1.3;margin-top:1px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.chapter-live .action-card__rate{font-size:14px;flex:none}
+.chapter-live .action-card__bottom{margin-top:3px;padding-top:3px;gap:8px;flex-wrap:nowrap;overflow:hidden}
+.chapter-live .action-card__bottom>span{font-size:9px;white-space:nowrap}
+.chapter-live .action-card__detail{display:none}
+.live-controls{flex:none;display:flex;flex-direction:column;gap:4px;border:1px solid #715357;background:#171419;border-radius:7px;padding:7px}
+.live-controls__summary{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:11px;color:#cfc1bb}
+.live-controls__summary strong{font-size:16px;color:#d8a69d}
+.live-controls__cost{display:flex;gap:8px;flex-wrap:wrap;font-size:9px;color:#c6b6ae}
+.live-controls__cost button{border:0;background:none;color:#e1a08e;font-size:9px;padding:0;display:inline-flex;align-items:center;gap:3px}
+.live-controls__buttons{display:grid;grid-template-columns:.9fr 1.4fr 1fr;gap:5px}
+.live-controls__buttons button{min-height:35px;padding:6px 4px;display:flex;justify-content:center;gap:4px;align-items:center;font-size:11px}
+.chapter-conclusion{display:flex;flex-direction:column;gap:9px;min-height:0;overflow:hidden}
+.chapter-conclusion .chapter-hero{min-height:0;flex:none;padding:15px}
+.chapter-conclusion .chapter-hero h1{font-size:20px}
+.chapter-conclusion .hud{flex:none}
+.chapter-conclusion__record{flex:1;min-height:0;overflow:hidden}
+.chapter-conclusion__record .log-list{max-height:32%;overflow:hidden}
+.chapter-conclusion>.primary-button{flex:none}
+/* Only secondary sheets scroll internally when there is genuinely more information. */
+.game-sheet-backdrop{position:absolute;inset:0;background:#000b;z-index:80;display:flex;align-items:flex-end;padding:10px;backdrop-filter:blur(4px)}
+.game-sheet{background:linear-gradient(155deg,#292126,#151317);border:1px solid #825e5a;border-radius:12px;padding:14px;width:100%;max-height:min(75dvh,490px);overflow-y:auto;box-shadow:0 0 40px #0009;animation:sheet-in .18s ease-out}
+.game-sheet__top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.game-sheet__top h3{font-size:14px;display:flex;align-items:center;gap:7px}
+.game-sheet__top button{border:1px solid #564549;color:#e0c7c1;background:#261e24;width:28px;height:28px;display:grid;place-items:center;border-radius:5px}
+.game-sheet .hand-section .section-heading{display:none}
+.game-sheet .skill-tile{background:#262024}
+.game-sheet .skill-tile__illustration{background:radial-gradient(circle,#5d484d,#292126 67%,#151217)}
+.game-sheet .primary-button{margin-top:11px}
+.game-story-modal{width:100%;max-height:85dvh;overflow-y:auto;align-self:center;background:#19161a;border:1px solid #765656;border-radius:10px;padding:17px;font-size:13px;line-height:1.8;color:#d8cecb;animation:sheet-in .18s ease-out}
+.game-story-modal blockquote{border-left:2px solid #9b6e69;padding:10px;background:#292126;margin:13px 0}
+.game-story-modal>p{margin-bottom:13px}
+.game-story-modal .story-clues{display:flex;align-items:center;gap:6px;color:#c9a4a0}
+/* Committed-result notification system */
+.game-feedback-layer{position:absolute;inset:0;z-index:110;pointer-events:none;display:flex;align-items:flex-end;justify-content:center;padding:0 12px max(18%,24px)}
+.game-feedback-layer--modal{pointer-events:auto;align-items:center;background:#000a;padding:14px;backdrop-filter:blur(3px)}
+.game-feedback{position:relative;pointer-events:auto;width:100%;background:linear-gradient(155deg,#32252c,#17151b);border:1px solid #ad827c;border-radius:10px;padding:13px 13px 13px 11px;box-shadow:0 15px 35px #000b,0 0 35px #9b5d4b22;display:flex;gap:10px;align-items:flex-start;animation:feedback-pop .28s cubic-bezier(.17,1.5,.35,1)}
+.game-feedback--danger{border-color:#e07674;background:linear-gradient(160deg,#4e2328,#1d151c);animation:feedback-pop .28s cubic-bezier(.17,1.5,.35,1),feedback-shake .34s ease .22s}
+.game-feedback--major{flex-direction:column;text-align:center;align-items:center;padding:21px 16px;max-width:370px}
+.game-feedback__icon{color:#e3b5a6;flex:none}
+.game-feedback__content{flex:1;min-width:0}
+.game-feedback__content strong{display:block;font-size:14px;letter-spacing:.05em}
+.game-feedback__content p{font-size:11px;line-height:1.55;color:#d1b5b0;margin-top:4px;white-space:normal;overflow-wrap:anywhere;max-height:10em;overflow:hidden}
+.game-feedback__close{background:transparent;border:0;color:#caa9a2;padding:0;flex:none}
+.game-feedback__dismiss{border:1px solid #a77972;color:#ead5cc;background:#633a3d;border-radius:5px;padding:7px 15px;font-size:12px;align-self:center;margin-top:8px;flex:none}
+.game-feedback--danger .game-feedback__dismiss{margin-top:auto}
+.game-feedback__warning{position:absolute;right:14px;top:13px;color:#e98982}
+.game-feedback--danger{flex-direction:column;align-items:center;text-align:center;max-width:370px}
+@keyframes feedback-pop{from{opacity:0;transform:translateY(25px) scale(.86)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes feedback-shake{0%,100%{transform:translateX(0)}22%{transform:translateX(-7px)}44%{transform:translateX(6px)}66%{transform:translateX(-3px)}85%{transform:translateX(2px)}}
+@keyframes sheet-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+/* Responsive portrait geometry: smaller screens remain single-viewport. */
+@media(max-height:760px){
+ .chapter-live{gap:4px}.chapter-live .scene-art{height:clamp(61px,14dvh,102px)}
+ .chapter-live .story-panel--compact{max-height:80px;padding:6px 8px}.chapter-live .story-panel__thought{-webkit-line-clamp:2}
+ .chapter-live .hud__weather{display:none}.chapter-live .hud__chips span:nth-child(n+4){display:none}
+ .live-controls{padding:5px}.live-controls__buttons button{min-height:31px}
+ .world-map-page .map-canvas{zoom:.62}
+ .world-map-page .map-intro__thought{display:none}
+}
+@media(max-height:620px){
+ .chapter-live .scene-art{height:62px}.chapter-live .story-panel--compact{max-height:67px}.chapter-live .story-panel__compact-npc{-webkit-line-clamp:1}
+ .chapter-live .action-card__title p{display:none}.chapter-live .action-card__bottom{gap:5px}
+ .chapter-live .action-card__bottom>span{font-size:8px}
+ .world-map-page .map-canvas{zoom:.5}
+ .world-map-page .map-intro__progress{display:none}
+}
+@media(max-width:370px){.chapter-live .action-card__bottom span:nth-child(3){display:none}.app-main{padding-left:8px;padding-right:8px}}
+@media(prefers-reduced-motion:reduce){.game-feedback,.game-feedback--danger,.game-sheet,.game-story-modal{animation:none!important}}
+/* Every player-facing menu uses tabs or pagination, not a vertically scrolling document. */
+.app-main>.viewport-page{overflow:hidden!important;display:flex;flex-direction:column;min-height:0;gap:9px}
+.viewport-page>.page-heading{flex:none;padding:3px 2px 0}
+.viewport-page>.page-heading h1{font-family:'Noto Serif TC',serif;font-size:22px;line-height:1.2;margin:3px 0}
+.viewport-page>.page-heading p{font-size:11px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.viewport-page .surface-card{padding:11px;border-radius:7px}
+.viewport-page .surface-card h3{margin-bottom:7px}
+.viewport-page .viewport-summary{flex:none}
+.viewport-page .viewport-summary .inline-summary{margin-bottom:6px}
+.viewport-page .viewport-summary>p{margin:0;font-size:10px}
+.viewport-page .viewport-list{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+.viewport-page .viewport-tip{flex:none;font-size:10px;padding:7px 9px;line-height:1.3}
+.view-tabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:5px;flex:none}
+.view-tabs button{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#1b181d;border:1px solid #574a4f;border-radius:5px;color:#a79895;font-size:11px;padding:7px 4px}
+.view-tabs button.is-active{background:#453036;color:#f0d0c7;border-color:#9b6a68}
+.page-stepper{display:flex;align-items:center;justify-content:center;gap:12px;flex:none;color:#bdaaa4;font-size:11px}
+.page-stepper button{width:27px;height:26px;border-radius:4px;display:grid;place-items:center;border:1px solid #685355;background:#292025;color:#e0c6be}
+.page-stepper button:disabled{opacity:.3}
+/* Cards: two items per screen */
+.cards-viewport .card-collection{display:grid;flex:1;grid-template-rows:repeat(2,minmax(0,1fr));align-content:stretch}
+.cards-viewport .collection-card{min-height:0;height:100%;grid-template-columns:69px 1fr;padding:8px;gap:9px}
+.cards-viewport .collection-card__art{height:100%;min-height:0;font-size:27px}
+.cards-viewport .collection-card__body{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px}
+.cards-viewport .collection-card__body p{font-size:10px;line-height:1.45;margin:2px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cards-viewport .collection-card__meta{margin:3px 0}
+.cards-viewport .upgrade-button{padding:4px 7px}
+/* Warehouse: item tabs and groups of three */
+.warehouse-viewport .capacity-bar{height:7px}
+.warehouse-viewport .viewport-list .item-list{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:6px}
+.warehouse-viewport .item-row{padding:7px 8px;min-height:0;max-height:30%;flex:1}
+.warehouse-viewport .item-row__emoji{width:32px;height:35px;font-size:18px}
+.warehouse-viewport .item-row__text small{font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+/* Black market: category tabs and four visible transactions */
+.market-viewport .market-merchant{flex:none;padding:8px 11px}
+.market-viewport .market-merchant__face{width:38px;height:40px;line-height:40px}
+.market-viewport .viewport-summary .market-summary{margin-bottom:5px}
+.market-viewport .viewport-summary .muted{font-size:10px;line-height:1.2;margin:4px 0 0}
+.market-viewport .market-rows{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:6px}
+.market-viewport .market-row{padding:6px 8px;flex:1;min-height:0}
+.market-viewport .market-row strong{font-size:11px}
+.market-viewport .market-row small{font-size:9px}
+.market-viewport .market-row button{padding:5px 9px}
+/* Character: three tabs for equipment, 18 long-term stats, and NPC memory. */
+.character-viewport .character-hero{flex:none;padding:8px 12px}
+.character-viewport .character-hero h2{font-size:17px;margin:2px 0}
+.character-viewport .character-hero p{font-size:10px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.character-viewport .character-hero__passive{font-size:9px;margin-top:3px}
+.character-viewport .character-hero__seal{font-size:8px;padding:5px}
+.character-viewport .equipment-panel{display:flex;flex-direction:column;gap:3px;padding:8px;min-height:0}
+.character-viewport .equipment-panel>.section-heading{flex:none}
+.character-viewport .equipment-panel>.section-heading h3{font-size:12px}
+.character-viewport .equipment-stage{flex:1;min-height:110px;height:auto;margin-top:0}
+.character-viewport .survivor-figure{height:100%;width:auto;max-width:60%;left:50%;transform:translateX(-50%)}
+.character-viewport .equipment-slot{transform:scale(.86)}
+.character-viewport .equipment-picker{flex:none;padding:4px 2px 0;gap:2px;max-height:112px;overflow:hidden}
+.character-viewport .equipment-picker__title{font-size:11px;margin-bottom:1px}
+.character-viewport .equipment-picker__item{padding:4px 7px}
+.character-viewport .equipment-picker__empty{padding:5px 7px;font-size:10px}
+.character-viewport .equipment-picker>.secondary-button{padding:5px}
+.character-viewport .character-attributes{display:grid;grid-template-columns:1fr;gap:5px;align-content:start}
+.character-viewport .character-attributes .surface-card{padding:7px 9px}
+.character-viewport .character-attributes .surface-card h3{font-size:11px;margin-bottom:5px}
+.character-viewport .character-attributes .attribute-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.character-viewport .character-attributes .attribute-item{font-size:9px;padding:5px;gap:4px}
+.character-viewport .viewport-tip{display:none}
+/* Town fits in one viewport with compact access routes. */
+.town-page .town-visual{flex:none;height:clamp(65px,13dvh,118px);padding:8px}
+.town-page .surface-card{flex:none}
+.town-page .surface-card p{font-size:10px;line-height:1.35;margin:3px 0}
+.town-page .town-rest-preview{margin:5px 0;gap:4px}
+.town-page .town-rest-preview span{padding:2px 4px;font-size:9px}
+.town-page .primary-button{margin-top:3px;padding:6px}
+.town-page .town-links{flex:1;display:grid;grid-template-rows:repeat(5,minmax(0,1fr));min-height:0;gap:4px}
+.town-page .town-links>a{min-height:0;padding:5px 9px;gap:7px}
+.town-page .town-links>a strong{font-size:10px}
+.town-page .town-links>a small{display:none}
+.town-page .town-links>a>svg:first-child{width:16px;height:16px}
+.town-page>.secondary-button{flex:none;min-height:32px;padding:5px}
+/* Sound controls */
+.settings-page .audio-settings{gap:7px}
+.settings-page .audio-settings>h3{flex:none;margin-bottom:1px}
+.settings-page .audio-settings>p{font-size:10px;line-height:1.5;margin:3px 0;max-height:3em;overflow:hidden}
+.settings-page .audio-settings>.secondary-button{padding:6px;min-height:31px;flex:none}
+.settings-page .audio-slider{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:3px}
+.settings-page .audio-slider>span{display:flex;align-items:center;gap:6px;font-size:11px}
+.settings-page .audio-slider strong{margin-left:auto;color:#e4c3b8}
+.settings-page input[type=range]{width:100%;accent-color:#a87476;height:18px}
+.settings-page .settings-data{display:flex;flex-direction:column;gap:10px}
+/* New-character page */
+.home-page .home-hero{min-height:0;flex:1;padding:13px}
+.home-page .home-hero h1{font-size:24px;margin:7px 0}
+.home-page .home-hero p{font-size:11px;line-height:1.5}
+.home-page .home-hero__symbol{opacity:.2}
+.home-page .surface-card{flex:none}
+.home-page .profession-cards{display:flex;flex-direction:column;gap:5px}
+.home-page .profession-card{padding:6px 9px;min-height:0}
+.home-page .profession-card__icon{height:36px;width:36px}
+.home-page .profession-card em{font-size:10px}
+.home-page .tip-panel{flex:none;font-size:10px;padding:7px}
+@media(max-height:650px){
+ .viewport-page>.page-heading p{display:none}
+ .viewport-page .viewport-tip{display:none}
+ .character-viewport .character-hero p{display:none}
+ .town-page .town-visual{height:52px}
+ .home-page .home-hero__symbol{display:none}
+ .home-page .home-hero{flex:0 0 auto}
+}

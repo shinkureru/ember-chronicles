@@ -1,0 +1,213 @@
+/* Prototype v0.4: portrait-space reallocation, predictable control footprints.
+ * Imported AFTER v0.3 overrides so small-screen rules do not collapse the scene.
+ */
+
+/* Chapter map — a centralized, immediately visible hub above the scrolling map. */
+.world-map-page{gap:5px}
+.world-map-page .map-intro{padding:7px 12px 5px}
+.world-map-page .map-intro__thought{display:none}
+.map-hub{
+  flex:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;
+  padding:5px;background:#171418;border:1px solid #584a4c;border-radius:6px;
+}
+.map-hub__link{
+  min-width:0;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  gap:3px;padding:6px 1px 5px;border:1px solid #3e3438;border-radius:4px;
+  background:linear-gradient(180deg,#282125,#171519);color:#dbccc4;
+  font-size:10px;line-height:1.2;transition:background .16s,border-color .16s;
+}
+.map-hub__link svg{width:18px;height:18px;color:#b58e85}
+.map-hub__link:hover,.map-hub__link:focus-visible{background:#3c292e;border-color:#af7f75;color:#f1dcd3}
+.world-map-page .map-toolbar{height:28px}
+.world-map-page .map-stage-detail{padding:7px 10px}
+.world-map-page .map-stage-detail h2{font-size:15px;margin:1px 0}
+.world-map-page .map-scroll-hint{padding:2px 8px}
+
+/* Card library: exactly 3 columns x 4 slots per page, including vacant slots. */
+.cards-viewport{gap:6px!important}
+.cards-viewport>.page-heading{flex:none}
+.cards-viewport>.page-heading h1{font-size:20px}
+.cards-viewport>.page-heading p{font-size:10px;line-height:1.35}
+.card-library-toolbar{display:flex;align-items:center;justify-content:space-between;gap:7px;flex:none;background:#171519;border:1px solid #56474a;border-radius:6px;padding:6px 8px;min-height:35px}
+.card-library-toolbar__count{display:flex;align-items:center;gap:5px;color:#bca7a0;font-size:10px;min-width:0}
+.card-library-toolbar__count svg{color:#bb948a;flex:none}
+.card-library-toolbar__count strong{font-size:11px;color:#ede0d8}
+.card-library-toolbar__count small{color:#948481;font-size:9px}
+.card-library-toolbar__count>span{white-space:nowrap;font-size:9px}
+.card-library-toolbar__filter{display:flex;flex:none;gap:3px}
+.card-library-toolbar__filter button{padding:4px 7px;border-radius:4px;border:1px solid #57474b;background:#211c20;color:#ae9993;font-size:9px}
+.card-library-toolbar__filter button.is-active{background:#5a383d;border-color:#ad7d73;color:#f6dfd6}
+.card-library-grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:6px}
+.card-library-tile,.card-library-empty{height:100%;width:100%;min-width:0;min-height:0;border-radius:5px;border:1px solid #665152;background:linear-gradient(155deg,#242025,#111216);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:6px 4px 5px;color:#dfd1cb;overflow:hidden;position:relative;text-align:center}
+.card-library-tile{cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
+.card-library-tile:active{transform:scale(.975)}
+.card-library-tile:hover,.card-library-tile:focus-visible{background:#3b2a30;border-color:#a97972}
+.card-library-tile__rarity{font-size:9px;letter-spacing:.09em;color:#a18d87;line-height:1}
+.rarity-tile--rare{border-color:#7e6b77}.rarity-tile--chaos{border-color:#a27070}
+.rarity-tile--chaos .card-library-tile__rarity{color:#dfa29f}
+.card-library-tile__art{display:grid;place-items:center;flex:1;min-height:0;font-size:clamp(18px,3dvh,29px);filter:grayscale(.85) sepia(.22) brightness(.78);line-height:1}
+.card-library-tile__name{font-size:clamp(10px,1.4dvh,12px);line-height:1.25;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:100%;min-height:1.25em}
+.card-library-tile__meta{width:100%;display:flex;justify-content:space-between;gap:2px;font-size:9px;color:#a9918b;border-top:1px solid #594649;padding-top:3px;white-space:nowrap}
+.card-library-tile.is-locked{border-style:dashed;opacity:.66}
+.card-library-empty{display:grid;place-items:center;opacity:.22;color:#aa9290;border-style:dashed;font-size:14px}
+.card-library-footer{display:flex;align-items:center;gap:6px;flex:none;color:#a78f89;font-size:9px;line-height:1.3;min-height:16px}
+.cards-viewport .page-stepper{min-height:25px}
+.card-detail-backdrop{position:absolute;inset:0;z-index:120;background:#050507e8;display:flex;align-items:center;justify-content:center;padding:12px;backdrop-filter:blur(5px)}
+.card-detail-dialog{width:100%;max-height:calc(100% - 5px);display:flex;flex-direction:column;min-height:0;padding:13px;background:linear-gradient(155deg,#2b2026,#101115);border:1px solid #98746e;border-radius:10px;box-shadow:0 20px 65px #000b;animation:sheet-in .2s ease-out}
+.card-detail-dialog__head{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;color:#ba9c94}
+.card-detail-dialog__head button{background:#241e22;border:1px solid #75585a;color:#e7d4cb;border-radius:5px;width:30px;height:30px;display:grid;place-items:center}
+.card-detail-dialog__hero{display:flex;align-items:center;gap:15px;border-bottom:1px solid #5e4a4b;padding-bottom:10px}
+.card-detail-dialog__icon{width:75px;height:82px;flex:none;display:grid;place-items:center;background:radial-gradient(ellipse,#4e383e,#19171c 75%);border:1px solid #675353;border-radius:6px;font-size:34px;filter:grayscale(.7)}
+.card-detail-dialog__hero h2{font:22px 'Noto Serif TC',serif;color:#ede1da;margin:4px 0}
+.card-detail-dialog__hero small{font-size:10px;color:#b6a19a}
+.card-detail-dialog__stats{flex:none;display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:9px 0}
+.card-detail-dialog__stats span{display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;background:#201b20;padding:8px 2px;font-size:9px;color:#aa928b;text-align:center}
+.card-detail-dialog__stats strong{font-size:12px;color:#ead8d1}
+.card-detail-dialog__content{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:4px;display:grid;align-content:start;gap:10px}
+.card-detail-dialog__content section{padding:10px;background:#161419;border:1px solid #4c3c40;border-radius:5px}
+.card-detail-dialog__content h3{font-size:12px;color:#e4c3b8;display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.card-detail-dialog__content p{font-size:11px;line-height:1.65;color:#d2c4bd}
+.card-detail-dialog__content .card-detail-dialog__numbers{margin-top:6px;font-size:10px;color:#ae8d83}
+.card-detail-dialog__upgrade{flex:none;display:flex;justify-content:space-between;gap:9px;align-items:center;border-top:1px solid #655052;padding-top:10px;margin-top:10px}
+.card-detail-dialog__upgrade>div{display:flex;flex-direction:column;gap:2px}
+.card-detail-dialog__upgrade strong{font-size:12px;color:#e7d5c9}
+.card-detail-dialog__upgrade small{font-size:10px;color:#a58e89}
+.card-detail-dialog__upgrade button{min-height:35px;padding:6px 12px}
+
+/* Character's equipped / unequipped action always reserves the same slot. */
+.character-viewport .equipment-picker{flex:none;display:grid;grid-template-rows:auto minmax(0,1fr) 32px;height:142px;max-height:142px;gap:5px;overflow:hidden;padding:3px 2px 0}
+.character-viewport .equipment-picker__title{min-height:17px;margin:0}
+.character-viewport .equipment-picker__title span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:65%}
+.character-viewport .equipment-picker__choices{min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:3px;scrollbar-width:thin}
+.character-viewport .equipment-picker__choices .equipment-picker__item{min-height:28px;flex:none;padding:4px 8px;border-radius:4px}
+.character-viewport .equipment-picker__choices .equipment-picker__empty{flex:none;padding:4px 6px}
+.character-viewport .equipment-picker__unequip{height:32px;min-height:32px;padding:3px 7px;border-radius:4px}
+.character-viewport .equipment-picker__unequip:disabled{opacity:.4}
+.character-viewport .equipment-stage{min-height:90px}
+
+/* Compact 15-row warehouse with independent list overflow on short phones. */
+.warehouse-viewport .viewport-list{min-height:0;overflow:hidden}
+.warehouse-viewport .viewport-list .item-list{display:flex;flex-direction:column;gap:2px;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:2px}
+.warehouse-viewport .item-row{flex:none;min-height:31px;max-height:none;padding:3px 5px;border-radius:4px;gap:7px;background:#19171b;border:1px solid #4b3b40;color:#d8c7bf}
+.warehouse-viewport .item-row__emoji{flex:none;width:24px;height:23px;border-radius:3px;background:#2c2329;font-size:15px;filter:grayscale(.76) sepia(.18) brightness(.8)}
+.warehouse-viewport .item-row__text{min-width:0;display:flex;flex-direction:row;align-items:center;gap:6px;white-space:nowrap;overflow:hidden}
+.warehouse-viewport .item-row__text strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
+.warehouse-viewport .item-row__text em{font-size:9px;color:#c8a59b}
+.warehouse-viewport .item-row__text small{display:none}
+.warehouse-viewport .item-row__text span{font-size:9px;color:#998781;margin-left:auto;white-space:nowrap;flex:none}
+.warehouse-viewport .item-row__actions{display:flex;flex:none;flex-direction:row;gap:3px}
+.warehouse-viewport .item-row__actions .mini-button{width:24px;height:24px;min-width:24px;min-height:24px;padding:4px;display:grid;place-items:center;background:#282026;border:1px solid #625056;border-radius:4px;color:#c6a8a0}
+.warehouse-viewport .item-row__actions .mini-button.is-on{border-color:#b2867b;color:#e9c2b4;background:#483037}
+.warehouse-viewport .item-row__actions .mini-button svg{width:13px;height:13px}
+
+/* Mission layout: scene and story have priority, action cards stay under 50%. */
+.chapter-live{gap:5px}
+.chapter-live .chapter-kicker{height:25px;min-height:25px}
+.chapter-kicker__controls{display:flex;align-items:center;gap:8px}
+.chapter-kicker__controls button{display:flex;align-items:center;gap:4px;padding:4px 5px;border:1px solid #5d494d;border-radius:4px;background:#231b20;font-size:10px;color:#dbc9c0}
+.chapter-conclusion .chapter-kicker--settings{flex:none;height:28px}
+.chapter-conclusion .chapter-kicker--settings button{display:flex;gap:4px;align-items:center}
+.chapter-live .hud{flex:none;padding:5px 8px}
+.chapter-live .hud__chips{margin-top:4px}
+.chapter-live .scene-art{flex:0 0 clamp(130px,27dvh,250px);height:clamp(130px,27dvh,250px);border-radius:8px;min-height:0;background:linear-gradient(0deg,#0d0d11 0%,#252024 42%,#14151b 100%)}
+.chapter-live .scene-art__warehouse{transform:scale(1);transform-origin:bottom center;left:8%;right:8%;height:74%}
+.chapter-live .scene-art__building{height:85%}
+.chapter-live .scene-art__halo{width:130px;height:130px;opacity:.27;left:65%;top:18%}
+.chapter-live .scene-art__atmosphere{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(165deg,transparent 0 6px,#b99d9620 7px,transparent 8px 27px);opacity:.28;mix-blend-mode:screen;z-index:2}
+.chapter-live .scene-art--inside{background:linear-gradient(180deg,#090a0d,#241d23 65%,#111114)}
+.chapter-live .scene-art--confrontation{background:radial-gradient(circle at 77% 48%,#66383754,transparent 32%),linear-gradient(#090a0d,#1e171b)}
+.chapter-live .scene-art--loot{background:linear-gradient(180deg,#111013,#2a2325 65%,#111114)}
+.chapter-live .scene-art--survey{background:linear-gradient(180deg,#101115,#242025 58%,#111013)}
+.chapter-live .scene-art__person{bottom:33px;z-index:3;opacity:.86;transform:scale(1.12)}
+.chapter-live .story-panel--compact{flex:0 0 clamp(104px,20dvh,170px);height:clamp(104px,20dvh,170px);min-height:0;max-height:none;display:flex;flex-direction:column;gap:2px;padding:7px 9px;overflow:hidden}
+.chapter-live .story-panel__top{flex:none;margin:0 0 2px}
+.chapter-live .story-panel__thought{font-size:11px;line-height:1.36;-webkit-line-clamp:3;flex:none;max-height:4.1em;overflow:hidden}
+.chapter-live .story-panel__compact-npc{font-size:10px;line-height:1.35;flex:none;max-height:2.7em;-webkit-line-clamp:2;margin:2px 0}
+.ambient-carousel{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:flex-start;padding-top:4px;border-top:1px solid #66515265;margin-top:2px}
+.ambient-carousel__heading{display:flex;justify-content:space-between;align-items:center;gap:5px;font-size:9px;color:#a68f88;min-height:18px}
+.ambient-carousel__heading>div{display:flex;align-items:center;gap:5px}
+.ambient-carousel__heading button{display:grid;place-items:center;width:21px;height:20px;background:#282027;border:1px solid #594549;border-radius:4px;color:#d4b5aa}
+.ambient-carousel>p{font-size:10px;color:#cfbcb4;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.chapter-live .story-panel__hint{font-size:9px;flex:none}
+.chapter-live .actions-section--viewport{flex:1 1 0;max-height:36%;min-height:0;overflow:hidden;gap:3px}
+.chapter-live .section-heading{flex:none;min-height:20px}
+.chapter-live .section-heading h3{font-size:11px}
+.chapter-live .action-stack--viewport{gap:4px;grid-template-rows:repeat(3,minmax(0,1fr));min-height:0}
+.chapter-live .action-card{display:flex;flex-direction:column;justify-content:space-between;min-height:0;padding:4px 6px}
+.chapter-live .action-card__top{min-height:0;gap:6px;align-items:flex-start}
+.chapter-live .action-card__index{width:19px;min-width:19px;height:19px;font-size:9px}
+.chapter-live .action-card__title strong{font-size:10px}
+.chapter-live .action-card__title p{font-size:9px;line-height:1.22;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;white-space:normal;overflow:hidden}
+.chapter-live .action-card__rate{font-size:13px}
+.chapter-live .action-card__bottom{flex:none;gap:7px;margin-top:2px;padding-top:2px}
+.chapter-live .action-card__bottom>span{font-size:8px}
+.chapter-live .action-card__detail{display:none}
+.chapter-live .live-controls{flex:none;padding:5px 7px;gap:3px}
+.chapter-live .live-controls__buttons button{min-height:32px;padding:5px 3px;font-size:10px}
+.chapter-live .live-controls__summary{font-size:10px}
+.chapter-live .live-controls__summary strong{font-size:14px}
+.skill-attach--glow{position:relative;border-color:#bb837f!important;color:#f1c6ba!important;animation:skill-soft-pulse 2.8s ease-in-out infinite;isolation:isolate}
+@keyframes skill-soft-pulse{0%,100%{box-shadow:0 0 0 0 #a96e6540,0 0 0 #a96e650b;background:#2d2329}50%{box-shadow:0 0 0 3px #bb898344,0 0 20px #ba75765b;background:#493038}}
+@media(max-height:710px){
+ .chapter-live .scene-art{height:clamp(120px,24dvh,195px);flex-basis:clamp(120px,24dvh,195px)}
+ .chapter-live .story-panel--compact{height:clamp(93px,18dvh,126px);flex-basis:clamp(93px,18dvh,126px)}
+ .chapter-live .story-panel__thought{-webkit-line-clamp:2}
+ .chapter-live .action-card__title p{-webkit-line-clamp:1}
+}
+@media(max-height:570px){
+ .chapter-live{gap:3px}
+ .chapter-live .scene-art{height:clamp(94px,20dvh,135px);flex-basis:clamp(94px,20dvh,135px)}
+ .chapter-live .story-panel--compact{height:90px;flex-basis:90px}
+ .chapter-live .hud__chips span:nth-child(n+4){display:none}
+ .chapter-live .story-panel__compact-npc{-webkit-line-clamp:1}
+ .ambient-carousel>p{-webkit-line-clamp:1}
+ .chapter-live .action-card__bottom span:nth-child(3){display:none}
+}
+@media(max-width:365px){
+ .map-hub__link{font-size:9px;padding:5px 0}
+ .map-hub__link svg{height:16px;width:16px}
+ .card-library-grid{gap:4px}
+ .card-library-toolbar__count small{display:none}
+ .warehouse-viewport .item-row__text span{display:none}
+}
+@media(prefers-reduced-motion:reduce){.skill-attach--glow{animation:none!important;border-width:2px!important}}
+
+/* Unified settings panels; no route change while in a mission. */
+.settings-audio-controls{display:flex;flex-direction:column;gap:8px;min-height:0}
+.settings-audio-controls>.secondary-button{width:100%;min-height:32px;padding:5px}
+.settings-audio-controls .audio-slider{display:flex;flex-direction:column;gap:3px}
+.settings-audio-controls .audio-slider>span{display:flex;align-items:center;gap:7px;color:#d8c3ba;font-size:11px}
+.settings-audio-controls .audio-slider strong{margin-left:auto;color:#edc2b7}
+.settings-audio-controls input[type=range]{width:100%;accent-color:#a97071}
+.settings-page .audio-settings .settings-audio-controls{flex:1;justify-content:space-around}
+.mission-settings-backdrop{z-index:140;align-items:center;justify-content:center;padding:11px}
+.mission-settings{display:flex;flex-direction:column;gap:8px;max-height:min(94dvh,670px);overflow-y:auto;width:100%;padding:15px;border-radius:9px;border:1px solid #966f6a;background:linear-gradient(170deg,#2b2229,#101115);box-shadow:0 19px 65px #000c}
+.mission-settings__desc{font-size:10px;line-height:1.6;color:#a9968e}
+.mission-settings__save{border-top:1px solid #60494d;padding-top:11px;display:flex;flex-direction:column;gap:5px}
+.mission-settings__save button{min-height:39px}
+.mission-settings__save p{min-height:1.5em;font-size:10px;color:#ac9893}
+
+.chapter-live .live-controls__cost{min-height:16px;flex-wrap:nowrap;white-space:nowrap;overflow:hidden;align-items:center}
+.chapter-live .live-controls__cost>span{flex:none}
+.chapter-live .live-controls__cost button{margin-left:auto;flex:none}
+.chapter-live .live-controls__placeholder{color:#8d7976;font-size:9px}
+.story-action-details{background:#21191e;border:1px solid #60464b;padding:8px;margin:8px 0}
+.story-action-details h4{font-size:12px;margin:0 0 4px}
+
+/* Three pairs of equipment slots adapt to the stage, instead of fixed 390px coordinates. */
+.character-viewport .equipment-slot{width:min(118px,37%);transform:none;padding:4px;min-height:30px}
+.character-viewport .equipment-slot__symbol{font-size:15px}
+.character-viewport .equipment-slot small{font-size:8px}
+.character-viewport .equipment-slot strong{font-size:9px;max-width:76px}
+.character-viewport .equipment-slot--head{top:4%;left:2%}
+.character-viewport .equipment-slot--body{top:4%;right:2%}
+.character-viewport .equipment-slot--hands{top:35%;left:2%}
+.character-viewport .equipment-slot--mainHand{top:35%;right:2%}
+.character-viewport .equipment-slot--utility{top:67%;left:2%}
+.character-viewport .equipment-slot--accessory{top:67%;right:2%;bottom:auto}
+
+.world-map-page .map-stage-detail__action-slot{height:36px;min-height:36px;display:flex;align-items:stretch}
+.world-map-page .map-stage-detail__action-slot>*{width:100%;height:100%;display:flex;align-items:center}
+.warehouse-capacity-status{height:20px;min-height:20px;overflow:hidden;font-size:9px;color:#9b8881;display:flex;align-items:center}
+.warehouse-capacity-status .warning-panel{font-size:9px;padding:2px 5px;margin:0;width:100%;align-items:center;gap:5px}
+.warehouse-capacity-status .warning-panel svg{width:12px;height:12px;margin:0}

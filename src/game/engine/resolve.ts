@@ -116,7 +116,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
         const itemId=ATTACK_CARDS[cardId]?.requiredItemId,def=itemId?ITEMS[itemId]:undefined;
         if(!def||(s.bag[itemId!]??0)>0||(s.warehouse[itemId!]??0)<=0)continue;
         if(bagWeight(s.bag)+def.weight>15)continue;
-        s.warehouse[itemId!]-=1;if(s.warehouse[itemId!]===0)delete s.warehouse[itemId!];
+        s.warehouse[itemId!]=(s.warehouse[itemId!]??0)-1;if(s.warehouse[itemId!]===0)delete s.warehouse[itemId!];
         s.bag[itemId!]=(s.bag[itemId!]??0)+1;
       }
       s.attempt+=1;s.npc.met+=1;s.mode='adventure';s.sceneId='gate';

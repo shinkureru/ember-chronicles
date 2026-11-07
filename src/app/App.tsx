@@ -8,6 +8,7 @@ import Frame from '../components/Frame';
 import HomePage from '../features/chapter/HomePage';
 import ChapterPage from '../features/chapter/ChapterPage';
 import CardsPage from '../features/cards/CardsPage';
+import PreparationPage from '../features/preparation/PreparationPage';
 import WarehousePage from '../features/inventory/WarehousePage';
 import CharacterPage from '../features/player/CharacterPage';
 import DevPage from '../features/dev/DevPage';
@@ -33,6 +34,7 @@ function GameRoutes(){
   <Route path="/black-market" element={<BlackMarketPage/>}/>
   <Route path="/chapter" element={<ChapterPage/>}/>
   <Route path="/cards" element={<CardsPage/>}/>
+  <Route path="/preparation" element={<PreparationPage/>}/>
   <Route path="/warehouse" element={<WarehousePage/>}/>
   <Route path="/character" element={<CharacterPage/>}/>
   <Route path="/settings" element={<SettingsPage/>}/>

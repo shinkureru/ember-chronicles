@@ -1,5 +1,9 @@
 import type { ItemDef } from '../types';
 export const ITEMS: Record<string, ItemDef> = {
+  pen:{id:'pen',name:'隨身鋼筆',emoji:'🖊️',type:'tool',weight:0.04,description:'記者常用鋼筆。鋼筆突刺所需物品。'},
+  notebook:{id:'notebook',name:'厚皮記事本',emoji:'📓',type:'tool',weight:0.24,description:'記者的採訪筆記，記事本猛擊所需物品。'},
+  camera:{id:'camera',name:'隨身相機',emoji:'📷',type:'tool',weight:0.9,description:'帶有長背帶的相機，可用於相機甩擊。'},
+  metal_ruler:{id:'metal_ruler',name:'金屬直尺',emoji:'📏',type:'tool',weight:0.22,description:'常見量測工具，可用於金屬尺反擊。'},
   flashlight:{id:'flashlight',name:'照明手電筒',emoji:'🔦',type:'tool',weight:0.5,description:'昏暗區域中的實用工具。'},
   keyring:{id:'keyring',name:'倉庫鑰匙串',emoji:'🗝️',type:'tool',weight:0.2,description:'幾把編號不明的鑰匙。'},
   radio:{id:'radio',name:'短距離對講機',emoji:'📻',type:'tool',weight:0.35,description:'可以接收附近巡邏人員的通訊。'},
@@ -26,9 +30,9 @@ export const ITEMS: Record<string, ItemDef> = {
   rope:{id:'rope',name:'捆貨繩索',emoji:'🪢',type:'tool',weight:0.6,description:'倉庫常見的貨物固定工具。'},
 };
 export const LOOT_POOLS: Record<string, string[]> = {
-  desk:['notes','badge','receipt','batteries','card_question','memorychip'],
-  shelves:['biscuit','water','canned','tape','gloves','rope','firstaid','handwarm'],
-  pockets:['keyring','notes','receipt','bandage','card_route','radio'],
+  desk:['notes','badge','receipt','batteries','card_question','memorychip','pen','notebook','metal_ruler'],
+  shelves:['biscuit','water','canned','tape','gloves','rope','firstaid','handwarm','wrench','screwdriver'],
+  pockets:['keyring','notes','receipt','bandage','card_route','radio','pen'],
 };
 export const INITIAL_NPC_GEAR=['flashlight','vest','radio'];
 export const WAREHOUSE_CAPACITY_KG = 30;

@@ -1,33 +1,9 @@
 import { useEffect, useMemo, type CSSProperties } from 'react';
 import { ArrowDownRight, ArrowLeft, Footprints, Layers3 } from 'lucide-react';
 import { calculateActionPreview } from '../../game/engine/rules';
+import { getChoicePositions, getRiskHintIndex } from './choiceLayout';
 import type { ActionChoice, GameState } from '../../game/types';
 import { CARDS } from '../../game/data/cards';
-
-/** Deliberately scattered but never overlapping: shuffle safe positions, not raw x/y coordinates. */
-const SLOTS:Record<number,readonly [number,number][]>={
-  1:[[50,48]],
-  2:[[27,34],[73,66]],
-  3:[[25,31],[75,30],[50,74]],
-  4:[[24,27],[76,27],[25,73],[76,73]],
-  5:[[19,24],[76,23],[50,49],[22,77],[78,77]],
-  6:[[21,18],[77,18],[49,46],[20,75],[76,75],[49,92]],
-};
-const hash=(s:string)=>{let h=2166136261;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),16777619);}return h>>>0;};
-const shuffleSlots=(choices:ActionChoice[],seed:string)=>{
-  const slots=SLOTS[Math.min(6,Math.max(1,choices.length))]??SLOTS[3];
-  return choices.map((choice,i)=>{
-    // Shuffle the index ordering by hashing all available choices and the scene.
-    const order=choices.map((_,j)=>({j,k:hash(`${seed}:${j}`)})).sort((a,b)=>a.k-b.k);
-    const slot=slots[order.findIndex(o=>o.j===i)%slots.length];
-    const jitter=hash(`${seed}:${choice.id}`);
-    const angle=((jitter>>>3)%19)-9;
-    return {x:slot[0],y:slot[1],angle,delay:-((jitter>>>9)%30)/10};
-  });
-};
-const knownRisk=(preview:ReturnType<typeof calculateActionPreview>)=>
-  (100-preview.chance)+preview.warnings.length*8+preview.staminaCost*.45+
-  (preview.courageDelta<0?-preview.courageDelta*.7:0);
 
 type Props={
   actions:ActionChoice[];
@@ -43,13 +19,11 @@ type Props={
 };
 export default function ActionDecision({actions,state,selected,skillId,skillCount,onSelect,onBack,onShowSkills,onExecute,onRetreat}:Props){
   const layout=useMemo(
-    ()=>shuffleSlots(actions,`${state.attempt}:${state.sceneId}:${actions.map(a=>a.id).join(',')}`),
+    ()=>getChoicePositions(actions,`${state.attempt}:${state.sceneId}:${actions.map(a=>a.id).join(',')}`),
     [state.attempt,state.sceneId,actions.map(a=>a.id).join(',')],
   );
   const previews=actions.map(a=>calculateActionPreview(state,a,null));
-  const riskyIndex=actions.length>1
-    ?previews.reduce((worst,p,i)=>knownRisk(p)>knownRisk(previews[worst])?i:worst,0)
-    :-1;
+  const riskyIndex=getRiskHintIndex(previews);
   const preview=selected?calculateActionPreview(state,selected,skillId):null;
   useEffect(()=>{
     if(!selected)return;

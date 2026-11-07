@@ -110,6 +110,15 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
   switch(action.type){
     case 'START_ATTEMPT':{
       if(!s.profession||s.mode==='adventure')return state;
+      // Re-use the player's previous loadout: selected weapons remain with the player
+      // or are re-withdrawn from storage if available and under the weight limit.
+      for(const cardId of s.attackDeck){
+        const itemId=ATTACK_CARDS[cardId]?.requiredItemId,def=itemId?ITEMS[itemId]:undefined;
+        if(!def||(s.bag[itemId!]??0)>0||(s.warehouse[itemId!]??0)<=0)continue;
+        if(bagWeight(s.bag)+def.weight>15)continue;
+        s.warehouse[itemId!]-=1;if(s.warehouse[itemId!]===0)delete s.warehouse[itemId!];
+        s.bag[itemId!]=(s.bag[itemId!]??0)+1;
+      }
       s.attempt+=1;s.npc.met+=1;s.mode='adventure';s.sceneId='gate';
       s.flags=[];s.searchedSources=[];s.outcome=null;s.lastLoot=null;s.lastEvent=null;s.enemy=makeInitialEnemy();
       s.hand=[];s.discardPile=[];s.drawPile=[...s.activeDeck];
@@ -225,6 +234,10 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if(s.mode!=='result')return state;
       const entries=Object.entries(s.bag);
       const protectedSet=new Set(s.protectedItems);
+      // Weapons from the prepared attack deck count as part of the player's loadout.
+      for(const cardId of s.attackDeck){
+        const itemId=ATTACK_CARDS[cardId]?.requiredItemId;if(itemId)protectedSet.add(itemId);
+      }
       for(const [id,qty] of entries){
         if(protectedSet.has(id)||!ITEMS[id])continue;
         const maxQty=Math.floor((s.warehouseCapacity-bagWeight(s.warehouse)+1e-8)/ITEMS[id]!.weight);

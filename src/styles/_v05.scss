@@ -1,0 +1,178 @@
+/* v0.5 — pure-black interface; vivid positive/negative numbers only.
+   The scene illustration deliberately keeps its own colors. */
+:root{
+  color-scheme:dark;
+  --bg:#000000;--surface:#0a0a0a;--surface2:#131313;--surface3:#1b1b1b;
+  --ink:#ebebeb;--soft:#b7b7b7;--muted:#888888;
+  --border:rgba(190,190,190,.23);--accent:#d1d1d1;--accent-dark:#171717;
+  --gold:#c4c4c4;--danger:#fb4141;
+}
+html,body,.desktop-world{background:#000!important;color:var(--ink)}
+.desktop-world{background-image:none!important}
+.desktop-world__accent{display:none!important}
+.game-frame{background:#000!important;border-color:#303030;box-shadow:0 0 0 1px #292929,0 0 60px #000}
+.app-header,.bottom-nav{background:#050505!important;border-color:#292929!important}
+.app-header__brand small,.app-header__status,.bottom-nav__link{color:#aaa!important}
+.app-header__status i,.bottom-nav__link.is-active svg{background:#c7c7c7!important;filter:none!important}
+.bottom-nav__link.is-active{color:#f0f0f0!important}
+.brand-mark,.dev-shortcut{background:#111!important;color:#ddd!important;border-color:#484848!important}
+.eyebrow,.subtle-small,.muted,.fine-print,.page-heading p,.page-heading .eyebrow{color:#a5a5a5!important}
+.page-heading h1,.section-heading h3{color:#f2f2f2}
+.surface-card,.tip-panel,.map-intro,.map-hub,.map-stage-detail,.map-stage-detail__notice,
+.map-location span,.map-point__label,.town-links>a,.town-visual,.market-merchant,.market-row,
+.character-hero,.equipment-panel,.equipment-stage,.equipment-picker__item,.equipment-picker__empty,
+.attribute-item,.character-profile,.card-library-toolbar,.card-library-grid,.card-library-footer,
+.card-library-tile,.card-library-empty,.card-detail-dialog,.card-detail-dialog__content section,
+.card-detail-dialog__stats span,.card-detail-dialog__icon,.warehouse-viewport .item-row,
+.modal-panel,.overlay__dialog,.game-sheet,.game-story-modal,.game-feedback,.story-panel,
+.live-controls,.mission-settings,.hand-section,.skill-tile,.skill-tile__illustration,
+.home-hero,.home-summary>div,.chapter-hero,.preview-panel,.warning-panel,
+.town-rest-preview span,.map-quick-actions a,.map-scroll-hint{
+  background:#0b0b0b!important;background-image:none!important;border-color:#383838!important;
+  color:#e0e0e0;
+}
+/* Scene illustration stays untouched by the neutral UI surface palette. */
+.game-sheet-backdrop,.card-detail-backdrop,.overlay,.mission-settings-backdrop{background:rgba(0,0,0,.88)!important}
+.card-detail-dialog__hero,.card-detail-dialog__upgrade,.card-detail-dialog__content section,
+.equipment-slot,.market-rows,.market-summary,.map-hub__link,.map-location svg,
+.map-scroll-hint,.map-toolbar,.world-map-page .map-stage-detail,
+.hud,.hud__chips span,.hud__chips .hud__resource{
+  background:#101010!important;border-color:#444!important;color:#dadada!important;
+}
+.card-detail-dialog__numbers,.card-detail-dialog__content p,.card-detail-dialog__hero small,
+.card-detail-dialog__stats span,.card-detail-dialog__upgrade small,
+.card-library-tile__meta,.card-library-tile__rarity,.rarity,
+.story-panel__top,.story-panel__thought,.story-panel__compact-npc,
+.market-row small,.map-intro__meta,.map-intro__heading p,.map-intro__progress,
+.equipment-picker__item small,.equipment-slot small,.character-hero p,
+.game-feedback__content p,.mission-settings__desc,.game-story-modal>p{
+  color:#a7a7a7!important;
+}
+.card-detail-dialog__hero h2,.card-detail-dialog__upgrade strong,.card-detail-dialog__content h3,
+.map-intro h1,.character-hero h2,.equipment-slot strong,.market-row strong,
+.card-library-tile__name{color:#ededed!important}
+.primary-button,.continue-floating{background:#dedede!important;color:#101010!important;border:1px solid #f1f1f1!important;box-shadow:0 4px 14px #0008!important}
+.primary-button:disabled{background:#4d4d4d!important;color:#aaa!important;border-color:#4c4c4c!important}
+.secondary-button,.market-row button,.mini-button,.map-hub__link,.town-links>a,
+.map-quick-actions a,.chapter-kicker__controls button,.card-library-toolbar__filter button,
+.audio-slider,.game-sheet__top button,.card-detail-dialog__head button,.game-feedback__dismiss{
+  background:#151515!important;color:#dedede!important;border-color:#535353!important;box-shadow:none!important;
+}
+.secondary-button:hover,.market-row button:hover:not(:disabled),.map-hub__link:hover,
+.town-links>a:hover{background:#242424!important}
+.danger-button{background:#242424!important;border-color:#b33!important;color:#ff6363!important}
+.map-intro::after{background:none!important}
+.map-intro__number,.map-point__marker,.market-merchant__face,.map-location svg,
+.equipment-slot__symbol,.character-hero__seal{color:#b8b8b8!important}
+.map-point__marker,.map-point--locked .map-point__marker{background:#131313!important;border-color:#5b5b5b!important;box-shadow:0 0 0 5px #050505!important}
+.map-point--selected .map-point__marker{border-color:#d4d4d4!important;box-shadow:0 0 0 5px #050505,0 0 0 8px #aaaaaa55!important}
+.map-intro__progress i,.capacity-bar>div{background:#939393!important}
+.equipment-stage{background:radial-gradient(ellipse at 50% 55%,#303030,#111 68%,#040404)!important}
+.equipment-slot:hover,.equipment-slot.is-selected{background:#252525!important;border-color:#aaa!important}
+.card-library-tile__art,.card-detail-dialog__icon{filter:grayscale(1)!important}
+.card-library-tile.is-locked{opacity:.57}
+.rarity--normal,.rarity--rare,.rarity--chaos{color:#d5d5d5!important;border-color:#666!important}
+/* Black HUD / grayscale status bars; only situational success or danger uses color. */
+.statbar__fill--mint,.statbar__fill--gold,.statbar__fill--violet{background:linear-gradient(90deg,#666,#bbb)!important}
+.hud__chips .hud__resource{background:#1e1e1e!important}
+.chapter-kicker,.chapter-kicker button,.live-controls__summary,
+.live-controls__summary strong,.live-controls__cost,.live-controls__cost button{color:#dadada!important}
+.chapter-live .action-card{background:#101010!important;border:1px solid #4b4b4b!important;color:#eee!important}
+.chapter-live .action-card--active{background:#1c1c1c!important;border-color:#f1f1f1!important;box-shadow:0 0 0 1px #aaa8,0 9px 22px #000b!important}
+.chapter-live .action-card__index{background:#282828!important;color:#eee!important}
+.chapter-live .action-card__rate,.chapter-live .action-card__rate.is-good{color:#ececec!important}
+.chapter-live .action-card__rate.is-low{color:#ff5a5a!important}
+.chapter-live .action-card__title p,.chapter-live .action-card__bottom{color:#b7b7b7!important}
+.game-sheet .skill-tile{background:#141414!important;border-color:#4f4f4f!important}
+.game-sheet .skill-tile.is-selected{background:#242424!important;border-color:#e0e0e0!important;box-shadow:0 6px 16px #000!important}
+.game-sheet .skill-tile__illustration{background:#111!important;border-color:#3d3d3d!important}
+.game-sheet .skill-tile__illustration>span{filter:grayscale(1)!important}
+.settings-audio-controls input[type=range]{accent-color:#dedede!important}
+.skill-attach--glow{border-color:#e1e1e1!important;color:#fff!important;animation:skill-mono-pulse 2.9s ease-in-out infinite!important}
+@keyframes skill-mono-pulse{0%,100%{box-shadow:0 0 0 0 #ffffff24;background:#151515}50%{box-shadow:0 0 0 2px #dddddd45,0 0 15px #ffffff2a;background:#262626}}
+/* Always center close X: existing button line-height/padding may otherwise shift SVG. */
+.card-detail-dialog__head button,.game-sheet__top button,.mission-settings__top button{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  padding:0!important;line-height:0!important;flex:0 0 32px!important;
+  width:32px!important;height:32px!important;min-height:32px!important;min-width:32px!important;
+  border-radius:6px!important;
+}
+.card-detail-dialog__head button svg,.game-sheet__top button svg,.mission-settings__top button svg{display:block;flex:none;margin:0!important}
+/* Scene internal thoughts: automatic CSS fade, no navigation controls. */
+.ambient-carousel__heading{color:#aaa!important}
+.ambient-carousel__line{animation:ambient-crossfade 5.5s ease-in-out both;will-change:opacity}
+@keyframes ambient-crossfade{0%{opacity:0;transform:translateY(3px)}13%,82%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-2px)}}
+/* Action card fan: horizontally scrollable and gently floating, never a tall list. */
+.chapter-live .actions-section--viewport{flex:1 1 0;min-height:105px;max-height:30%;overflow:hidden;gap:3px}
+.chapter-live .action-stack--viewport{
+  display:flex!important;flex:1 1 0;flex-direction:row!important;grid-template-rows:none!important;
+  align-items:stretch;gap:10px;min-height:0;overflow-x:auto;overflow-y:hidden;
+  overscroll-behavior-x:contain;scroll-snap-type:x proximity;touch-action:pan-x;
+  padding:5px 9px 9px;scrollbar-width:thin;scrollbar-color:#666 #111;
+}
+.chapter-live .action-card--floating{
+  flex:0 0 clamp(142px,61%,184px);width:auto;min-width:0;max-width:none;
+  height:calc(100% - 3px);min-height:0;padding:6px 9px;
+  scroll-snap-align:center;display:flex;flex-direction:column;justify-content:space-between;
+  border-radius:10px!important;box-shadow:0 8px 14px #000a;
+  animation:card-breathe 4.4s ease-in-out infinite;
+  transition:border-color .15s,box-shadow .15s,background .15s;
+}
+.chapter-live .action-card--floating:nth-child(2n){animation-delay:-1.9s}
+.chapter-live .action-card--floating:nth-child(3n){animation-delay:-3.2s}
+.chapter-live .action-card--floating:active{animation-play-state:paused}
+@keyframes card-breathe{0%,100%{translate:0 0}50%{translate:0 -3px}}
+.chapter-live .action-card__crest{height:clamp(25px,5dvh,43px);display:flex;justify-content:space-between;align-items:center;color:#aaa;flex:none}
+.chapter-live .action-card__crest>svg:nth-child(2){opacity:.7;stroke-width:1.3}
+.chapter-live .action-card__index{font:700 11px Inter,sans-serif!important;width:23px;height:23px;display:grid;place-items:center;border:1px solid #474747;border-radius:5px}
+.chapter-live .action-card__check{margin:0;color:#eee!important}
+.chapter-live .action-card__top{display:flex;flex-direction:column;align-items:stretch;gap:2px;min-height:0;flex:1}
+.chapter-live .action-card__title{width:100%}
+.chapter-live .action-card__title strong{font-size:11px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.chapter-live .action-card__title p{font-size:9px;line-height:1.33;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;white-space:normal}
+.chapter-live .action-card__rate{text-align:right;font-size:15px;line-height:1.2}
+.chapter-live .action-card__bottom{gap:7px;margin-top:4px;padding-top:5px;border-top:1px solid #393939}
+.chapter-live .action-card__bottom>span{font-size:9px}
+.action-scroll-hint{font-size:9px;color:#999;white-space:nowrap}
+/* Skill preview preserves both snapshots and exposes skill-resource changes. */
+.game-sheet{max-height:min(89dvh,660px);overflow-y:auto;overscroll-behavior:contain}
+.skill-resource-status{display:flex;align-items:center;gap:7px;padding:8px;border:1px solid #444;background:#101010;margin-bottom:10px;font-size:11px}
+.skill-resource-status strong{color:#ddd;font-size:12px}
+.skill-resource-status>span:nth-child(3){margin-left:auto;color:#aaa}
+.skill-comparison{display:flex;flex-direction:column;gap:6px;margin-top:10px;min-width:0}
+.skill-comparison__resource{display:flex;align-items:center;gap:6px;padding:7px 8px;background:#101010;border:1px solid #444;font-size:11px}
+.skill-comparison__resource strong{color:#ddd}
+.skill-comparison__resource>span{margin-left:auto;font-weight:700;white-space:nowrap}
+.skill-comparison__card{padding:9px 11px;background:#0a0a0a;border:1px solid #444;border-radius:7px;min-width:0}
+.skill-comparison__card>span{display:block;font-size:10px;letter-spacing:.08em;color:#999;margin-bottom:2px}
+.skill-comparison__card>strong{display:block;font-size:12px;margin-bottom:6px;color:#e8e8e8}
+.skill-comparison__numbers{display:flex;flex-wrap:wrap;gap:5px 8px;color:#aaa;font-size:9px}
+.skill-comparison__arrow{display:flex;align-items:center;justify-content:center;gap:6px;min-height:20px;color:#c1c1c1;font-size:10px}
+.skill-comparison__card--enhanced{border-color:#9b9b9b;background:#131313}
+.skill-comparison__metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.skill-comparison__metric{min-width:0;background:#080808;padding:5px 1px;display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:4px}
+.skill-comparison__metric small{color:#aaa;font-size:9px;white-space:nowrap}
+.skill-comparison__metric strong{display:flex;align-items:center;justify-content:center;gap:1px;font-size:12px;white-space:nowrap}
+.change--better{color:#53e397!important}
+.change--worse{color:#ff4b4b!important}
+.change--same{color:#c1c1c1!important}
+.skill-comparison__warning{border:1px solid #b43b3b;padding:7px 9px;font-size:10px;color:#ff8585;line-height:1.6;background:#170707}
+.skill-comparison__warning p+p{margin-top:5px}
+.skill-comparison__warning strong{color:#ff6363}
+@media(max-height:680px){
+  .chapter-live .actions-section--viewport{min-height:94px;max-height:25%}
+  .chapter-live .action-card__crest{height:25px}
+  .chapter-live .action-card__title p{-webkit-line-clamp:2}
+}
+@media(max-width:365px){
+  .skill-comparison__metric small{font-size:8px}
+  .skill-comparison__metric strong{font-size:10px}
+  .chapter-live .action-card--floating{flex-basis:154px}
+}
+@media(prefers-reduced-motion:reduce){
+  .ambient-carousel__line,.chapter-live .action-card--floating,.skill-attach--glow{animation:none!important;translate:none!important}
+}
+/* The map is a navigational UI, so desaturate its painting without desaturating scene artwork. */
+.map-viewport .map-landscape{filter:grayscale(1)}
+.game-feedback--danger,.warning-panel{border-color:#d44747!important}
+.game-feedback--danger .game-feedback__warning,.text-warning{color:#ff5151!important}

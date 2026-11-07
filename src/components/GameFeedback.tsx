@@ -13,7 +13,7 @@ function changes(previous:GameState,current:GameState):Notice[]{
  const result:Notice[]=[];
  const add=(title:string,detail:string,kind:Notice['kind']='normal')=>result.push({id:++nextId,title,detail,kind});
  if(previous.mode!==current.mode&&current.mode==='result')add(current.outcome==='victory'?'任務完成':current.outcome==='defeat'?'嚴重事件：戰敗':'已撤退',current.lastEvent??'事件已結束。',current.outcome==='defeat'?'danger':'major');
- if(previous.enemy?.health>current.enemy?.health)add('攻擊命中',`對方生命 ${previous.enemy.health} → ${current.enemy.health}（-${previous.enemy.health-current.enemy.health}）`,'normal');
+ if(previous.enemy&&current.enemy&&previous.enemy.health>current.enemy.health)add('攻擊命中',`對方生命 ${previous.enemy.health} → ${current.enemy.health}（-${previous.enemy.health-current.enemy.health}）`,'normal');
  if(previous.player.health>current.player.health)add('受傷',`生命 ${previous.player.health} → ${current.player.health}`,'danger');
  if(previous.player.stamina>current.player.stamina&&previous.mode==='adventure'){
    const difference=previous.player.stamina-current.player.stamina;

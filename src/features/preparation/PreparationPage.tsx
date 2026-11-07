@@ -11,8 +11,17 @@ export default function PreparationPage(){
  const {state:s,dispatch}=useGame(),navigate=useNavigate();
  const [confirm,setConfirm]=useState(false);
  const ids=Object.keys(ATTACK_CARDS).filter(id=>!!s.ownedCards[id]);
- const invalid=s.attackDeck.filter(id=>{const x=attackStatus(s,id);return !x.inBag&&!x.inWarehouse;});
- const readyCount=s.attackDeck.filter(id=>{const x=attackStatus(s,id);return x.inBag||x.inWarehouse;}).length;
+ let projectedWeight=bagWeight(s.bag);
+ const invalid:string[]=[];
+ for(const id of s.attackDeck){
+   const status=attackStatus(s,id);
+   if(status.inBag)continue;
+   const itemId=ATTACK_CARDS[id]?.requiredItemId, item=itemId?ITEMS[itemId]:undefined;
+   if(status.inWarehouse&&item&&projectedWeight+item.weight<=15){
+     projectedWeight+=item.weight;
+   }else invalid.push(id);
+ }
+ const readyCount=s.attackDeck.length-invalid.length;
  const begin=()=>{
    playCue('confirm');
    dispatch({type:'START_ATTEMPT'});
@@ -30,8 +39,8 @@ export default function PreparationPage(){
     <div className="preparation-slots__grid">
       {Array.from({length:MAX_ATTACK_DECK},(_,i)=>{
         const id=s.attackDeck[i],card=id?ATTACK_CARDS[id]:null,status=id?attackStatus(s,id):null;
-        return card?<button key={id} type="button" className={`preparation-slot ${status?.inBag||status?.inWarehouse?'is-ready':'is-invalid'}`} onClick={()=>{dispatch({type:'PREPARE_ATTACK_CARD',cardId:card.id});playCue('card')}} title="點擊移除這張攻擊牌">
-          <span className="preparation-slot__number">{i+1}</span><strong>{card.emoji}</strong><small>{card.name}</small><span className="preparation-slot__state">{status?.inBag?'已備妥':status?.inWarehouse?'倉庫可備妥':'缺少物品'}</span><X size={12} className="preparation-slot__remove"/>
+        return card?<button key={id} type="button" className={`preparation-slot ${!invalid.includes(card.id)?'is-ready':'is-invalid'}`} onClick={()=>{dispatch({type:'PREPARE_ATTACK_CARD',cardId:card.id});playCue('card')}} title="點擊移除這張攻擊牌">
+          <span className="preparation-slot__number">{i+1}</span><strong>{card.emoji}</strong><small>{card.name}</small><span className="preparation-slot__state">{status?.inBag?'已備妥':!invalid.includes(card.id)?'倉庫可備妥':status?.inWarehouse?'負重不足':'缺少物品'}</span><X size={12} className="preparation-slot__remove"/>
         </button>:<div key={i} className="preparation-slot preparation-slot--empty" aria-label={`空的卡牌位置 ${i+1}`}><small>{i+1}</small><span>＋</span></div>;
       })}
     </div>

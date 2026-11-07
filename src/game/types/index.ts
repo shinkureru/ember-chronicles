@@ -18,8 +18,13 @@ export interface SkillCard {
   tags: ActionTag[]; chanceBonus: number; staminaSaved?: number; courageSaved?: number;
   resourceCost: number; rarity: 'normal' | 'rare' | 'chaos';
 }
+export interface AttackCard {
+ id:string; name:string; emoji:string; description:string; detail:string;
+ profession?:ProfessionId; requiredItemId:string; damage:number; baseChance:number;
+ staminaCost:number; rarity:'normal'|'rare'|'chaos';
+}
 export interface ActionChoice {
-  id: string; thought: string; title: string; detail: string; tags: ActionTag[];
+  id: string; thought: string; title: string; detail: string; tags: ActionTag[]; attackCardId?:string;
   baseChance: number; staminaCost: number; courageDelta: number; minutes: number;
   successScene?: SceneId; failureScene?: SceneId;
   successOutcome?: Outcome; failureOutcome?: Outcome;
@@ -33,6 +38,7 @@ export interface LootDrop { itemId: string; quantity: number; source: string }
 export interface ActionPreview {
   chance: number; staminaCost: number; courageDelta: number; minutes: number;
   resourceCost: number; projectedStamina: number; projectedCourage: number;
+  damage?:number; attackAvailable?:boolean;
   warnings: { title: string; detail: string; remedy: string }[];
 }
 export interface GameState {
@@ -43,6 +49,7 @@ export interface GameState {
   world: { minute: number; day: number; weather: 'clear' | 'rain' };
   npc: { hostility: number; trust: number; met: number; adaptations: Record<string, number>; remembers: string[]; stolenGear: string[] };
   attempt: number; sceneId: SceneId; flags: string[]; searchedSources: string[];
+  attackDeck:string[]; enemy:{id:string;name:string;health:number;maxHealth:number};
   clues: string[]; insightBonus: number;
   bag: Record<string, number>; warehouse: Record<string, number>; warehouseCapacity: number;
   protectedItems: string[];

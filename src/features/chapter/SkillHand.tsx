@@ -2,12 +2,15 @@ import { LockKeyhole, Layers3, Sparkles } from 'lucide-react';
 import { useGame } from '../../app/GameContext';
 import { CARDS } from '../../game/data/cards';
 import { PROFESSIONS } from '../../game/data/professions';
-import { isSkillCompatible } from '../../game/engine/rules';
+import { isSkillCompatible, clamp } from '../../game/engine/rules';
 import type { ActionChoice } from '../../game/types';
 export default function SkillHand({choice,skillId,onChange}:{choice:ActionChoice|null;skillId:string|null;onChange:(v:string|null)=>void}){
  const {state}=useGame();
+ const selected=skillId?CARDS[skillId]:undefined;
+ const projected=clamp(state.player.resource-(selected?.resourceCost??0),0,state.player.maxResource);
  return <section className="hand-section">
   <div className="section-heading"><div><span className="eyebrow">DECK / SKILL</span><h3><Layers3 size={17}/> 附加技能卡</h3></div><span className="subtle-small">手牌 {state.hand.length} 張 · {state.profession?PROFESSIONS[state.profession].resourceName:'能量'} {state.player.resource}</span></div>
+  <div className="skill-resource-status" role="status"><span>{state.profession?PROFESSIONS[state.profession].resourceName:'技能資源'}</span><strong>{state.player.resource} / {state.player.maxResource}</strong><span aria-hidden="true">→</span><strong className={projected>state.player.resource?'change--better':projected<state.player.resource?'change--worse':'change--same'}>{projected} / {state.player.maxResource}</strong></div>
   <div className="hand-scroll"><button type="button" className={`skill-tile skill-tile--none ${!skillId?'is-selected':''}`} onClick={()=>onChange(null)}><div className="skill-tile__illustration"><span>∅</span></div><strong>不附加</strong><small>0 資源</small></button>
   {state.hand.map((id,i)=>{
     const card=CARDS[id];if(!card)return null;

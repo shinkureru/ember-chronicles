@@ -13,10 +13,10 @@ const hash=(s:string)=>{let h=2166136261;for(let i=0;i<s.length;i++)h=Math.imul(
 export interface ChoicePosition {x:number;y:number;angle:number;delay:number;}
 export const getChoicePositions=(actions:ActionChoice[],seed:string):ChoicePosition[]=>{
   // More than six actions are paginated into blocks; the prototype currently uses ≤ 6.
-  const slots=SAFE_SLOTS[Math.min(6,Math.max(1,actions.length))];
+  const slots=SAFE_SLOTS[Math.min(6,Math.max(1,actions.length))]??([[50,48]] as const);
   const order=actions.map((_,j)=>({j,k:hash(`${seed}:${j}`)})).sort((a,b)=>a.k-b.k);
   return actions.map((action,i)=>{
-    const slot=slots[order.findIndex(o=>o.j===i)%slots.length];
+    const slot=slots[order.findIndex(o=>o.j===i)%slots.length]??slots[0]??([50,48] as const);
     const jitter=hash(`${seed}:${action.id}`);
     return {x:slot[0],y:slot[1],angle:((jitter>>>3)%19)-9,delay:-((jitter>>>9)%30)/10};
   });
@@ -27,5 +27,5 @@ export const knownChoiceRisk=(preview:ActionPreview):number=>
 /** Only show a warning based on visible numerical risks, never hidden NPC outcomes. */
 export const getRiskHintIndex=(previews:ActionPreview[]):number=>{
   if(previews.length<2)return -1;
-  return previews.reduce((worst,p,i)=>knownChoiceRisk(p)>knownChoiceRisk(previews[worst])?i:worst,0);
+  return previews.reduce((worst,p,i)=>knownChoiceRisk(p)>knownChoiceRisk(previews[worst]!)?i:worst,0);
 };

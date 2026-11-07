@@ -41,6 +41,7 @@ export default function PreparationPage(){
     <div className="preparation-available__list">
       {ids.map(id=>{
         const card=ATTACK_CARDS[id],status=attackStatus(s,id),selected=s.attackDeck.includes(id);
+        if(!card)return null;
         const item=ITEMS[card.requiredItemId];
         return <button key={id} type="button" aria-pressed={selected} className={`preparation-option ${status.inBag||status.inWarehouse?'is-ready':'is-invalid'} ${selected?'is-selected':''}`}
           onClick={()=>{dispatch({type:'PREPARE_ATTACK_CARD',cardId:id});playCue('card')}}>

@@ -35,11 +35,12 @@ export default function ActionDecision({actions,state,selected,skillId,skillCoun
     <header className="choice-stage__heading"><strong>我接下來要怎麼做？</strong><small>{selected?'ACTION / DECISION':'CHOOSE YOUR WAY'}</small></header>
     {!selected?<div key={`pick-${state.attempt}-${state.sceneId}`} className="choice-cloud" role="group" aria-label="選擇行動">
       {actions.map((action,i)=>{
+        const choicePreview=previews[i]??calculateActionPreview(state,action,null);
         const pos=layout[i]??{x:50,y:50,angle:0,delay:0};
         const style={'--choice-x':`${pos.x}%`,'--choice-y':`${pos.y}%`,'--choice-angle':`${pos.angle}deg`,'--choice-delay':`${pos.delay}s`} as CSSProperties;
         return <button type="button" key={action.id} style={style}
           className={`choice-word ${i===riskyIndex?'choice-word--static':''}`}
-          onClick={()=>onSelect(action)} aria-label={`${action.title}。成功率 ${previews[i].chance}%。${action.thought}`}
+          onClick={()=>onSelect(action)} aria-label={`${action.title}。成功率 ${choicePreview.chance}%。${action.thought}`}
           title={action.thought}>
           <span>{action.title}</span>
         </button>;

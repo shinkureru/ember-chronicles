@@ -11,8 +11,8 @@ export default function PreparationPage(){
  const {state:s,dispatch}=useGame(),navigate=useNavigate();
  const [confirm,setConfirm]=useState(false);
  const ids=Object.keys(ATTACK_CARDS).filter(id=>!!s.ownedCards[id]);
- const invalid=s.attackDeck.filter(id=>!attackStatus(s,id).inBag);
- const readyCount=s.attackDeck.filter(id=>attackStatus(s,id).inBag).length;
+ const invalid=s.attackDeck.filter(id=>{const x=attackStatus(s,id);return !x.inBag&&!x.inWarehouse;});
+ const readyCount=s.attackDeck.filter(id=>{const x=attackStatus(s,id);return x.inBag||x.inWarehouse;}).length;
  const begin=()=>{
    playCue('confirm');
    dispatch({type:'START_ATTEMPT'});
@@ -30,8 +30,8 @@ export default function PreparationPage(){
     <div className="preparation-slots__grid">
       {Array.from({length:MAX_ATTACK_DECK},(_,i)=>{
         const id=s.attackDeck[i],card=id?ATTACK_CARDS[id]:null,status=id?attackStatus(s,id):null;
-        return card?<button key={id} type="button" className={`preparation-slot ${status?.inBag?'is-ready':'is-invalid'}`} onClick={()=>{dispatch({type:'PREPARE_ATTACK_CARD',cardId:card.id});playCue('card')}} title="點擊移除這張攻擊牌">
-          <span className="preparation-slot__number">{i+1}</span><strong>{card.emoji}</strong><small>{card.name}</small><span className="preparation-slot__state">{status?.inBag?'已備妥':'缺少物品'}</span><X size={12} className="preparation-slot__remove"/>
+        return card?<button key={id} type="button" className={`preparation-slot ${status?.inBag||status?.inWarehouse?'is-ready':'is-invalid'}`} onClick={()=>{dispatch({type:'PREPARE_ATTACK_CARD',cardId:card.id});playCue('card')}} title="點擊移除這張攻擊牌">
+          <span className="preparation-slot__number">{i+1}</span><strong>{card.emoji}</strong><small>{card.name}</small><span className="preparation-slot__state">{status?.inBag?'已備妥':status?.inWarehouse?'倉庫可備妥':'缺少物品'}</span><X size={12} className="preparation-slot__remove"/>
         </button>:<div key={i} className="preparation-slot preparation-slot--empty" aria-label={`空的卡牌位置 ${i+1}`}><small>{i+1}</small><span>＋</span></div>;
       })}
     </div>

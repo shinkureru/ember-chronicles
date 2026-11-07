@@ -1,5 +1,6 @@
 import { INITIAL_ATTRIBUTES } from '../data/attributes';
 import { STARTER_CARDS } from '../data/cards';
+import { STARTER_ATTACK_CARDS, makeInitialEnemy } from '../data/attacks';
 import { INITIAL_NPC_GEAR, WAREHOUSE_CAPACITY_KG } from '../data/items';
 import type { GameState, ProfessionId } from '../types';
 
@@ -11,10 +12,10 @@ export const makeInitialState=(profession:ProfessionId|null=null):GameState=>{
     world:{minute:16*60+20,day:1,weather:'clear'},
     npc:{hostility:18,trust:15,met:0,adaptations:{},remembers:[],stolenGear:[]},
     attempt:0,sceneId:'gate',flags:[],searchedSources:[],clues:[],insightBonus:0,
-    bag:{biscuit:2,water:1},warehouse:{},warehouseCapacity:WAREHOUSE_CAPACITY_KG,
+    bag:{biscuit:2,water:1},warehouse:{pen:1,notebook:1,wrench:1,screwdriver:1},warehouseCapacity:WAREHOUSE_CAPACITY_KG,
     protectedItems:[],
-    ownedCards:Object.fromEntries(deck.map(id=>[id,{copies:0,level:1}])),
-    activeDeck:[...deck],hand:[],drawPile:[],discardPile:[],
+    ownedCards:Object.fromEntries([...deck,...(profession?STARTER_ATTACK_CARDS[profession]:[])].map(id=>[id,{copies:0,level:1}])),
+    activeDeck:[...deck],hand:[],drawPile:[],discardPile:[],attackDeck:[],enemy:makeInitialEnemy(),
     log:[],lastEvent:null,lastLoot:null,outcome:null,rngSeed:123456789,hasSeenIntro:false,
     chapterProgress:{completed:[],unlocked:1},
     economy:{coins:120,blackMarketFavor:0,marketPurchases:0},

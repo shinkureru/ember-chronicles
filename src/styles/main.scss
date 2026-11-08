@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;600;700;800&family=Noto+Serif+TC:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Noto+Serif+TC:wght@500;600;700;900&display=swap');
 :root{font-family:'Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif;color:#eaf2ea;background:#0b1718;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;--bg:#101f22;--surface:#1a2c2e;--surface2:#223739;--surface3:#2b4544;--ink:#ecf3e9;--soft:#b1c5bd;--muted:#829b96;--border:rgba(183,212,192,.17);--accent:#b5dfbb;--accent-dark:#143529;--gold:#edca89;--danger:#f2a295}
 *{box-sizing:border-box}html{min-height:100%;scroll-behavior:smooth}body{margin:0;min-width:320px;color:var(--ink);font-size:14px;line-height:1.65;background:#0b1718}button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed}a{color:inherit;text-decoration:none}a:hover{color:var(--accent)}h1,h2,h3,h4,h5,p{margin:0}h1,h2,h3{letter-spacing:.015em}strong,b{font-weight:700}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #eacb8e;outline-offset:3px}::selection{background:#679580;color:white}
 .desktop-world{min-height:100dvh;display:flex;justify-content:center;position:relative;overflow-x:hidden;background:radial-gradient(circle at 18% 30%,rgba(43,91,73,.4),transparent 38%),radial-gradient(circle at 90% 80%,rgba(56,76,59,.35),transparent 36%),#0a1719}
@@ -31,3 +31,5 @@
 @import "v05";
 
 @import "hotfix-header";
+
+@import "v06";

@@ -57,8 +57,12 @@ describe('劇情規則',()=>{
  });
  it('倉庫只轉移容許容量，剩餘物品不會消失',()=>{
    let s=makeInitialState('journalist');s.mode='result';s.bag={vest:5,flashlight:5};s.warehouseCapacity=1;
+   // v0.7 gives a new character starter weapons in storage. Assert conservation,
+   // rather than assuming a brand-new character has an empty warehouse.
+   const before=Object.values(s.bag).reduce((a,b)=>a+b,0)+Object.values(s.warehouse).reduce((a,b)=>a+b,0);
    s=gameReducer(s,{type:'RETURN_HUB'});
-   expect(Object.values(s.bag).reduce((a,b)=>a+b,0)+Object.values(s.warehouse).reduce((a,b)=>a+b,0)).toBe(10);
+   const after=Object.values(s.bag).reduce((a,b)=>a+b,0)+Object.values(s.warehouse).reduce((a,b)=>a+b,0);
+   expect(after).toBe(before);
  });
  it('NPC 對同一類行動的適應會降低成功率',()=>{
    const s=makeInitialState('journalist');const action=SCENES.gate.actions[0]!;

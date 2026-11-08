@@ -1,4 +1,5 @@
 import { CARDS, getUpgradeRequirement } from '../data/cards';
+import { ATTACK_CARDS, attackStatus, getAttackDamage, MAX_ATTACK_DECK, makeInitialEnemy } from '../data/attacks';
 import { ITEMS, LOOT_POOLS, INITIAL_NPC_GEAR } from '../data/items';
 import { calculateActionPreview, bagWeight, getVisibleActions, isSkillCompatible, retreatPreview, clamp } from './rules';
 import { makeInitialState } from '../state/initial';
@@ -8,6 +9,7 @@ import type { GameState, Outcome, ProfessionId, LootDrop } from '../types';
 export type GameAction =
   | {type:'SELECT_PROFESSION';profession:ProfessionId}
   | {type:'START_ATTEMPT'}
+  | {type:'PREPARE_ATTACK_CARD';cardId:string}
   | {type:'CHOOSE';choiceId:string;skillId:string|null}
   | {type:'RETREAT'}
   | {type:'RETURN_HUB'}
@@ -60,10 +62,10 @@ const addLoot=(s:GameState,source:string):LootDrop|null=>{
   const def=ITEMS[itemId]!;
   if(bagWeight(s.bag)+def.weight>15){s.lastEvent=`我看到「${def.name}」，但背包快裝不下了。得先整理物品。`;return null;}
   if(def.type==='card'){
-    const cardId=itemId==='card_question'?'question':'route';
+    const cardId=itemId==='card_question'?'question':itemId==='card_route'?'route':itemId==='card_pen'?'pen_thrust':'wrench_hit';
     if(!s.ownedCards[cardId])s.ownedCards[cardId]={copies:0,level:1};
     s.ownedCards[cardId]!.copies+=1;
-    s.lastEvent=`竟然找到「${CARDS[cardId]!.name}」的重複卡！已放入卡牌收藏庫。`;
+    s.lastEvent=`竟然找到「${(CARDS[cardId]??ATTACK_CARDS[cardId])!.name}」的重複卡！已放入卡牌收藏庫。`;
   }else{
     s.bag[itemId]=(s.bag[itemId]??0)+1;
     s.lastEvent=`我仔細翻找，找到「${def.name}」。`;
@@ -108,18 +110,54 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
   switch(action.type){
     case 'START_ATTEMPT':{
       if(!s.profession||s.mode==='adventure')return state;
+      // Re-use the player's previous loadout: selected weapons remain with the player
+      // or are re-withdrawn from storage if available and under the weight limit.
+      for(const cardId of s.attackDeck){
+        const itemId=ATTACK_CARDS[cardId]?.requiredItemId,def=itemId?ITEMS[itemId]:undefined;
+        if(!def||(s.bag[itemId!]??0)>0||(s.warehouse[itemId!]??0)<=0)continue;
+        if(bagWeight(s.bag)+def.weight>15)continue;
+        s.warehouse[itemId!]=(s.warehouse[itemId!]??0)-1;if(s.warehouse[itemId!]===0)delete s.warehouse[itemId!];
+        s.bag[itemId!]=(s.bag[itemId!]??0)+1;
+      }
       s.attempt+=1;s.npc.met+=1;s.mode='adventure';s.sceneId='gate';
-      s.flags=[];s.searchedSources=[];s.outcome=null;s.lastLoot=null;s.lastEvent=null;
+      s.flags=[];s.searchedSources=[];s.outcome=null;s.lastLoot=null;s.lastEvent=null;s.enemy=makeInitialEnemy();
       s.hand=[];s.discardPile=[];s.drawPile=[...s.activeDeck];
       drawCards(s,3);
       s.player.resource=clamp(s.player.resource+2,0,s.player.maxResource);
       s.log.push(`第 ${s.attempt} 次前往倉庫。`);
       return s;
     }
+    case 'PREPARE_ATTACK_CARD':{
+      if(s.mode!=='home')return state;
+      const card=ATTACK_CARDS[action.cardId];
+      if(!card||!s.ownedCards[card.id])return state;
+      if(s.attackDeck.includes(card.id)){
+        s.attackDeck=s.attackDeck.filter(id=>id!==card.id);
+        s.lastEvent=`我先把「${card.name}」從這次準備的攻擊牌組移除。`;
+        return s;
+      }
+      if(s.attackDeck.length>=MAX_ATTACK_DECK){
+        s.lastEvent='最多只能準備五張攻擊型主動牌。';return s;
+      }
+      s.attackDeck.push(card.id);
+      const status=attackStatus(s,card.id);
+      if(!status.inBag&&status.inWarehouse){
+        const item=ITEMS[card.requiredItemId]!;
+        if(bagWeight(s.bag)+item.weight<=15){
+          s.warehouse[item.id]=(s.warehouse[item.id]??0)-1;
+          if(s.warehouse[item.id]===0)delete s.warehouse[item.id];
+          s.bag[item.id]=(s.bag[item.id]??0)+1;
+          s.lastEvent=`我把「${item.name}」放進了背包，準備使用「${card.name}」。`;
+        }else s.lastEvent=`已加入「${card.name}」，但背包負重不足，無法帶上「${item.name}」。這張卡目前無效。`;
+      }else if(status.inBag)s.lastEvent=`「${card.name}」已準備好，背包裡有對應的「${ITEMS[card.requiredItemId]!.name}」。`;
+      else s.lastEvent=`已加入「${card.name}」，但缺少「${ITEMS[card.requiredItemId]!.name}」。進關卡若找到它，這張卡就能使用。`;
+      return s;
+    }
     case 'CHOOSE':{
       if(s.mode!=='adventure')return state;
       const choice=getVisibleActions(s).find(c=>c.id===action.choiceId);
       if(!choice)return state;
+      if(choice.attackCardId&&(!s.attackDeck.includes(choice.attackCardId)||!attackStatus(s,choice.attackCardId).inBag))return state;
       const card=action.skillId?CARDS[action.skillId]:undefined;
       const skill=card&&isSkillCompatible(choice,card)&&s.hand.includes(card.id)&&s.player.resource>=card.resourceCost?card:undefined;
       const preview=calculateActionPreview(s,choice,skill?.id??null);
@@ -146,6 +184,25 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if(choice.tags.includes('talk')&&!isSuccess)s.npc.adaptations.talk=Math.min(12,(s.npc.adaptations.talk??0)+2);
       if(s.profession==='journalist'&&choice.tags.includes('observe')&&isSuccess)s.player.resource=Math.min(s.player.maxResource,s.player.resource+1);
       if(s.profession==='courier'&&choice.tags.includes('run')&&isSuccess)s.player.resource=Math.min(s.player.maxResource,s.player.resource+1);
+      if(choice.attackCardId){
+        const cardName=ATTACK_CARDS[choice.attackCardId]?.name??choice.title;
+        if(isSuccess){
+          const damage=getAttackDamage(s,choice.attackCardId);
+          s.enemy.health=clamp(s.enemy.health-damage,0,s.enemy.maxHealth);
+          s.lastEvent=`我用「${cardName}」命中了對方，造成 ${damage} 點傷害。對方剩下 ${s.enemy.health}/${s.enemy.maxHealth} 生命。`;
+          if(s.enemy.health===0){
+            s.flags=Array.from(new Set([...s.flags,'won_by_combat']));
+            s.sceneId='loot';
+            s.lastEvent+= ' 他終於失去了抵抗能力，現在可以搜查現場。';
+          }
+        }else{
+          const counter=5+Math.floor(s.npc.hostility/24);
+          s.player.health=clamp(s.player.health-counter,0,s.player.maxHealth);
+          s.lastEvent=`我用「${cardName}」反擊失手，被對方擊中，生命 -${counter}；他的生命仍是 ${s.enemy.health}/${s.enemy.maxHealth}。`;
+          if(s.player.health<=0)resolveOutcome(s,'defeat');
+        }
+        return s;
+      }
       if(isSuccess&&choice.lootSource){
         addLoot(s,choice.lootSource);
         // 裝備屬於同一個 NPC 的持久資產，取完前可以繼續拿
@@ -177,6 +234,10 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if(s.mode!=='result')return state;
       const entries=Object.entries(s.bag);
       const protectedSet=new Set(s.protectedItems);
+      // Weapons from the prepared attack deck count as part of the player's loadout.
+      for(const cardId of s.attackDeck){
+        const itemId=ATTACK_CARDS[cardId]?.requiredItemId;if(itemId)protectedSet.add(itemId);
+      }
       for(const [id,qty] of entries){
         if(protectedSet.has(id)||!ITEMS[id])continue;
         const maxQty=Math.floor((s.warehouseCapacity-bagWeight(s.warehouse)+1e-8)/ITEMS[id]!.weight);
@@ -245,7 +306,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       return s;
     }
     case 'UPGRADE_CARD':{
-      const card=CARDS[action.cardId];const owned=s.ownedCards[action.cardId];
+      const card=CARDS[action.cardId]??ATTACK_CARDS[action.cardId];const owned=s.ownedCards[action.cardId];
       if(!card||!owned)return state;
       const cost=getUpgradeRequirement(card.rarity,owned.level);
       if(cost===null||owned.copies<cost)return state;

@@ -1,6 +1,7 @@
 import { CARDS } from '../data/cards';
 import { ITEMS } from '../data/items';
 import { SCENES } from '../data/scenes';
+import { createAttackChoice, attackStatus, getAttackDamage } from '../data/attacks';
 import type { ActionChoice, ActionPreview, ActionTag, GameState, SceneDef, SkillCard } from '../types';
 
 export const clamp = (value:number, min:number, max:number) => Math.max(min,Math.min(max,value));
@@ -22,7 +23,10 @@ export const isSkillCompatible = (action:ActionChoice, card?:SkillCard):boolean 
 export const getVisibleActions = (state:GameState):ActionChoice[]=>{
   const scene=SCENES[state.sceneId];
   if(!scene)return [];
-  return scene.actions.filter(action=>!action.requiresNotSearched||!state.searchedSources.includes(action.requiresNotSearched));
+  const story=scene.actions.filter(action=>!action.requiresNotSearched||!state.searchedSources.includes(action.requiresNotSearched));
+  if(state.sceneId!=='confrontation'||state.mode!=='adventure'||state.enemy.health<=0)return story;
+  const attacks=state.attackDeck.map(id=>createAttackChoice(state,id)).filter((a):a is ActionChoice=>a!==null);
+  return [...story,...attacks];
 };
 export const getSceneContent = (state:GameState):SceneDef => {
   const base=SCENES[state.sceneId] ?? SCENES.gate;
@@ -70,16 +74,20 @@ export const calculateActionPreview=(state:GameState,choice:ActionChoice,skillId
   const routeBonus=state.flags.includes('route_known')&&choice.tags.some(t=>t==='sneak'||t==='run')?8:0;
   const heardBonus=state.flags.includes('heard_steps')&&choice.tags.includes('talk')?8:0;
   const hostilityPenalty=choice.tags.includes('talk')?Math.max(0,Math.floor((state.npc.hostility-25)/8)):0;
-  const chance=choice.baseChance===100?100:Math.round(clamp(
+  const weaponAvailable=!choice.attackCardId||attackStatus(state,choice.attackCardId).inBag;
+  const chance=!weaponAvailable?0:choice.baseChance===100?100:Math.round(clamp(
     choice.baseChance+specialtyBonus(state,choice.tags)+attributeBonus(state,choice.tags)+
     (validSkill?validSkill.chanceBonus+(skillLevel-1)*3:0)+clueBonus+state.insightBonus+routeBonus+heardBonus-
     npcPenalty-overweightPenalty-tiredPenalty-lowStaminaPenalty-hostilityPenalty-fearPenalty,
     5,95));
   const warnings:ActionPreview['warnings']=[];
+  if(!weaponAvailable)warnings.push({title:'缺少所需武器',detail:'對應物品尚未放進背包，無法使用這張攻擊牌。',remedy:'可在關卡內取得武器，或回據點從倉庫備妥。'});
   if(projectedCourage<40&&state.player.courage>=40)warnings.push({title:'膽量將跌破 40',detail:'可能進入「畏縮」狀態，面對威嚇類事件時較不利。',remedy:'可透過休息、情緒安撫或完成勇氣事件恢復。'});
   if(projectedStamina<=10&&state.player.stamina>10)warnings.push({title:'體力即將見底',detail:'後續逃跑及衝刺會較不容易成功。',remedy:'可返回安全地點休息或使用補給。'});
   if(state.player.fatigue>=70)warnings.push({title:'疲勞偏高',detail:'部分需要集中注意力的行動成功率降低。',remedy:'可以在安全地點休息。'});
-  return {chance,staminaCost,courageDelta,minutes:choice.minutes,resourceCost:validSkill?.resourceCost??0,projectedStamina,projectedCourage,warnings};
+  return {chance,staminaCost,courageDelta,minutes:choice.minutes,resourceCost:validSkill?.resourceCost??0,projectedStamina,projectedCourage,warnings,
+    damage:choice.attackCardId&&weaponAvailable?getAttackDamage(state,choice.attackCardId):undefined,
+    attackAvailable:weaponAvailable};
 };
 export const bagWeight=(bag:Record<string,number>):number=>
   Object.entries(bag).reduce((total,[id,qty])=>total+(ITEMS[id]?.weight??0)*qty,0);

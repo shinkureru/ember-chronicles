@@ -1,9 +1,10 @@
-import { useEffect, useMemo, type CSSProperties } from 'react';
-import { ArrowDownRight, ArrowLeft, Footprints, Layers3 } from 'lucide-react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { ArrowDownRight, ArrowLeft, ChevronLeft, ChevronRight, Footprints, Layers3 } from 'lucide-react';
 import { calculateActionPreview } from '../../game/engine/rules';
 import { getChoicePositions, getRiskHintIndex } from './choiceLayout';
 import type { ActionChoice, GameState } from '../../game/types';
 import { CARDS } from '../../game/data/cards';
+import { ATTACK_CARDS, attackStatus } from '../../game/data/attacks';
 
 type Props={
   actions:ActionChoice[];
@@ -18,12 +19,19 @@ type Props={
   onRetreat:()=>void;
 };
 export default function ActionDecision({actions,state,selected,skillId,skillCount,onSelect,onBack,onShowSkills,onExecute,onRetreat}:Props){
+  const [page,setPage]=useState(0);
+  const pageSize=6;
+  const pages=Math.max(1,Math.ceil(actions.length/pageSize));
+  const shownPage=Math.min(page,pages-1);
+  const visible=actions.slice(shownPage*pageSize,(shownPage+1)*pageSize);
+  const ids=visible.map(a=>a.id).join(',');
   const layout=useMemo(
-    ()=>getChoicePositions(actions,`${state.attempt}:${state.sceneId}:${actions.map(a=>a.id).join(',')}`),
-    [state.attempt,state.sceneId,actions.map(a=>a.id).join(',')],
+    ()=>getChoicePositions(visible,`${state.attempt}:${state.sceneId}:${shownPage}:${ids}`),
+    [state.attempt,state.sceneId,shownPage,ids],
   );
-  const previews=actions.map(a=>calculateActionPreview(state,a,null));
+  const previews=visible.map(a=>calculateActionPreview(state,a,null));
   const riskyIndex=getRiskHintIndex(previews);
+  useEffect(()=>setPage(0),[state.attempt,state.sceneId]);
   const preview=selected?calculateActionPreview(state,selected,skillId):null;
   useEffect(()=>{
     if(!selected)return;
@@ -32,17 +40,25 @@ export default function ActionDecision({actions,state,selected,skillId,skillCoun
     return()=>window.removeEventListener('keydown',handleEscape);
   },[selected,onBack]);
   return <section className={`choice-stage ${selected?'choice-stage--detail':'choice-stage--pick'}`} aria-label="當前行動">
-    <header className="choice-stage__heading"><strong>我接下來要怎麼做？</strong><small>{selected?'ACTION / DECISION':'CHOOSE YOUR WAY'}</small></header>
+    <header className="choice-stage__heading"><strong>我接下來要怎麼做？</strong>
+      {!selected&&pages>1?<span className="choice-stage__pages">
+        <button type="button" disabled={shownPage===0} onClick={()=>setPage(p=>Math.max(0,p-1))} aria-label="上一組行動"><ChevronLeft size={14}/></button>
+        <small>{shownPage+1} / {pages}</small>
+        <button type="button" disabled={shownPage>=pages-1} onClick={()=>setPage(p=>Math.min(pages-1,p+1))} aria-label="下一組行動"><ChevronRight size={14}/></button>
+      </span>:<small>{selected?'ACTION / DECISION':'CHOOSE YOUR WAY'}</small>}
+    </header>
     {!selected?<div key={`pick-${state.attempt}-${state.sceneId}`} className="choice-cloud" role="group" aria-label="選擇行動">
-      {actions.map((action,i)=>{
+      {visible.map((action,i)=>{
         const choicePreview=previews[i]??calculateActionPreview(state,action,null);
+        const required=action.attackCardId?ATTACK_CARDS[action.attackCardId]:undefined;
+        const unavailable=!!required&&!attackStatus(state,required.id).inBag;
         const pos=layout[i]??{x:50,y:50,angle:0,delay:0};
         const style={'--choice-x':`${pos.x}%`,'--choice-y':`${pos.y}%`,'--choice-angle':`${pos.angle}deg`,'--choice-delay':`${pos.delay}s`} as CSSProperties;
-        return <button type="button" key={action.id} style={style}
-          className={`choice-word ${i===riskyIndex?'choice-word--static':''}`}
-          onClick={()=>onSelect(action)} aria-label={`${action.title}。成功率 ${choicePreview.chance}%。${action.thought}`}
-          title={action.thought}>
-          <span>{action.title}</span>
+        return <button type="button" key={action.id} style={style} disabled={unavailable}
+          className={`choice-word ${i===riskyIndex&&!unavailable?'choice-word--static':''} ${unavailable?'choice-word--unavailable':''}`}
+          onClick={()=>onSelect(action)} aria-label={unavailable?`${action.title}，缺少${required?.requiredItemId}，目前不可用`:`${action.title}。成功率 ${choicePreview.chance}%。${action.thought}`}
+          title={unavailable?'目前背包缺少對應武器，取得後可使用':action.thought}>
+          <span>{action.title}</span>{unavailable&&<small>缺少武器</small>}
         </button>;
       })}
     </div>:<div key={`detail-${selected.id}`} className="choice-inspect">
@@ -60,6 +76,7 @@ export default function ActionDecision({actions,state,selected,skillId,skillCoun
               <b>{preview?.chance}% <small>成功率</small></b>
               <span>體力 -{preview?.staminaCost}　膽量 {preview&&preview.courageDelta>0?'+':''}{preview?.courageDelta}</span>
               <span>時間 +{preview?.minutes} 分　資源 {preview&&preview.resourceCost<=0?'+':''}{preview&&-preview.resourceCost}</span>
+              {selected.attackCardId&&<span className="torn-action-card__damage">攻擊傷害 {preview?.damage??0} · 對方生命 {state.enemy.health}/{state.enemy.maxHealth}</span>}
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { makeInitialState } from './initial';
 import { STARTER_ATTACK_CARDS, makeInitialEnemy } from '../data/attacks';
+import { LOOT_LIMITS } from '../engine/lootLimits';
 import type { GameState } from '../types';
 const KEY='ember-chronicles-prototype-v1';
 export const loadGame=():GameState=>{
@@ -22,7 +23,8 @@ export const loadGame=():GameState=>{
       const starter=old.profession==='courier'?{wrench:1,screwdriver:1}:{pen:1,notebook:1};
       for(const [id,count] of Object.entries(starter))if(!((old.bag[id]??0)>0)&&!((warehouse[id]??0)>0))warehouse[id]=count;
     }
-    return { ...old, attackDeck,enemy:old.enemy??makeInitialEnemy(),ownedCards,warehouse,
+    const lootSearches=old.lootSearches??Object.fromEntries((old.searchedSources??[]).map(id=>[id,LOOT_LIMITS[id]??1]));
+    return { ...old, attackDeck,enemy:old.enemy??makeInitialEnemy(),ownedCards,warehouse,lootSearches,
       chapterProgress: old.chapterProgress ?? { completed: old.npc?.remembers?.includes('player_victory')?[1]:[], unlocked:old.npc?.remembers?.includes('player_victory')?2:1 },
       economy: old.economy ?? {coins:120,blackMarketFavor:0,marketPurchases:0},
       equipment: old.equipment ?? {head:null,body:null,hands:null,mainHand:null,utility:null,accessory:null},

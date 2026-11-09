@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, BookOpenText, Search, Settings2, ShieldAlert, Sparkles, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowRight, BookOpenText, Layers3, Search, Settings2, ShieldAlert, Sparkles, X } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useGame } from '../../app/GameContext';
 import Hud from '../../components/Hud';
@@ -13,6 +13,9 @@ import { playCue } from '../../audio/sound';
 import { CARDS } from '../../game/data/cards';
 import { getAmbientThoughts } from '../../game/data/ambientThoughts';
 import GameSettingsDialog from '../settings/GameSettingsDialog';
+import EnemyPresence from './EnemyPresence';
+import AttackProjectile, { type AttackFlight } from './AttackProjectile';
+import { ATTACK_CARDS } from '../../game/data/attacks';
 export default function ChapterPage(){
  const {state:s,dispatch}=useGame();
  const [chosenId,setChosenId]=useState<string|null>(null);
@@ -23,13 +26,58 @@ export default function ChapterPage(){
  const [thoughtPage,setThoughtPage]=useState(0);
  const [showSettings,setShowSettings]=useState(false);
  const [handOpenCount,setHandOpenCount]=useState(0);
+ const [skillPrompt,setSkillPrompt]=useState(false);
+ const [skipSkillPrompt,setSkipSkillPrompt]=useState(()=>{try{return localStorage.getItem('ember-skip-skill-warning-v08')==='yes'}catch{return false}});
+ const [rememberSkip,setRememberSkip]=useState(false);
+ const [pendingOrigin,setPendingOrigin]=useState<{x:number;y:number}|null>(null);
+ const [flight,setFlight]=useState<AttackFlight|null>(null);
+ const [executing,setExecuting]=useState(false);
+ const [combatHold,setCombatHold]=useState(false);
+ const flightTimer=useRef<number|null>(null);
+ const afterTimer=useRef<number|null>(null);
  const scene=getSceneContent(s), actions=getVisibleActions(s);
  const ambientLines=useMemo(()=>getAmbientThoughts(s.sceneId,s.attempt,s.world.minute,6),[s.sceneId,s.attempt,Math.floor(s.world.minute/60)]);
  const current:ActionChoice|null=actions.find(a=>a.id===chosenId)??null;
  const preview=current?calculateActionPreview(s,current,skillId):null;
  const usableSkillCount=current?s.hand.filter(id=>{const card=CARDS[id];return !!card&&isSkillCompatible(current,card)&&s.player.resource>=card.resourceCost}).length:0;
  useEffect(()=>{setChosenId(null);setSkillId(null);setThoughtPage(0);setShowHand(false);},[s.sceneId,s.attempt]);
- useEffect(()=>{if(showStory||showHand||showSettings||showRetreat)return;const timer=window.setInterval(()=>setThoughtPage(p=>(p+1)%ambientLines.length),5500);return()=>window.clearInterval(timer);},[s.sceneId,s.attempt,ambientLines.length,showStory,showHand,showSettings,showRetreat]);
+
+ useEffect(()=>()=>{if(flightTimer.current!==null)window.clearTimeout(flightTimer.current);if(afterTimer.current!==null)window.clearTimeout(afterTimer.current);},[]);
+ const performUse=(origin:{x:number;y:number},choice:ActionChoice,chosenSkill:string|null)=>{
+  if(executing)return;
+  const dispatchChoice=()=>{
+   dispatch({type:'CHOOSE',choiceId:choice.id,skillId:chosenSkill});
+   setChosenId(null);setSkillId(null);
+   playCue(choice.attackCardId?'impact':'confirm');
+  };
+  if(choice.attackCardId&&s.sceneId==='confrontation'){
+   const enemyRect=document.querySelector('[data-combat-target="true"]')?.getBoundingClientRect();
+   if(!enemyRect){dispatchChoice();return;}
+   const kind=ATTACK_CARDS[choice.attackCardId]?.requiredItemId??'pen';
+   setExecuting(true);
+   setFlight({id:Date.now(),kind,x:origin.x,y:origin.y,targetX:enemyRect.left+enemyRect.width*.50,targetY:enemyRect.top+enemyRect.height*.52});
+   flightTimer.current=window.setTimeout(()=>{
+    setCombatHold(true);setFlight(null);
+    dispatchChoice();
+    afterTimer.current=window.setTimeout(()=>{setCombatHold(false);setExecuting(false)},900);
+   },510);
+   playCue('card');
+  }else dispatchChoice();
+ };
+ const requestUse=(origin:{x:number;y:number})=>{
+  if(!current||executing)return;
+  if(usableSkillCount>0&&!skillId&&!skipSkillPrompt){
+   setPendingOrigin(origin);setRememberSkip(false);setSkillPrompt(true);playCue('warning');return;
+  }
+  performUse(origin,current,skillId);
+ };
+ const confirmWithoutSkill=()=>{
+  if(rememberSkip){try{localStorage.setItem('ember-skip-skill-warning-v08','yes')}catch{/* no storage */}setSkipSkillPrompt(true);}
+  setSkillPrompt(false);
+  if(pendingOrigin&&current)performUse(pendingOrigin,current,skillId);
+  setPendingOrigin(null);
+ };
+ useEffect(()=>{if(showStory||showHand||showSettings||showRetreat||skillPrompt)return;const timer=window.setInterval(()=>setThoughtPage(p=>(p+1)%ambientLines.length),5500);return()=>window.clearInterval(timer);},[s.sceneId,s.attempt,ambientLines.length,showStory,showHand,showSettings,showRetreat,skillPrompt]);
  if(!s.profession)return <div className="page-stack"><section className="surface-card"><h2>先選擇你的職業</h2><p>到第一章地圖完成角色建立後，即可開始調查。</p><NavLink to="/" className="primary-button">前往地圖 <ArrowRight size={16}/></NavLink></section></div>;
  if(s.mode==='result'){
    const success=s.outcome==='victory';
@@ -48,22 +96,22 @@ export default function ChapterPage(){
  return <div className="chapter-live">
   <div className="chapter-kicker"><span>CHAPTER 01 · {scene.label} · {worldPhase(s.world.minute)}</span><div className="chapter-kicker__controls"><button type="button" onClick={()=>setShowStory(true)}><BookOpenText size={15}/>全文</button><button type="button" onClick={()=>setShowSettings(true)} aria-label="遊戲設定"><Settings2 size={16}/>設定</button></div></div>
   <Hud/>
-  {s.sceneId==='confrontation'&&<div className="enemy-hud" aria-label="敵人生命值">
+  {(s.sceneId==='confrontation'||combatHold)&&<div className="enemy-hud" aria-label="敵人生命值">
     <div className="enemy-hud__top"><span>ENEMY / {s.enemy.name}</span><strong>{s.enemy.health} / {s.enemy.maxHealth} HP</strong></div>
     <div className="enemy-hud__track" role="progressbar" aria-label="敵人生命" aria-valuemin={0} aria-valuemax={s.enemy.maxHealth} aria-valuenow={s.enemy.health}><i style={{width:`${s.enemy.health/s.enemy.maxHealth*100}%`}}/></div>
   </div>}
-  <section className={`scene-art scene-art--${s.sceneId}`} aria-label={`${scene.location}的環境場景`}><div className="scene-art__halo"/><div className="scene-art__atmosphere"/><div className="scene-art__warehouse"><div className="scene-art__building"><span>舊物流站</span><div className="scene-art__windows"><i/><i/><i/></div></div><div className="scene-art__door"/></div><div className="scene-art__person scene-art__person--shadow"><span/></div><div className="scene-art__floor"/><div className="scene-art__caption"><span className="scene-art__pin"/> {scene.location}<span> · 第 {s.attempt} 次來訪</span></div></section>
+  <section className={`scene-art scene-art--${s.sceneId} ${(s.sceneId==='confrontation'||combatHold)?'scene-art--combat':''}`} aria-label={`${scene.location}的環境場景`}><div className="scene-art__halo"/><div className="scene-art__atmosphere"/><div className="scene-art__warehouse"><div className="scene-art__building"><span>舊物流站</span><div className="scene-art__windows"><i/><i/><i/></div></div><div className="scene-art__door"/></div><div className="scene-art__person scene-art__person--shadow"><span/></div>{(s.sceneId==='confrontation'||combatHold)&&<EnemyPresence health={s.enemy.health} maxHealth={s.enemy.maxHealth} name={s.enemy.name}/>}<div className="scene-art__floor"/><div className="scene-art__caption"><span className="scene-art__pin"/> {scene.location}<span> · 第 {s.attempt} 次來訪</span></div></section>
   <section className="story-panel story-panel--compact"><div className="story-panel__top"><span className="eyebrow">SCENE / {scene.label}</span><span>{s.npc.met>1?'對方記得我':'初次接觸'}</span></div>
    <p className="story-panel__thought">{scene.narration}</p>
    {scene.npcText&&<p className="story-panel__compact-npc"><strong>阿忠：</strong>{scene.npcText}</p>}
    <div className="ambient-carousel" aria-label="場景內心獨白"><div className="ambient-carousel__heading"><span>我的心聲</span><span>{thoughtPage+1} / {ambientLines.length}</span></div><p key={`${s.sceneId}-${thoughtPage}`} className="ambient-carousel__line" aria-live="off">「{ambientLines[thoughtPage]??ambientLines[0]}」</p></div>
    {s.sceneId==='loot'&&<div className="story-panel__hint"><Search size={12}/>搜刮會推進世界時間</div>}
   </section>
-  <ActionDecision actions={actions} state={s} selected={current} skillId={skillId} skillCount={usableSkillCount}
+  <ActionDecision actions={actions} state={s} selected={current} skillId={skillId} skillCount={usableSkillCount} busy={executing}
     onSelect={action=>{setChosenId(action.id);setSkillId(null);playCue('select')}}
     onBack={()=>{setChosenId(null);setSkillId(null);playCue('open')}}
     onShowSkills={()=>{setHandOpenCount(n=>n+1);setShowHand(true);playCue('open')}}
-    onExecute={()=>{if(!current)return;dispatch({type:'CHOOSE',choiceId:current.id,skillId});playCue('confirm');setChosenId(null);setSkillId(null)}}
+    onExecute={requestUse}
     onRetreat={()=>setShowRetreat(true)}/>
   {showHand&&current&&<div className="game-sheet-backdrop game-sheet-backdrop--ritual" role="presentation" onClick={()=>setShowHand(false)}>
     <div className="game-sheet game-sheet--ritual" role="dialog" aria-label="附加技能卡" aria-modal="true" onClick={e=>e.stopPropagation()}>
@@ -72,6 +120,16 @@ export default function ChapterPage(){
       <SkillHand choice={current} skillId={skillId} layoutSeed={handOpenCount} onChange={id=>{setSkillId(id);playCue('card')}}/>
       <button className="primary-button primary-button--full game-sheet__confirm" onClick={()=>{setShowHand(false);playCue('confirm')}}>確認附加 · 返回行動卡</button>
     </div>
+  </div>}
+  {flight&&<AttackProjectile flight={flight}/>}
+  {skillPrompt&&<div className="skill-confirm-overlay" role="presentation">
+   <section className="skill-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="提醒附加技能卡">
+    <Layers3 size={27}/><h3>還有可用的附加技能</h3>
+    <p>我現在有 {usableSkillCount} 張技能卡能強化這次行動。要先看看，還是直接執行？</p>
+    <label className="skill-confirm-dialog__check"><input type="checkbox" checked={rememberSkip} onChange={e=>setRememberSkip(e.target.checked)}/>不再提醒</label>
+    <div className="skill-confirm-dialog__actions"><button type="button" onClick={()=>{setSkillPrompt(false);setPendingOrigin(null);setHandOpenCount(n=>n+1);setShowHand(true);}}>前往附加技能</button>
+     <button type="button" onClick={confirmWithoutSkill}>仍然直接使用</button></div>
+   </section>
   </div>}
   {showStory&&<div className="game-sheet-backdrop" role="presentation" onClick={()=>setShowStory(false)}><div className="game-story-modal" role="dialog" aria-label="劇情與警告詳情" aria-modal="true" onClick={e=>e.stopPropagation()}><div className="game-sheet__top"><h3><BookOpenText size={17}/>劇情紀錄</h3><button onClick={()=>setShowStory(false)} aria-label="關閉劇情詳情"><X size={19}/></button></div><p>{scene.narration}</p>{scene.npcText&&<blockquote>阿忠：{scene.npcText}</blockquote>}{s.lastEvent&&<p>{s.lastEvent}</p>}{current&&<section className="story-action-details"><h4>目前選擇：{current.title}</h4><p>{current.thought}</p><p>{current.detail}</p></section>}<h4>場景心聲</h4>{ambientLines.map((line,i)=><p key={i}>「{line}」</p>)}{preview?.warnings.map(w=><div className="warning-panel" key={w.title}><ShieldAlert size={17}/><div><strong>{w.title}</strong><p>{w.detail}</p><small>恢復：{w.remedy}</small></div></div>)}{s.clues.length>0&&<p className="story-clues"><Sparkles size={14}/>已掌握 {s.clues.length} 條線索</p>}</div></div>}
   {showRetreat&&<RetreatDialog onClose={()=>setShowRetreat(false)}/>}

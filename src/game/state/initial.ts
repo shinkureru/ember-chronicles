@@ -11,7 +11,7 @@ export const makeInitialState=(profession:ProfessionId|null=null):GameState=>{
     player:{health:100,maxHealth:100,stamina:80,maxStamina:80,courage:55,hunger:20,fatigue:12,temperature:36.5,resource:6,maxResource:6,attributes:{...INITIAL_ATTRIBUTES}},
     world:{minute:16*60+20,day:1,weather:'clear'},
     npc:{hostility:18,trust:15,met:0,adaptations:{},remembers:[],stolenGear:[]},
-    attempt:0,sceneId:'gate',flags:[],searchedSources:[],clues:[],insightBonus:0,
+    attempt:0,sceneId:'gate',flags:[],searchedSources:[],lootSearches:{},clues:[],insightBonus:0,
     bag:{biscuit:2,water:1},warehouse:{pen:1,notebook:1,wrench:1,screwdriver:1},warehouseCapacity:WAREHOUSE_CAPACITY_KG,
     protectedItems:[],
     ownedCards:Object.fromEntries([...deck,...(profession?STARTER_ATTACK_CARDS[profession]:[])].map(id=>[id,{copies:0,level:1}])),

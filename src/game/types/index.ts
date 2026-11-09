@@ -48,7 +48,7 @@ export interface GameState {
   player: { health: number; maxHealth: number; stamina: number; maxStamina: number; courage: number; hunger: number; fatigue: number; temperature: number; resource: number; maxResource: number; attributes: Attributes };
   world: { minute: number; day: number; weather: 'clear' | 'rain' };
   npc: { hostility: number; trust: number; met: number; adaptations: Record<string, number>; remembers: string[]; stolenGear: string[] };
-  attempt: number; sceneId: SceneId; flags: string[]; searchedSources: string[];
+  attempt: number; sceneId: SceneId; flags: string[]; searchedSources: string[]; lootSearches:Record<string,number>;
   attackDeck:string[]; enemy:{id:string;name:string;health:number;maxHealth:number};
   clues: string[]; insightBonus: number;
   bag: Record<string, number>; warehouse: Record<string, number>; warehouseCapacity: number;

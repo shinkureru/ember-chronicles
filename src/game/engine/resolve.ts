@@ -3,6 +3,7 @@ import { ATTACK_CARDS, attackStatus, getAttackDamage, MAX_ATTACK_DECK, makeIniti
 import { ITEMS, LOOT_POOLS, INITIAL_NPC_GEAR } from '../data/items';
 import { calculateActionPreview, bagWeight, getVisibleActions, isSkillCompatible, retreatPreview, clamp } from './rules';
 import { makeInitialState } from '../state/initial';
+import { remainingSearches } from './lootLimits';
 import { EQUIPMENT_SLOTS } from '../data/equipment';
 import type { GameState, Outcome, ProfessionId, LootDrop } from '../types';
 
@@ -46,12 +47,15 @@ const drawCards=(s:GameState,count:number)=>{
   }
 };
 const addLoot=(s:GameState,source:string):LootDrop|null=>{
+  if(remainingSearches(s,source)<=0){s.lastEvent='這裡已經沒有可搜查的東西了。';return null;}
   if(source==='npcGear'){
     const available=INITIAL_NPC_GEAR.filter(id=>!s.npc.stolenGear.includes(id));
     if(available.length===0){s.searchedSources.push('npcGear');s.lastEvent='對方身上的可取裝備已經沒有剩下的了。';return null;}
     const id=available[0]!;
     if(bagWeight(s.bag)+ITEMS[id]!.weight>15){s.lastEvent=`背包太重了，無法帶走「${ITEMS[id]!.name}」。`;return null;}
     s.npc.stolenGear.push(id);
+    s.lootSearches[source]=(s.lootSearches[source]??0)+1;
+    if(remainingSearches(s,source)===0&&!s.searchedSources.includes(source))s.searchedSources.push(source);
     s.bag[id]=(s.bag[id]??0)+1;
     s.lastEvent=`我取下了「${ITEMS[id]!.name}」。這東西有點重量。`;
     return {itemId:id,quantity:1,source};
@@ -70,7 +74,8 @@ const addLoot=(s:GameState,source:string):LootDrop|null=>{
     s.bag[itemId]=(s.bag[itemId]??0)+1;
     s.lastEvent=`我仔細翻找，找到「${def.name}」。`;
   }
-  s.searchedSources.push(source);
+  s.lootSearches[source]=(s.lootSearches[source]??0)+1;
+  if(remainingSearches(s,source)===0&&!s.searchedSources.includes(source))s.searchedSources.push(source);
   return {itemId,quantity:1,source};
 };
 const resolveOutcome=(s:GameState,outcome:Outcome)=>{
@@ -120,7 +125,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
         s.bag[itemId!]=(s.bag[itemId!]??0)+1;
       }
       s.attempt+=1;s.npc.met+=1;s.mode='adventure';s.sceneId='gate';
-      s.flags=[];s.searchedSources=[];s.outcome=null;s.lastLoot=null;s.lastEvent=null;s.enemy=makeInitialEnemy();
+      s.flags=[];s.searchedSources=[];s.lootSearches={};s.outcome=null;s.lastLoot=null;s.lastEvent=null;s.enemy=makeInitialEnemy();
       s.hand=[];s.discardPile=[];s.drawPile=[...s.activeDeck];
       drawCards(s,3);
       s.player.resource=clamp(s.player.resource+2,0,s.player.maxResource);
@@ -206,7 +211,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if(isSuccess&&choice.lootSource){
         addLoot(s,choice.lootSource);
         // 裝備屬於同一個 NPC 的持久資產，取完前可以繼續拿
-        if(choice.lootSource==='npcGear'&&INITIAL_NPC_GEAR.every(id=>s.npc.stolenGear.includes(id)))s.searchedSources.push('npcGear');
+        if(choice.lootSource==='npcGear'&&INITIAL_NPC_GEAR.every(id=>s.npc.stolenGear.includes(id))&&!s.searchedSources.includes('npcGear'))s.searchedSources.push('npcGear');
       }else{
         s.lastEvent=isSuccess?'我完成了這個行動。接下來該怎麼辦？':'事情沒有照我想的發展。我得面對新的局面。';
       }

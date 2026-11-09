@@ -1,6 +1,8 @@
 import { CARDS } from '../data/cards';
 import { ITEMS } from '../data/items';
 import { SCENES } from '../data/scenes';
+import { getSceneVariation } from '../data/chapters/ch01-warehouse/sceneVariants';
+import { remainingSearches } from './lootLimits';
 import { createAttackChoice, attackStatus, getAttackDamage } from '../data/attacks';
 import type { ActionChoice, ActionPreview, ActionTag, GameState, SceneDef, SkillCard } from '../types';
 
@@ -23,7 +25,7 @@ export const isSkillCompatible = (action:ActionChoice, card?:SkillCard):boolean 
 export const getVisibleActions = (state:GameState):ActionChoice[]=>{
   const scene=SCENES[state.sceneId];
   if(!scene)return [];
-  const story=scene.actions.filter(action=>!action.requiresNotSearched||!state.searchedSources.includes(action.requiresNotSearched));
+  const story=getSceneVariation(state).filter(action=>!action.lootSource||remainingSearches(state,action.lootSource)>0);
   if(state.sceneId!=='confrontation'||state.mode!=='adventure'||state.enemy.health<=0)return story;
   const attacks=state.attackDeck.map(id=>createAttackChoice(state,id)).filter((a):a is ActionChoice=>a!==null);
   return [...story,...attacks];

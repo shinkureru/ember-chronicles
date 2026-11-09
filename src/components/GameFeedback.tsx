@@ -1,74 +1,78 @@
 import { useEffect, useRef, useState } from 'react';
-import { AlertTriangle, CheckCircle2, HeartCrack, PackagePlus, Sparkles, X } from 'lucide-react';
+import { AlertTriangle, HeartCrack, Sparkles, X } from 'lucide-react';
 import { useGame } from '../app/GameContext';
 import { playCue } from '../audio/sound';
-import { ITEMS } from '../game/data/items';
 import { CARDS } from '../game/data/cards';
+import { ATTACK_CARDS } from '../game/data/attacks';
 import { getVisibleActions } from '../game/engine/rules';
 import type { GameState } from '../game/types';
-type Notice={id:number;title:string;detail:string;kind:'normal'|'loot'|'danger'|'major'};
+
+type Notice={id:number;title:string;detail:string;kind:'danger'|'major'};
 let nextId=0;
-/** The gameplay state is the only source of truth. Notices reflect committed changes, not predicted ones. */
-function changes(previous:GameState,current:GameState):Notice[]{
+/** Only the truly consequential changes interrupt gameplay. Minor pickups and costs remain in the story log. */
+export const majorStateChanges=(previous:GameState,current:GameState):Notice[]=>{
  const result:Notice[]=[];
- const add=(title:string,detail:string,kind:Notice['kind']='normal')=>result.push({id:++nextId,title,detail,kind});
- if(previous.mode!==current.mode&&current.mode==='result')add(current.outcome==='victory'?'任務完成':current.outcome==='defeat'?'嚴重事件：戰敗':'已撤退',current.lastEvent??'事件已結束。',current.outcome==='defeat'?'danger':'major');
- if(previous.enemy&&current.enemy&&previous.enemy.health>current.enemy.health)add('攻擊命中',`對方生命 ${previous.enemy.health} → ${current.enemy.health}（-${previous.enemy.health-current.enemy.health}）`,'normal');
- if(previous.player.health>current.player.health)add('受傷',`生命 ${previous.player.health} → ${current.player.health}`,'danger');
- if(previous.player.stamina>current.player.stamina&&previous.mode==='adventure'){
-   const difference=previous.player.stamina-current.player.stamina;
-   if(difference>=8)add('體力消耗',`體力 -${difference}，目前剩餘 ${current.player.stamina}`,'normal');
+ const add=(title:string,detail:string,kind:Notice['kind']='major')=>
+  result.push({id:++nextId,title,detail,kind});
+ const ended=previous.mode!==current.mode&&current.mode==='result';
+ if(ended){
+  const extra=current.chapterProgress.unlocked>previous.chapterProgress.unlocked?
+    ` 第 ${current.chapterProgress.unlocked} 關已解鎖。`:'';
+  add(current.outcome==='victory'?'任務完成':current.outcome==='defeat'?'戰敗':'已撤退',
+    (current.lastEvent??'這次事件已經結束。')+extra,current.outcome==='defeat'?'danger':'major');
  }
- if(previous.player.courage>=40&&current.player.courage<40)add('膽量低於臨界值','進入畏縮狀態；休息或完成勇氣事件可恢復。','danger');
- for(const [id,count] of Object.entries(current.bag)){
-  const diff=count-(previous.bag[id]??0);
-  if(diff>0)add('獲得物資',`「${ITEMS[id]?.name??id}」 × ${diff}`,'loot');
- }
+ const lost=previous.player.health-current.player.health;
+ // Result screens already present serious injuries and gained clues; do not stack several modals.
+ if(!ended&&(lost>=15||previous.player.health>20&&current.player.health<=20))
+  add('嚴重受傷',`生命 ${previous.player.health} → ${current.player.health}`, 'danger');
+ if(!ended&&previous.player.courage>=40&&current.player.courage<40)
+  add('膽量跌破臨界值','畏縮狀態已觸發；休息或完成勇氣事件可恢復。','danger');
+ if(!ended&&current.clues.length>previous.clues.length)
+  add('關鍵情報',current.clues[current.clues.length-1]??'取得了新的線索。');
+ if(!ended&&current.chapterProgress.unlocked>previous.chapterProgress.unlocked)
+  add('新關卡解鎖',`第 ${current.chapterProgress.unlocked} 關現已開放。`);
  for(const [id,data] of Object.entries(current.ownedCards)){
-  const old=previous.ownedCards[id];
-  if(data.copies>(old?.copies??0))add('獲得卡牌',`「${CARDS[id]?.name??id}」複本 +${data.copies-(old?.copies??0)}`,'loot');
-  if(data.level>(old?.level??1))add('卡牌升級',`「${CARDS[id]?.name??id}」升至 ${['','I','II','III','IV','V'][data.level]} 階`,'major');
+  const card=CARDS[id]??ATTACK_CARDS[id],old=previous.ownedCards[id];
+  if(card&&!old&&card.rarity!=='normal')add('取得稀有卡牌',`「${card.name}」已加入收藏。`);
+  if(card&&old&&data.level>old.level&&data.level>=5)add('卡牌升至最高階',`「${card.name}」達到 V 階。`);
  }
- if(current.clues.length>previous.clues.length)add('獲得新情報',current.clues[current.clues.length-1]??'已掌握新的線索。','major');
- if(current.chapterProgress.unlocked>previous.chapterProgress.unlocked)add('章節進度更新',`第 ${current.chapterProgress.unlocked} 關已解鎖。`,'major');
- if(current.lastEvent&&current.lastEvent!==previous.lastEvent && !result.some(r=>r.detail===current.lastEvent))add('事件紀錄',current.lastEvent,'normal');
- if(current.log.length>previous.log.length && result.length===0)add('行動結算',current.log[current.log.length-1]??'這次行動已經結束。','normal');
- return result;
-}
+ return result.slice(0,3);
+};
 export default function GameFeedback(){
- const {state}=useGame();const previous=useRef(state);
+ const {state}=useGame();
+ const previous=useRef(state);
  const [queue,setQueue]=useState<Notice[]>([]);
  const notice=queue[0];
  useEffect(()=>{
   if(previous.current===state)return;
-  const oldState=previous.current;
-  const notices=changes(oldState,state);previous.current=state;
-  if(state.log.length>oldState.log.length&&oldState.mode==='adventure'){
-    const last=state.log[state.log.length-1]??'';
-    const selected=getVisibleActions(oldState).find(c=>last.startsWith(c.title));
-    if(selected?.tags.includes('fight'))playCue('impact');
-    else if(selected?.tags.includes('run'))playCue('footsteps');
-    else if(selected?.tags.includes('search'))playCue('loot');
+  const old=previous.current;
+  previous.current=state;
+  const notable=majorStateChanges(old,state);
+  if(state.log.length>old.log.length&&old.mode==='adventure'){
+    const line=state.log[state.log.length-1]??'';
+    const chosen=getVisibleActions(old).find(c=>line.startsWith(c.title));
+    if(chosen?.attackCardId)playCue(state.enemy.health<old.enemy.health?'impact':'warning');
+    else if(chosen?.tags.includes('run'))playCue('footsteps');
+    else if(chosen?.tags.includes('search'))playCue('loot');
   }
-  if(state.player.stamina<oldState.player.stamina)playCue('breath');
-  if(state.player.health<oldState.player.health)playCue('injury');
-  if(notices.length)setQueue(old=>[...old,...notices].slice(0,18));
+  if(state.player.stamina<old.player.stamina&&old.player.stamina-state.player.stamina>=8)playCue('breath');
+  if(state.player.health<old.player.health)playCue('injury');
+  if(notable.length)setQueue(q=>[...q,...notable].slice(0,5));
  },[state]);
  useEffect(()=>{
   if(!notice)return;
-  playCue(notice.kind==='danger'?'injury':notice.kind==='major'?'reward':notice.kind==='loot'?'loot':'open');
-  if(notice.kind==='danger'||notice.kind==='major')return;
-  const timer=window.setTimeout(()=>setQueue(q=>q.filter(i=>i.id!==notice.id)),2100);
+  playCue(notice.kind==='danger'?'warning':'reward');
+  const timer=window.setTimeout(()=>setQueue(q=>q.filter(n=>n.id!==notice.id)),notice.kind==='danger'?3300:2700);
   return()=>window.clearTimeout(timer);
  },[notice]);
  if(!notice)return null;
- const major=notice.kind==='danger'||notice.kind==='major';
- const Icon=notice.kind==='danger'?HeartCrack:notice.kind==='major'?Sparkles:notice.kind==='loot'?PackagePlus:CheckCircle2;
- return <div className={`game-feedback-layer ${major?'game-feedback-layer--modal':''}`} aria-live={major?'assertive':'polite'}>
-   <div className={`game-feedback game-feedback--${notice.kind}`} role={major?'alertdialog':'status'} aria-modal={major} aria-label={notice.title}>
-     <div className="game-feedback__icon"><Icon size={25}/></div><div className="game-feedback__content"><strong>{notice.title}</strong><p>{notice.detail}</p></div>
-     {major?<button className="game-feedback__dismiss" onClick={()=>setQueue(q=>q.slice(1))}>我知道了</button>:<button className="game-feedback__close" onClick={()=>setQueue(q=>q.slice(1))} aria-label="關閉提示"><X size={16}/></button>}
-     {notice.kind==='danger'&&<AlertTriangle size={22} className="game-feedback__warning"/>}
-   </div>
+ const Icon=notice.kind==='danger'?HeartCrack:Sparkles;
+ return <div className="critical-notice-layer" aria-live="assertive">
+   <section key={notice.id} className={`critical-notice critical-notice--${notice.kind}`} role="alertdialog" aria-modal="true" aria-label={notice.title}>
+    <Icon size={29} className="critical-notice__icon"/>
+    <strong>{notice.title}</strong><p>{notice.detail}</p>
+    <button type="button" aria-label="關閉重大事件提示" onClick={()=>setQueue(q=>q.slice(1))}><X size={18}/>關閉</button>
+    {notice.kind==='danger'&&<AlertTriangle size={15} className="critical-notice__danger"/>}
+   </section>
  </div>;
 }

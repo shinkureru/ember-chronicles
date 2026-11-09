@@ -1,0 +1,197 @@
+/* v0.8 — dark horror interface; important events only, no risk-biased option styling. */
+.chapter-live .choice-word{
+ display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;
+ color:#e0e0e0!important;text-shadow:1px 3px #3a3a3a,0 0 13px #7775!important;
+}
+.choice-word__chance{
+ display:block;font-family:Inter,'Noto Sans TC',sans-serif;
+ font-style:normal;font-size:clamp(12px,3vw,15px);font-weight:700;line-height:1.2;
+ letter-spacing:0;text-shadow:none;color:#b7b7b7;
+}
+.choice-word__note{
+ display:block;position:static!important;font-family:'Noto Sans TC',sans-serif;
+ font-weight:500;font-size:9px;letter-spacing:0;line-height:1.25;
+ color:#aaa;white-space:nowrap;transform:none!important;
+}
+.choice-word--unavailable{opacity:.42;color:#777!important}
+.choice-word--static,.choice-word--static span,.choice-word--static::after{
+ animation:none!important;opacity:1;filter:none!important;
+}
+/* Replace large irregular card frame with a readable typographic overlay.
+   The abstract object artwork is intentionally very large and out of focus. */
+.choice-inspect{grid-template-columns:minmax(0,54%) minmax(0,46%);padding:5px 2px 1px}
+.choice-inspect__left{padding:2px;gap:0}
+.action-object-panel{
+ width:min(100%,250px);height:100%;min-height:0;position:relative;
+ display:flex;flex-direction:column;align-items:stretch;justify-content:stretch;
+ isolation:isolate;overflow:hidden;background:transparent;color:#eee;
+ animation:action-object-in .34s ease both;
+}
+@keyframes action-object-in{from{opacity:0;translate:0 7px}to{opacity:1;translate:0 0}}
+.action-object-panel__art{
+ position:absolute;inset:-8% -5%;width:110%;height:116%;
+ object-fit:contain;transform:rotate(-7deg) scale(1.11);
+ color:#8d8d8d;opacity:.39;filter:blur(1.75px) grayscale(1);
+ z-index:-2;pointer-events:none;
+}
+.action-object-panel::before{
+ content:"";position:absolute;inset:0;z-index:-1;
+ background:linear-gradient(180deg,#0008 0%,#000a 32%,#000b 66%,#000f 100%);
+ pointer-events:none;
+}
+.action-object-panel__foreground{
+ flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:5px;
+ position:relative;padding:8px 9px 10px;overflow:hidden;
+ color:#f0f0f0;text-shadow:0 2px 3px #000,0 0 9px #000;
+}
+.action-object-panel__index{font:700 9px Inter,sans-serif;color:#aaa;letter-spacing:.1em}
+.action-object-panel h3{
+ font-weight:900;font-size:clamp(15px,4vw,20px);
+ line-height:1.25;letter-spacing:-.04em;text-shadow:0 2px 4px #000;
+}
+.action-object-panel__text-scroll{
+ flex:1 1 auto;min-height:0;overflow-y:auto;
+ overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#777 #171717;
+ padding-right:4px;
+}
+.action-object-panel__text-scroll p{
+ display:block;line-height:1.5;font-size:clamp(10px,2.6vw,12px);
+ color:#ededed;margin:0 0 6px;white-space:normal;overflow-wrap:anywhere;
+ -webkit-line-clamp:unset;
+}
+.action-object-panel__text-scroll p.action-object-panel__detail{color:#c2c2c2}
+.action-object-panel__stats{
+ flex:0 0 auto;display:flex;flex-direction:column;gap:3px;
+ padding-top:5px;border-top:1px solid #6d6d6d;
+ font-size:clamp(9px,2.4vw,11px);line-height:1.35;color:#dadada;
+}
+.action-object-panel__stats strong{font:700 clamp(18px,5vw,26px) Inter,sans-serif;color:#fff}
+.action-object-panel__stats strong small{font-size:10px;font-weight:500;color:#bbb}
+.action-object-panel__stats span{white-space:normal}
+.choice-inspect__right{gap:clamp(5px,2dvh,14px);padding:8px 0 27px}
+.choice-inspect__skill--prominent{
+ width:min(100%,172px);height:auto;min-height:46px;flex:none;
+ display:flex;align-items:center;justify-content:center;gap:6px;
+ border:1px solid #a0a0a0!important;background:#252525!important;color:#fff!important;
+ padding:6px 5px;white-space:normal;
+ position:relative;text-align:left;
+}
+.choice-inspect__skill--prominent>span{display:flex;flex-direction:column;gap:2px;line-height:1.3;font-size:11px;font-weight:800}
+.choice-inspect__skill--prominent small{font-size:9px;color:#ccc;font-weight:500}
+.choice-inspect__skill--prominent.skill-attach--glow{
+ animation:skill-attention-v08 2.4s ease-in-out infinite!important;
+}
+@keyframes skill-attention-v08{
+ 0%,100%{box-shadow:0 0 0 0 #dddddd1c,0 0 0 #ffffff14!important;background:#151515!important}
+ 50%{box-shadow:0 0 0 2px #ffffff80,0 0 22px #ffffff60!important;background:#353535!important}
+}
+.choice-inspect__text-button{font-size:clamp(14px,3.4vw,20px)}
+.choice-inspect__text-button--execute{font-size:clamp(18px,4.6vw,27px)}
+.choice-inspect__text-button:disabled{opacity:.5;cursor:wait}
+.choice-ecg{height:40px;bottom:1px;opacity:.72}
+/* Important notices: central, nearly square, never a stream of routine toasts. */
+.critical-notice-layer{
+ position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+ z-index:130;background:rgba(0,0,0,.68);padding:16px;
+}
+.critical-notice{
+ width:min(85vw,260px);aspect-ratio:1/1;max-height:min(80dvh,300px);
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+ border:1px solid #bbb;background:#020202;color:#f5f5f5;
+ padding:20px;position:relative;text-align:center;overflow:hidden;
+ box-shadow:0 0 0 6px #0008,0 25px 65px #000;
+ animation:critical-in .35s ease both;
+}
+.critical-notice--danger{border-color:#d33;animation:critical-in .35s ease both,critical-shudder .42s .28s}
+.critical-notice__icon{color:#f2f2f2}
+.critical-notice--danger .critical-notice__icon,.critical-notice__danger{color:#fb5050}
+.critical-notice>strong{font-size:19px;letter-spacing:.07em}
+.critical-notice>p{font-size:11px;line-height:1.65;color:#bbb;overflow-y:auto;max-height:42%;white-space:normal}
+.critical-notice>button{display:inline-flex;align-items:center;gap:4px;background:none;border:0;color:#ddd;font-size:11px;padding:4px}
+.critical-notice__danger{position:absolute;top:9px;right:9px}
+@keyframes critical-in{from{opacity:0;scale:.86;filter:blur(4px)}to{opacity:1;scale:1;filter:none}}
+@keyframes critical-shudder{0%,100%{translate:0}20%,60%{translate:-6px 2px}40%,80%{translate:5px -1px}}
+/* Skill confirmation is optional and persists only when the player explicitly opts out. */
+.skill-confirm-overlay{
+ position:fixed;inset:0;z-index:125;background:#000c;
+ display:grid;place-items:center;padding:16px;
+}
+.skill-confirm-dialog{
+ width:min(100%,365px);border:1px solid #9a9a9a;background:#060606;
+ color:#eaeaea;padding:19px;display:flex;align-items:center;flex-direction:column;gap:12px;
+ text-align:center;box-shadow:0 20px 55px #000;
+}
+.skill-confirm-dialog h3{font-size:17px}
+.skill-confirm-dialog p{font-size:12px;line-height:1.65;color:#c0c0c0}
+.skill-confirm-dialog__check{align-self:start;display:flex;align-items:center;gap:8px;font-size:12px;color:#ddd}
+.skill-confirm-dialog__check input{accent-color:#aaa;width:16px;height:16px}
+.skill-confirm-dialog__actions{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.skill-confirm-dialog__actions button{padding:9px 6px;border:1px solid #666;background:#151515;color:#fff;font-weight:700;font-size:11px}
+.skill-confirm-dialog__actions button:first-child{background:#dedede;color:#111}
+/* Enemy presence, expressive model and hit reaction. */
+.chapter-live .enemy-hud{
+ height:50px;min-height:50px;flex:0 0 50px;
+ border:1px solid #aaa!important;background:#090909!important;padding:7px 10px;gap:5px;
+}
+.enemy-hud__top{font-size:12px!important;color:#eee}
+.enemy-hud__top strong{font:900 15px Inter,sans-serif!important;color:#fff!important}
+.enemy-hud__track{height:10px!important;border-color:#7b7b7b!important;background:#151515!important}
+.enemy-hud__track i{background:linear-gradient(90deg,#9a292d,#e86b70)!important}
+.chapter-live .scene-art--combat{height:clamp(130px,24dvh,185px)!important;flex-basis:clamp(130px,24dvh,185px)!important}
+.scene-art--combat .scene-art__person--shadow{opacity:.14}
+.enemy-presence{position:absolute;right:13%;top:0;width:37%;height:90%;z-index:7;pointer-events:none}
+.enemy-presence__model{position:relative;height:100%;display:grid;place-items:center;transform-origin:50% 75%;filter:drop-shadow(0 5px 8px #000)}
+.enemy-presence__model svg{width:100%;height:100%;overflow:visible}
+.enemy-presence__model--struck{animation:enemy-impact .65s ease both}
+.enemy-presence__wound{filter:drop-shadow(0 0 3px #dd1111)}
+.enemy-presence__damage{
+ position:absolute;left:45%;top:24%;color:#ff5151;font:900 24px Inter,sans-serif;
+ text-shadow:0 1px 1px #000,0 0 9px #000;
+ animation:enemy-damage .9s ease-out both;
+}
+@keyframes enemy-impact{
+ 0%,100%{transform:none;filter:drop-shadow(0 5px 8px #000)}
+ 10%{transform:translate(-9px,2px) rotate(-6deg);filter:brightness(1.9)}
+ 25%{transform:translate(10px,-2px) rotate(7deg)}
+ 40%{transform:translate(-6px,2px) rotate(-4deg)}
+ 60%{transform:translate(2px,0) rotate(1deg)}
+}
+@keyframes enemy-damage{0%{opacity:0;transform:translateY(8px) scale(.7)}30%{opacity:1;transform:translateY(-7px) scale(1.1)}100%{opacity:0;transform:translateY(-29px) scale(.9)}}
+.combat-projectile{
+ position:fixed;z-index:120;pointer-events:none;width:64px;height:86px;
+ transform:translate(-50%,-50%);color:#e0e0e0;
+ animation:weapon-flight .51s cubic-bezier(.15,.45,.55,1) forwards;
+ filter:drop-shadow(0 0 6px #fff7) drop-shadow(0 6px 8px #000);
+}
+.combat-projectile__object{width:100%;height:100%;object-fit:contain}
+@keyframes weapon-flight{
+ 0%{opacity:0;transform:translate(-50%,-50%) rotate(-25deg) scale(.65)}
+ 12%{opacity:1}
+ 84%{opacity:1}
+ 100%{opacity:.75;transform:translate(calc(-50% + var(--attack-dx)),calc(-50% + var(--attack-dy))) rotate(140deg) scale(.98)}
+}
+/* Keep the single-height viewport on short phones. */
+@media(max-height:710px){
+ .chapter-live .enemy-hud{height:38px;min-height:38px;flex-basis:38px;padding:4px 7px}
+ .chapter-live .scene-art--combat{height:clamp(90px,20dvh,135px)!important;flex-basis:clamp(90px,20dvh,135px)!important}
+ .action-object-panel__foreground{padding:4px 7px 6px;gap:3px}
+ .action-object-panel h3{font-size:14px}
+ .action-object-panel__text-scroll p{font-size:9px;line-height:1.35}
+ .action-object-panel__stats{font-size:9px;gap:1px}
+ .action-object-panel__stats strong{font-size:18px}
+ .choice-inspect__skill--prominent{min-height:35px;padding:4px 2px}
+ .choice-inspect__right{gap:4px;padding-bottom:14px}
+ .choice-ecg{height:28px}
+}
+@media(max-width:365px){
+ .choice-inspect{grid-template-columns:minmax(0,55%) minmax(0,45%)}
+ .choice-word__chance{font-size:11px}
+ .choice-word__note{font-size:8px}
+ .choice-inspect__skill--prominent>span{font-size:10px}
+ .enemy-hud__top strong{font-size:13px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .critical-notice,.critical-notice--danger,.enemy-presence__model--struck,.enemy-presence__damage,
+ .combat-projectile,.action-object-panel,.choice-inspect__skill--prominent.skill-attach--glow{animation:none!important}
+ .combat-projectile{display:none}
+}

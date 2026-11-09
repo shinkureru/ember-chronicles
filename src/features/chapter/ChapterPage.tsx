@@ -77,7 +77,7 @@ export default function ChapterPage(){
   if(pendingOrigin&&current)performUse(pendingOrigin,current,skillId);
   setPendingOrigin(null);
  };
- useEffect(()=>{if(showStory||showHand||showSettings||showRetreat)return;const timer=window.setInterval(()=>setThoughtPage(p=>(p+1)%ambientLines.length),5500);return()=>window.clearInterval(timer);},[s.sceneId,s.attempt,ambientLines.length,showStory,showHand,showSettings,showRetreat]);
+ useEffect(()=>{if(showStory||showHand||showSettings||showRetreat||skillPrompt)return;const timer=window.setInterval(()=>setThoughtPage(p=>(p+1)%ambientLines.length),5500);return()=>window.clearInterval(timer);},[s.sceneId,s.attempt,ambientLines.length,showStory,showHand,showSettings,showRetreat,skillPrompt]);
  if(!s.profession)return <div className="page-stack"><section className="surface-card"><h2>先選擇你的職業</h2><p>到第一章地圖完成角色建立後，即可開始調查。</p><NavLink to="/" className="primary-button">前往地圖 <ArrowRight size={16}/></NavLink></section></div>;
  if(s.mode==='result'){
    const success=s.outcome==='victory';

@@ -14,17 +14,22 @@ export const majorStateChanges=(previous:GameState,current:GameState):Notice[]=>
  const result:Notice[]=[];
  const add=(title:string,detail:string,kind:Notice['kind']='major')=>
   result.push({id:++nextId,title,detail,kind});
- if(previous.mode!==current.mode&&current.mode==='result')
+ const ended=previous.mode!==current.mode&&current.mode==='result';
+ if(ended){
+  const extra=current.chapterProgress.unlocked>previous.chapterProgress.unlocked?
+    ` 第 ${current.chapterProgress.unlocked} 關已解鎖。`:'';
   add(current.outcome==='victory'?'任務完成':current.outcome==='defeat'?'戰敗':'已撤退',
-    current.lastEvent??'這次事件已經結束。',current.outcome==='defeat'?'danger':'major');
+    (current.lastEvent??'這次事件已經結束。')+extra,current.outcome==='defeat'?'danger':'major');
+ }
  const lost=previous.player.health-current.player.health;
- if(lost>=15||previous.player.health>20&&current.player.health<=20)
+ // Result screens already present serious injuries and gained clues; do not stack several modals.
+ if(!ended&&(lost>=15||previous.player.health>20&&current.player.health<=20))
   add('嚴重受傷',`生命 ${previous.player.health} → ${current.player.health}`, 'danger');
- if(previous.player.courage>=40&&current.player.courage<40)
+ if(!ended&&previous.player.courage>=40&&current.player.courage<40)
   add('膽量跌破臨界值','畏縮狀態已觸發；休息或完成勇氣事件可恢復。','danger');
- if(current.clues.length>previous.clues.length)
+ if(!ended&&current.clues.length>previous.clues.length)
   add('關鍵情報',current.clues[current.clues.length-1]??'取得了新的線索。');
- if(current.chapterProgress.unlocked>previous.chapterProgress.unlocked)
+ if(!ended&&current.chapterProgress.unlocked>previous.chapterProgress.unlocked)
   add('新關卡解鎖',`第 ${current.chapterProgress.unlocked} 關現已開放。`);
  for(const [id,data] of Object.entries(current.ownedCards)){
   const card=CARDS[id]??ATTACK_CARDS[id],old=previous.ownedCards[id];

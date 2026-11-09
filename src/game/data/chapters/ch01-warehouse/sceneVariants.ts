@@ -63,6 +63,8 @@ export const getSceneVariation=(state:GameState):ActionChoice[]=>{
     const rot=(attempt+1)%base.length;
     return [base[3]!,base[rot]!,base[(rot+1)%3]!,chosen].filter((c,i,a)=>a.findIndex(x=>x.id===c.id)===i);
   }
+  if(state.sceneId==='confrontation')return [base[0]!,base[1+(attempt%2)]!,chosen];
+  if(state.sceneId==='gate')return [base[1]!,base[attempt%2===0?0:2]!,chosen];
   const start=attempt%base.length;
   return [base[start]!,base[(start+1)%base.length]!,chosen];
 };

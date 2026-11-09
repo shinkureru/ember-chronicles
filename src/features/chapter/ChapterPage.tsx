@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, BookOpenText, Search, Settings2, ShieldAlert, Sparkles, X } from 'lucide-react';
+import { ArrowRight, BookOpenText, Layers3, Search, Settings2, ShieldAlert, Sparkles, X } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useGame } from '../../app/GameContext';
 import Hud from '../../components/Hud';

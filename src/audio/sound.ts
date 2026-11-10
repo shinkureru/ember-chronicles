@@ -1,6 +1,6 @@
 /**
  * Ember Chronicles v0.5 original procedural score and foley.
- * No third-party music, performance or sound effects are bundled.
+ * CC0 recorded foley samples by Kenney supplement the original procedural score.
  * AudioContext requires a user gesture on mobile browsers.
  */
 import { SOUNDSCAPES, type SoundscapeId } from './soundscapes';
@@ -8,6 +8,53 @@ import { SOUNDSCAPES, type SoundscapeId } from './soundscapes';
 export type SoundCue='tap'|'select'|'confirm'|'locked'|'open'|'loot'|'reward'|'card'|
   'warning'|'injury'|'impact'|'breath'|'footsteps'|'retreat'|'defeat'|'victory'|
   'runFast'|'sneakStep'|'searchCloth'|'searchPaper'|'searchTools'|'dialogue'|'inspect';
+
+/** Kenney RPG Audio 1.0, Creative Commons CC0 1.0.
+ * Recorded source provenance: docs/AUDIO_LICENSES.md. URLs are local Vite public assets. */
+const RECORDED_FOLEY:Partial<Record<SoundCue,readonly string[]>>={
+ footsteps:['footstep_0','footstep_2'],
+ runFast:['footstep_0','footstep_2','footstep_4'],
+ sneakStep:['footstep_4','footstep_2'],
+ searchCloth:['cloth_1','cloth_2'],
+ searchPaper:['book_flip_1','book_open'],
+ searchTools:['metal_latch','metal_click'],
+ loot:['handle_small_leather'],
+ card:['book_flip_1'],
+ open:['door_open_1'],
+};
+const FOLEY_ASSETS=[...new Set(Object.values(RECORDED_FOLEY).flat())] as string[];
+const recordedBuffers=new Map<string,AudioBuffer>();
+const loadingBuffers=new Set<string>();
+function queueFoley(ctx:AudioContext,id:string){
+ if(recordedBuffers.has(id)||loadingBuffers.has(id))return;
+ loadingBuffers.add(id);
+ const url=`${import.meta.env.BASE_URL}audio/kenney-rpg/${id}.ogg`;
+ void fetch(url).then(response=>{
+  if(!response.ok)throw Error('Unable to load '+url);
+  return response.arrayBuffer();
+ }).then(buffer=>ctx.decodeAudioData(buffer)).then(buffer=>recordedBuffers.set(id,buffer))
+  .catch(()=>{/* Synthesized SFX stays available when offline. */})
+  .finally(()=>loadingBuffers.delete(id));
+}
+function playRecordedFoley(ctx:AudioContext,cue:SoundCue){
+ const ids=RECORDED_FOLEY[cue];
+ if(!ids?.length||!effectsGain)return false;
+ const ready=ids.every(id=>recordedBuffers.has(id));
+ if(!ready){ids.forEach(id=>queueFoley(ctx,id));return false;}
+ const steps=cue==='runFast'?7:cue==='footsteps'?2:cue==='sneakStep'?3:
+  cue==='searchCloth'?3:cue==='searchPaper'?2:1;
+ const gap=cue==='runFast'?.115:cue==='footsteps'?.23:cue==='sneakStep'?.37:cue==='searchCloth'?.19:cue==='searchPaper'?.18:0;
+ for(let i=0;i<steps;i++){
+  const buffer=recordedBuffers.get(ids[i%ids.length]!);
+  if(!buffer)continue;
+  const src=ctx.createBufferSource(),gain=ctx.createGain();
+  src.buffer=buffer;src.playbackRate.value=.96+Math.random()*.09;
+  gain.gain.value=cue==='runFast'?.49:cue==='sneakStep'?.25:.47;
+  src.connect(gain);gain.connect(effectsGain);
+  src.start(ctx.currentTime+i*gap);
+ }
+ return true;
+}
 export interface AudioSettings { muted:boolean;master:number;music:number;ambience:number;effects:number; }
 const KEY='ember-audio-v03'; // Keep previously saved player settings.
 const defaults:AudioSettings={muted:false,master:.95,music:.55,ambience:.55,effects:1};
@@ -94,6 +141,7 @@ export const playCue=(cue:SoundCue)=>{
   const now=typeof performance!=='undefined'?performance.now():Date.now();
   if(cue==='tap'&&now-lastTap<70)return;
   if(cue==='tap')lastTap=now;
+  if(playRecordedFoley(ctx,cue))return;
   switch(cue){
     case 'tap':noise(ctx,.035,.34,1900,{highpass:true});note(ctx,540,.045,.19,{type:'triangle'});break;
     case 'select':note(ctx,350,.10,.30,{type:'triangle'});note(ctx,440,.11,.20,{delay:.065});break;
@@ -184,6 +232,6 @@ export const setAudioScene=(id:SoundscapeId)=>{desiredScene=id;if(context?.state
 export const unlockAudio=()=>{
   if(config.muted)return;
   const ctx=createContext();if(!ctx)return;
-  void ctx.resume().then(()=>startScene()).catch(()=>{/* Autoplay restriction */});
+  void ctx.resume().then(()=>{FOLEY_ASSETS.forEach(id=>queueFoley(ctx,id));startScene();}).catch(()=>{/* Autoplay restriction */});
 };
 export const disposeAudio=()=>{stopScene();if(context)void context.close();context=null;musicGain=null;ambienceGain=null;effectsGain=null;};

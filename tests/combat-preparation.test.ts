@@ -5,6 +5,14 @@ import { loadGame } from '../src/game/state/storage';
 import { getVisibleActions, calculateActionPreview } from '../src/game/engine/rules';
 import { ATTACK_CARDS, STARTER_ATTACK_CARDS, getAttackDamage, MAX_ATTACK_DECK } from '../src/game/data/attacks';
 
+const finishEnemyTurn=(start:ReturnType<typeof makeInitialState>)=>{
+ if(!start.enemyCounter)return start;
+ let s=gameReducer(start,{type:'ENEMY_COUNTER_WINDUP'});
+ s=gameReducer(s,{type:'ENEMY_COUNTER_THROW'});
+ s=gameReducer(s,{type:'ENEMY_COUNTER_HIT'});
+ return s.mode==='adventure'?gameReducer(s,{type:'ENEMY_COUNTER_FINISH'}):s;
+};
+
 describe('v0.7 attack preparation and weapon-backed combat',()=>{
   it('automatically transfers the required weapon from the warehouse on selection',()=>{
     const before=makeInitialState('journalist');
@@ -73,10 +81,11 @@ describe('v0.7 attack preparation and weapon-backed combat',()=>{
     const first=gameReducer(s,{type:'CHOOSE',choiceId:'attack_pen_thrust',skillId:null});
     expect(first.enemy.health).toBe(s.enemy.maxHealth-expectedDamage);
     expect(first.sceneId).toBe('confrontation');
-    s=first;
+    s=finishEnemyTurn(first);
     for(let i=0;i<12&&s.mode==='adventure'&&s.sceneId==='confrontation';i++){
       s.rngSeed=0;
       s=gameReducer(s,{type:'CHOOSE',choiceId:'attack_pen_thrust',skillId:null});
+      s=finishEnemyTurn(s);
     }
     expect(s.enemy.health).toBe(0);
     expect(s.sceneId).toBe('loot');
@@ -89,8 +98,11 @@ describe('v0.7 attack preparation and weapon-backed combat',()=>{
     const health=s.player.health;
     const after=gameReducer(s,{type:'CHOOSE',choiceId:'attack_pen_thrust',skillId:null});
     expect(after.enemy.health).toBe(s.enemy.health);
-    expect(after.player.health).toBeLessThan(health);
-    expect(after.bag.pen).toBe(1);
+    expect(after.player.health).toBe(health);
+    expect(after.enemyCounter?.phase).toBe('waiting');
+    const impacted=gameReducer(gameReducer(gameReducer(after,{type:'ENEMY_COUNTER_WINDUP'}),{type:'ENEMY_COUNTER_THROW'}),{type:'ENEMY_COUNTER_HIT'});
+    expect(impacted.player.health).toBeLessThan(health);
+    expect(impacted.bag.pen).toBe(1);
   });
   it('preserves selected loadout weapons when returning to town',()=>{
     let s=makeInitialState('journalist');

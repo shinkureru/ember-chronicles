@@ -1,20 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Archive, Clock3, Landmark, Layers3, LockKeyhole, MapPinned, Play, Skull, Store, UserRound, Settings2, Swords } from 'lucide-react';
+import { ArrowDown, ArrowLeft, ArrowRight, Archive, Landmark, Layers3, LockKeyhole, MapPinned, Skull, Store, UserRound } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useGame } from '../../app/GameContext';
 import { CHAPTER_ONE } from '../../game/data/maps/ch01';
-import { worldClock, worldPhase } from '../../game/engine/rules';
+import { worldClock, worldPhase, worldPhaseToken } from '../../game/engine/rules';
 import { playCue } from '../../audio/sound';
 
 const connections = CHAPTER_ONE.stages.map(s=>`${s.x},${s.y}`).join(' ');
 const HUB_ACTIONS=[
-  {label:'事前準備',Icon:Swords,to:'/preparation'},
   {label:'城鎮',Icon:Landmark,to:'/town'},
   {label:'黑市',Icon:Store,to:'/black-market'},
   {label:'倉庫',Icon:Archive,to:'/warehouse'},
   {label:'人物',Icon:UserRound,to:'/character'},
   {label:'牌組',Icon:Layers3,to:'/cards'},
-  {label:'設定',Icon:Settings2,to:'/settings'},
 ];
 
 export default function ChapterMapPage(){
@@ -22,6 +20,7 @@ export default function ChapterMapPage(){
   const map=useRef<HTMLDivElement|null>(null);
   const drag=useRef({active:false,startX:0,scrollStart:0});
   const [selected,setSelected]=useState(1);
+  const [stageNotice,setStageNotice]=useState('');
   const [position,setPosition]=useState(0);
   const [mapScale,setMapScale]=useState(.7);
   useEffect(()=>{
@@ -33,18 +32,21 @@ export default function ChapterMapPage(){
     observer.observe(map.current);
     return()=>observer.disconnect();
   },[]);
-  const stage=CHAPTER_ONE.stages.find(point=>point.sequence===selected)!;
-  const unlocked=selected<=s.chapterProgress.unlocked;
-  const cleared=s.chapterProgress.completed.includes(selected);
-  const playable=stage.implementation==='playable';
-  const handleStart=()=>{
-    if(!unlocked||!playable)return;
-    playCue('confirm');
-    if(s.mode==='home')navigate('/preparation');
-    else navigate('/chapter');
+  const nextStage=Math.min(12,s.chapterProgress.unlocked);
+  const visitNode=(sequence:number,implementation:string)=>{
+    setSelected(sequence);
+    if(sequence>s.chapterProgress.unlocked)return;
+    if(implementation==='playable'){
+      setStageNotice('');
+      playCue('confirm');
+      navigate(s.mode==='home'?'/preparation':'/chapter');
+      return;
+    }
+    playCue('locked');
+    setStageNotice(`第 ${sequence} 關尚在製作中。請先從已完成的關卡繼續挑戰。`);
   };
   const pan=(delta:number)=>map.current?.scrollBy({left:delta,behavior:'smooth'});
-  return <div className="world-map-page page-stack">
+  return <div className={`world-map-page page-stack phase--${worldPhaseToken(s.world.minute)}`}>
     <section className="map-intro">
       <div className="map-intro__meta"><span>WORLD MAP / CHAPTER 01</span><span>第 {s.world.day} 日 · {worldPhase(s.world.minute)} {worldClock(s.world.minute)}</span></div>
       <div className="map-intro__heading"><div><h1>灰燼封鎖區</h1><p>THE ASHEN QUARTER</p></div><span className="map-intro__number">01</span></div>
@@ -83,8 +85,9 @@ export default function ChapterMapPage(){
           <span className="map-district map-district--two">NO SIGNAL / ZONE 02</span>
           <span className="map-district map-district--three">MILITARY CONTROL</span>
           {CHAPTER_ONE.stages.map(node=>{
-            const isLocked=node.sequence>s.chapterProgress.unlocked;const isSelected=selected===node.sequence;const isCleared=s.chapterProgress.completed.includes(node.sequence);
-            return <button key={node.id} disabled={isLocked} title={isLocked?'完成前一關後解鎖':node.subtitle} className={`map-point ${isLocked?'map-point--locked':''} ${isSelected?'map-point--selected':''} ${isCleared?'map-point--cleared':''} ${node.kind==='boss'?'map-point--boss':''}`} style={{left:node.x,top:node.y}} type="button" onClick={()=>{setSelected(node.sequence);playCue(isLocked?'locked':'select')}} aria-label={`第${node.sequence}關 ${node.name}，${isLocked?'未解鎖':isCleared?'已通關':'已解鎖'}`}>
+            const isLocked=node.sequence>s.chapterProgress.unlocked;const isSelected=selected===node.sequence;const isCleared=s.chapterProgress.completed.includes(node.sequence);const isNext=node.sequence===nextStage&&!isCleared;
+            return <button key={node.id} disabled={isLocked} title={isLocked?'完成前一關後解鎖':node.subtitle} className={`map-point ${isLocked?'map-point--locked':''} ${isSelected?'map-point--selected':''} ${isCleared?'map-point--cleared':''} ${isNext?'map-point--next':''} ${node.kind==='boss'?'map-point--boss':''}`} style={{left:node.x,top:node.y}} type="button" onClick={()=>visitNode(node.sequence,node.implementation)} aria-label={`第${node.sequence}關 ${node.name}，${isLocked?'未解鎖':isCleared?'已通關':'已解鎖'}`}>
+              {isNext&&<span className="map-point__next-indicator" aria-hidden="true"><ArrowDown size={21}/><span>下一關</span></span>}
               <span className="map-point__marker">{isLocked?<LockKeyhole size={16}/>:node.kind==='boss'?<Skull size={18}/>:<span>{String(node.sequence).padStart(2,'0')}</span>}</span>
               <span className="map-point__label">{node.name}</span>
             </button>;
@@ -94,10 +97,6 @@ export default function ChapterMapPage(){
       <div className="map-scroll-hint"><span>← 拖曳或左右捲動地圖 →</span><span>{position>750?'東區 / 城門':position>250?'中央工業區':'舊城南區'}</span></div>
     </section>
 
-    <section className="map-stage-detail" aria-live="polite">
-      <div className="map-stage-detail__meta"><span>MISSION {String(stage.sequence).padStart(2,'0')} / 12</span><span>{cleared?'已通關':!unlocked?'未解鎖':!playable?'製作中':'可進入'}</span></div>
-      <h2>{stage.name}</h2><p>{stage.subtitle}</p>
-      <div className="map-stage-detail__action-slot">{unlocked ? playable ? <button type="button" className="primary-button primary-button--full" onClick={handleStart}><Play size={16}/>{s.mode==='adventure'?'繼續調查':s.mode==='result'?'查看上次結果':cleared?'準備再次挑戰':'事前準備並進關'}<ArrowRight size={17}/></button> : <div className="map-stage-detail__notice"><Clock3 size={15}/> 已依序解鎖；本關尚未加入原型，後續會實作。</div> : <div className="map-stage-detail__notice"><LockKeyhole size={15}/> 需要先通過第 {stage.sequence-1} 關，才能解鎖本關。</div>}</div>
-    </section>
+    {stageNotice&&<div className="map-stage-hint" role="status">{stageNotice}<button onClick={()=>setStageNotice('')} aria-label="關閉關卡提示">×</button></div>}
   </div>;
 }

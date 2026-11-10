@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Archive, Backpack, Box, Heart, ArrowDownToLine, ArrowUpFromLine, ShieldCheck, X, Info } from 'lucide-react';
+import { Archive, Backpack, Box, Heart, PackagePlus, PackageOpen, ShieldCheck, X, Info } from 'lucide-react';
 import { useGame } from '../../app/GameContext';
 import { ITEMS } from '../../game/data/items';
 import { bagWeight } from '../../game/engine/rules';
@@ -61,7 +61,7 @@ export default function WarehousePage(){
       <button type="button" className="warehouse-v11__move" disabled={disabled} onClick={()=>move(id)}
        title={where==='bag'?'存入倉庫':'領出至背包'}
        aria-label={where==='bag'?`將${item.name}存入倉庫`:`將${item.name}領到背包`}>
-       {where==='bag'?<ArrowDownToLine size={17}/>:<ArrowUpFromLine size={17}/>}
+       {where==='bag'?<PackagePlus size={17}/>:<PackageOpen size={17}/>}
       </button>
      </div>;
     })}
@@ -77,7 +77,7 @@ export default function WarehousePage(){
     {moveReason&&<p className="warehouse-v11__warning">{moveReason}</p>}
     <div className="warehouse-v11__actions">
      <button type="button" disabled={moveBlocked} onClick={()=>move(selected.id)}>
-      {where==='bag'?<ArrowDownToLine size={17}/>:<ArrowUpFromLine size={17}/>} {where==='bag'?'存入倉庫 ×1':'領出至背包 ×1'}
+      {where==='bag'?<PackagePlus size={17}/>:<PackageOpen size={17}/>} {where==='bag'?'存入倉庫 ×1':'領出至背包 ×1'}
      </button>
      <button type="button" disabled={equipped} onClick={()=>{dispatch({type:'PROTECT_ITEM',itemId:selected.id});playCue('select')}}>
       <ShieldCheck size={17}/>{protectedItem?'取消常用標記':'標為常用物品'}

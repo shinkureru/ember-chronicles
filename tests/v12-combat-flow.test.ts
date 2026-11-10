@@ -21,11 +21,20 @@ describe('v1.2 — enemy has a distinct offensive turn',()=>{
   const s=prepare(),after=gameReducer(s,{type:'CHOOSE',choiceId:'attack_pen_thrust',skillId:null});
   expect(after.sceneId).toBe('confrontation');
   expect(after.enemy.health).toBe(s.enemy.health-getAttackDamage(s,'pen_thrust'));
-  expect(after.enemyStrike).not.toBeNull();
-  expect(['radio','flashlight','keyring']).toContain(after.enemyStrike?.itemId);
-  expect(after.enemyStrike?.id).toBeGreaterThan(0);
-  expect(after.player.health).toBeLessThanOrEqual(s.player.health);
-  expect(after.bag.pen).toBe(s.bag.pen);
+  expect(after.enemyCounter?.phase).toBe('waiting');
+  expect(after.enemyStrike).toBeNull();
+  expect(['radio','flashlight','keyring']).toContain(after.enemyCounter?.itemId);
+  expect(after.enemyCounter?.id).toBeGreaterThan(0);
+  expect(after.player.health).toBe(s.player.health);
+  const windup=gameReducer(after,{type:'ENEMY_COUNTER_WINDUP'});
+  expect(windup.enemyCounter?.phase).toBe('windup');
+  const throwState=gameReducer(windup,{type:'ENEMY_COUNTER_THROW'});
+  expect(throwState.enemyStrike?.itemId).toBe(windup.enemyCounter?.itemId);
+  const hitState=gameReducer(throwState,{type:'ENEMY_COUNTER_HIT'});
+  expect(hitState.player.health).toBeLessThanOrEqual(s.player.health);
+  expect(hitState.bag.pen).toBe(s.bag.pen);
+  const finished=gameReducer(hitState,{type:'ENEMY_COUNTER_FINISH'});
+  expect(finished.enemyCounter).toBeNull();
  });
  it('enemy never retaliates after lethal damage and loot remains unlocked',()=>{
   const s=prepare();
@@ -39,7 +48,7 @@ describe('v1.2 — enemy has a distinct offensive turn',()=>{
  it('the guard cannot throw persistent items already taken by the player',()=>{
   const s=prepare();s.npc.stolenGear=['radio','flashlight'];
   const after=gameReducer(s,{type:'CHOOSE',choiceId:'attack_pen_thrust',skillId:null});
-  expect(after.enemyStrike?.itemId).toBe('keyring');
+  expect(after.enemyCounter?.itemId).toBe('keyring');
  });
  it('can finish and return home without losing loot or progress',()=>{
   let s=prepare();s.sceneId='loot';s.bag.keyring=2;

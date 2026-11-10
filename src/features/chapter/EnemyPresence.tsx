@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 /** Always visible above the combat scene, with a hit response driven by committed HP. */
-export default function EnemyPresence({health,maxHealth,name}:{health:number;maxHealth:number;name:string}){
+export default function EnemyPresence({health,maxHealth,name,windup=false}:{health:number;maxHealth:number;name:string;windup?:boolean}){
  const previous=useRef(health);
  const [impact,setImpact]=useState<{id:number;damage:number}|null>(null);
  useEffect(()=>{
@@ -13,7 +13,7 @@ export default function EnemyPresence({health,maxHealth,name}:{health:number;max
  },[health]);
  const injured=health<maxHealth;
  return <div className="enemy-presence" aria-label={`${name}，生命值 ${health}/${maxHealth}`}>
-   <div className={`enemy-presence__model ${impact?'enemy-presence__model--struck':''} ${health<=0?'enemy-presence__model--fallen':''}`} data-combat-target="true">
+   <div className={`enemy-presence__model ${impact?'enemy-presence__model--struck':''} ${windup?'enemy-presence__model--windup':''} ${health<=0?'enemy-presence__model--fallen':''}`} data-combat-target="true">
     <svg viewBox="0 0 220 310" aria-hidden="true" preserveAspectRatio="xMidYMax meet">
       <defs>
         <linearGradient id="enemyJacket" x1="0" x2="1"><stop offset="0" stopColor="#161616"/><stop offset=".45" stopColor="#484848"/><stop offset="1" stopColor="#101010"/></linearGradient>

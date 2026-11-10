@@ -1,0 +1,165 @@
+/* v1.3: time-driven black-market interaction, physical wall staging, battle impact and feedback */
+.market-v13 .market-v12__meeting .market-v12__person--merchant{left:7.5%;width:41%;bottom:-3%}
+.market-v13 .market-v12__meeting .market-v12__person--player{right:7.5%;width:41%;bottom:-3%}
+/* Reversed profiles face the OUTSIDE; backs and shoulders rest against the central partition. */
+.market-v13 .market-v12__person--merchant svg,
+.market-v13 .market-v12__person--player svg{
+ transform:scaleX(-1);transform-origin:50% 90%;
+}
+.market-v13 .market-v12__person--merchant svg{object-position:98% 100%}
+.market-v13 .market-v12__person--player svg{object-position:2% 100%}
+.market-v13 .market-v12__wall{border-inline-width:3px;box-shadow:-7px 0 18px #000b,7px 0 18px #000b,inset 0 0 15px #050505}
+/* Status displayed on a solid chip well below speech and completely clear of wall lines. */
+.market-v13__favor{
+ position:absolute;right:7px;bottom:3px;z-index:9;
+ display:flex;align-items:center;justify-content:center;gap:6px;
+ background:#07090def;color:#eaeaea;border:1px solid #71767b;border-radius:4px;
+ box-shadow:0 0 6px #000c;padding:5px 8px;
+ font:600 10px 'Noto Sans TC',sans-serif;white-space:nowrap;
+}
+.market-v13__favor strong{font:800 12px Inter,sans-serif;color:#eee}
+.market-v13__favor svg{color:#c4c4c4}
+.market-v13__filter-wrap{display:flex;flex-direction:column;gap:4px;z-index:3;flex:none}
+.market-v13__filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.market-v13__filters button,
+.market-v13__extra-filters button{
+ min-width:0;display:flex;align-items:center;justify-content:center;gap:3px;
+ padding:5px 2px;min-height:27px;font-size:clamp(10px,2.5vw,12px);
+ color:#e5e5e5;background:#1b1d20;border:1px solid #66676a;border-radius:2px;
+ white-space:nowrap;transition:background .15s,border-color .15s;
+}
+.market-v13__filters button.is-active,
+.market-v13__extra-filters button.is-active{
+ border-color:#e1e4e5;color:#080909;background:#d3d3d3;font-weight:800;
+}
+.market-v13__extra-filters{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.market-v13__extra-filters button{flex:1 0 16%;min-width:45px;font-size:10px;min-height:23px;padding:2px}
+.market-v13__waiting{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+ color:#aaa;z-index:2;text-align:center;padding:12px;
+}
+.market-v13__waiting svg{color:#d2d5d7;opacity:.85}
+.market-v13__waiting strong{font:900 clamp(13px,3vw,18px) 'Noto Serif TC',serif;color:#e0e0e0}
+.market-v13__waiting p{font-size:clamp(11px,2.5vw,13px);color:#9d9d9d;line-height:1.5}
+.market-v13 .market-v12__offers{align-content:flex-start}
+.market-v13 .market-v12__table{gap:5px}
+.market-v13 .market-v12__modes{height:43px}
+.market-v13 .market-v10__footer{font-size:10px}
+@media(max-height:700px){
+ .market-v13 .market-v12__modes{height:36px}
+ .market-v13__filters button{min-height:23px;padding:3px 1px;font-size:10px}
+ .market-v13__extra-filters button{min-height:21px}
+ .market-v13__favor{padding:3px 5px;font-size:9px}
+}
+@media(max-width:350px){
+ .market-v13__filters{gap:2px}
+ .market-v13__filters button{font-size:10px}
+ .market-v13__favor span{display:none}
+}
+
+/* Wide-but-brief response animations for combat: NPC bends/lurches before any thrown projectile. */
+.chapter-live .enemy-presence__model--windup{
+ transform-origin:50% 86%;animation:enemy-counter-windup-v13 .65s cubic-bezier(.21,.72,.31,1) both!important;
+}
+@keyframes enemy-counter-windup-v13{
+ 0%{transform:translateX(0) rotate(0) scale(1);filter:brightness(1)}
+ 18%{transform:translateX(11px) rotate(8deg) scale(1.03)}
+ 35%{transform:translateX(-16px) rotate(-13deg) scale(.97);filter:brightness(1.18)}
+ 51%{transform:translateX(19px) rotate(13deg) scale(1.06)}
+ 70%{transform:translateX(-12px) rotate(-9deg) scale(1)}
+ 87%{transform:translateY(-13px) rotate(6deg) scale(1.11)}
+ 100%{transform:translate(-2px,-5px) rotate(-7deg) scale(1.04);filter:brightness(1.3)}
+}
+.enemy-counter__status{
+ display:flex;align-items:center;justify-content:space-between;gap:10px;
+ font-size:clamp(10px,2.6vw,12px);line-height:1.2;color:#f5d6d6;
+ border-block:1px solid #704146;background:linear-gradient(90deg,#2b1114,#0b0b0c);
+ padding:5px 9px;min-height:24px;animation:counter-status-v13 1.4s ease-in-out infinite;
+}
+.enemy-counter__status small{font-size:9px;color:#c3b9b9;text-align:right;max-width:52%}
+@keyframes counter-status-v13{0%,100%{filter:brightness(.9)}50%{filter:brightness(1.16)}}
+.game-frame--damaged{animation:camera-shake-v13 .58s cubic-bezier(.26,.74,.4,.92) both}
+.game-frame--damaged::after{
+ content:"";position:absolute;z-index:240;inset:0;pointer-events:none;
+ background:radial-gradient(ellipse at center,transparent 28%,#971a2452 100%);
+ animation:camera-vignette-v13 .62s ease-out both;
+}
+@keyframes camera-shake-v13{
+ 0%,100%{transform:translate(0,0)}
+ 12%{transform:translate(-11px,6px) rotate(-.7deg)}
+ 25%{transform:translate(10px,-8px) rotate(.65deg)}
+ 38%{transform:translate(-8px,-4px) rotate(-.4deg)}
+ 51%{transform:translate(8px,6px) rotate(.4deg)}
+ 67%{transform:translate(-5px,2px) rotate(-.22deg)}
+ 82%{transform:translate(3px,-2px)}
+}
+@keyframes camera-vignette-v13{0%{opacity:.95}100%{opacity:0}}
+
+/* Pickups: object begins in the center, arcs toward the open backpack and disappears inside it. */
+.pickup-flight{position:fixed;inset:0 auto 0 50%;width:min(100vw,468px);transform:translateX(-50%);z-index:155;pointer-events:none;overflow:hidden;isolation:isolate}
+.pickup-flight__glow{
+ position:absolute;top:48%;left:48%;width:155px;height:155px;border-radius:100%;
+ transform:translate(-50%,-50%);background:radial-gradient(circle,#e2e7e42d,transparent 70%);
+ animation:pickup-halo-v13 1.45s ease-out both;
+}
+.pickup-flight__bag{
+ position:absolute;right:5%;top:46%;transform:translate(0,-50%);
+ display:flex;align-items:center;justify-content:center;width:66px;height:85px;
+ color:#c8d8db;background:#131a20ed;border:1px solid #82929c;border-radius:16px 16px 18px 18px;
+ box-shadow:0 0 21px #b6ccd43b,0 6px 25px #000;
+ animation:pickup-bag-v13 1.85s ease both;
+}
+.pickup-flight__bag-opening{
+ position:absolute;top:-9px;width:52px;height:15px;
+ border:2px solid #b6babc;border-bottom:0;border-radius:50% 50% 0 0;
+ background:linear-gradient(#1f2731,#080e11);box-shadow:0 0 14px #cbd7d946;
+}
+.pickup-flight__bag>svg{position:relative;z-index:1}
+.pickup-flight__object{
+ position:absolute;top:48%;left:48%;width:70px;height:80px;
+ display:flex;align-items:center;justify-content:center;flex-direction:column;
+ color:#f3f3f3;font-size:50px;line-height:1.1;
+ text-shadow:0 0 16px #fff5,0 9px 13px #000;
+ filter:drop-shadow(0 6px 8px #000);
+ animation:pickup-item-flight-v13 1.45s cubic-bezier(.18,.65,.25,1) both;
+}
+.pickup-flight__object small{font:900 16px Inter,sans-serif}
+.pickup-flight__title{
+ position:absolute;left:50%;top:calc(48% + 56px);
+ transform:translateX(-50%);width:max-content;max-width:88vw;overflow:hidden;
+ font:800 12px 'Noto Sans TC',sans-serif;color:#f6f6f6;text-shadow:0 2px 7px #000,0 0 10px #000;
+ animation:pickup-title-v13 1.5s ease both;
+}
+@keyframes pickup-bag-v13{
+ 0%,12%{opacity:0;transform:translate(20px,-50%) scale(.82)}
+ 25%{opacity:1;transform:translate(0,-50%) scale(1)}
+ 70%{opacity:1;transform:translate(0,-50%) scale(1)}
+ 79%{transform:translate(0,-50%) scale(1.1);box-shadow:0 0 27px #d7f5ff65}
+ 91%{opacity:1;transform:translate(0,-50%) scale(.97)}
+ 100%{opacity:0;transform:translate(30px,-50%) scale(.85)}
+}
+@keyframes pickup-item-flight-v13{
+ 0%{opacity:0;transform:translate(-50%,-25%) scale(.8)}
+ 12%{opacity:1;transform:translate(-50%,0) scale(1)}
+ 33%{opacity:1;transform:translate(3vw,-38px) scale(1.07)}
+ 59%{opacity:1;transform:translate(min(21vw,110px),-62px) scale(.7)}
+ 77%{opacity:1;transform:translate(min(36vw,185px),-21px) scale(.35)}
+ 94%,100%{opacity:0;transform:translate(min(40vw,200px),-8px) scale(.05)}
+}
+@keyframes pickup-halo-v13{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}20%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+@keyframes pickup-title-v13{0%{opacity:0;translate:0 10px}20%,53%{opacity:1;translate:0 0}100%{opacity:0;translate:0 -19px}}
+
+/* Brief route transitions without separate waiting screens. */
+.app-main:not(.app-main--mission){animation:quick-page-enter-v13 .23s cubic-bezier(.19,.75,.35,1) both;transform-origin:50% 35%}
+@keyframes quick-page-enter-v13{
+ from{opacity:0;transform:translateY(9px) scale(.985);filter:blur(2px)}
+ to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+@media(prefers-reduced-motion:reduce){
+ .chapter-live .enemy-presence__model--windup,
+ .enemy-counter__status,.game-frame--damaged,.game-frame--damaged::after,
+ .pickup-flight__glow,.pickup-flight__bag,.pickup-flight__object,.pickup-flight__title,
+ .app-main:not(.app-main--mission){animation:none!important}
+ .game-frame--damaged::after{opacity:.32}
+ .pickup-flight__bag,.pickup-flight__title{opacity:1}
+ .pickup-flight__object{opacity:0}
+}

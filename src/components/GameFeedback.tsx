@@ -5,6 +5,7 @@ import { playCue } from '../audio/sound';
 import { CARDS } from '../game/data/cards';
 import { ATTACK_CARDS } from '../game/data/attacks';
 import { getVisibleActions } from '../game/engine/rules';
+import { getActionSoundCue } from '../audio/actionCues';
 import type { GameState } from '../game/types';
 
 type Notice={id:number;title:string;detail:string;kind:'danger'|'major'};
@@ -51,9 +52,7 @@ export default function GameFeedback(){
   if(state.log.length>old.log.length&&old.mode==='adventure'){
     const line=state.log[state.log.length-1]??'';
     const chosen=getVisibleActions(old).find(c=>line.startsWith(c.title));
-    if(chosen?.attackCardId)playCue(state.enemy.health<old.enemy.health?'impact':'warning');
-    else if(chosen?.tags.includes('run'))playCue('footsteps');
-    else if(chosen?.tags.includes('search'))playCue('loot');
+    if(chosen)playCue(chosen.attackCardId&&state.enemy.health>=old.enemy.health?'warning':getActionSoundCue(chosen));
   }
   if(state.player.stamina<old.player.stamina&&old.player.stamina-state.player.stamina>=8)playCue('breath');
   if(state.player.health<old.player.health)playCue('injury');

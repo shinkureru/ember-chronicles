@@ -5,6 +5,8 @@ import { calculateActionPreview, bagWeight, getVisibleActions, isSkillCompatible
 import { makeInitialState } from '../state/initial';
 import { remainingSearches } from './lootLimits';
 import { EQUIPMENT_SLOTS } from '../data/equipment';
+import { getEquippedDefense, mitigateCounterDamage } from '../data/equipmentEffects';
+import { getVendorStockKey, marketSellPrice, vendorById } from '../data/marketVendors';
 import type { GameState, Outcome, ProfessionId, LootDrop } from '../types';
 
 export type GameAction =
@@ -15,8 +17,10 @@ export type GameAction =
   | {type:'RETREAT'}
   | {type:'RETURN_HUB'}
   | {type:'UPGRADE_CARD';cardId:string}
-  | {type:'MARKET_SELL';cardId:string}
-  | {type:'MARKET_BUY';cardId:string}
+  | {type:'MARKET_SELL_ITEM';vendorId:string;itemId:string}
+  | {type:'MARKET_BUY_ITEM';vendorId:string;itemId:string}
+  | {type:'MARKET_SELL';vendorId:string;cardId:string}
+  | {type:'MARKET_BUY';vendorId:string;cardId:string}
   | {type:'REST_TOWN'}
   | {type:'EQUIP_ITEM';slot:string;itemId:string}
   | {type:'UNEQUIP_ITEM';slot:string}
@@ -201,7 +205,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
             s.lastEvent+= ' 他終於失去了抵抗能力，現在可以搜查現場。';
           }
         }else{
-          const counter=5+Math.floor(s.npc.hostility/24);
+          const counter=mitigateCounterDamage(5+Math.floor(s.npc.hostility/24),getEquippedDefense(s));
           s.player.health=clamp(s.player.health-counter,0,s.player.maxHealth);
           s.lastEvent=`我用「${cardName}」反擊失手，被對方擊中，生命 -${counter}；他的生命仍是 ${s.enemy.health}/${s.enemy.maxHealth}。`;
           if(s.player.health<=0)resolveOutcome(s,'defeat');
@@ -256,8 +260,43 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.mode='home';s.lastEvent=bagWeight(s.bag)>0?'已自動整理戰利品；部分物品因保護設定或倉庫容量，仍保留在背包中。':'戰利品已自動入倉，常用裝備會保留在身上。';
       return s;
     }
+    case 'MARKET_BUY_ITEM':{
+      if(s.mode==='adventure')return state;
+      const vendor=vendorById(action.vendorId);
+      const offer=vendor?.sellItems.find(x=>x.id===action.itemId),item=ITEMS[action.itemId];
+      if(!vendor||!offer||!item)return state;
+      const stockKey=getVendorStockKey(vendor.id,item.id);
+      if((s.economy.marketStock[stockKey]??0)>=offer.stock||s.economy.coins<offer.price)return state;
+      if(bagWeight(s.bag)+item.weight>15){s.lastEvent='背包已接近負重上限，現在裝不下這件商品。';return s;}
+      s.economy.coins-=offer.price;
+      s.economy.marketStock[stockKey]=(s.economy.marketStock[stockKey]??0)+1;
+      s.economy.marketPurchases+=1;
+      s.bag[item.id]=(s.bag[item.id]??0)+1;
+      s.lastEvent=`我向「${vendor.name}」購買了「${item.name}」，花掉 ${offer.price} 枚舊幣。`;
+      return s;
+    }
+    case 'MARKET_SELL_ITEM':{
+      if(s.mode==='adventure')return state;
+      const vendor=vendorById(action.vendorId),item=ITEMS[action.itemId];
+      if(!vendor||!item||!vendor.buyItems.includes(action.itemId))return state;
+      if(s.protectedItems.includes(item.id)||Object.values(s.equipment).includes(item.id))return state;
+      // Keep selected weapon cards functional; never silently sell a prepared weapon.
+      if(s.attackDeck.some(id=>ATTACK_CARDS[id]?.requiredItemId===item.id)&&
+        (s.warehouse[item.id]??0)+(s.bag[item.id]??0)<=1)return state;
+      const source=(s.warehouse[item.id]??0)>0?'warehouse':'bag';
+      if((s[source][item.id]??0)<=0)return state;
+      s[source][item.id]=(s[source][item.id]??0)-1;
+      if(s[source][item.id]===0)delete s[source][item.id];
+      const gain=marketSellPrice(item.id);
+      s.economy.coins+=gain;
+      s.economy.blackMarketFavor=Math.min(100,s.economy.blackMarketFavor+1);
+      s.lastEvent=`我把「${item.name}」賣給「${vendor.name}」，得到 ${gain} 枚舊幣。`;
+      return s;
+    }
     case 'MARKET_SELL':{
       if(s.mode==='adventure')return state;
+      const vendor=vendorById(action.vendorId);
+      if(!vendor||!vendor.cardIds.includes(action.cardId))return state;
       const card=CARDS[action.cardId],owned=s.ownedCards[action.cardId];
       if(!card||!owned||owned.copies<1)return state;
       const earnings=card.rarity==='normal'?18:card.rarity==='rare'?55:120;
@@ -268,6 +307,8 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
     }
     case 'MARKET_BUY':{
       if(s.mode==='adventure')return state;
+      const vendor=vendorById(action.vendorId);
+      if(!vendor||!vendor.cardIds.includes(action.cardId))return state;
       const card=CARDS[action.cardId];if(!card||!s.ownedCards[action.cardId])return state;
       const price=card.rarity==='normal'?360:card.rarity==='rare'?980:4000;
       if(s.economy.coins<price)return state;

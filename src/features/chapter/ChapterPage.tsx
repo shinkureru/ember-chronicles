@@ -3,7 +3,7 @@ import { ArrowRight, BookOpenText, Layers3, Search, Settings2, ShieldAlert, Spar
 import { NavLink } from 'react-router-dom';
 import { useGame } from '../../app/GameContext';
 import Hud from '../../components/Hud';
-import { getSceneContent, getVisibleActions, calculateActionPreview, worldPhase, bagWeight, isSkillCompatible } from '../../game/engine/rules';
+import { getSceneContent, getVisibleActions, calculateActionPreview, worldPhase, worldPhaseToken, bagWeight, isSkillCompatible } from '../../game/engine/rules';
 import type { ActionChoice } from '../../game/types';
 import ActionDecision from './ActionDecision';
 import SkillHand from './SkillHand';
@@ -21,6 +21,7 @@ export default function ChapterPage(){
  const [chosenId,setChosenId]=useState<string|null>(null);
  const [skillId,setSkillId]=useState<string|null>(null);
  const [showRetreat,setShowRetreat]=useState(false);
+ const [confirmLootExit,setConfirmLootExit]=useState(false);
  const [showStory,setShowStory]=useState(false);
  const [showHand,setShowHand]=useState(false);
  const [thoughtPage,setThoughtPage]=useState(0);
@@ -40,7 +41,7 @@ export default function ChapterPage(){
  const current:ActionChoice|null=actions.find(a=>a.id===chosenId)??null;
  const preview=current?calculateActionPreview(s,current,skillId):null;
  const usableSkillCount=current?s.hand.filter(id=>{const card=CARDS[id];return !!card&&isSkillCompatible(current,card)&&s.player.resource>=card.resourceCost}).length:0;
- useEffect(()=>{setChosenId(null);setSkillId(null);setThoughtPage(0);setShowHand(false);},[s.sceneId,s.attempt]);
+ useEffect(()=>{setChosenId(null);setSkillId(null);setThoughtPage(0);setShowHand(false);setConfirmLootExit(false);},[s.sceneId,s.attempt]);
 
  useEffect(()=>()=>{if(flightTimer.current!==null)window.clearTimeout(flightTimer.current);if(afterTimer.current!==null)window.clearTimeout(afterTimer.current);},[]);
  const performUse=(origin:{x:number;y:number},choice:ActionChoice,chosenSkill:string|null)=>{
@@ -100,7 +101,7 @@ export default function ChapterPage(){
     <div className="enemy-hud__top"><span>ENEMY / {s.enemy.name}</span><strong>{s.enemy.health} / {s.enemy.maxHealth} HP</strong></div>
     <div className="enemy-hud__track" role="progressbar" aria-label="敵人生命" aria-valuemin={0} aria-valuemax={s.enemy.maxHealth} aria-valuenow={s.enemy.health}><i style={{width:`${s.enemy.health/s.enemy.maxHealth*100}%`}}/></div>
   </div>}
-  <section className={`scene-art scene-art--${s.sceneId} ${(s.sceneId==='confrontation'||combatHold)?'scene-art--combat':''}`} aria-label={`${scene.location}的環境場景`}><div className="scene-art__halo"/><div className="scene-art__atmosphere"/><div className="scene-art__warehouse"><div className="scene-art__building"><span>舊物流站</span><div className="scene-art__windows"><i/><i/><i/></div></div><div className="scene-art__door"/></div><div className="scene-art__person scene-art__person--shadow"><span/></div>{(s.sceneId==='confrontation'||combatHold)&&<EnemyPresence health={s.enemy.health} maxHealth={s.enemy.maxHealth} name={s.enemy.name}/>}<div className="scene-art__floor"/><div className="scene-art__caption"><span className="scene-art__pin"/> {scene.location}<span> · 第 {s.attempt} 次來訪</span></div></section>
+  <section className={`scene-art scene-art--${s.sceneId} phase--${worldPhaseToken(s.world.minute)} ${(s.sceneId==='confrontation'||combatHold)?'scene-art--combat':''}`} aria-label={`${scene.location}的環境場景`}><div className="scene-art__halo"/><div className="scene-art__atmosphere"/><div className="scene-art__warehouse"><div className="scene-art__building"><span>舊物流站</span><div className="scene-art__windows"><i/><i/><i/></div></div><div className="scene-art__door"/></div><div className="scene-art__person scene-art__person--shadow"><span/></div>{(s.sceneId==='confrontation'||combatHold)&&<EnemyPresence health={s.enemy.health} maxHealth={s.enemy.maxHealth} name={s.enemy.name}/>}<div className="scene-art__floor"/><div className="scene-art__caption"><span className="scene-art__pin"/> {scene.location}<span> · 第 {s.attempt} 次來訪</span></div></section>
   <section className="story-panel story-panel--compact"><div className="story-panel__top"><span className="eyebrow">SCENE / {scene.label}</span><span>{s.npc.met>1?'對方記得我':'初次接觸'}</span></div>
    <p className="story-panel__thought">{scene.narration}</p>
    {scene.npcText&&<p className="story-panel__compact-npc"><strong>阿忠：</strong>{scene.npcText}</p>}
@@ -108,11 +109,22 @@ export default function ChapterPage(){
    {s.sceneId==='loot'&&<div className="story-panel__hint"><Search size={12}/>搜刮會推進世界時間</div>}
   </section>
   <ActionDecision actions={actions} state={s} selected={current} skillId={skillId} skillCount={usableSkillCount} busy={executing}
-    onSelect={action=>{setChosenId(action.id);setSkillId(null);playCue('select')}}
+    onSelect={action=>{if(action.id==='loot_exit'){setConfirmLootExit(true);playCue('open');return;}setChosenId(action.id);setSkillId(null);playCue('select')}}
     onBack={()=>{setChosenId(null);setSkillId(null);playCue('open')}}
     onShowSkills={()=>{setHandOpenCount(n=>n+1);setShowHand(true);playCue('open')}}
     onExecute={requestUse}
     onRetreat={()=>setShowRetreat(true)}/>
+  {confirmLootExit&&<div className="mission-exit-overlay" role="presentation">
+   <section className="mission-exit-dialog" role="alertdialog" aria-modal="true" aria-label="確認結束搜查">
+    <h3>現在結束搜查？</h3>
+    <p>「如果現在離開，就沒辦法繼續翻找這一輪的物資了。我確定都看完了嗎？」</p>
+    <small>已獲得的物資不會因結束搜查而消失。</small>
+    <div className="mission-exit-dialog__actions">
+     <button type="button" onClick={()=>{setConfirmLootExit(false);playCue('open')}}>繼續搜查</button>
+     <button type="button" onClick={()=>{setConfirmLootExit(false);dispatch({type:'CHOOSE',choiceId:'loot_exit',skillId:null});playCue('confirm')}}>確定結束</button>
+    </div>
+   </section>
+  </div>}
   {showHand&&current&&<div className="game-sheet-backdrop game-sheet-backdrop--ritual" role="presentation" onClick={()=>setShowHand(false)}>
     <div className="game-sheet game-sheet--ritual" role="dialog" aria-label="附加技能卡" aria-modal="true" onClick={e=>e.stopPropagation()}>
       <div className="game-sheet__top"><h3>附加技能卡 <small>SKILL / ATTACHMENT</small></h3><button type="button" aria-label="關閉技能面板" onClick={()=>setShowHand(false)}><X size={20}/></button></div>

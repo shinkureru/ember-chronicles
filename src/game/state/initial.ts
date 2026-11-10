@@ -18,7 +18,7 @@ export const makeInitialState=(profession:ProfessionId|null=null):GameState=>{
     activeDeck:[...deck],hand:[],drawPile:[],discardPile:[],attackDeck:[],enemy:makeInitialEnemy(),
     log:[],lastEvent:null,lastLoot:null,outcome:null,rngSeed:123456789,hasSeenIntro:false,
     chapterProgress:{completed:[],unlocked:1},
-    economy:{coins:120,blackMarketFavor:0,marketPurchases:0},
+    economy:{coins:120,blackMarketFavor:0,marketPurchases:0,marketStock:{}},
     equipment:{head:null,body:null,hands:null,mainHand:null,utility:null,accessory:null},
   };
 };

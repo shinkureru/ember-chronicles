@@ -58,6 +58,6 @@ export interface GameState {
   log: string[]; lastEvent: string | null; lastLoot: LootDrop | null; outcome: Outcome | null;
   rngSeed: number; hasSeenIntro: boolean;
   chapterProgress: { completed: number[]; unlocked: number };
-  economy: { coins: number; blackMarketFavor: number; marketPurchases: number };
+  economy: { coins: number; blackMarketFavor: number; marketPurchases: number; marketStock:Record<string,number> };
   equipment: Record<string, string | null>;
 }

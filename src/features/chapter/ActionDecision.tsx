@@ -24,7 +24,7 @@ type Props={
 };
 export default function ActionDecision({actions,state,selected,skillId,skillCount,busy=false,onSelect,onBack,onShowSkills,onExecute,onRetreat}:Props){
  const [page,setPage]=useState(0);
- const pageSize=6,pages=Math.max(1,Math.ceil(actions.length/pageSize));
+ const pageSize=4,pages=Math.max(1,Math.ceil(actions.length/pageSize));
  const shownPage=Math.min(page,pages-1);
  const visible=actions.slice(shownPage*pageSize,(shownPage+1)*pageSize);
  const ids=visible.map(a=>a.id).join(',');

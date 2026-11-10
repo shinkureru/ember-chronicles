@@ -15,6 +15,15 @@ export const worldPhase = (minute:number): string => {
   if(hour>=18&&hour<23)return '晚上';
   return '深夜';
 };
+/** Five supported day phases; the visuals remain dark even in daylight. */
+export const worldPhaseToken=(minute:number):'morning'|'noon'|'afternoon'|'evening'|'late-night'=> {
+  const hour=Math.floor((((minute%1440)+1440)%1440)/60);
+  if(hour>=5&&hour<11)return 'morning';
+  if(hour>=11&&hour<14)return 'noon';
+  if(hour>=14&&hour<18)return 'afternoon';
+  if(hour>=18&&hour<23)return 'evening';
+  return 'late-night';
+};
 export const worldClock=(minute:number)=>{
   const time=((minute%1440)+1440)%1440;
   return `${String(Math.floor(time/60)).padStart(2,'0')}:${String(time%60).padStart(2,'0')}`;

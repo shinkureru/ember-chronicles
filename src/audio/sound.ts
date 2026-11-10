@@ -6,7 +6,8 @@
 import { SOUNDSCAPES, type SoundscapeId } from './soundscapes';
 
 export type SoundCue='tap'|'select'|'confirm'|'locked'|'open'|'loot'|'reward'|'card'|
-  'warning'|'injury'|'impact'|'breath'|'footsteps'|'retreat'|'defeat'|'victory';
+  'warning'|'injury'|'impact'|'breath'|'footsteps'|'retreat'|'defeat'|'victory'|
+  'runFast'|'sneakStep'|'searchCloth'|'searchPaper'|'searchTools'|'dialogue'|'inspect';
 export interface AudioSettings { muted:boolean;master:number;music:number;ambience:number;effects:number; }
 const KEY='ember-audio-v03'; // Keep previously saved player settings.
 const defaults:AudioSettings={muted:false,master:.95,music:.55,ambience:.55,effects:1};
@@ -107,6 +108,25 @@ export const playCue=(cue:SoundCue)=>{
     case 'injury':noise(ctx,.34,.42,480);note(ctx,136,.46,.34,{type:'sawtooth',glide:.5});break;
     case 'breath':noise(ctx,.40,.24,1050);noise(ctx,.24,.13,1000,{delay:.45});break;
     case 'footsteps':noise(ctx,.11,.48,330);noise(ctx,.12,.48,290,{delay:.2});break;
+    case 'runFast':
+      for(let i=0;i<7;i++){noise(ctx,.075,.46,210+(i%2)*100,{delay:i*.105});note(ctx,82+(i%3)*19,.078,.16,{type:'triangle',delay:i*.105});}
+      break;
+    case 'sneakStep':
+      for(let i=0;i<3;i++)noise(ctx,.12,.23,260,{delay:i*.31});
+      break;
+    case 'searchCloth':
+      for(let i=0;i<5;i++)noise(ctx,.16,.18,1000+(i%2)*320,{delay:i*.14,highpass:true});
+      break;
+    case 'searchPaper':
+      for(let i=0;i<4;i++)noise(ctx,.08,.27,1750,{delay:i*.115,highpass:true});
+      break;
+    case 'searchTools':
+      noise(ctx,.18,.31,760);note(ctx,650,.1,.19,{delay:.16,type:'triangle'});noise(ctx,.12,.27,910,{delay:.31});
+      break;
+    case 'dialogue':
+      note(ctx,312,.12,.15,{type:'triangle'});note(ctx,287,.14,.13,{type:'triangle',delay:.19});break;
+    case 'inspect':
+      note(ctx,590,.08,.09,{type:'sine'});noise(ctx,.10,.14,1550,{delay:.08,highpass:true});break;
     case 'retreat':noise(ctx,.46,.29,1450);note(ctx,330,.46,.35,{type:'triangle',glide:.55});break;
     case 'defeat':note(ctx,262,.43,.29,{type:'triangle'});note(ctx,196,.55,.30,{type:'triangle',delay:.25});note(ctx,131,.95,.25,{delay:.52});break;
     case 'victory':note(ctx,294,.36,.24);note(ctx,392,.39,.24,{delay:.14});note(ctx,466,.55,.28,{delay:.30});break;

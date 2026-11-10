@@ -3,6 +3,8 @@ import { AlertTriangle, HeartCrack, Sparkles, X } from 'lucide-react';
 import { useGame } from '../app/GameContext';
 import { playCue } from '../audio/sound';
 import { CARDS } from '../game/data/cards';
+import { ITEMS } from '../game/data/items';
+import PickupFly, { type PickupVisual } from './PickupFly';
 import { ATTACK_CARDS } from '../game/data/attacks';
 import { getVisibleActions } from '../game/engine/rules';
 import { getActionSoundCue } from '../audio/actionCues';
@@ -10,6 +12,7 @@ import type { GameState } from '../game/types';
 
 type Notice={id:number;title:string;detail:string;kind:'danger'|'major'};
 let nextId=0;
+let nextPickupId=0;
 /** Only the truly consequential changes interrupt gameplay. Minor pickups and costs remain in the story log. */
 export const majorStateChanges=(previous:GameState,current:GameState):Notice[]=>{
  const result:Notice[]=[];
@@ -43,6 +46,8 @@ export default function GameFeedback(){
  const {state}=useGame();
  const previous=useRef(state);
  const [queue,setQueue]=useState<Notice[]>([]);
+ const [pickups,setPickups]=useState<PickupVisual[]>([]);
+ const pickup=pickups[0];
  const notice=queue[0];
  useEffect(()=>{
   if(previous.current===state)return;
@@ -57,6 +62,19 @@ export default function GameFeedback(){
   if(state.player.stamina<old.player.stamina&&old.player.stamina-state.player.stamina>=8)playCue('breath');
   if(state.player.health<old.player.health)playCue('injury');
   if(notable.length)setQueue(q=>[...q,...notable].slice(0,5));
+  // A committed loot event plays exactly once: global time ticks do not replay it.
+  const found=state.mode==='adventure'&&state.log.length>old.log.length?state.lastLoot:null;
+  let pickupItem=found?.itemId,quantity=found?.quantity??1;
+  if(!pickupItem&&state.economy.marketPurchases>old.economy.marketPurchases){
+   const bought=Object.entries(state.bag).find(([id,count])=>(count-(old.bag[id]??0))>0&&ITEMS[id]);
+   if(bought){pickupItem=bought[0];quantity=bought[1]-(old.bag[bought[0]]??0);}
+  }
+  if(!pickupItem&&state.lastEvent?.startsWith('我從倉庫領出了')){
+   const gained=Object.entries(state.bag).find(([id,count])=>count>(old.bag[id]??0)&&ITEMS[id]);
+   if(gained){pickupItem=gained[0];quantity=gained[1]-(old.bag[gained[0]]??0);}
+  }
+  const item=pickupItem?ITEMS[pickupItem]:undefined;
+  if(item&&quantity>0)setPickups(q=>[...q,{id:++nextPickupId,emoji:item.emoji,name:item.name,quantity}].slice(0,8));
  },[state]);
  useEffect(()=>{
   if(!notice)return;
@@ -64,14 +82,23 @@ export default function GameFeedback(){
   const timer=window.setTimeout(()=>setQueue(q=>q.filter(n=>n.id!==notice.id)),notice.kind==='danger'?3300:2700);
   return()=>window.clearTimeout(timer);
  },[notice]);
- if(!notice)return null;
- const Icon=notice.kind==='danger'?HeartCrack:Sparkles;
- return <div className="critical-notice-layer" aria-live="assertive">
+ useEffect(()=>{
+  if(!pickup)return;
+  playCue('loot');
+  const timer=window.setTimeout(()=>setPickups(q=>q.filter(item=>item.id!==pickup.id)),1920);
+  return()=>window.clearTimeout(timer);
+ },[pickup]);
+ if(!notice&&!pickup)return null;
+ const Icon=notice?.kind==='danger'?HeartCrack:Sparkles;
+ return <>
+  {pickup&&<PickupFly key={pickup.id} pickup={pickup}/>}
+  {notice&&<div className="critical-notice-layer" aria-live="assertive">
    <section key={notice.id} className={`critical-notice critical-notice--${notice.kind}`} role="alertdialog" aria-modal="true" aria-label={notice.title}>
     <Icon size={29} className="critical-notice__icon"/>
     <strong>{notice.title}</strong><p>{notice.detail}</p>
     <button type="button" aria-label="關閉重大事件提示" onClick={()=>setQueue(q=>q.slice(1))}><X size={18}/>關閉</button>
     {notice.kind==='danger'&&<AlertTriangle size={15} className="critical-notice__danger"/>}
    </section>
- </div>;
+ </div>}
+ </>;
 }

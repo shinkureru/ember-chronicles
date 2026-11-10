@@ -1,3 +1,4 @@
+import { getScheduledVendorId } from '../data/marketSchedule';
 import { CARDS, getUpgradeRequirement } from '../data/cards';
 import { ATTACK_CARDS, attackStatus, getAttackDamage, MAX_ATTACK_DECK, makeInitialEnemy } from '../data/attacks';
 import { ITEMS, LOOT_POOLS, INITIAL_NPC_GEAR } from '../data/items';
@@ -262,6 +263,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
     }
     case 'MARKET_BUY_ITEM':{
       if(s.mode==='adventure')return state;
+      if(action.vendorId!==getScheduledVendorId(s.world.minute))return state;
       const vendor=vendorById(action.vendorId);
       const offer=vendor?.sellItems.find(x=>x.id===action.itemId),item=ITEMS[action.itemId];
       if(!vendor||!offer||!item)return state;
@@ -277,6 +279,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
     }
     case 'MARKET_SELL_ITEM':{
       if(s.mode==='adventure')return state;
+      if(action.vendorId!==getScheduledVendorId(s.world.minute))return state;
       const vendor=vendorById(action.vendorId),item=ITEMS[action.itemId];
       if(!vendor||!item||!vendor.buyItems.includes(action.itemId))return state;
       if(s.protectedItems.includes(item.id)||Object.values(s.equipment).includes(item.id))return state;
@@ -295,6 +298,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
     }
     case 'MARKET_SELL':{
       if(s.mode==='adventure')return state;
+      if(action.vendorId!==getScheduledVendorId(s.world.minute))return state;
       const vendor=vendorById(action.vendorId);
       if(!vendor||!vendor.cardIds.includes(action.cardId))return state;
       const card=CARDS[action.cardId],owned=s.ownedCards[action.cardId];
@@ -307,6 +311,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
     }
     case 'MARKET_BUY':{
       if(s.mode==='adventure')return state;
+      if(action.vendorId!==getScheduledVendorId(s.world.minute))return state;
       const vendor=vendorById(action.vendorId);
       if(!vendor||!vendor.cardIds.includes(action.cardId))return state;
       const card=CARDS[action.cardId];if(!card||!s.ownedCards[action.cardId])return state;

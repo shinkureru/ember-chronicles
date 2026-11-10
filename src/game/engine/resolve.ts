@@ -386,7 +386,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if(bagWeight(s.warehouse)+item.weight>s.warehouseCapacity+1e-8){
         s.lastEvent='倉庫容量已滿。物品仍安全留在背包裡。';return s;
       }
-      s.bag[action.itemId]-=1;
+      s.bag[action.itemId]=(s.bag[action.itemId]??0)-1;
       if(s.bag[action.itemId]===0)delete s.bag[action.itemId];
       s.warehouse[action.itemId]=(s.warehouse[action.itemId]??0)+1;
       s.lastEvent=`我把「${item.name}」存進了倉庫。`;

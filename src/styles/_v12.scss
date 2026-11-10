@@ -1,0 +1,254 @@
+/* v1.2 — tactile skill rail, turn-based threat, mission cinema, black-market perspective */
+
+/* Pointer-based desktop drag keeps mobile native scroll; a partial next card replaces instructions. */
+.game-sheet--ritual .skill-scatter__wrap{overflow:hidden}
+.game-sheet--ritual .skill-scatter__track{
+ cursor:grab;scroll-behavior:auto!important;scroll-snap-type:none!important;
+ padding-right:clamp(22px,9%,52px);user-select:none;
+ overscroll-behavior-inline:contain;
+}
+.game-sheet--ritual .skill-scatter__track:active{cursor:grabbing}
+.game-sheet--ritual .skill-tile--scatter{
+ flex:0 0 clamp(105px,41%,172px)!important;
+}
+.game-sheet--ritual .skill-scatter__peek{display:none!important}
+
+/* The defeated enemy is visible for the hit-hold duration even as the engine unlocks loot. */
+.chapter-live .enemy-presence__model--fallen{
+ transform-origin:50% 87%;
+ animation:enemy-fall-v12 1.7s cubic-bezier(.23,.81,.28,1) forwards!important;
+}
+@keyframes enemy-fall-v12{
+ 0%{opacity:1;transform:translate(0,0) rotate(0) scale(1);filter:brightness(1.9)}
+ 20%{opacity:1;transform:translate(-8px,-4px) rotate(-11deg) scale(1.02)}
+ 58%{opacity:1;transform:translate(-31px,20px) rotate(-69deg) scale(.85);filter:brightness(.75)}
+ 75%{opacity:1;transform:translate(-43px,33px) rotate(-83deg) scale(.81)}
+ 100%{opacity:.28;transform:translate(-47px,43px) rotate(-88deg) scale(.79);filter:brightness(.35)}
+}
+.chapter-live .scene-art:has(.enemy-presence__model--fallen)::after{
+ content:"";position:absolute;inset:0;pointer-events:none;background:#9e1d281b;
+ animation:enemy-collapse-flash 1s ease-out forwards;z-index:13;
+}
+@keyframes enemy-collapse-flash{0%{opacity:.8}100%{opacity:0}}
+
+/* Real enemy throw travels toward the camera: small -> large -> impact/red vignette. */
+.enemy-counter{position:fixed;inset:0;pointer-events:none;z-index:185;isolation:isolate;overflow:hidden}
+.enemy-counter__speedlines{position:absolute;inset:0;opacity:0;background:repeating-conic-gradient(from 20deg at 50% 48%,transparent 0deg 7deg,#cfcfcf1e 8deg 9deg,transparent 10deg 17deg);
+ mask-image:radial-gradient(ellipse at 50% 53%,transparent 9%,#000 65%);animation:counter-speed .8s ease-out both}
+.enemy-counter__object{
+ position:absolute;top:39%;left:53%;width:88px;height:120px;
+ transform-origin:50% 50%;color:#d1d0d0;
+ filter:drop-shadow(0 4px 15px #000) drop-shadow(0 0 8px #fff3);
+ animation:counter-camera-throw .78s cubic-bezier(.16,.14,.48,1) both;
+}
+.enemy-counter__svg{width:100%;height:100%}
+.enemy-counter__impact{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 56%,#aa262635,transparent 42%),inset 0 0 30px #ad2222;
+ opacity:0;animation:counter-impact-vignette 1.1s ease both}
+.enemy-counter--miss .enemy-counter__impact{display:none}
+.enemy-counter--miss .enemy-counter__object{animation-name:counter-camera-miss}
+.enemy-counter__text{
+ position:absolute;left:50%;bottom:21%;transform:translateX(-50%);
+ font:900 clamp(18px,5vw,26px) 'Noto Sans TC',sans-serif;
+ color:#efeeee;text-shadow:0 0 12px #000,0 2px 7px #000;
+ white-space:nowrap;opacity:0;animation:counter-text 1.1s ease both;
+}
+.enemy-counter--hit .enemy-counter__text{color:#ff8e97}
+@keyframes counter-camera-throw{
+ 0%{opacity:0;transform:translate(25px,-80px) scale(.12) rotate(-70deg)}
+ 12%{opacity:1}
+ 65%{opacity:1;transform:translate(4px,4px) scale(1.2) rotate(16deg)}
+ 80%{opacity:1;transform:translate(-8px,25px) scale(2.55) rotate(45deg)}
+ 100%{opacity:0;transform:translate(-15px,49px) scale(3.45) rotate(72deg);filter:blur(5px)}
+}
+@keyframes counter-camera-miss{
+ 0%{opacity:0;transform:translate(25px,-80px) scale(.12) rotate(-70deg)}
+ 12%{opacity:1}
+ 65%{opacity:1;transform:translate(12px,-6px) scale(1.1) rotate(16deg)}
+ 100%{opacity:0;transform:translate(70vw,30vh) scale(2.1) rotate(120deg);filter:blur(5px)}
+}
+@keyframes counter-speed{15%{opacity:.8}75%{opacity:.4}100%{opacity:0}}
+@keyframes counter-impact-vignette{0%,45%{opacity:0}65%{opacity:.8}100%{opacity:0}}
+@keyframes counter-text{0%,50%{opacity:0}70%{opacity:1}100%{opacity:0}}
+
+/* Enemy portrait is permanently BEHIND title and spoken text. */
+.mission-cinematic--entry .mission-cinematic__entry{animation:mission-arrive-v12 2.5s ease both}
+.mission-cinematic--enemy .mission-cinematic__enemy{
+ position:relative;display:block;isolation:isolate;width:min(100vw,480px);
+ height:min(89dvh,750px);max-height:89dvh;text-align:center;overflow:visible;
+}
+.mission-cinematic__enemy-background{
+ position:absolute;inset:8% 8% 9%;z-index:-1;opacity:.72;
+ -webkit-mask-image:linear-gradient(to bottom,#000 5%,#000 65%,transparent 99%);
+ mask-image:linear-gradient(to bottom,#000 5%,#000 65%,transparent 99%);
+}
+.mission-cinematic__enemy-background .enemy-presence{
+ inset:0!important;left:0!important;right:0!important;top:0!important;
+ width:100%!important;height:100%!important;opacity:1;
+}
+.mission-cinematic__enemy-background .enemy-presence__model{height:100%}
+.mission-cinematic__enemy-foreground{
+ position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+ gap:clamp(9px,2.2dvh,20px);padding:0 14px 10%;
+ color:#fff;text-shadow:0 2px 7px #000,0 5px 17px #000;
+}
+.mission-cinematic__enemy-foreground .mission-cinematic__warning{position:absolute;top:4%;color:#f99b9b;font-weight:800}
+.mission-cinematic__enemy-foreground .mission-cinematic__enemy-label{font-weight:900;color:#ffd1d1}
+.mission-cinematic__enemy-foreground>strong{
+ font:900 clamp(25px,7.5vw,41px) 'Noto Serif TC',serif;
+ color:#f6f6f6;background:#08080ac7;padding:1px 8px;border-radius:3px;
+}
+.mission-cinematic__enemy-foreground>p{
+ background:#040404c9;padding:7px 12px;font-size:clamp(14px,3.8vw,19px);line-height:1.5;
+ border-left:2px solid #a33540;
+}
+.mission-cinematic__enemy-foreground>small{font-size:11px;background:#050505ad;padding:3px 9px}
+.mission-cinematic--ending{background:radial-gradient(ellipse at 50% 65%,#222a32,#030306 67%)}
+.mission-cinematic--victory{background:radial-gradient(ellipse at 50% 50%,#2d3439,#020305 73%)}
+.mission-cinematic--defeat{background:radial-gradient(ellipse at 50% 60%,#40181c,#020205 75%)}
+.mission-cinematic__ending{
+ width:min(92vw,470px);min-height:44dvh;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:clamp(12px,2vh,20px);text-align:center;animation:mission-end-v12 3.5s ease both;
+}
+.mission-cinematic__ending>span{font:700 12px Inter,sans-serif;letter-spacing:.24em;color:#c8c8c8}
+.mission-cinematic__ending>strong{font:900 clamp(35px,9vw,60px) 'Noto Serif TC',serif;letter-spacing:.06em}
+.mission-cinematic__ending>i{width:72%;height:2px;background:#cacaca;box-shadow:0 0 12px #fff3}
+.mission-cinematic__ending>p{
+ color:#ddd;font-size:clamp(13px,3.8vw,17px);line-height:1.6;
+ max-height:25vh;overflow-y:auto;scrollbar-width:thin;
+}
+.mission-cinematic__ending>small{font-size:12px;color:#acacac;line-height:1.5}
+@keyframes mission-arrive-v12{0%{opacity:0;transform:scale(.94)}35%{opacity:1;transform:scale(1)}100%{opacity:1}}
+@keyframes mission-end-v12{0%{opacity:0;transform:translateY(15px)}23%{opacity:1;transform:translateY(0)}100%{opacity:1}}
+
+/* Black-market secret side-on exchange, with a narrow physical wall and shared player silhouette. */
+.market-v12 .market-v10__heading{flex-basis:43px}
+.market-v12__scene{
+ flex:1 1 0;min-height:0;overflow:hidden;display:flex;flex-direction:column;
+ background:#050608;border:1px solid #515151;border-radius:9px;
+}
+.market-v12__meeting{
+ position:relative;flex:1 1 53%;min-height:0;overflow:hidden;
+ background:radial-gradient(ellipse at 51% 12%,#33383d,transparent 65%),linear-gradient(160deg,var(--phase-sky,#15161d),#050608 85%);
+}
+.market-v12__meeting::before{
+ content:"";position:absolute;inset:0;opacity:.22;pointer-events:none;
+ background:repeating-linear-gradient(0deg,#b9a99b16 0px,transparent 2px,transparent 32px,#aaa4 33px),
+ repeating-linear-gradient(90deg,transparent 0 54px,#aaa3 55px,transparent 56px);
+}
+.market-v12__lantern{
+ pointer-events:none;position:absolute;left:50%;top:-18%;width:70%;height:100%;z-index:1;transform:translateX(-50%);
+ background:radial-gradient(ellipse at 50% 15%,#abb0c82b,transparent 68%);
+}
+.market-v12__person{position:absolute;bottom:-4%;height:95%;width:40%;z-index:2}
+.market-v12__person--merchant{left:0}
+.market-v12__person--player{right:0}
+.market-v12__person svg{
+ width:100%;height:100%;object-fit:contain;filter:grayscale(.8) contrast(1.2) drop-shadow(0 6px 13px #000);
+}
+.market-v12__person--merchant .market-portrait--profile{object-position:95% 100%}
+.market-v12__person--player .survivor-figure--profile{object-position:14% 100%}
+.market-v12__wall{
+ position:absolute;left:45%;width:10%;top:0;bottom:-3%;z-index:4;isolation:isolate;
+ border-inline:2px solid #545359;
+ background:repeating-linear-gradient(90deg,#24262a 0 4px,#1a1c21 6px 12px);
+ box-shadow:-6px 0 20px #000,6px 0 20px #000,inset 0 0 15px #050505;
+}
+.market-v12__wall>i{
+ position:absolute;left:10%;right:10%;height:1px;background:#4b4b50;top:20%;
+}
+.market-v12__wall>i:nth-of-type(2){top:53%}
+.market-v12__wall>i:nth-of-type(3){top:81%}
+.market-v12__slot{position:absolute;left:-18%;width:136%;height:10%;top:43%;border:2px solid #7b7c7d;background:#030406;
+ box-shadow:0 0 15px #000,inset 0 0 8px #d7d7dc29;border-radius:2px}
+.market-v12__person-name{
+ position:absolute;top:2%;width:100%;display:flex;flex-direction:column;gap:1px;
+ font-size:11px;line-height:1.3;text-shadow:0 0 6px #000,0 0 15px #000;
+}
+.market-v12__person--merchant .market-v12__person-name{left:10%;text-align:left}
+.market-v12__person--player .market-v12__person-name{right:10%;text-align:right}
+.market-v12__person-name strong{color:#eee;font-size:clamp(11px,2.8vw,16px)}
+.market-v12__person-name small{color:#d2d2d2;font-size:9px}
+.market-v12__dialogue{
+ position:absolute;z-index:5;bottom:10%;left:4%;right:4%;
+ font-size:clamp(10px,2.7vw,13px);line-height:1.45;text-align:center;color:#f1f1f1;
+ padding:5px 10px;background:#030305d9;border:1px solid #575757;max-height:54px;overflow:auto;
+}
+.market-v12__time{
+ position:absolute;top:5%;left:50%;transform:translateX(-50%);
+ background:#050608;color:#ddd;font:600 9px Inter,sans-serif;
+ display:flex;align-items:center;gap:4px;white-space:nowrap;z-index:7;padding:4px;
+ border:1px solid #616161;border-radius:3px;
+}
+.market-v12__table{
+ position:relative;flex:1 1 47%;min-height:0;display:flex;flex-direction:column;
+ padding:8px 7px 9px;gap:6px;border-top:5px solid #79797c;
+ background:linear-gradient(165deg,#393a3f 0%,#17191d 16%,#0a0b0e 70%,#07080b);
+ box-shadow:0 -14px 22px #000b,inset 0 7px 20px #eee1;
+}
+.market-v12__table::before{
+ content:"";position:absolute;inset:0;pointer-events:none;opacity:.15;
+ background:repeating-linear-gradient(7deg,transparent 0 37px,#c5c6cd2c 40px,transparent 45px);
+}
+.market-v12__table-heading{
+ display:flex;justify-content:space-between;gap:8px;flex:none;font:700 9px Inter,sans-serif;letter-spacing:.06em;color:#cacaca;z-index:1;
+}
+.market-v12__table-heading span:last-child{font-family:'Noto Sans TC',sans-serif;font-size:9px;letter-spacing:0;color:#999}
+.market-v12__offers{
+ flex:1 1 auto;min-height:0;z-index:1;position:relative;
+ display:flex;flex-wrap:wrap;align-content:center;align-items:center;justify-content:space-around;gap:13px 9px;
+ padding:10px 5px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#777 #101010;
+}
+.market-v12__offer{
+ flex:0 0 calc((100% - 28px)/3);height:clamp(98px,18dvh,157px);
+ display:flex;flex-direction:column;justify-content:space-between;align-items:center;
+ padding:6px 3px 8px;gap:4px;border:1px solid #86878a;border-radius:4px;
+ background:linear-gradient(153deg,#25262b,#0c1116);
+ color:#e9e9e9;text-align:center;min-width:0;
+ transform:translateY(var(--offer-y)) rotate(var(--offer-angle));
+ box-shadow:1px 6px 12px #000c;transition:filter .17s,box-shadow .17s,scale .17s;
+}
+.market-v12__offer:hover,.market-v12__offer:focus-visible{
+ filter:brightness(1.28);scale:1.035;box-shadow:0 0 9px #ddd3,2px 7px 14px #000d;
+}
+.market-v12__offer:active{scale:.97}
+.market-v12__offer.is-unavailable{opacity:.48}
+.market-v12__offer-type{align-self:flex-start;font:700 8px Inter,sans-serif;letter-spacing:.13em;color:#95989f}
+.market-v12__offer-icon{font-size:clamp(22px,5vw,34px);line-height:1;filter:grayscale(.55)}
+.market-v12__offer strong{font-size:clamp(10px,2.6vw,12px);line-height:1.2;overflow-wrap:anywhere;max-width:100%}
+.market-v12__offer small{font:600 10px Inter,sans-serif;color:#ccc;display:flex;align-items:center;gap:3px}
+.market-v12__empty{align-self:center;text-align:center;color:#b9b9b9;font-size:11px}
+.market-v12__modes,.market-v12__kinds{
+ display:grid;gap:6px;flex:none;
+}
+.market-v12__modes{grid-template-columns:repeat(2,minmax(0,1fr));height:39px}
+.market-v12__kinds{grid-template-columns:repeat(2,minmax(0,1fr));height:32px}
+.market-v12__modes button,.market-v12__kinds button{
+ display:flex;align-items:center;justify-content:center;gap:6px;
+ min-width:0;border:1px solid #646464;background:#131316;border-radius:5px;
+ color:#d0d0d0;font-size:12px;
+}
+.market-v12__modes button.is-active{background:#dedede;color:#111;font-weight:800}
+.market-v12__kinds button.is-active{border-color:#eee;background:#333338;color:#fff;font-weight:700}
+.market-v12__card-remark{display:flex;align-items:center;gap:4px;font-size:10px!important;line-height:1.4}
+@media(max-height:700px){
+ .market-v12 .market-v10__heading{flex-basis:34px}
+ .market-v12__modes{height:34px}.market-v12__kinds{height:28px}
+ .market-v12__offer{height:clamp(72px,17dvh,110px)}
+ .market-v12__offer-icon{font-size:23px}
+ .market-v12__dialogue{max-height:39px;font-size:10px}
+ .market-v12__person-name small{display:none}
+}
+@media(max-width:360px){
+ .market-v12__table-heading span:last-child{display:none}
+ .market-v12__offers{gap:10px 5px}
+ .market-v12__offer{flex-basis:calc((100% - 14px)/3);padding:4px 2px}
+ .market-v12__offer strong{font-size:10px}
+}
+/* Accessibility: do not remove important outcome text for reduced-motion mode. */
+@media(prefers-reduced-motion:reduce){
+ .chapter-live .enemy-presence__model--fallen{animation:none!important;transform:translate(-33px,25px) rotate(-76deg) scale(.82);opacity:.65}
+ .enemy-counter__speedlines,.enemy-counter__object,.enemy-counter__impact{animation:none!important;opacity:.6}
+ .enemy-counter__text{animation:none!important;opacity:1}
+ .mission-cinematic__ending,.mission-cinematic--entry .mission-cinematic__entry{animation:none!important}
+ .market-v12__offer{transition:none}
+}

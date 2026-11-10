@@ -6,9 +6,13 @@ import { useGame } from '../app/GameContext';
 import GameFeedback from './GameFeedback';
 import type { SoundscapeId } from '../audio/soundscapes';
 export default function Frame({children}:{children:ReactNode}){
-  const location=useLocation(),{state}=useGame();
+  const location=useLocation(),{state,pauseClock}=useGame();
   const inMission=state.mode!=='home';
   const onMap=location.pathname==='/';
+  useEffect(()=>{
+   pauseClock('route',location.pathname==='/settings');
+   return()=>pauseClock('route',false);
+  },[location.pathname,pauseClock]);
   useEffect(()=>{
     const scene:SoundscapeId=inMission?(state.mode==='result'?'result':state.sceneId):
       location.pathname==='/town'?'town':location.pathname==='/black-market'?'market':
@@ -27,7 +31,7 @@ export default function Frame({children}:{children:ReactNode}){
     return()=>document.removeEventListener('pointerdown',onPress);
   },[]);
   return <div className={`desktop-world ${inMission?'desktop-world--mission':''}`}><div className="desktop-world__accent desktop-world__accent--left"/><div className="desktop-world__accent desktop-world__accent--right"/>
-    <div className={`game-frame ${inMission?'game-frame--mission':''}`}>
+    <div className={`game-frame ${inMission?'game-frame--mission':''} ${state.enemyCounter?.phase==='hit'&&state.enemyCounter.hit?'game-frame--damaged':''}`}>
       {!inMission&&<header className="app-header">
         <NavLink to="/" className="app-header__brand"><span className="brand-mark"><Skull size={17}/></span><span><strong>餘燼紀事</strong><small>EMBER CHRONICLES</small></span></NavLink>
         {!onMap&&<NavLink to="/" className="app-header__back" aria-label="返回主地圖"><ArrowLeft size={16}/>地圖</NavLink>}

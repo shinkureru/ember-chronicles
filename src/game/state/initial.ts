@@ -15,7 +15,7 @@ export const makeInitialState=(profession:ProfessionId|null=null):GameState=>{
     bag:{biscuit:2,water:1},warehouse:{pen:1,notebook:1,wrench:1,screwdriver:1},warehouseCapacity:WAREHOUSE_CAPACITY_KG,
     protectedItems:[],
     ownedCards:Object.fromEntries([...deck,...(profession?STARTER_ATTACK_CARDS[profession]:[])].map(id=>[id,{copies:0,level:1}])),
-    activeDeck:[...deck],hand:[],drawPile:[],discardPile:[],attackDeck:[],enemy:makeInitialEnemy(),
+    activeDeck:[...deck],hand:[],drawPile:[],discardPile:[],attackDeck:[],enemy:makeInitialEnemy(),enemyStrike:null,
     log:[],lastEvent:null,lastLoot:null,outcome:null,rngSeed:123456789,hasSeenIntro:false,
     chapterProgress:{completed:[],unlocked:1},
     economy:{coins:120,blackMarketFavor:0,marketPurchases:0,marketStock:{}},

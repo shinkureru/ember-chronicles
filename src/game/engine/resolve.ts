@@ -131,7 +131,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
         s.bag[itemId!]=(s.bag[itemId!]??0)+1;
       }
       s.attempt+=1;s.npc.met+=1;s.mode='adventure';s.sceneId='gate';
-      s.flags=[];s.searchedSources=[];s.lootSearches={};s.outcome=null;s.lastLoot=null;s.lastEvent=null;s.enemy=makeInitialEnemy();
+      s.flags=[];s.searchedSources=[];s.lootSearches={};s.outcome=null;s.lastLoot=null;s.lastEvent=null;s.enemy=makeInitialEnemy();s.enemyStrike=null;
       s.hand=[];s.discardPile=[];s.drawPile=[...s.activeDeck];
       drawCards(s,3);
       s.player.resource=clamp(s.player.resource+2,0,s.player.maxResource);
@@ -165,7 +165,8 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       return s;
     }
     case 'CHOOSE':{
-      if(s.mode!=='adventure')return state;
+      if(s.mode!=='adventure'||s.sceneId==='confrontation'&&s.enemy.health<=0)return state;
+      s.enemyStrike=null;
       const choice=getVisibleActions(s).find(c=>c.id===action.choiceId);
       if(!choice)return state;
       if(choice.attackCardId&&(!s.attackDeck.includes(choice.attackCardId)||!attackStatus(s,choice.attackCardId).inBag))return state;
@@ -200,18 +201,28 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
         if(isSuccess){
           const damage=getAttackDamage(s,choice.attackCardId);
           s.enemy.health=clamp(s.enemy.health-damage,0,s.enemy.maxHealth);
-          s.lastEvent=`我用「${cardName}」命中了對方，造成 ${damage} 點傷害。對方剩下 ${s.enemy.health}/${s.enemy.maxHealth} 生命。`;
+          s.lastEvent=`我用「${cardName}」命中對方，造成 ${damage} 點傷害；對方剩下 ${s.enemy.health}/${s.enemy.maxHealth} 生命。`;
           if(s.enemy.health===0){
             s.flags=Array.from(new Set([...s.flags,'won_by_combat']));
             s.sceneId='loot';
-            s.lastEvent+= ' 他終於失去了抵抗能力，現在可以搜查現場。';
+            s.lastEvent+=' 對方倒在地上，終於失去抵抗能力。';
+            return s;
           }
-        }else{
-          const counter=mitigateCounterDamage(5+Math.floor(s.npc.hostility/24),getEquippedDefense(s));
-          s.player.health=clamp(s.player.health-counter,0,s.player.maxHealth);
-          s.lastEvent=`我用「${cardName}」反擊失手，被對方擊中，生命 -${counter}；他的生命仍是 ${s.enemy.health}/${s.enemy.maxHealth}。`;
+        }else s.lastEvent=`「${cardName}」失手了。我必須準備承受他的反擊。`;
+
+        // One explicit enemy turn after an attempted weapon attack while the guard remains standing.
+        // Items are drawn from his still-held gear; no infinite spam or inventory deletion.
+        const available=['radio','flashlight','keyring'].filter(id=>!s.npc.stolenGear.includes(id));
+        const itemId=available[Math.floor(nextRand(s)*available.length)]??'keyring';
+        const hit=!isSuccess||nextRand(s)<.68;
+        const rawDamage=itemId==='flashlight'?8:itemId==='radio'?6:4;
+        const damage=hit?mitigateCounterDamage(rawDamage+Math.floor(s.npc.hostility/40),getEquippedDefense(s)):0;
+        s.enemyStrike={id:s.attempt*1000+s.log.length,itemId,damage,hit};
+        if(hit){
+          s.player.health=clamp(s.player.health-damage,0,s.player.maxHealth);
+          s.lastEvent+=` 他把「${ITEMS[itemId]?.name??'工具'}」丟了過來，我被擊中，生命 -${damage}。`;
           if(s.player.health<=0)resolveOutcome(s,'defeat');
-        }
+        }else s.lastEvent+=' 他反手丟出工具，但我閃過了。';
         return s;
       }
       if(isSuccess&&choice.lootSource){

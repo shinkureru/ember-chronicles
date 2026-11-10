@@ -61,7 +61,13 @@ export default function CharacterPage(){
     <p>每種屬性都有獨立成長方向。進行不同關卡或劇情選擇時，會逐步累積擅長領域。</p>
   </section>}
   {tab==='record'&&<section className="character-tab-content viewport-list">
-    <h2><BookOpenText size={19}/>NPC 記憶</h2><p>已嘗試 {s.attempt} 次；掌握情報 {s.clues.length} 條，NPC 對談判的適應值為 {s.npc.adaptations.talk??0}。</p>
+    <h2><BookOpenText size={19}/>NPC 記憶</h2>
+    <p>已嘗試 {s.attempt} 次；掌握情報 {s.clues.length} 條。以下 NPC 各自保留記憶，重新挑戰其他關卡也不會覆蓋。</p>
+    <div className="character-tab-content__stats">
+     <div className="character-tab-stat"><span>第一關 · 倉庫管理員阿忠</span><strong>來訪 {s.npc.met} 次</strong><small>敵意 {s.npc.hostility} · 交涉適應 {s.npc.adaptations.talk??0}</small></div>
+     <div className="character-tab-stat"><span>第二關 · 後巷灰衣守望者</span><strong>來訪 {s.alleyNpc?.met??0} 次</strong><small>敵意 {s.alleyNpc?.hostility??18} · 交涉適應 {s.alleyNpc?.adaptations.talk??0}</small></div>
+    </div>
+    <p>倉庫記憶：{s.npc.remembers.length?s.npc.remembers.length+' 項事件已記住':'尚未發生特殊事件'}；後巷記憶：{s.alleyNpc?.remembers.length??0} 項事件已記住。</p>
     <div className="clue-list">{s.clues.slice().reverse().map((line,i)=><p key={i}>{line}</p>)}{s.clues.length===0&&<p>還沒有取得關鍵線索。</p>}</div>
   </section>}
   {tab==='story'&&<section className="character-tab-content viewport-list">

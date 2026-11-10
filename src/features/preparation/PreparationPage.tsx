@@ -11,7 +11,7 @@ import { CHAPTER_ONE } from '../../game/data/maps/ch01';
 export default function PreparationPage(){
  const {state:s,dispatch}=useGame(),navigate=useNavigate();
  const [confirm,setConfirm]=useState(false);
- const mission=CHAPTER_ONE.stages[(s.stageId??1)-1]??CHAPTER_ONE.stages[0];
+ const mission=CHAPTER_ONE.stages[(s.stageId??1)-1]!;
  const ids=Object.keys(ATTACK_CARDS).filter(id=>!!s.ownedCards[id]);
  let projectedWeight=bagWeight(s.bag);
  const invalid:string[]=[];

@@ -19,7 +19,6 @@ export default function ChapterMapPage(){
  const {state:s}=useGame(),navigate=useNavigate();
  const viewport=useRef<HTMLDivElement|null>(null);
  const drag=useRef({active:false,start:0,initial:0});
- const [position,setPosition]=useState(0);
  const [mapScale,setMapScale]=useState(.75);
  const [stageNotice,setStageNotice]=useState('');
  const [selected,setSelected]=useState(s.chapterProgress.unlocked);
@@ -69,10 +68,9 @@ export default function ChapterMapPage(){
     onPointerMove={e=>{if(drag.current.active)e.currentTarget.scrollLeft=drag.current.initial-(e.clientX-drag.current.start);}}
     onPointerUp={()=>{drag.current.active=false;}}
     onPointerCancel={()=>{drag.current.active=false;}}
-    onScroll={e=>setPosition(e.currentTarget.scrollLeft)}
     tabIndex={0} aria-label="可左右拖曳查看十二個關卡的城市地圖">
     <div className="map-canvas city-map-canvas" style={{zoom:mapScale}}>
-     <div className="city-map-backdrop" aria-hidden="true"/>
+     <div className="city-map-backdrop" style={{backgroundImage:`linear-gradient(180deg,#02070d0c,#030a19aa),url(${import.meta.env.BASE_URL}chapter01-city.svg)`}} aria-hidden="true"/>
      <svg className="map-landscape city-map-route" viewBox="0 0 1540 430" preserveAspectRatio="none" aria-hidden="true">
       <polyline points={connections} stroke="#09131e" strokeOpacity=".9" strokeWidth="13" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
       <polyline points={connections} stroke="#c4d4df" strokeOpacity=".74" strokeWidth="2.7" strokeDasharray="5 8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>

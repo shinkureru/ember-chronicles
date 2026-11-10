@@ -50,6 +50,7 @@ export interface GameState {
   npc: { hostility: number; trust: number; met: number; adaptations: Record<string, number>; remembers: string[]; stolenGear: string[] };
   attempt: number; sceneId: SceneId; flags: string[]; searchedSources: string[]; lootSearches:Record<string,number>;
   attackDeck:string[]; enemy:{id:string;name:string;health:number;maxHealth:number};
+  enemyStrike?:{id:number;itemId:string;damage:number;hit:boolean}|null;
   clues: string[]; insightBonus: number;
   bag: Record<string, number>; warehouse: Record<string, number>; warehouseCapacity: number;
   protectedItems: string[];

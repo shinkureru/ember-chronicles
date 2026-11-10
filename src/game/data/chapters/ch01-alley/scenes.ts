@@ -44,7 +44,7 @@ export const ALLEY_SCENES:Record<SceneId,SceneDef>={
 export const getAlleySceneActions=(state:GameState):ActionChoice[]=>{
  const scene=ALLEY_SCENES[state.sceneId];
  if(!scene)return [];
- const base=scene.actions.filter(action=>!action.lootSource || true);
+ const base=scene.actions;
  const attempt=state.alleyNpc?.met??1;
  const versions:Record<SceneId,ActionChoice[]>={
   gate:[

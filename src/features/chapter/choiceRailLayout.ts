@@ -22,8 +22,8 @@ export const getChoiceRailLayout=(actions:ActionChoice[],seed:string):RailChoice
   const upper=index%2===0;
   return {
    cluster:Math.floor(index/2),
-   x:(upper?38:54)+(h%23)-11,
-   y:(upper?28:73)+((h>>>8)%13)-6,
+   x:(upper?38:54)+(h%25)-12,
+   y:(upper?24:77)+((h>>>8)%9)-4,
    angle:((h>>>15)%19)-9,
    delay:-((h>>>21)%19)/10,
   };

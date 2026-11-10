@@ -1,0 +1,231 @@
+/* v0.9 — one world-map hub, deliberate mobile typography, legible equipment and trading. */
+
+/* Navigation: map is the only hub. Other screens have one consistent way home. */
+.app-header__back{display:inline-flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;min-height:34px;padding:4px 8px;border:1px solid #454545;border-radius:5px;color:#e5e5e5;font-size:10px}
+.app-header__back svg,.app-header__settings svg{display:block;flex:none}
+.app-header__settings{flex:0 0 35px;min-width:35px;min-height:35px;display:grid;place-items:center;border:1px solid #494949;border-radius:5px}
+.app-header__status{margin-left:auto}
+.world-map-page .map-hub{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:5px!important;background:#090909;border-color:#414141;padding:5px}
+.world-map-page .map-hub__link{min-width:0;min-height:55px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:5px 1px!important;line-height:1.2;text-align:center;font-size:10px;background:#101010;border:1px solid #3c3c3c;border-radius:5px}
+.world-map-page .map-hub__link svg{display:block;flex:0 0 auto;margin:0 auto!important;width:19px;height:19px;background:none!important;filter:none!important;transform:none!important}
+.world-map-page .map-hub__link span{display:block;text-align:center;line-height:1.3}
+.map-toolbar button{display:grid!important;place-items:center!important;min-height:35px;min-width:35px;padding:0!important}
+.map-toolbar button svg{display:block;position:static;transform:none;flex:none}
+.world-map-page .chapter-map-section{position:relative;flex:1;min-height:0}
+.world-map-page .map-stage-detail{display:none!important}
+.map-point__next-indicator{position:absolute;bottom:calc(100% + 9px);left:50%;display:flex;flex-direction:column;align-items:center;gap:0;transform:translateX(-50%);white-space:nowrap;font-size:10px;color:#f4e9d6;text-shadow:0 2px 5px #000;pointer-events:none;z-index:8;animation:next-mission-bounce 1.7s ease-in-out infinite}
+.map-point__next-indicator svg{display:block;filter:drop-shadow(0 0 5px #ffffff88)}
+.map-point--next .map-point__marker{border-color:#e5e5e5!important;box-shadow:0 0 0 4px #000a,0 0 19px #d6d6d644}
+@keyframes next-mission-bounce{0%,100%{translate:0 0}50%{translate:0 -9px}}
+.map-stage-hint{position:absolute;z-index:12;left:9px;right:9px;bottom:26px;background:#070707f5;border:1px solid #898989;padding:9px 35px 9px 11px;color:#eaeaea;font-size:11px;line-height:1.5;box-shadow:0 10px 25px #000}
+.map-stage-hint button{position:absolute;right:8px;top:3px;background:transparent;border:none;color:#eee;font-size:21px;display:grid;place-items:center}
+.town-return-hint{margin:4px 0 0;color:#999;font-size:11px;line-height:1.5;padding:9px;border:1px solid #353535}
+.town-page .town-links{display:none!important}
+
+/* Five canonical in-world day phases. Stay tense and dark even around noon. */
+.phase--morning{--phase-glow:#98917a;--phase-haze:#7e8b91;--phase-sky:#272e36}
+.phase--noon{--phase-glow:#b7a389;--phase-haze:#8b8b87;--phase-sky:#373533}
+.phase--afternoon{--phase-glow:#a97a5f;--phase-haze:#6f6565;--phase-sky:#2c2528}
+.phase--evening{--phase-glow:#5f566d;--phase-haze:#48475a;--phase-sky:#15151f}
+.phase--late-night{--phase-glow:#253c58;--phase-haze:#28313e;--phase-sky:#090c16}
+.chapter-live .scene-art[class*="phase--"]{
+ background:radial-gradient(ellipse at 68% 20%,var(--phase-glow) 0,transparent 45%),linear-gradient(180deg,var(--phase-sky),#0d0d0e 82%)!important;
+}
+.chapter-live .scene-art[class*="phase--"] .scene-art__halo{background:var(--phase-glow);opacity:.31!important;filter:blur(31px)}
+.chapter-live .scene-art[class*="phase--"] .scene-art__atmosphere{background:repeating-linear-gradient(166deg,transparent 0 8px,var(--phase-haze) 10px,transparent 11px 37px);opacity:.12}
+.town-page .town-visual[class*="phase--"]{background:radial-gradient(ellipse at 70% 20%,var(--phase-glow),transparent 56%),linear-gradient(180deg,var(--phase-sky),#090909)!important}
+.world-map-page[class*="phase--"] .map-viewport{background:var(--phase-sky)!important}
+.world-map-page[class*="phase--"] .map-landscape{filter:sepia(.14) saturate(.6) brightness(.93);opacity:.93}
+.world-map-page.phase--morning .map-landscape{filter:sepia(.35) hue-rotate(162deg) saturate(.52) brightness(1.17)}
+.world-map-page.phase--noon .map-landscape{filter:sepia(.42) saturate(.67) brightness(1.25)}
+.world-map-page.phase--afternoon .map-landscape{filter:sepia(.3) saturate(.55) brightness(1.06)}
+.world-map-page.phase--evening .map-landscape{filter:sepia(.23) hue-rotate(230deg) saturate(.78) brightness(.76)}
+.world-map-page.phase--late-night .map-landscape{filter:sepia(.18) hue-rotate(163deg) saturate(.9) brightness(.50)}
+.world-map-page.phase--morning .map-intro{border-color:#646861}
+.world-map-page.phase--noon .map-intro{border-color:#877a68}
+.world-map-page.phase--evening .map-intro{border-color:#50465d}
+.world-map-page.phase--late-night .map-intro{border-color:#353c4d}
+
+/* Four picks per page = a strict 2x2 safe grid; no absolute overlapping text. */
+.chapter-live .choice-stage--pick .choice-cloud{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));
+ gap:clamp(7px,1.7vh,14px);padding:clamp(9px,2vh,18px) 7px clamp(24px,4.5vh,38px);
+ align-content:stretch;justify-items:stretch;min-height:0;overflow:hidden;
+}
+.chapter-live .choice-stage--pick .choice-word{
+ position:relative!important;left:auto!important;top:auto!important;
+ width:100%!important;min-width:0!important;min-height:0!important;max-height:100%;
+ transform:rotate(var(--choice-angle)) skewX(-4deg)!important;
+ font-size:clamp(15px,4.2vw,23px)!important;line-height:1.23!important;letter-spacing:-.055em!important;
+ padding:4px 3px!important;gap:4px;align-self:stretch;justify-self:stretch;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ overflow:hidden!important;white-space:normal;
+}
+.chapter-live .choice-stage--pick .choice-word span{
+ max-width:100%;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+ overflow:hidden;overflow-wrap:anywhere;line-height:1.23;text-align:center;text-wrap:balance;
+}
+.chapter-live .choice-stage--pick .choice-word__chance{flex:none;font-size:12px;line-height:1.1}
+.chapter-live .choice-stage--pick .choice-word__note{position:static;max-width:100%;font-size:9px;line-height:1.2;white-space:normal;text-align:center}
+.chapter-live .choice-stage--pick .choice-word:hover{z-index:2}
+.choice-stage__retreat{bottom:0!important}
+/* Visual invitation to open optional skills: valid keyframes have no !important. */
+.choice-inspect .choice-inspect__skill--prominent{
+ border:1px solid #a1a1a1!important;background:#191919!important;color:#fff!important;
+ border-radius:6px!important;min-height:49px;max-width:100%;width:min(100%,168px);
+ text-align:center;display:flex;justify-content:center;align-items:center;gap:7px;
+}
+.choice-inspect__skill--prominent svg{flex:0 0 auto;display:block}
+.choice-inspect .choice-inspect__skill--prominent.skill-attach--glow{
+ animation:skill-attention-v09 2.2s ease-in-out infinite!important;
+}
+@keyframes skill-attention-v09{
+ 0%,100%{box-shadow:0 0 0 1px #aaaaaa36,0 0 5px #ffffff15;filter:brightness(1)}
+ 50%{box-shadow:0 0 0 3px #ffffffa8,0 0 25px #ffffff91;filter:brightness(1.45)}
+}
+/* Direct exit confirmation: no intermediate action card. */
+.mission-exit-overlay{position:fixed;inset:0;z-index:126;background:#000c;display:grid;place-items:center;padding:18px}
+.mission-exit-dialog{width:min(100%,380px);padding:23px 19px;background:#070707;border:1px solid #aaa;color:#f2f2f2;display:flex;flex-direction:column;gap:14px;box-shadow:0 15px 58px #000}
+.mission-exit-dialog h3{font-size:19px}
+.mission-exit-dialog p{font-size:13px;line-height:1.75}
+.mission-exit-dialog small{font-size:11px;color:#aaa}
+.mission-exit-dialog__actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.mission-exit-dialog__actions button{border:1px solid #888;background:#141414;color:#eee;padding:10px 6px;font-size:12px}
+.mission-exit-dialog__actions button:last-child{background:#e8e8e8;color:#111}
+
+/* Character first view: large full-body figure and six separate data tabs. */
+.character-viewport--v09{height:100%;min-height:0;gap:6px!important;overflow:hidden!important;padding:0!important}
+.character-page__header{flex:0 0 auto;display:flex;align-items:end;justify-content:space-between;gap:8px;min-height:42px}
+.character-page__header h1{font:800 20px 'Noto Serif TC',serif;color:#eee;line-height:1.3}
+.character-page__header>span{font-size:10px;color:#b0b0b0;white-space:nowrap}
+.character-page__tabs{
+ display:flex;gap:4px;align-items:center;overflow-x:auto;overflow-y:hidden;
+ flex:0 0 39px;min-height:39px;scrollbar-width:thin;scrollbar-color:#777 #111;
+ padding-bottom:3px;overscroll-behavior-x:contain;
+}
+.character-page__tabs button{
+ flex:0 0 auto;padding:8px 10px;min-height:32px;background:#111;border:1px solid #4a4a4a;
+ border-radius:5px;color:#bcbcbc;font-size:11px;white-space:nowrap;
+}
+.character-page__tabs button.is-active{background:#303030;border-color:#dedede;color:#fff;font-weight:800}
+.character-viewport--v09 .character-equipment--v09{
+ flex:1 1 0;min-height:0;display:flex;flex-direction:column;gap:5px;padding:4px;
+ border:1px solid #3d3d3d;background:#050505;overflow:hidden;
+}
+.character-viewport--v09 .equipment-stage{
+ position:relative;flex:1 1 0;min-height:0;height:auto;margin:0;overflow:hidden;
+ background:radial-gradient(ellipse at 50% 64%,#333 0,#1b1b1b 37%,#080808 79%);border:1px solid #363636;
+}
+.character-viewport--v09 .survivor-figure{
+ position:absolute;left:50%;bottom:0;transform:translateX(-50%);height:100%;width:auto;
+ max-width:47%;filter:drop-shadow(0 0 14px #000);
+}
+.character-viewport--v09 .equipment-slot{
+ position:absolute;z-index:4;transform:none!important;width:34%;max-width:135px;min-height:54px;
+ padding:5px 4px;border:1px solid #555;border-radius:4px;background:#060606e8;
+ display:flex;gap:3px;align-items:center;color:#eee;overflow:hidden;
+}
+.character-viewport--v09 .equipment-slot.is-selected{border-color:#e1e1e1;background:#242424}
+.character-viewport--v09 .equipment-slot__symbol{font-size:12px;flex:none;color:#aaa}
+.character-viewport--v09 .equipment-slot__copy{display:flex;flex-direction:column;min-width:0;gap:1px}
+.character-viewport--v09 .equipment-slot small{color:#9e9e9e;font-size:9px}
+.character-viewport--v09 .equipment-slot strong{display:block;font-size:10px;line-height:1.2;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.character-viewport--v09 .equipment-slot em{
+ display:block;font-style:normal;color:#bebebe;font-size:8px;line-height:1.25;
+ overflow-wrap:anywhere;
+}
+.character-viewport--v09 .equipment-slot--head{top:4%;left:1.5%}
+.character-viewport--v09 .equipment-slot--body{top:4%;right:1.5%;left:auto}
+.character-viewport--v09 .equipment-slot--hands{top:40%;left:1.5%}
+.character-viewport--v09 .equipment-slot--mainHand{top:40%;right:1.5%;left:auto}
+.character-viewport--v09 .equipment-slot--utility{top:76%;left:1.5%}
+.character-viewport--v09 .equipment-slot--accessory{top:76%;right:1.5%;left:auto;bottom:auto}
+.character-viewport--v09 .equipment-picker{
+ flex:0 0 auto;min-height:104px;max-height:124px;overflow:hidden;
+ display:flex;flex-direction:column;gap:3px;padding:4px;
+}
+.character-viewport--v09 .equipment-picker__title{flex:none;font-size:11px}
+.character-viewport--v09 .equipment-picker__choices{flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;display:flex;flex-direction:column;gap:3px}
+.character-viewport--v09 .equipment-picker__item{flex:none;min-height:31px;padding:4px 8px}
+.character-viewport--v09 .equipment-picker__item span{display:flex;flex-direction:column;text-align:left;font-size:10px;line-height:1.3}
+.character-viewport--v09 .equipment-picker__item span small{font-size:9px;color:#aaa}
+.character-viewport--v09 .equipment-picker__unequip{flex:none;min-height:30px;padding:4px;font-size:10px}
+.character-tab-content{
+ flex:1 1 0;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+ padding:13px;background:#090909;border:1px solid #444;display:flex;flex-direction:column;gap:12px;
+ scrollbar-width:thin;
+}
+.character-tab-content h2{display:flex;align-items:center;gap:8px;font-size:17px;color:#eee}
+.character-tab-content>p{font-size:11px;color:#bbb;line-height:1.85}
+.character-tab-content__stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.character-tab-stat{min-width:0;border:1px solid #333;background:#151515;padding:10px;display:grid;gap:3px}
+.character-tab-stat>span{font-size:10px;color:#b8b8b8}
+.character-tab-stat>strong{font:800 22px Inter,sans-serif;color:#eee}
+.character-tab-stat>small{font-size:9px;color:#777}
+
+/* Market: five distinct trader portraits; each has a real inventory. */
+.market-viewport--v09{height:100%;min-height:0;overflow:hidden!important;display:flex;flex-direction:column;gap:7px!important;padding:0!important}
+.market-v09__heading{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:0 0 auto;min-height:41px}
+.market-v09__heading h1{font:800 21px 'Noto Serif TC',serif}
+.market-v09__heading>div:last-child{display:flex;align-items:center;gap:5px;font:700 14px Inter,sans-serif;color:#eee}
+.market-v09__heading small{font:400 9px 'Noto Sans TC',sans-serif;color:#aaa}
+.market-vendor-nav{flex:0 0 77px;min-height:77px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.market-vendor-nav button{
+ min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;
+ border:1px solid #444;background:#111;color:#bcbcbc;padding:3px 2px;border-radius:4px;overflow:hidden;
+}
+.market-vendor-nav button.is-active{border-color:#e7e7e7;color:#fff;background:#2a2a2a}
+.market-vendor-nav .market-portrait{height:44px;width:44px;max-width:100%;display:block;filter:grayscale(1)}
+.market-vendor-nav button span{font-size:9px;max-width:100%;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.market-vendor-profile{
+ flex:0 0 clamp(102px,18dvh,141px);min-height:102px;
+ background:#0c0c0c;border:1px solid #4b4b4b;padding:6px;display:flex;gap:11px;overflow:hidden;
+}
+.market-vendor-profile>.market-portrait{flex:0 0 36%;width:36%;height:100%;object-fit:contain;border:1px solid #2c2c2c}
+.market-vendor-profile>div{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:3px}
+.market-vendor-profile strong{font-size:16px;color:#f1f1f1}
+.market-vendor-profile small{font-size:10px;color:#b7b7b7}
+.market-vendor-profile p{flex:1 1 0;overflow-y:auto;min-height:0;font-size:11px;line-height:1.5;color:#cecece}
+.market-vendor-profile__favor{display:flex;gap:4px;align-items:center;font-size:9px;color:#a4a4a4}
+.market-v09__tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;flex:0 0 35px}
+.market-v09__tabs button,.market-v09__card-mode button{display:flex;align-items:center;justify-content:center;gap:4px;border:1px solid #555;background:#111;color:#bbb;font-size:11px;padding:4px;min-width:0}
+.market-v09__tabs button svg{flex:none}
+.market-v09__tabs button.is-active,.market-v09__card-mode button.is-active{background:#303030;color:#fff;border-color:#aaa}
+.market-v09__card-mode{display:grid;grid-template-columns:1fr 1fr;gap:5px;flex:0 0 28px}
+.market-v09__inventory{
+ flex:1 1 0;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#555 #111;
+ border:1px solid #383838;background:#090909;padding:6px;display:flex;flex-direction:column;gap:5px;
+}
+.market-v09__inventory>p{padding:14px;color:#aaa;font-size:11px}
+.market-v09__row{flex:0 0 auto;min-height:64px;display:flex;align-items:center;gap:8px;padding:7px;border:1px solid #353535;background:#151515;min-width:0}
+.market-v09__row-icon{flex:0 0 29px;display:grid;place-items:center;font-size:21px;filter:grayscale(1)}
+.market-v09__row>div{min-width:0;flex:1;display:flex;flex-direction:column;gap:3px}
+.market-v09__row strong{font-size:12px;color:#e8e8e8}
+.market-v09__row small{font-size:10px;color:#b3b3b3;line-height:1.3}
+.market-v09__row button{flex:0 0 55px;border:1px solid #aaa;background:#ddd;color:#111;font-size:11px;min-height:32px;padding:4px}
+.market-v09__row button:disabled{background:#252525;border-color:#474747;color:#696969}
+.market-v09__footer{flex:0 0 auto;color:#a6a6a6;font-size:10px;line-height:1.4;padding-bottom:2px}
+
+@media(max-width:365px){
+ .app-header__brand strong{font-size:14px}
+ .app-header__back{padding:4px 5px}
+ .app-header__status{display:none}
+ .world-map-page .map-hub__link{font-size:9px}
+ .character-viewport--v09 .equipment-slot{width:35%;padding:3px;min-height:49px}
+ .character-viewport--v09 .equipment-slot strong{font-size:9px}
+ .character-viewport--v09 .equipment-slot em{font-size:7px}
+ .market-vendor-nav button span{font-size:8px}
+ .chapter-live .choice-stage--pick .choice-word{font-size:clamp(14px,4vw,18px)!important}
+}
+@media(max-height:670px){
+ .character-viewport--v09 .equipment-picker{min-height:88px;max-height:91px}
+ .character-viewport--v09 .equipment-slot{min-height:43px}
+ .character-viewport--v09 .equipment-slot em{font-size:7px}
+ .market-vendor-nav{flex-basis:62px;min-height:62px}
+ .market-vendor-nav .market-portrait{height:34px}
+ .market-vendor-profile{flex-basis:91px;min-height:91px}
+ .market-v09__row{min-height:53px}
+}
+@media(prefers-reduced-motion:reduce){
+ .map-point__next-indicator,.choice-inspect .choice-inspect__skill--prominent.skill-attach--glow{animation:none!important}
+}

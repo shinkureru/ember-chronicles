@@ -13,6 +13,11 @@ import type { GameState, Outcome, ProfessionId, LootDrop } from '../types';
 export type GameAction =
   | {type:'SELECT_PROFESSION';profession:ProfessionId}
   | {type:'START_ATTEMPT'}
+  | {type:'WORLD_CLOCK_TICK';minutes?:number}
+  | {type:'ENEMY_COUNTER_WINDUP'}
+  | {type:'ENEMY_COUNTER_THROW'}
+  | {type:'ENEMY_COUNTER_HIT'}
+  | {type:'ENEMY_COUNTER_FINISH'}
   | {type:'PREPARE_ATTACK_CARD';cardId:string}
   | {type:'CHOOSE';choiceId:string;skillId:string|null}
   | {type:'RETREAT'}
@@ -119,6 +124,43 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
   if(action.type==='SELECT_PROFESSION')return makeInitialState(action.profession);
   const s:GameState=structuredClone(state);
   switch(action.type){
+    case 'WORLD_CLOCK_TICK':{
+      // World time advances even on map and during missions. Do not mutate other events.
+      // Five in-game minutes per ten seconds of visible unpaused play.
+      const minutes=action.minutes??5;
+      if(!Number.isFinite(minutes)||minutes<=0||minutes>1440)return state;
+      if(s.mode==='result')return state;
+      advanceTime(s,minutes);
+      return s;
+    }
+    case 'ENEMY_COUNTER_WINDUP':{
+      if(s.mode!=='adventure'||s.enemyCounter?.phase!=='waiting')return state;
+      s.enemyCounter.phase='windup';
+      return s;
+    }
+    case 'ENEMY_COUNTER_THROW':{
+      if(s.mode!=='adventure'||s.enemyCounter?.phase!=='windup')return state;
+      s.enemyCounter.phase='throwing';
+      s.enemyStrike={id:s.enemyCounter.id,itemId:s.enemyCounter.itemId,
+        damage:s.enemyCounter.damage,hit:s.enemyCounter.hit};
+      return s;
+    }
+    case 'ENEMY_COUNTER_HIT':{
+      if(s.mode!=='adventure'||s.enemyCounter?.phase!=='throwing')return state;
+      s.enemyCounter.phase='hit';
+      const {itemId,damage,hit}=s.enemyCounter;
+      if(hit){
+        s.player.health=clamp(s.player.health-damage,0,s.player.maxHealth);
+        s.lastEvent=`對方把「${ITEMS[itemId]?.name??'工具'}」扔向我。我被擊中，生命 -${damage}！`;
+        if(s.player.health<=0){s.enemyCounter=null;s.enemyStrike=null;resolveOutcome(s,'defeat');}
+      }else s.lastEvent='對方扔來的物品擦身而過，我閃開了。';
+      return s;
+    }
+    case 'ENEMY_COUNTER_FINISH':{
+      if(s.mode!=='adventure'||s.enemyCounter?.phase!=='hit')return state;
+      s.enemyCounter=null;s.enemyStrike=null;
+      return s;
+    }
     case 'START_ATTEMPT':{
       if(!s.profession||s.mode==='adventure')return state;
       // Re-use the player's previous loadout: selected weapons remain with the player
@@ -131,7 +173,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
         s.bag[itemId!]=(s.bag[itemId!]??0)+1;
       }
       s.attempt+=1;s.npc.met+=1;s.mode='adventure';s.sceneId='gate';
-      s.flags=[];s.searchedSources=[];s.lootSearches={};s.outcome=null;s.lastLoot=null;s.lastEvent=null;s.enemy=makeInitialEnemy();s.enemyStrike=null;
+      s.flags=[];s.searchedSources=[];s.lootSearches={};s.outcome=null;s.lastLoot=null;s.lastEvent=null;s.enemy=makeInitialEnemy();s.enemyStrike=null;s.enemyCounter=null;
       s.hand=[];s.discardPile=[];s.drawPile=[...s.activeDeck];
       drawCards(s,3);
       s.player.resource=clamp(s.player.resource+2,0,s.player.maxResource);
@@ -165,7 +207,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       return s;
     }
     case 'CHOOSE':{
-      if(s.mode!=='adventure'||s.sceneId==='confrontation'&&s.enemy.health<=0)return state;
+      if(s.mode!=='adventure'||s.enemyCounter||s.sceneId==='confrontation'&&s.enemy.health<=0)return state;
       s.enemyStrike=null;
       const choice=getVisibleActions(s).find(c=>c.id===action.choiceId);
       if(!choice)return state;
@@ -217,12 +259,10 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
         const hit=!isSuccess||nextRand(s)<.68;
         const rawDamage=itemId==='flashlight'?8:itemId==='radio'?6:4;
         const damage=hit?mitigateCounterDamage(rawDamage+Math.floor(s.npc.hostility/40),getEquippedDefense(s)):0;
-        s.enemyStrike={id:s.attempt*1000+s.log.length,itemId,damage,hit};
-        if(hit){
-          s.player.health=clamp(s.player.health-damage,0,s.player.maxHealth);
-          s.lastEvent+=` 他把「${ITEMS[itemId]?.name??'工具'}」丟了過來，我被擊中，生命 -${damage}。`;
-          if(s.player.health<=0)resolveOutcome(s,'defeat');
-        }else s.lastEvent+=' 他反手丟出工具，但我閃過了。';
+        // Store the rolled attack once, then play it in distinct timed phases.
+        // Health is only deducted at the on-screen impact; the player cannot bypass the queued counter.
+        s.enemyCounter={id:s.attempt*1000+s.log.length,itemId,damage,hit,phase:'waiting'};
+        s.lastEvent+=' 對方正準備反擊，我得提防他接下來的動作。';
         return s;
       }
       if(isSuccess&&choice.lootSource){
@@ -241,7 +281,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       return s;
     }
     case 'RETREAT':{
-      if(s.mode!=='adventure')return state;
+      if(s.mode!=='adventure'||s.enemyCounter)return state;
       const preview=retreatPreview(s);
       advanceTime(s,preview.minutes);
       s.player.stamina=clamp(s.player.stamina-preview.staminaCost,0,s.player.maxStamina);

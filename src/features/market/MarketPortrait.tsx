@@ -1,5 +1,20 @@
 /** Original monochrome SVG portraits; no external image licenses or stock photos. */
-export default function MarketPortrait({face,name}:{face:number;name:string}){
+export default function MarketPortrait({face,name,profile=false}:{face:number;name:string;profile?:boolean}){
+ if(profile)return <svg className={`market-portrait market-portrait--profile market-portrait--${face}`} viewBox="0 0 200 370" role="img" aria-label={name+'的側面像'}>
+  <defs><linearGradient id={`market-profile-coat-${face}`} x1="0" y1="0" x2="1" y2="1"><stop stopColor="#5d6263"/><stop offset=".55" stopColor="#24262a"/><stop offset="1" stopColor="#0b0b0d"/></linearGradient></defs>
+  <path d="M44 359L68 189L65 114Q88 87 130 108L154 170L175 357Z" fill={`url(#market-profile-coat-${face})`} stroke="#818589" strokeWidth="3"/>
+  <path d="M64 129L49 207L61 270M137 126L160 221L151 263" fill="none" stroke="#6f777a" strokeWidth="4"/>
+  <path d="M88 45L99 95L124 107L137 65Z" fill="#5d6063" stroke="#96999a" strokeWidth="2"/>
+  <path d="M76 43Q99 19 131 43L140 66L151 78L140 87L135 97Q96 111 80 84Z" fill={face===2?'#737173':'#626466'} stroke="#a0a0a0" strokeWidth="3"/>
+  {face===3&&<path d="M75 64Q55 1 119 14Q146 22 140 90L132 70L126 35L77 60Z" fill="#a2a2a2" stroke="#acacac" strokeWidth="2"/>}
+  {face!==3&&<path d="M75 64Q58 10 105 17Q138 16 141 48L126 39L81 49Z" fill="#242426"/>}
+  {face===0&&<g><rect x="116" y="58" width="32" height="13" rx="4" fill="#050505" stroke="#999" strokeWidth="2"/><path d="M114 61L100 59" stroke="#999" strokeWidth="3"/></g>}
+  {face===4&&<g><path d="M119 76L159 78L150 108L128 111Z" fill="#151515" stroke="#919191" strokeWidth="2"/><circle cx="144" cy="95" r="11" fill="#303030" stroke="#888" strokeWidth="3"/></g>}
+  {face===2&&<path d="M113 58L124 93M105 59L116 79" stroke="#2f2d2d" strokeWidth="3"/>}
+  {face===1&&<path d="M53 151L87 137M63 169L96 155" stroke="#444" strokeWidth="5"/>}
+  {face!==4&&<path d="M120 62L133 61M132 86L142 86" stroke="#191919" strokeWidth="3"/>}
+  <path d="M98 125L113 156L98 197M100 262L90 350" stroke="#74797d" strokeWidth="3" fill="none" opacity=".8"/>
+ </svg>;
  const hood=face===0||face===4;
  const hair=face===3;
  const mask=face===4;

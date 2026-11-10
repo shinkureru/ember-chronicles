@@ -6,7 +6,8 @@ import AudioSettingsControls from './AudioSettingsControls';
 
 /** In-mission settings: modal only, does not navigate away from the locked chapter. */
 export default function GameSettingsDialog({onClose}:{onClose:()=>void}){
-  const {state}=useGame();
+  const {state,pauseClock}=useGame();
+  useEffect(()=>{pauseClock('dialog',true);return()=>pauseClock('dialog',false)},[pauseClock]);
   const [saved,setSaved]=useState<'idle'|'success'|'error'>('idle');
   useEffect(()=>{const onKey=(e:KeyboardEvent)=>{if(e.key==='Escape')onClose()};window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey)},[onClose]);
   const persist=()=>setSaved(saveGame(state)?'success':'error');

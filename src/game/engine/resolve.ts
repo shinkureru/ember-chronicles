@@ -19,8 +19,8 @@ export type GameAction =
   | {type:'UPGRADE_CARD';cardId:string}
   | {type:'MARKET_SELL_ITEM';vendorId:string;itemId:string}
   | {type:'MARKET_BUY_ITEM';vendorId:string;itemId:string}
-  | {type:'MARKET_SELL';cardId:string}
-  | {type:'MARKET_BUY';cardId:string}
+  | {type:'MARKET_SELL';vendorId:string;cardId:string}
+  | {type:'MARKET_BUY';vendorId:string;cardId:string}
   | {type:'REST_TOWN'}
   | {type:'EQUIP_ITEM';slot:string;itemId:string}
   | {type:'UNEQUIP_ITEM';slot:string}
@@ -295,6 +295,8 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
     }
     case 'MARKET_SELL':{
       if(s.mode==='adventure')return state;
+      const vendor=vendorById(action.vendorId);
+      if(!vendor||!vendor.cardIds.includes(action.cardId))return state;
       const card=CARDS[action.cardId],owned=s.ownedCards[action.cardId];
       if(!card||!owned||owned.copies<1)return state;
       const earnings=card.rarity==='normal'?18:card.rarity==='rare'?55:120;
@@ -305,6 +307,8 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
     }
     case 'MARKET_BUY':{
       if(s.mode==='adventure')return state;
+      const vendor=vendorById(action.vendorId);
+      if(!vendor||!vendor.cardIds.includes(action.cardId))return state;
       const card=CARDS[action.cardId];if(!card||!s.ownedCards[action.cardId])return state;
       const price=card.rarity==='normal'?360:card.rarity==='rare'?980:4000;
       if(s.economy.coins<price)return state;

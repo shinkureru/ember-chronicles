@@ -132,3 +132,12 @@
 - 倉庫雙向圖示改為箱子加號／開箱，主要功能頁面 230ms 快速漸顯。
 - v1.4 下階段：BGM／完整商用音效、新職業滲透者、第二關後巷的目擊者；目前不包含於 v1.3。
 - 詳見 docs/V13_IMPLEMENTATION.md；最新 CI 請查 GitHub PR。
+
+
+### v1.4｜第二關、滲透者、合法音訊（PR 待合併）
+- 任務選擇：`GameState.stageId=1|2`，`SELECT_STAGE` 僅接受已解鎖任務；地圖第 02 節點可玩，先進事前準備後進任務。
+- 後巷的目擊者：`src/game/data/chapters/ch01-alley/scenes.ts` 五場景，包含偵查、目擊者證詞、潛行、對峙與搜查；`AlleySceneArtwork` 五幅獨立 SVG，分時段上色；NPC 個別記憶 `alleyNpc` 與第一關倉管記憶分開，重訪選項輪換，戰敗仍獲保底情報，通關解鎖第 03 關節點。
+- 原型第三職業「滲透者（Infiltrator）」：四張專屬技能 `shadow_wall` / `silent_approach` / `quick_withdraw` / `use_blindspot`，職業被動強化潛行與回復隱匿，初始工具攻擊卡 `hook_snap` / `pocket_tool` 與實體工具對應；人物卡牌故事完整。
+- 音訊：新增八個 Kenney UI Audio CC0 WAV，已分配到不同操作家族；探索／交戰使用原創程序旋律，後巷五首聲景，戰鬥加強低音節奏與切換；授權清單見 `docs/AUDIO_LICENSES.md`。
+- 保留舊 localStorage v1 key，遷移補上 stageId/alleyNpc，不清玩家過往進度。
+- 詳細驗收：`docs/V14_IMPLEMENTATION.md`；v1.5 再討論正式完整世界觀及更多後續任務。

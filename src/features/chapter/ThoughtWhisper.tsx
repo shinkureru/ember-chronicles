@@ -30,7 +30,7 @@ export default function ThoughtWhisper({state,paused}:{state:GameState;paused:bo
     if(!active)return;
     const pool=contextualThoughts(state);
     const count=Math.random()<.18?2:1;
-    const choices:Array<Whisper>=Array.from({length:count},(_,n)=>({
+    const choices:Array<Whisper>=Array.from({length:count},()=>({
      id:++sequence,
      text:pool[Math.floor(Math.random()*pool.length)]??'我得小心一點。',
      x:8+Math.random()*47,

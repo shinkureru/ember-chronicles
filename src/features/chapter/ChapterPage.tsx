@@ -99,6 +99,8 @@ export default function ChapterPage(){
    onFinish={()=>{dispatch({type:'RETURN_HUB'});navigate('/',{replace:true});playCue(outcome==='victory'?'victory':outcome==='defeat'?'defeat':'retreat')}}/>;
  }
  if(s.mode==='home')return <Navigate to="/" replace/>;
+ const npc=s.stageId===2?(s.alleyNpc??s.npc):s.npc;
+ const stageVisit=s.stageId===2?(s.alleyNpc?.met??1):s.npc.met;
  return <div className="chapter-live">
   <div className="chapter-kicker"><span>CHAPTER 01 · MISSION {String(s.stageId??1).padStart(2,'0')} · {scene.label} · {worldPhase(s.world.minute)}</span><div className="chapter-kicker__controls"><button type="button" onClick={()=>setShowStory(true)}><BookOpenText size={15}/>全文</button><button type="button" onClick={()=>setShowSettings(true)} aria-label="遊戲設定"><Settings2 size={16}/>設定</button></div></div>
   <Hud/>

@@ -28,7 +28,6 @@ const RECORDED_FOLEY:Partial<Record<SoundCue,readonly string[]>>={
  searchTools:['metal_latch','metal_click'],
  loot:['handle_small_leather'],
  card:['book_flip_1'],
- open:['door_open_1'],
 };
 const FOLEY_ASSETS=[...new Set(Object.values(RECORDED_FOLEY).flat())] as string[];
 const recordedBuffers=new Map<string,AudioBuffer>();

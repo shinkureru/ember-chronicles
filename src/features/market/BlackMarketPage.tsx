@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Coins, HeartHandshake, LockKeyhole, ShoppingBag, Tag, X, ArrowRight, Clock3 } from 'lucide-react';
 import { useGame } from '../../app/GameContext';
 import { CARDS } from '../../game/data/cards';
@@ -88,7 +88,7 @@ export default function BlackMarketPage(){
     <div className="market-v10__goods" role="group" aria-label="點選攤位上的物品查看詳情">
      {offers.map((offer,i)=><button type="button" key={offer.id}
        className={`market-v10__object ${offer.canTrade?'is-available':'is-unavailable'}`}
-       style={{'--goods-shift':`${[-5,3,-8,5,0][i%5]}px`,'--goods-tilt':`${[-4,3,-2,5,0][i%5]}deg`} as React.CSSProperties}
+       style={{'--goods-shift':`${[-5,3,-8,5,0][i%5]}px`,'--goods-tilt':`${[-4,3,-2,5,0][i%5]}deg`} as CSSProperties}
        onClick={()=>{setSelectedId(offer.id);playCue('select')}}
        title={`${offer.name}，${offer.price} 舊幣`}>
        <span className="market-v10__object-art" aria-hidden="true">{offer.emoji}</span>

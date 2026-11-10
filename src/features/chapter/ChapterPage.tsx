@@ -17,6 +17,7 @@ import EnemyPresence from './EnemyPresence';
 import AttackProjectile, { type AttackFlight } from './AttackProjectile';
 import { ATTACK_CARDS } from '../../game/data/attacks';
 import SceneArtwork from './SceneArtwork';
+import AlleySceneArtwork from './AlleySceneArtwork';
 import ThoughtWhisper from './ThoughtWhisper';
 import MissionTransition, { type MissionTransitionKind } from './MissionTransition';
 import EnemyCounterProjectile from './EnemyCounterProjectile';
@@ -50,7 +51,7 @@ export default function ChapterPage(){
  const flightTimer=useRef<number|null>(null);
  const afterTimer=useRef<number|null>(null);
  const scene=getSceneContent(s), actions=getVisibleActions(s);
- const ambientLines=useMemo(()=>getAmbientThoughts(s.sceneId,s.attempt,s.world.minute,6),[s.sceneId,s.attempt,Math.floor(s.world.minute/60)]);
+ const ambientLines=useMemo(()=>getAmbientThoughts(s.sceneId,s.attempt,s.world.minute,6,s.stageId),[s.sceneId,s.attempt,Math.floor(s.world.minute/60),s.stageId]);
  const current:ActionChoice|null=actions.find(a=>a.id===chosenId)??null;
  const preview=current?calculateActionPreview(s,current,skillId):null;
  const usableSkillCount=current?s.hand.filter(id=>{const card=CARDS[id];return !!card&&isSkillCompatible(current,card)&&s.player.resource>=card.resourceCost}).length:0;
@@ -94,25 +95,26 @@ export default function ChapterPage(){
  if(!s.profession)return <div className="page-stack"><section className="surface-card"><h2>先選擇你的職業</h2><p>到第一章地圖完成角色建立後，即可開始調查。</p><NavLink to="/" className="primary-button">前往地圖 <ArrowRight size={16}/></NavLink></section></div>;
  if(s.mode==='result'){
   const outcome=s.outcome==='victory'?'victory':s.outcome==='retreat'?'retreat':'defeat';
-  return <MissionTransition kind={outcome} enemyName={s.enemy.name} summary={s.lastEvent}
+  return <MissionTransition kind={outcome} enemyName={s.enemy.name} stageId={s.stageId??1} summary={s.lastEvent}
    onFinish={()=>{dispatch({type:'RETURN_HUB'});navigate('/',{replace:true});playCue(outcome==='victory'?'victory':outcome==='defeat'?'defeat':'retreat')}}/>;
  }
  if(s.mode==='home')return <Navigate to="/" replace/>;
  return <div className="chapter-live">
-  <div className="chapter-kicker"><span>CHAPTER 01 · {scene.label} · {worldPhase(s.world.minute)}</span><div className="chapter-kicker__controls"><button type="button" onClick={()=>setShowStory(true)}><BookOpenText size={15}/>全文</button><button type="button" onClick={()=>setShowSettings(true)} aria-label="遊戲設定"><Settings2 size={16}/>設定</button></div></div>
+  <div className="chapter-kicker"><span>CHAPTER 01 · MISSION {String(s.stageId??1).padStart(2,'0')} · {scene.label} · {worldPhase(s.world.minute)}</span><div className="chapter-kicker__controls"><button type="button" onClick={()=>setShowStory(true)}><BookOpenText size={15}/>全文</button><button type="button" onClick={()=>setShowSettings(true)} aria-label="遊戲設定"><Settings2 size={16}/>設定</button></div></div>
   <Hud/>
   {(s.sceneId==='confrontation'||combatHold)&&<div className="enemy-hud" aria-label="敵人生命值">
     <div className="enemy-hud__top"><span>ENEMY / {s.enemy.name}</span><strong>{s.enemy.health} / {s.enemy.maxHealth} HP</strong></div>
     <div className="enemy-hud__track" role="progressbar" aria-label="敵人生命" aria-valuemin={0} aria-valuemax={s.enemy.maxHealth} aria-valuenow={s.enemy.health}><i style={{width:`${s.enemy.health/s.enemy.maxHealth*100}%`}}/></div>
   </div>}
   <section className={`scene-art scene-art--${s.sceneId} phase--${worldPhaseToken(s.world.minute)} ${s.sceneId==='confrontation'||combatHold?'scene-art--combat':''}`} aria-label={`${scene.location}的環境場景`}>
-   <SceneArtwork scene={combatHold&&s.enemy.health===0?'confrontation':s.sceneId}/>
-   {(s.sceneId==='confrontation'||combatHold)&&<EnemyPresence health={s.enemy.health} maxHealth={s.enemy.maxHealth} name={s.enemy.name} windup={s.enemyCounter?.phase==='windup'}/>}
-   <div className="scene-art__caption"><span className="scene-art__pin"/> {scene.location}<span> · 第 {s.attempt} 次來訪</span></div>
+   {s.stageId===2?<AlleySceneArtwork scene={combatHold&&s.enemy.health===0?'confrontation':s.sceneId}/>:
+     <SceneArtwork scene={combatHold&&s.enemy.health===0?'confrontation':s.sceneId}/>}
+   {(s.sceneId==='confrontation'||combatHold)&&<EnemyPresence health={s.enemy.health} maxHealth={s.enemy.maxHealth} name={s.enemy.name} variant={s.stageId===2?'alley':'warehouse'} windup={s.enemyCounter?.phase==='windup'}/>}
+   <div className="scene-art__caption"><span className="scene-art__pin"/> {scene.location}<span> · 第 {stageVisit} 次來訪</span></div>
   </section>
-  <section className="story-panel story-panel--compact"><div className="story-panel__top"><span className="eyebrow">SCENE / {scene.label}</span><span>{s.npc.met>1?'對方記得我':'初次接觸'}</span></div>
+  <section className="story-panel story-panel--compact"><div className="story-panel__top"><span className="eyebrow">SCENE / {scene.label}</span><span>{npc.met>1?'對方記得我':'初次接觸'}</span></div>
    <p className="story-panel__thought">{scene.narration}</p>
-   {scene.npcText&&<p className="story-panel__compact-npc"><strong>阿忠：</strong>{scene.npcText}</p>}
+   {scene.npcText&&<p className="story-panel__compact-npc"><strong>{s.stageId===2?'守望者':'阿忠'}：</strong>{scene.npcText}</p>}
 
    {s.sceneId==='loot'&&<div className="story-panel__hint"><Search size={12}/>搜刮會推進世界時間</div>}
   </section>
@@ -122,7 +124,7 @@ export default function ChapterPage(){
     s.enemyCounter.phase==='throwing'?'敵方投擲中': '反擊結算中'
    }<small>可以選擇下一個行動，反擊結束前無法執行。</small></div>}
   <ActionDecision actions={actions} state={s} selected={current} skillId={skillId} skillCount={usableSkillCount} busy={executing||s.sceneId==='confrontation'&&s.enemy.health===0}
-    onSelect={action=>{if(action.id==='loot_exit'){setConfirmLootExit(true);playCue('open');return;}setChosenId(action.id);setSkillId(null);playCue('select')}}
+    onSelect={action=>{if(action.id==='loot_exit'||action.id==='alley_loot_exit'){setConfirmLootExit(true);playCue('open');return;}setChosenId(action.id);setSkillId(null);playCue('select')}}
     onBack={()=>{setChosenId(null);setSkillId(null);playCue('open')}}
     onShowSkills={()=>{setHandOpenCount(n=>n+1);setShowHand(true);playCue('open')}}
     onExecute={requestUse}
@@ -134,7 +136,7 @@ export default function ChapterPage(){
     <small>已獲得的物資不會因結束搜查而消失。</small>
     <div className="mission-exit-dialog__actions">
      <button type="button" onClick={()=>{setConfirmLootExit(false);playCue('open')}}>繼續搜查</button>
-     <button type="button" onClick={()=>{setConfirmLootExit(false);dispatch({type:'CHOOSE',choiceId:'loot_exit',skillId:null});playCue('confirm')}}>確定結束</button>
+     <button type="button" onClick={()=>{setConfirmLootExit(false);dispatch({type:'CHOOSE',choiceId:s.stageId===2?'alley_loot_exit':'loot_exit',skillId:null});playCue('confirm')}}>確定結束</button>
     </div>
    </section>
   </div>}
@@ -148,7 +150,7 @@ export default function ChapterPage(){
   </div>}
   {s.enemyStrike&&s.enemyCounter&&s.sceneId==='confrontation'&&<EnemyCounterProjectile key={s.enemyStrike.id} strike={s.enemyStrike}/>}
   <ThoughtWhisper state={s} paused={!!cinematic||showStory||showHand||showSettings||showRetreat||skillPrompt||confirmLootExit}/>
-  {cinematic&&<MissionTransition kind={cinematic} enemyName={s.enemy.name} onFinish={()=>setCinematic(null)}/>}
+  {cinematic&&<MissionTransition kind={cinematic} enemyName={s.enemy.name} stageId={s.stageId??1} onFinish={()=>setCinematic(null)}/>}
   {flight&&<AttackProjectile flight={flight}/>}
   {skillPrompt&&<div className="skill-confirm-overlay" role="presentation">
    <section className="skill-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="提醒附加技能卡">
@@ -159,7 +161,7 @@ export default function ChapterPage(){
      <button type="button" onClick={confirmWithoutSkill}>仍然直接使用</button></div>
    </section>
   </div>}
-  {showStory&&<div className="game-sheet-backdrop" role="presentation" onClick={()=>setShowStory(false)}><div className="game-story-modal" role="dialog" aria-label="劇情與警告詳情" aria-modal="true" onClick={e=>e.stopPropagation()}><div className="game-sheet__top"><h3><BookOpenText size={17}/>劇情紀錄</h3><button onClick={()=>setShowStory(false)} aria-label="關閉劇情詳情"><X size={19}/></button></div><p>{scene.narration}</p>{scene.npcText&&<blockquote>阿忠：{scene.npcText}</blockquote>}{s.lastEvent&&<p>{s.lastEvent}</p>}{current&&<section className="story-action-details"><h4>目前選擇：{current.title}</h4><p>{current.thought}</p><p>{current.detail}</p></section>}<h4>場景心聲</h4>{ambientLines.map((line,i)=><p key={i}>「{line}」</p>)}{preview?.warnings.map(w=><div className="warning-panel" key={w.title}><ShieldAlert size={17}/><div><strong>{w.title}</strong><p>{w.detail}</p><small>恢復：{w.remedy}</small></div></div>)}{s.clues.length>0&&<p className="story-clues"><Sparkles size={14}/>已掌握 {s.clues.length} 條線索</p>}</div></div>}
+  {showStory&&<div className="game-sheet-backdrop" role="presentation" onClick={()=>setShowStory(false)}><div className="game-story-modal" role="dialog" aria-label="劇情與警告詳情" aria-modal="true" onClick={e=>e.stopPropagation()}><div className="game-sheet__top"><h3><BookOpenText size={17}/>劇情紀錄</h3><button onClick={()=>setShowStory(false)} aria-label="關閉劇情詳情"><X size={19}/></button></div><p>{scene.narration}</p>{scene.npcText&&<blockquote>{s.stageId===2?'守望者':'阿忠'}：{scene.npcText}</blockquote>}{s.lastEvent&&<p>{s.lastEvent}</p>}{current&&<section className="story-action-details"><h4>目前選擇：{current.title}</h4><p>{current.thought}</p><p>{current.detail}</p></section>}<h4>場景心聲</h4>{ambientLines.map((line,i)=><p key={i}>「{line}」</p>)}{preview?.warnings.map(w=><div className="warning-panel" key={w.title}><ShieldAlert size={17}/><div><strong>{w.title}</strong><p>{w.detail}</p><small>恢復：{w.remedy}</small></div></div>)}{s.clues.length>0&&<p className="story-clues"><Sparkles size={14}/>已掌握 {s.clues.length} 條線索</p>}</div></div>}
   {showRetreat&&<RetreatDialog onClose={()=>setShowRetreat(false)}/>}
   {showSettings&&<GameSettingsDialog onClose={()=>setShowSettings(false)}/>}
  </div>;

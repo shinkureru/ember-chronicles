@@ -285,7 +285,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
         (s.warehouse[item.id]??0)+(s.bag[item.id]??0)<=1)return state;
       const source=(s.warehouse[item.id]??0)>0?'warehouse':'bag';
       if((s[source][item.id]??0)<=0)return state;
-      s[source][item.id]-=1;
+      s[source][item.id]=(s[source][item.id]??0)-1;
       if(s[source][item.id]===0)delete s[source][item.id];
       const gain=marketSellPrice(item.id);
       s.economy.coins+=gain;

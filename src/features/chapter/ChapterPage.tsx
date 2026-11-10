@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, BookOpenText, Layers3, Search, Settings2, ShieldAlert, Sparkles, X } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Navigate, useNavigate } from 'react-router-dom';
 import { useGame } from '../../app/GameContext';
 import Hud from '../../components/Hud';
-import { getSceneContent, getVisibleActions, calculateActionPreview, worldPhase, worldPhaseToken, bagWeight, isSkillCompatible } from '../../game/engine/rules';
+import { getSceneContent, getVisibleActions, calculateActionPreview, worldPhase, worldPhaseToken, isSkillCompatible } from '../../game/engine/rules';
 import type { ActionChoice } from '../../game/types';
 import ActionDecision from './ActionDecision';
 import SkillHand from './SkillHand';
@@ -19,8 +19,10 @@ import { ATTACK_CARDS } from '../../game/data/attacks';
 import SceneArtwork from './SceneArtwork';
 import ThoughtWhisper from './ThoughtWhisper';
 import MissionTransition, { type MissionTransitionKind } from './MissionTransition';
+import EnemyCounterProjectile from './EnemyCounterProjectile';
 export default function ChapterPage(){
  const {state:s,dispatch}=useGame();
+ const navigate=useNavigate();
  const [chosenId,setChosenId]=useState<string|null>(null);
  const [skillId,setSkillId]=useState<string|null>(null);
  const [showRetreat,setShowRetreat]=useState(false);
@@ -71,7 +73,7 @@ export default function ChapterPage(){
    flightTimer.current=window.setTimeout(()=>{
     setCombatHold(true);setFlight(null);
     dispatchChoice();
-    afterTimer.current=window.setTimeout(()=>{setCombatHold(false);setExecuting(false)},900);
+    afterTimer.current=window.setTimeout(()=>{setCombatHold(false);setExecuting(false)},1750);
    },510);
    playCue('card');
   }else dispatchChoice();
@@ -91,19 +93,11 @@ export default function ChapterPage(){
  };
  if(!s.profession)return <div className="page-stack"><section className="surface-card"><h2>先選擇你的職業</h2><p>到第一章地圖完成角色建立後，即可開始調查。</p><NavLink to="/" className="primary-button">前往地圖 <ArrowRight size={16}/></NavLink></section></div>;
  if(s.mode==='result'){
-   const success=s.outcome==='victory';
-   return <div className="chapter-conclusion">
-     <div className="chapter-kicker chapter-kicker--settings"><span>CHAPTER 01 · 任務結算</span><button type="button" onClick={()=>setShowSettings(true)} aria-label="關卡設定"><Settings2 size={17}/>設定</button></div>
-     <div className={`chapter-hero chapter-hero--${s.outcome}`}><span className="eyebrow">CHAPTER 01 / RESULT</span><h1>{success?'這一次，我做到了。':s.outcome==='retreat'?'我選擇暫時離開。':'這次，事情沒有照我的計畫發展。'}</h1><p>{s.lastEvent}</p></div>
-     <Hud/>
-     <section className="surface-card chapter-conclusion__record"><h3><BookOpenText size={18}/>本次紀錄</h3><div className="log-list">{s.log.slice(-3).reverse().map((line,i)=><p key={i}>{line}</p>)}</div>
-     {s.outcome==='defeat'&&<div className="insight-note"><Sparkles size={17}/><div><strong>失敗學習已記錄</strong><p>下次關鍵判定額外 +6 個百分點，並保留取得的線索。</p></div></div>}
-     <div className="inventory-preview"><strong>背包物資</strong><span>{Object.entries(s.bag).length} 類 · {bagWeight(s.bag).toFixed(1)} kg</span></div></section>
-     <button className="primary-button primary-button--full" onClick={()=>{dispatch({type:'RETURN_HUB'});playCue('open')}}>返回地圖，自動整理戰利品 <ArrowRight size={17}/></button>
-     {showSettings&&<GameSettingsDialog onClose={()=>setShowSettings(false)}/>}
-   </div>;
+  const outcome=s.outcome==='victory'?'victory':s.outcome==='retreat'?'retreat':'defeat';
+  return <MissionTransition kind={outcome} enemyName={s.enemy.name} summary={s.lastEvent}
+   onFinish={()=>{dispatch({type:'RETURN_HUB'});navigate('/',{replace:true});playCue(outcome==='victory'?'victory':outcome==='defeat'?'defeat':'retreat')}}/>;
  }
- if(s.mode==='home')return <div className="chapter-conclusion"><section className="chapter-hero"><span className="eyebrow">STORY / CHAPTER 01</span><h1>失蹤的倉庫員工</h1><p>那座舊物流站的燈還亮著。進去之前，我還是先整理攻擊牌與隨身工具。</p></section><NavLink className="primary-button primary-button--full" to="/preparation">前往事前準備 <ArrowRight size={17}/></NavLink></div>;
+ if(s.mode==='home')return <Navigate to="/" replace/>;
  return <div className="chapter-live">
   <div className="chapter-kicker"><span>CHAPTER 01 · {scene.label} · {worldPhase(s.world.minute)}</span><div className="chapter-kicker__controls"><button type="button" onClick={()=>setShowStory(true)}><BookOpenText size={15}/>全文</button><button type="button" onClick={()=>setShowSettings(true)} aria-label="遊戲設定"><Settings2 size={16}/>設定</button></div></div>
   <Hud/>
@@ -112,7 +106,7 @@ export default function ChapterPage(){
     <div className="enemy-hud__track" role="progressbar" aria-label="敵人生命" aria-valuemin={0} aria-valuemax={s.enemy.maxHealth} aria-valuenow={s.enemy.health}><i style={{width:`${s.enemy.health/s.enemy.maxHealth*100}%`}}/></div>
   </div>}
   <section className={`scene-art scene-art--${s.sceneId} phase--${worldPhaseToken(s.world.minute)} ${s.sceneId==='confrontation'||combatHold?'scene-art--combat':''}`} aria-label={`${scene.location}的環境場景`}>
-   <SceneArtwork scene={s.sceneId}/>
+   <SceneArtwork scene={combatHold&&s.enemy.health===0?'confrontation':s.sceneId}/>
    {(s.sceneId==='confrontation'||combatHold)&&<EnemyPresence health={s.enemy.health} maxHealth={s.enemy.maxHealth} name={s.enemy.name}/>}
    <div className="scene-art__caption"><span className="scene-art__pin"/> {scene.location}<span> · 第 {s.attempt} 次來訪</span></div>
   </section>
@@ -122,7 +116,7 @@ export default function ChapterPage(){
 
    {s.sceneId==='loot'&&<div className="story-panel__hint"><Search size={12}/>搜刮會推進世界時間</div>}
   </section>
-  <ActionDecision actions={actions} state={s} selected={current} skillId={skillId} skillCount={usableSkillCount} busy={executing}
+  <ActionDecision actions={actions} state={s} selected={current} skillId={skillId} skillCount={usableSkillCount} busy={executing||s.sceneId==='confrontation'&&s.enemy.health===0}
     onSelect={action=>{if(action.id==='loot_exit'){setConfirmLootExit(true);playCue('open');return;}setChosenId(action.id);setSkillId(null);playCue('select')}}
     onBack={()=>{setChosenId(null);setSkillId(null);playCue('open')}}
     onShowSkills={()=>{setHandOpenCount(n=>n+1);setShowHand(true);playCue('open')}}
@@ -147,6 +141,7 @@ export default function ChapterPage(){
       <button className="primary-button primary-button--full game-sheet__confirm" onClick={()=>{setShowHand(false);playCue('confirm')}}>確認附加 · 返回行動卡</button>
     </div>
   </div>}
+  {s.enemyStrike&&s.sceneId==='confrontation'&&<EnemyCounterProjectile key={s.enemyStrike.id} strike={s.enemyStrike}/>}
   <ThoughtWhisper state={s} paused={!!cinematic||showStory||showHand||showSettings||showRetreat||skillPrompt||confirmLootExit}/>
   {cinematic&&<MissionTransition kind={cinematic} enemyName={s.enemy.name} onFinish={()=>setCinematic(null)}/>}
   {flight&&<AttackProjectile flight={flight}/>}

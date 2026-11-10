@@ -8,7 +8,7 @@ export const CHAPTER_ONE = {
   synopsis: '城內的失蹤通報逐漸增加。每條道路都通往新的謊言，而夜裡似乎有人守著那些不該被發現的事。',
   stages: [
     {id:'01',sequence:1,name:'失蹤的倉庫員工',subtitle:'舊物流站 · 第一個線索',x:95,y:270,kind:'stage',implementation:'playable'},
-    {id:'02',sequence:2,name:'後巷的目擊者',subtitle:'暗巷 · 不可靠的證詞',x:215,y:190,kind:'stage',implementation:'planned'},
+    {id:'02',sequence:2,name:'後巷的目擊者',subtitle:'暗巷 · 不可靠的證詞',x:215,y:190,kind:'stage',implementation:'playable'},
     {id:'03',sequence:3,name:'無人接聽',subtitle:'公寓 · 午夜電話',x:337,y:290,kind:'stage',implementation:'planned'},
     {id:'04',sequence:4,name:'鎖住的診間',subtitle:'診所 · 消失的病歷',x:458,y:158,kind:'stage',implementation:'planned'},
     {id:'05',sequence:5,name:'車站末班車',subtitle:'轉運站 · 不存在的旅客',x:582,y:232,kind:'stage',implementation:'planned'},

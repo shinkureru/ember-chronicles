@@ -1,0 +1,107 @@
+/* v1.0-a: the city itself is the chapter hub; all 12 locations remain on the panorama. */
+.world-map-page--city{
+  height:100%;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:7px;
+  position:relative;color:#f2f2f2;
+}
+.city-overview{
+  flex:0 0 auto;background:#05070bdc;border:1px solid #4b5560;border-radius:11px;
+  padding:10px 13px 9px;display:flex;flex-direction:column;gap:4px;
+}
+.city-overview__kicker,.city-overview__progress{display:flex;align-items:center;justify-content:space-between;gap:7px;font-size:10px;color:#b0becd}
+.city-overview__kicker span:first-child{font:700 9px Inter,sans-serif;letter-spacing:.14em;color:#c7d7e2}
+.city-overview__title{display:flex;align-items:center;justify-content:space-between}
+.city-overview__title h1{font-size:clamp(20px,5.1vw,25px);line-height:1.25;font-family:'Noto Serif TC',serif}
+.city-overview__title span{font:600 10px Inter,sans-serif;letter-spacing:.15em;color:#9daebc}
+.city-overview__title>strong{font:800 26px Inter,sans-serif;color:#758aa0}
+.city-overview__progress{margin-top:2px;white-space:nowrap}
+.city-overview__track{height:6px;border-radius:5px;background:#252a31;flex:1;overflow:hidden}
+.city-overview__track i{display:block;height:100%;background:#b1c7d6;transition:width .3s}
+.city-overview__progress strong{font-size:10px;color:#eceef3}
+.world-map-page--city .chapter-map-section--city{
+  flex:1 1 0;min-height:0;border:1px solid #526170;position:relative;
+  border-radius:10px;overflow:hidden;background:#08121d;display:flex;flex-direction:column;gap:0;
+}
+.city-map-controls{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  height:36px;flex:0 0 36px;padding:0 10px;background:#060d17e8;
+  border-bottom:1px solid #4a5765;position:relative;z-index:5;color:#f0f0f0;font-size:11px;
+}
+.city-map-controls small{font-size:9px;color:#b1bec9}
+.city-map-controls>div{display:flex;align-items:center;gap:5px}
+.city-map-controls button{
+  width:30px;height:28px;padding:0;display:grid;place-items:center;border-radius:4px;
+  border:1px solid #637181;background:#17202b;color:#e5eefa;
+}
+.world-map-page--city .city-map-viewport{
+  flex:1 1 0;min-height:0;touch-action:pan-x;overflow-x:auto;overflow-y:hidden;
+  scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:#778595 #15202b;
+  background:#0b1622;
+}
+.city-map-canvas{width:1540px!important;min-width:1540px!important;height:430px!important;position:relative!important;overflow:visible}
+.city-map-backdrop{
+  position:absolute;inset:0;z-index:0;background-position:center center;background-size:100% 100%;
+  background-repeat:no-repeat;pointer-events:none;filter:saturate(.75) brightness(.83);
+}
+.city-map-canvas::after{content:"";pointer-events:none;position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,transparent 8%,#0002 70%,#02070e99 100%)}
+.world-map-page--city.phase--morning .city-map-backdrop{filter:sepia(.17) hue-rotate(165deg) brightness(1.12) saturate(.72)}
+.world-map-page--city.phase--noon .city-map-backdrop{filter:sepia(.12) brightness(1.23) saturate(.6)}
+.world-map-page--city.phase--afternoon .city-map-backdrop{filter:sepia(.23) brightness(1.08) saturate(.85)}
+.world-map-page--city.phase--evening .city-map-backdrop{filter:hue-rotate(24deg) brightness(.87) saturate(.88)}
+.world-map-page--city.phase--late-night .city-map-backdrop{filter:hue-rotate(-12deg) brightness(.68) saturate(.8)}
+.city-map-canvas .city-map-route{position:absolute!important;inset:0;z-index:1;pointer-events:none;width:1540px;height:430px}
+.city-map-canvas .map-point{z-index:2}
+.city-map-canvas .map-point__marker{
+  background:#060c14ee!important;border:3px solid #9daebd!important;color:#ebf1f8!important;
+  box-shadow:0 2px 5px #000,0 0 11px #142b40!important;
+}
+.city-map-canvas .map-point--cleared .map-point__marker{border-color:#8ec7d9!important}
+.city-map-canvas .map-point--locked .map-point__marker{border-color:#4b5360!important;color:#888!important}
+.city-map-canvas .map-point__label{
+  background:#050911e8!important;border:1px solid #65707a!important;
+  color:#f1f5fa!important;padding:3px 6px;white-space:nowrap;
+}
+.city-map-canvas .map-point__next-indicator{color:#f5e3b9;animation:city-stage-arrow 1.6s ease-in-out infinite!important}
+.city-map-canvas .map-point__next-indicator svg{filter:drop-shadow(0 0 8px #efdcac)}
+@keyframes city-stage-arrow{0%,100%{translate:0 0;opacity:1}50%{translate:0 -11px;opacity:.75}}
+.city-chapter-strip{
+  flex:0 0 28px;min-height:28px;display:flex;gap:3px;align-items:center;justify-content:space-between;
+  padding:3px 6px;background:#070d15e8;border-top:1px solid #4d5b69;overflow-x:auto;
+  scrollbar-width:none;overscroll-behavior-x:contain;
+}
+.city-chapter-strip button{
+  flex:1 0 23px;height:21px;min-width:23px;display:grid;place-items:center;
+  font:600 10px Inter,sans-serif;background:#101b28;color:#637482;
+  border:1px solid #364653;border-radius:3px;padding:0;
+}
+.city-chapter-strip button.is-unlocked{color:#d0e1ec;border-color:#788a9b}
+.city-chapter-strip button.is-selected{background:#d1e5f0;color:#0a1620;border-color:#e5f3ff}
+.city-hub-dock{
+  flex:0 0 65px;min-height:65px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:5px;padding:6px;background:#070c13e8;border:1px solid #4e5c68;border-radius:9px;
+}
+.city-hub-dock a{
+  min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  border:1px solid #455464;background:#111c27d9;border-radius:5px;
+  font-size:11px;line-height:1.25;color:#f0f2f5;transition:background .15s,border-color .15s;
+}
+.city-hub-dock a:hover,.city-hub-dock a:focus-visible{background:#2d4254;border-color:#b3c9dc}
+.city-hub-dock svg{flex:none;display:block;align-self:center;filter:none!important;transform:none!important}
+.world-map-page--city .map-stage-hint{bottom:75px;z-index:11}
+@media(max-height:695px){
+  .world-map-page--city{gap:4px}
+  .city-overview{padding:6px 10px}
+  .city-overview__title h1{font-size:18px}
+  .city-overview__title>strong{font-size:19px}
+  .city-map-controls{height:29px;flex-basis:29px}
+  .city-hub-dock{flex-basis:54px;min-height:54px;padding:4px}
+  .city-hub-dock a{font-size:9px;gap:1px}
+  .city-hub-dock svg{width:17px;height:17px}
+}
+@media(max-width:365px){
+  .city-overview__kicker{font-size:9px}
+  .city-overview__title span{font-size:8px}
+  .city-chapter-strip button{flex-basis:24px;min-width:24px}
+  .city-hub-dock{gap:3px}
+  .city-hub-dock a{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){.city-map-canvas .map-point__next-indicator{animation:none!important}}

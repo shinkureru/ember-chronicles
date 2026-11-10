@@ -163,6 +163,14 @@
 .character-tab-stat>strong{font:800 22px Inter,sans-serif;color:#eee}
 .character-tab-stat>small{font-size:9px;color:#777}
 
+/* The market is also a physical location: its ambient lighting follows world time. */
+.market-vendor-profile[class*="phase--"]{
+  background:radial-gradient(ellipse at 22% 18%,var(--phase-glow) -50%,transparent 63%),
+             linear-gradient(150deg,var(--phase-sky),#090909 82%)!important;
+}
+.market-vendor-profile[class*="phase--"]>.market-portrait{
+  background:linear-gradient(145deg,var(--phase-sky),#101010)!important;
+}
 /* Market: five distinct trader portraits; each has a real inventory. */
 .market-viewport--v09{height:100%;min-height:0;overflow:hidden!important;display:flex;flex-direction:column;gap:7px!important;padding:0!important}
 .market-v09__heading{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:0 0 auto;min-height:41px}

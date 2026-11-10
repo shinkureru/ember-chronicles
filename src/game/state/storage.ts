@@ -26,7 +26,7 @@ export const loadGame=():GameState=>{
     const lootSearches=old.lootSearches??Object.fromEntries((old.searchedSources??[]).map(id=>[id,LOOT_LIMITS[id]??1]));
     return { ...old, attackDeck,enemy:old.enemy??makeInitialEnemy(),ownedCards,warehouse,lootSearches,
       chapterProgress: old.chapterProgress ?? { completed: old.npc?.remembers?.includes('player_victory')?[1]:[], unlocked:old.npc?.remembers?.includes('player_victory')?2:1 },
-      economy: old.economy ?? {coins:120,blackMarketFavor:0,marketPurchases:0},
+      economy: {...(old.economy??{coins:120,blackMarketFavor:0,marketPurchases:0}),marketStock:old.economy?.marketStock??{}},
       equipment: old.equipment ?? {head:null,body:null,hands:null,mainHand:null,utility:null,accessory:null},
     };
   }catch{return makeInitialState();}

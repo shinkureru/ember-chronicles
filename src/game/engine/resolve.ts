@@ -27,6 +27,7 @@ export type GameAction =
   | {type:'UNEQUIP_ITEM';slot:string}
   | {type:'PROTECT_ITEM';itemId:string}
   | {type:'WITHDRAW_ITEM';itemId:string}
+  | {type:'DEPOSIT_ITEM';itemId:string}
   | {type:'USE_ITEM';itemId:string}
   | {type:'DEBUG';patch:{kind:'health'|'stamina'|'courage'|'resource'|'minute';value:number}}
   | {type:'RESET'};
@@ -370,6 +371,25 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if((s.bag[action.itemId]??0)<=0 && (s.warehouse[action.itemId]??0)<=0)return state;
       if(s.protectedItems.includes(action.itemId))s.protectedItems=s.protectedItems.filter(id=>id!==action.itemId);
       else s.protectedItems.push(action.itemId);
+      return s;
+    }
+    case 'DEPOSIT_ITEM':{
+      if(s.mode!=='home')return state;
+      const item=ITEMS[action.itemId];
+      if(!item||(s.bag[action.itemId]??0)<=0)return state;
+      if(Object.values(s.equipment).includes(action.itemId)){
+        s.lastEvent='這件裝備目前正在穿戴，必須先卸下才能存進倉庫。';return s;
+      }
+      if(s.protectedItems.includes(action.itemId)){
+        s.lastEvent='這是常用隨身物品。先取消常用標記，才能手動入倉。';return s;
+      }
+      if(bagWeight(s.warehouse)+item.weight>s.warehouseCapacity+1e-8){
+        s.lastEvent='倉庫容量已滿。物品仍安全留在背包裡。';return s;
+      }
+      s.bag[action.itemId]-=1;
+      if(s.bag[action.itemId]===0)delete s.bag[action.itemId];
+      s.warehouse[action.itemId]=(s.warehouse[action.itemId]??0)+1;
+      s.lastEvent=`我把「${item.name}」存進了倉庫。`;
       return s;
     }
     case 'WITHDRAW_ITEM':{

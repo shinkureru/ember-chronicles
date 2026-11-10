@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
-import { Coins, HeartHandshake, ShoppingBag, Tag, X, ArrowRight, Clock3, BookOpen, Package, SlidersHorizontal, Handshake, Eye, LockKeyhole } from 'lucide-react';
+import { Coins, HeartHandshake, ShoppingBag, Tag, X, ArrowRight, Clock3, SlidersHorizontal, Handshake, Eye, LockKeyhole } from 'lucide-react';
 import { useGame } from '../../app/GameContext';
 import { CARDS } from '../../game/data/cards';
 import { ITEMS } from '../../game/data/items';

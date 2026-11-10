@@ -77,7 +77,7 @@ export default function WarehousePage(){
     {moveReason&&<p className="warehouse-v11__warning">{moveReason}</p>}
     <div className="warehouse-v11__actions">
      <button type="button" disabled={moveBlocked} onClick={()=>move(selected.id)}>
-      {where==='bag'?<ArrowDownToLine size={17}/>:<ArrowUpFromLine size={17}/>} {where==='bag'?'存入倉庫 ×1':'領出至背包 ×1'}
+      {where==='bag'?<PackagePlus size={17}/>:<PackageOpen size={17}/>} {where==='bag'?'存入倉庫 ×1':'領出至背包 ×1'}
      </button>
      <button type="button" disabled={equipped} onClick={()=>{dispatch({type:'PROTECT_ITEM',itemId:selected.id});playCue('select')}}>
       <ShieldCheck size={17}/>{protectedItem?'取消常用標記':'標為常用物品'}

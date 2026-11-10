@@ -1,6 +1,6 @@
 /**
- * Ember Chronicles v0.5 original procedural score and foley.
- * CC0 recorded foley samples by Kenney supplement the original procedural score.
+ * Ember Chronicles v1.4 original procedural score and CC0-recorded foley.
+ * Kenney RPG Audio and Kenney UI Audio (CC0) supplement 100% original MIDI-free synthesized music.
  * AudioContext requires a user gesture on mobile browsers.
  */
 import { SOUNDSCAPES, type SoundscapeId } from './soundscapes';
@@ -12,6 +12,14 @@ export type SoundCue='tap'|'select'|'confirm'|'locked'|'open'|'loot'|'reward'|'c
 /** Kenney RPG Audio 1.0, Creative Commons CC0 1.0.
  * Recorded source provenance: docs/AUDIO_LICENSES.md. URLs are local Vite public assets. */
 const RECORDED_FOLEY:Partial<Record<SoundCue,readonly string[]>>={
+ tap:['ui:click5'],
+ select:['ui:click3'],
+ confirm:['ui:switch10'],
+ locked:['ui:switch14'],
+ warning:['ui:switch14'],
+ open:['ui:mouserelease1'],
+ inspect:['ui:rollover2'],
+ dialogue:['ui:click1'],
  footsteps:['footstep_0','footstep_2'],
  runFast:['footstep_0','footstep_2','footstep_4'],
  sneakStep:['footstep_4','footstep_2'],
@@ -28,7 +36,8 @@ const loadingBuffers=new Set<string>();
 function queueFoley(ctx:AudioContext,id:string){
  if(recordedBuffers.has(id)||loadingBuffers.has(id))return;
  loadingBuffers.add(id);
- const url=`${import.meta.env.BASE_URL}audio/kenney-rpg/${id}.ogg`;
+ const url=id.startsWith('ui:')?`${import.meta.env.BASE_URL}audio/kenney-ui/${id.slice(3)}.wav`:
+   `${import.meta.env.BASE_URL}audio/kenney-rpg/${id}.ogg`;
  void fetch(url).then(response=>{
   if(!response.ok)throw Error('Unable to load '+url);
   return response.arrayBuffer();
@@ -49,7 +58,7 @@ function playRecordedFoley(ctx:AudioContext,cue:SoundCue){
   if(!buffer)continue;
   const src=ctx.createBufferSource(),gain=ctx.createGain();
   src.buffer=buffer;src.playbackRate.value=.96+Math.random()*.09;
-  gain.gain.value=cue==='runFast'?.49:cue==='sneakStep'?.25:.47;
+  gain.gain.value=cue==='runFast'?.49:cue==='sneakStep'?.25:cue==='warning'?.52:cue==='confirm'?.58:.47;
   src.connect(gain);gain.connect(effectsGain);
   src.start(ctx.currentTime+i*gap);
  }
@@ -189,14 +198,24 @@ function stopScene(){
   sceneNodes=[];scene=null;step=0;
 }
 function playSceneStep(ctx:AudioContext,id:SoundscapeId){
-  const preset=SOUNDSCAPES[id];
-  const semitone=preset.melody[step%preset.melody.length];step++;
-  if(semitone===null||semitone===undefined)return;
-  const frequency=preset.tonic*4*Math.pow(2,semitone/12);
-  // Soft piano/bell-like melody with low tension, each scene has its own 8-note score.
-  note(ctx,frequency,.65,.24,{into:musicGain!,type:'triangle',attack:.018});
-  note(ctx,frequency*2,.38,.068,{into:musicGain!,type:'sine',attack:.01});
-  if(step%4===1)note(ctx,preset.tonic*2,1.1,.13,{into:musicGain!,type:'sine',attack:.19});
+  const preset=SOUNDSCAPES[id],beat=step++%preset.melody.length;
+  const semitone=preset.melody[beat];
+  // Original dark tonal motifs, not sampled from any existing composition.
+  // Counterpoint + octave echo establish an audible melody over heartbeat-like bass.
+  if(semitone!==null&&semitone!==undefined){
+    const frequency=preset.tonic*4*Math.pow(2,semitone/12);
+    const battle=id==='confrontation'||id==='alley_confrontation';
+    note(ctx,frequency,battle?.41:.69,battle?.30:.25,{into:musicGain!,type:battle?'sawtooth':'triangle',attack:.02});
+    note(ctx,frequency*2,battle?.22:.36,.055,{into:musicGain!,type:'sine',delay:battle?.06:.1});
+    if(beat===3||beat===7)note(ctx,frequency*.75,.82,.09,{into:musicGain!,type:'triangle',delay:.16});
+  }
+  if(beat%2===0)note(ctx,preset.tonic*2,Math.min(.72,preset.beat*.9),.13+preset.tension*.055,
+    {into:musicGain!,type:'triangle',attack:.07});
+  if(preset.tension>.76){
+    // Short dry, mechanical hits: intentionally distinct from the exploration score.
+    noise(ctx,.07,.07+preset.tension*.06,750,{into:musicGain!,highpass:beat%2===0});
+    if(beat%4===2)note(ctx,preset.tonic*8,.11,.09,{into:musicGain!,type:'square',attack:.016});
+  }
 }
 function startScene(){
   const ctx=createContext();if(!ctx||config.muted||scene===desiredScene)return;

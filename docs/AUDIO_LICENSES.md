@@ -2,10 +2,10 @@
 
 ## 目前專案實際使用情況
 
-- `src/audio/sound.ts` 為我們自行以 Web Audio API 寫出的程序式短音效（UI 點擊、確認、未解鎖、進入、獲得物品）。
-- 原型 **沒有內含任何第三方音效檔**，也未使用他人遊戲或電影的音效。
+- `src/audio/sound.ts` 包含自製 Web Audio API 程序式短音效，並於 v1.1 加入 Kenney CC0 實錄 Foley 音效。
+- v1.1 **已實際納入 11 個 CC0 錄音檔**；沒有使用版權不明的遊戲、電影或動畫原聲。
 - 只在使用者按鍵／觸控後啟動音訊，提供設定頁的音效開關。
-- 程序式音效屬本專案自有程式產生，沒有外部素材授權歸屬問題。
+- 自製程序式音效仍是後備音效；實錄音效依 CC0 授權使用，保留來源紀錄。
 
 ## 可選素材來源（需逐一查核實際檔案）
 
@@ -44,3 +44,21 @@ src/audio/
 ```
 
 瀏覽器對自動播放有限制，必須在使用者互動後才啟動／恢復 AudioContext。可參考 https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices 。
+
+## v1.1 實際導入的錄音
+
+**原始作者／授權：** Kenney，`RPG Audio` 1.0，Creative Commons Zero 1.0（CC0-1.0）。官方素材頁：https://kenney.nl/assets/rpg-audio ，官方標示 CC0。
+
+**取得方式／可追溯來源：** 從開源 Godot 重整版 `Boyquotes/kenney-rpg-audio-for-godot` 中的原始 OGG 取得，再將音訊檔以 GitHub blob 原樣加入自己的專案。鏡像網址：https://github.com/Boyquotes/kenney-rpg-audio-for-godot 。建議在正式發行前保存官方授權頁封存／日期證據。
+
+| 本專案音檔（`public/audio/kenney-rpg/`） | 用途 |
+|---|---|
+| `footstep_0.ogg`, `footstep_2.ogg`, `footstep_4.ogg` | 一般腳步、快速跑步、潛行 |
+| `cloth_1.ogg`, `cloth_2.ogg` | 翻找外套、衣物與口袋 |
+| `book_flip_1.ogg`, `book_open.ogg` | 翻文件、查看辦公桌文件、卡牌翻動 |
+| `metal_click.ogg`, `metal_latch.ogg` | 工具、金屬零件、搜查貨架 |
+| `handle_small_leather.ogg` | 取得／處理皮革小物 |
+| `door_open_1.ogg` | 開啟介面或門的音效 |
+
+所有檔案由遊戲整合播放，可商用且不強制署名。音檔還沒準備好、網路離線或瀏覽器無法解碼時保留原先的合成效果，不會造成選項無法執行。**各段音效仍需於實際裝置上聆聽與音量校正；檔名匹配不等於最終品質驗收。**
+

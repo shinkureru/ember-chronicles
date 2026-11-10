@@ -85,9 +85,9 @@ export default function ChapterMapPage(){
           <span className="map-district map-district--two">NO SIGNAL / ZONE 02</span>
           <span className="map-district map-district--three">MILITARY CONTROL</span>
           {CHAPTER_ONE.stages.map(node=>{
-            const isLocked=node.sequence>s.chapterProgress.unlocked;const isSelected=selected===node.sequence;const isCleared=s.chapterProgress.completed.includes(node.sequence);const isNext=node.sequence===nextStage&&!isCleared;
-            return <button key={node.id} disabled={isLocked} title={isLocked?'完成前一關後解鎖':node.subtitle} className={`map-point ${isLocked?'map-point--locked':''} ${isSelected?'map-point--selected':''} ${isCleared?'map-point--cleared':''} ${isNext?'map-point--next':''} ${node.kind==='boss'?'map-point--boss':''}`} style={{left:node.x,top:node.y}} type="button" onClick={()=>visitNode(node.sequence,node.implementation)} aria-label={`第${node.sequence}關 ${node.name}，${isLocked?'未解鎖':isCleared?'已通關':'已解鎖'}`}>
-              {isNext&&<span className="map-point__next-indicator" aria-hidden="true"><ArrowDown size={21}/><span>下一關</span></span>}
+            const isLocked=node.sequence>s.chapterProgress.unlocked;const isSelected=selected===node.sequence;const isCleared=s.chapterProgress.completed.includes(node.sequence);const isNext=node.sequence===nextStage&&!isCleared;const nextPlanned=isNext&&node.implementation!=='playable';
+            return <button key={node.id} disabled={isLocked} title={isLocked?'完成前一關後解鎖':node.subtitle} className={`map-point ${isLocked?'map-point--locked':''} ${isSelected?'map-point--selected':''} ${isCleared?'map-point--cleared':''} ${isNext?'map-point--next':''} ${nextPlanned?'map-point--planned':''} ${node.kind==='boss'?'map-point--boss':''}`} style={{left:node.x,top:node.y}} type="button" onClick={()=>visitNode(node.sequence,node.implementation)} aria-label={`第${node.sequence}關 ${node.name}，${isLocked?'未解鎖':isCleared?'已通關':'已解鎖'}`}>
+              {isNext&&<span className="map-point__next-indicator" aria-hidden="true"><ArrowDown size={21}/><span>{nextPlanned?'下一關 · 製作中':'下一關'}</span></span>}
               <span className="map-point__marker">{isLocked?<LockKeyhole size={16}/>:node.kind==='boss'?<Skull size={18}/>:<span>{String(node.sequence).padStart(2,'0')}</span>}</span>
               <span className="map-point__label">{node.name}</span>
             </button>;

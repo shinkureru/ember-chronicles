@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react';
-import { ArrowDownRight, ArrowLeft, ChevronLeft, ChevronRight, Footprints, Layers3 } from 'lucide-react';
+import { useEffect, useMemo, useRef, type CSSProperties } from 'react';
+import { ArrowDownRight, ArrowLeft, Footprints, Layers3 } from 'lucide-react';
 import { calculateActionPreview } from '../../game/engine/rules';
-import { getChoicePositions } from './choiceLayout';
+import { getChoiceRailLayout, getChoiceClusterCount } from './choiceRailLayout';
 import { hasSearchedBefore, remainingSearches } from '../../game/engine/lootLimits';
 import type { ActionChoice, GameState } from '../../game/types';
 import { ATTACK_CARDS, attackStatus } from '../../game/data/attacks';
@@ -23,16 +23,14 @@ type Props={
  onRetreat:()=>void;
 };
 export default function ActionDecision({actions,state,selected,skillId,skillCount,busy=false,onSelect,onBack,onShowSkills,onExecute,onRetreat}:Props){
- const [page,setPage]=useState(0);
- const pageSize=4,pages=Math.max(1,Math.ceil(actions.length/pageSize));
- const shownPage=Math.min(page,pages-1);
- const visible=actions.slice(shownPage*pageSize,(shownPage+1)*pageSize);
- const ids=visible.map(a=>a.id).join(',');
- const layout=useMemo(()=>getChoicePositions(visible,`${state.attempt}:${state.sceneId}:${shownPage}:${ids}`),
-  [state.attempt,state.sceneId,shownPage,ids]);
- const previews=visible.map(a=>calculateActionPreview(state,a,null));
+ const railRef=useRef<HTMLDivElement|null>(null);
+ const scrollOffset=useRef(0);
+ const ids=actions.map(action=>action.id).join(',');
+ const layout=useMemo(()=>getChoiceRailLayout(actions,`${state.attempt}:${state.sceneId}:${ids}`),[state.attempt,state.sceneId,ids]);
+ const previews=actions.map(action=>calculateActionPreview(state,action,null));
  const preview=selected?calculateActionPreview(state,selected,skillId):null;
- useEffect(()=>setPage(0),[state.attempt,state.sceneId]);
+ useEffect(()=>{scrollOffset.current=0;if(railRef.current)railRef.current.scrollLeft=0;},[state.attempt,state.sceneId]);
+ useEffect(()=>{if(!selected&&railRef.current)railRef.current.scrollLeft=scrollOffset.current;},[selected]);
  useEffect(()=>{
   if(!selected)return;
   const key=(e:KeyboardEvent)=>{if(e.key==='Escape'&&!busy)onBack();};
@@ -40,15 +38,12 @@ export default function ActionDecision({actions,state,selected,skillId,skillCoun
   return()=>window.removeEventListener('keydown',key);
  },[selected,onBack,busy]);
  return <section className={`choice-stage ${selected?'choice-stage--detail':'choice-stage--pick'}`} aria-label="當前行動">
-  <header className="choice-stage__heading"><strong>我接下來要怎麼做？</strong>
-   {!selected&&pages>1?<span className="choice-stage__pages">
-    <button type="button" disabled={shownPage===0||busy} onClick={()=>setPage(v=>Math.max(0,v-1))} aria-label="上一組行動"><ChevronLeft size={14}/></button>
-    <small>{shownPage+1} / {pages}</small>
-    <button type="button" disabled={shownPage===pages-1||busy} onClick={()=>setPage(v=>Math.min(pages-1,v+1))} aria-label="下一組行動"><ChevronRight size={14}/></button>
-   </span>:<small>{selected?'ACTION / DECISION':'CHOOSE YOUR WAY'}</small>}
-  </header>
-  {!selected?<div key={`choice-${state.attempt}-${state.sceneId}-${shownPage}`} className="choice-cloud" role="group" aria-label="選擇行動">
-   {visible.map((action,i)=>{
+  <header className="choice-stage__heading"><strong>我接下來要怎麼做？</strong><small>{selected?'ACTION / DECISION':'CHOOSE YOUR WAY'}</small></header>
+  {!selected?<div className="choice-cloud" ref={railRef} onScroll={e=>{scrollOffset.current=e.currentTarget.scrollLeft;}} role="group" aria-label="可左右滑動的行動選項">
+   <div className="choice-rail">
+    {Array.from({length:getChoiceClusterCount(actions.length)},(_,cluster)=><div className="choice-rail__cluster" key={cluster}>
+   {actions.slice(cluster*2,cluster*2+2).map((action,localIndex)=>{
+    const i=cluster*2+localIndex;
     const p=previews[i]??calculateActionPreview(state,action,null);
     const weapon=action.attackCardId?ATTACK_CARDS[action.attackCardId]:undefined;
     const unavailable=!!weapon&&!attackStatus(state,weapon.id).inBag;
@@ -68,6 +63,8 @@ export default function ActionDecision({actions,state,selected,skillId,skillCoun
       {searched&&<small className="choice-word__note">剩餘搜刮次數：{remaining}</small>}
     </button>;
    })}
+    </div>)}
+   </div>
   </div>:<div key={`inspect-${selected.id}`} className="choice-inspect">
    <div className="choice-inspect__left">
     <div className="action-object-panel" aria-label={selected.title}>

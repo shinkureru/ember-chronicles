@@ -1,18 +1,18 @@
 import { useState } from 'react';
-import { BookOpen, Brain, HeartPulse, Shield, UserRound, LockKeyhole } from 'lucide-react';
+import { Brain, HeartPulse, Shield, UserRound, LockKeyhole, BookOpenText } from 'lucide-react';
 import { useGame } from '../../app/GameContext';
 import { ATTRIBUTE_LABELS } from '../../game/data/attributes';
 import { PROFESSIONS } from '../../game/data/professions';
 import { EQUIPMENT_SLOTS, type EquipmentSlot } from '../../game/data/equipment';
+import { EQUIPMENT_EFFECTS, getEquippedDefense } from '../../game/data/equipmentEffects';
 import { ITEMS } from '../../game/data/items';
 import type { AttributeId } from '../../game/types';
 import { playCue } from '../../audio/sound';
-import ViewTabs from '../../components/ViewTabs';
-const categories:[string,AttributeId[],typeof HeartPulse][]=[
- ['身體素質',['maxHealth','maxStamina','mobility','melee','endurance','climate'],HeartPulse],
- ['思維素質',['observation','reasoning','memory','focus','adaptability','planning'],Brain],
- ['社交素質',['persuasion','deception','negotiation','empathy','intimidation','resilience'],UserRound],
-];
+const categories:Record<string,{title:string;ids:AttributeId[];Icon:typeof HeartPulse}>={
+ physical:{title:'身體與生存',['ids']:['maxHealth','maxStamina','mobility','melee','endurance','climate'],Icon:HeartPulse},
+ mental:{title:'觀察與思維',ids:['observation','reasoning','memory','focus','adaptability','planning'],Icon:Brain},
+ social:{title:'社交與心理',ids:['persuasion','deception','negotiation','empathy','intimidation','resilience'],Icon:UserRound},
+};
 function SurvivorFigure({equipment}:{equipment:Record<string,string|null>}){return <svg className="survivor-figure" viewBox="0 0 200 375" role="img" aria-label="主角全身裝備輪廓示意">
  <defs><linearGradient id="body" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#3e3d3e"/><stop offset=".56" stopColor="#17191b"/><stop offset="1" stopColor="#080a0b"/></linearGradient></defs>
  <ellipse cx="100" cy="359" rx="64" ry="11" fill="#050608" opacity=".7"/>
@@ -33,28 +33,61 @@ function SurvivorFigure({equipment}:{equipment:Record<string,string|null>}){retu
  {equipment.utility==='radio'&&<g><rect x="118" y="181" width="18" height="22" rx="2" fill="#656365" stroke="#ae9e95" strokeWidth="1"/><path d="M127 181L128 167" stroke="#a99d94" strokeWidth="2"/><circle cx="126" cy="189" r="2" fill="#a67a6b"/></g>}
  {equipment.accessory==='keyring'&&<g stroke="#b4a196" fill="none"><circle cx="76" cy="231" r="5" strokeWidth="2"/><path d="M76 235L78 247L82 246"/></g>}
  </svg>}
+
 export default function CharacterPage(){
- const {state:s,dispatch}=useGame();const [slot,setSlot]=useState<EquipmentSlot>('body');const [tab,setTab]=useState('equipment');
+ const {state:s,dispatch}=useGame();
+ const [slot,setSlot]=useState<EquipmentSlot>('body');
+ const [tab,setTab]=useState('equipment');
  if(!s.profession)return <section className="page-heading"><h1>人物檔案</h1><p>建立角色後即可檢視裝備與永久成長屬性。</p></section>;
- const profession=PROFESSIONS[s.profession];const selected=EQUIPMENT_SLOTS.find(e=>e.id===slot)!;
+ const profession=PROFESSIONS[s.profession],selected=EQUIPMENT_SLOTS.find(e=>e.id===slot)!;
  const ownedItems=[...new Set([...Object.keys(s.bag),...Object.keys(s.warehouse)])];
  const available=ownedItems.filter(id=>selected.allowed.includes(id));
- return <div className="page-stack character-page viewport-page character-viewport"><section className="page-heading"><span className="eyebrow">CHARACTER / SURVIVOR PROFILE</span><h1>人物檔案</h1><p>「我還能走多遠，取決於我帶了什麼，也取決於我成了什麼樣的人。」</p></section>
-  <section className="character-hero"><div><span className="eyebrow">CLASS / {profession.en}</span><h2>{profession.name}</h2><p>{profession.overview}</p><span className="character-hero__passive"><Shield size={13}/>{profession.passive}</span></div><div className="character-hero__seal">SURVIVOR<br/>NO. 001</div></section>
-  <ViewTabs value={tab} onChange={setTab} tabs={[{id:'equipment',label:'全身裝備'},{id:'attributes',label:'永久屬性'},{id:'record',label:'NPC 記憶'}]}/>
-  {tab==='equipment'&&<section className="equipment-panel viewport-list"><div className="section-heading"><div><span className="eyebrow">PERSONAL EQUIPMENT</span><h3>全身裝備</h3></div><span className="subtle-small">選擇部位管理</span></div>
+ const category=categories[tab];
+ return <div className="page-stack character-page viewport-page character-viewport character-viewport--v09">
+  <header className="character-page__header"><div><span className="eyebrow">CHARACTER / SURVIVOR</span><h1>人物檔案</h1></div><span>{profession.name} · 防禦 {getEquippedDefense(s)}</span></header>
+  <nav className="character-page__tabs" aria-label="人物資料分頁">
+   {[
+    {id:'equipment',label:'全身裝備'},{id:'physical',label:'身體'},{id:'mental',label:'思維'},
+    {id:'social',label:'社交'},{id:'record',label:'NPC 記憶'},{id:'story',label:'人物故事'},
+   ].map(item=><button key={item.id} type="button" aria-current={tab===item.id?'page':undefined} className={tab===item.id?'is-active':''} onClick={()=>{setTab(item.id);playCue('select')}}>{item.label}</button>)}
+  </nav>
+  {tab==='equipment'&&<section className="equipment-panel viewport-list character-equipment--v09">
    <div className="equipment-stage"><div className="equipment-stage__fog"/><SurvivorFigure equipment={s.equipment}/>
-    {EQUIPMENT_SLOTS.map(e=><button key={e.id} type="button" className={`equipment-slot equipment-slot--${e.id} ${slot===e.id?'is-selected':''}`} onClick={()=>{setSlot(e.id);playCue('select')}} aria-label={`裝備欄位 ${e.name}`}>
-      <span className="equipment-slot__symbol">{e.icon}</span><span><small>{e.name}</small><strong>{s.equipment[e.id]?ITEMS[s.equipment[e.id]!]!.name:'未裝備'}</strong></span>
-    </button>)}
+    {EQUIPMENT_SLOTS.map(e=>{
+      const id=s.equipment[e.id],item=id?ITEMS[id]:null;
+      return <button key={e.id} type="button" className={`equipment-slot equipment-slot--${e.id} ${slot===e.id?'is-selected':''}`}
+        onClick={()=>{setSlot(e.id);playCue('select')}} aria-pressed={slot===e.id} aria-label={`${e.name}：${item?.name??'未裝備'}`}>
+        <span className="equipment-slot__symbol">{e.icon}</span>
+        <span className="equipment-slot__copy"><small>{e.name}</small><strong>{item?.name??'未裝備'}</strong><em>{item?EQUIPMENT_EFFECTS[item.id]?.description??'裝備功能待設定':'點選裝備'}</em></span>
+      </button>;
+    })}
    </div>
-   <div className="equipment-picker"><div className="equipment-picker__title"><strong>{selected.name}</strong><span>{s.equipment[slot]?`已裝備：${ITEMS[s.equipment[slot]!]!.name}`:'目前未裝備'}</span></div>
-    <div className="equipment-picker__choices">{available.length?available.map(id=><button type="button" key={id} className="equipment-picker__item" disabled={s.equipment[slot]===id||s.mode==='adventure'} onClick={()=>{dispatch({type:'EQUIP_ITEM',slot,itemId:id});playCue('confirm')}}><span>{ITEMS[id]!.name}</span><small>{s.equipment[slot]===id?'使用中':'裝備'} →</small></button>):<div className="equipment-picker__empty"><LockKeyhole size={15}/> 背包及倉庫目前沒有可用的裝備。</div>}</div>
-    <button type="button" className="secondary-button equipment-picker__unequip" disabled={!s.equipment[slot]||s.mode==='adventure'} onClick={()=>{dispatch({type:'UNEQUIP_ITEM',slot});playCue('select')}}>{s.equipment[slot]?'卸下此部位裝備':'此部位尚未裝備'}</button>
+   <div className="equipment-picker">
+    <div className="equipment-picker__title"><strong>{selected.name}</strong><span>{s.equipment[slot]?ITEMS[s.equipment[slot]!]!.name:'未裝備'}</span></div>
+    <div className="equipment-picker__choices">
+     {available.length?available.map(id=><button type="button" key={id} className="equipment-picker__item"
+       disabled={s.equipment[slot]===id||s.mode==='adventure'} onClick={()=>{dispatch({type:'EQUIP_ITEM',slot,itemId:id});playCue('confirm')}}>
+       <span>{ITEMS[id]!.name}<small>{EQUIPMENT_EFFECTS[id]?.description??'裝備功能待設定'}</small></span>
+       <small>{s.equipment[slot]===id?'使用中':'裝備'} →</small>
+     </button>):<div className="equipment-picker__empty"><LockKeyhole size={15}/>背包與倉庫暫無此部位裝備。</div>}
+    </div>
+    <button type="button" className="secondary-button equipment-picker__unequip" disabled={!s.equipment[slot]||s.mode==='adventure'}
+      onClick={()=>{dispatch({type:'UNEQUIP_ITEM',slot});playCue('select')}}>{s.equipment[slot]?'卸下此部位裝備':'此部位尚未裝備'}</button>
    </div>
   </section>}
-  {tab==='record'&&<section className="surface-card viewport-list"><div className="inline-summary"><BookOpen size={18}/><strong>NPC 交手紀錄</strong><span>{s.attempt} 次</span></div><p className="muted">已累積 {s.clues.length} 條失敗情報；NPC 的談判適應值目前為 {s.npc.adaptations.talk??0}。</p>{s.clues.length>0&&<div className="clue-list">{s.clues.slice(-5).reverse().map((c,i)=><p key={i}>{c}</p>)}</div>}</section>}
-  {tab==='attributes'&&<div className="character-attributes viewport-list">{categories.map(([title,ids,Icon])=><section className="surface-card" key={title}><h3><Icon size={17}/>{title}</h3><div className="attribute-grid">{ids.map(id=><div className="attribute-item" key={id}><span>{ATTRIBUTE_LABELS[id]}</span><strong>{s.player.attributes[id]}</strong></div>)}</div></section>)}</div>}
-  <div className="tip-panel viewport-tip"><UserRound size={15}/>角色模型目前是全身輪廓示意，裝備欄位已能從背包與倉庫指定道具；裝備的額外數值效果與 3D 角色換裝尚待後續實作。</div>
+  {category&&<section className="character-tab-content viewport-list"><h2><category.Icon size={19}/>{category.title}</h2>
+    <div className="character-tab-content__stats">{category.ids.map(id=><div className="character-tab-stat" key={id}><span>{ATTRIBUTE_LABELS[id]}</span><strong>{s.player.attributes[id]}</strong><small>永久成長屬性</small></div>)}</div>
+    <p>每種屬性都有獨立成長方向。進行不同關卡或劇情選擇時，會逐步累積擅長領域。</p>
+  </section>}
+  {tab==='record'&&<section className="character-tab-content viewport-list">
+    <h2><BookOpenText size={19}/>NPC 記憶</h2><p>已嘗試 {s.attempt} 次；掌握情報 {s.clues.length} 條，NPC 對談判的適應值為 {s.npc.adaptations.talk??0}。</p>
+    <div className="clue-list">{s.clues.slice().reverse().map((line,i)=><p key={i}>{line}</p>)}{s.clues.length===0&&<p>還沒有取得關鍵線索。</p>}</div>
+  </section>}
+  {tab==='story'&&<section className="character-tab-content viewport-list">
+    <h2><Shield size={19}/>{profession.name}</h2>
+    <p>「我還能走多遠，取決於我帶了什麼，也取決於我成了什麼樣的人。」</p>
+    <p>{profession.overview}</p><p>職業天賦：{profession.passive}</p>
+    <p>「這座被封鎖的城區，到底還藏了多少沒有說出口的事？」</p>
+  </section>}
  </div>;
 }

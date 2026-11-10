@@ -95,7 +95,7 @@
 @keyframes camera-vignette-v13{0%{opacity:.95}100%{opacity:0}}
 
 /* Pickups: object begins in the center, arcs toward the open backpack and disappears inside it. */
-.pickup-flight{position:fixed;inset:0;z-index:155;pointer-events:none;overflow:hidden;isolation:isolate}
+.pickup-flight{position:fixed;inset:0 auto 0 50%;width:min(100vw,468px);transform:translateX(-50%);z-index:155;pointer-events:none;overflow:hidden;isolation:isolate}
 .pickup-flight__glow{
  position:absolute;top:48%;left:48%;width:155px;height:155px;border-radius:100%;
  transform:translate(-50%,-50%);background:radial-gradient(circle,#e2e7e42d,transparent 70%);
@@ -141,9 +141,9 @@
  0%{opacity:0;transform:translate(-50%,-25%) scale(.8)}
  12%{opacity:1;transform:translate(-50%,0) scale(1)}
  33%{opacity:1;transform:translate(3vw,-38px) scale(1.07)}
- 59%{opacity:1;transform:translate(22vw,-62px) scale(.7)}
- 77%{opacity:1;transform:translate(37vw,-21px) scale(.35)}
- 94%,100%{opacity:0;transform:translate(40vw,-8px) scale(.05)}
+ 59%{opacity:1;transform:translate(min(21vw,110px),-62px) scale(.7)}
+ 77%{opacity:1;transform:translate(min(36vw,185px),-21px) scale(.35)}
+ 94%,100%{opacity:0;transform:translate(min(40vw,200px),-8px) scale(.05)}
 }
 @keyframes pickup-halo-v13{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}20%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
 @keyframes pickup-title-v13{0%{opacity:0;translate:0 10px}20%,53%{opacity:1;translate:0 0}100%{opacity:0;translate:0 -19px}}

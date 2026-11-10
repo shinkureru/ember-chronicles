@@ -1,6 +1,7 @@
 import { CARDS } from '../data/cards';
 import { ITEMS } from '../data/items';
 import { SCENES } from '../data/scenes';
+import { ALLEY_SCENES, getAlleySceneActions } from '../data/chapters/ch01-alley/scenes';
 import { getSceneVariation } from '../data/chapters/ch01-warehouse/sceneVariants';
 import { remainingSearches } from './lootLimits';
 import { createAttackChoice, attackStatus, getAttackDamage } from '../data/attacks';
@@ -32,15 +33,31 @@ export const isSkillCompatible = (action:ActionChoice, card?:SkillCard):boolean 
   !!card && action.tags.some(tag=>card.tags.includes(tag));
 
 export const getVisibleActions = (state:GameState):ActionChoice[]=>{
-  const scene=SCENES[state.sceneId];
+  const scene=(state.stageId===2?ALLEY_SCENES:SCENES)[state.sceneId];
   if(!scene)return [];
-  const story=getSceneVariation(state).filter(action=>!action.lootSource||remainingSearches(state,action.lootSource)>0);
+  const story=(state.stageId===2?getAlleySceneActions(state):getSceneVariation(state)).filter(action=>!action.lootSource||remainingSearches(state,action.lootSource)>0);
   if(state.sceneId!=='confrontation'||state.mode!=='adventure'||state.enemy.health<=0)return story;
   const attacks=state.attackDeck.map(id=>createAttackChoice(state,id)).filter((a):a is ActionChoice=>a!==null);
   return [...story,...attacks];
 };
 export const getSceneContent = (state:GameState):SceneDef => {
-  const base=SCENES[state.sceneId] ?? SCENES.gate;
+  const base=(state.stageId===2?ALLEY_SCENES:SCENES)[state.sceneId] ?? SCENES.gate;
+  if(state.stageId===2){
+    const npc=state.alleyNpc;
+    if(state.sceneId==='gate'&&(npc?.met??0)>1){
+      const prior=npc?.remembers.includes('alley_spotted')?'「你上次沿著水管偷偷摸過去，我都看見了。別再耍那一套。」':
+       npc?.remembers.includes('alley_retreat')?'「又回來了？你上次跑得可真快。」':
+       '「又是你？上次問過的事情，我已經回答得夠多了。」';
+      return {...base,npcText:prior,narration:`這是我第 ${npc?.met??1} 次來到那條後巷。我知道某段圍牆有視線死角，可這次對方也記住我的腳步聲。`};
+    }
+    if(state.sceneId==='inside'&&npc?.remembers.includes('alley_victory')){
+      return {...base,npcText:'「你上次把證物帶走了。這回還打算拿走什麼？」'};
+    }
+    if(state.sceneId==='confrontation'&&npc?.remembers.includes('alley_spotted')){
+      return {...base,npcText:'「那天我明明看到你。你還敢回來？」'};
+    }
+    return base;
+  }
   if(state.sceneId==='gate' && state.npc.met>1){
     const last=state.npc.remembers.includes('bluff_exposed')
       ? '「你上次那套虛張聲勢我可還記得。這次少耍花樣。」'
@@ -58,6 +75,8 @@ export const getSceneContent = (state:GameState):SceneDef => {
 const specialtyBonus=(state:GameState,tags:ActionTag[]) => {
   if(state.profession==='journalist'&&tags.some(t=>t==='talk'||t==='observe'||t==='search'))return 6;
   if(state.profession==='courier'&&tags.some(t=>t==='run'||t==='sneak'))return 8;
+  if(state.profession==='infiltrator'&&tags.includes('sneak'))return 11;
+  if(state.profession==='infiltrator'&&tags.includes('observe'))return 4;
   return 0;
 };
 const attributeBonus=(state:GameState,tags:ActionTag[])=>{
@@ -77,14 +96,15 @@ export const calculateActionPreview=(state:GameState,choice:ActionChoice,skillId
   const projectedCourage=clamp(state.player.courage+courageDelta,0,100);
   const weight=bagWeight(state.bag);
   const overweightPenalty=choice.tags.some(t=>t==='run'||t==='sneak')?Math.max(0,Math.floor((weight-10)*3)):0;
-  const npcPenalty=(state.npc.adaptations[adaptationKey(choice.tags)]??0);
+  const currentNpc=state.stageId===2?(state.alleyNpc??state.npc):state.npc;
+  const npcPenalty=(currentNpc.adaptations[adaptationKey(choice.tags)]??0);
   const tiredPenalty=state.player.fatigue>=70?7:state.player.fatigue>=50?3:0;
   const lowStaminaPenalty=state.player.stamina<staminaCost?24:0;
   const fearPenalty=state.player.courage<40 && choice.tags.some(t=>t==='talk'||t==='fight')?7:0;
   const clueBonus=Math.min(24,state.clues.length*5);
   const routeBonus=state.flags.includes('route_known')&&choice.tags.some(t=>t==='sneak'||t==='run')?8:0;
   const heardBonus=state.flags.includes('heard_steps')&&choice.tags.includes('talk')?8:0;
-  const hostilityPenalty=choice.tags.includes('talk')?Math.max(0,Math.floor((state.npc.hostility-25)/8)):0;
+  const hostilityPenalty=choice.tags.includes('talk')?Math.max(0,Math.floor((currentNpc.hostility-25)/8)):0;
   const weaponAvailable=!choice.attackCardId||attackStatus(state,choice.attackCardId).inBag;
   const chance=!weaponAvailable?0:choice.baseChance===100?100:Math.round(clamp(
     choice.baseChance+specialtyBonus(state,choice.tags)+attributeBonus(state,choice.tags)+
@@ -106,7 +126,7 @@ export const remainingWarehouseCapacity=(s:GameState)=>Math.max(0,s.warehouseCap
 export const retreatPreview=(state:GameState)=>{
   const excess=Math.max(0,bagWeight(state.bag)-10);
   const lowStamina=state.player.stamina<25?16:0;
-  const speed=state.profession==='courier'?12:0;
+  const speed=state.profession==='courier'?12:state.profession==='infiltrator'?8:0;
   const sceneRisk=state.sceneId==='confrontation'?18:state.sceneId==='loot'?5:0;
   const chance=Math.round(clamp(64+speed+Math.round((state.player.attributes.mobility-10)*0.8)-lowStamina-Math.ceil(excess*3)-sceneRisk+Math.min(8,state.clues.length*2),5,95));
   return {chance,staminaCost:6,courageLoss:state.sceneId==='gate'?6:3,minutes:8};

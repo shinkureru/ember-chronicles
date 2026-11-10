@@ -1,4 +1,4 @@
-export type ProfessionId = 'journalist' | 'courier';
+export type ProfessionId = 'journalist' | 'courier' | 'infiltrator';
 export type Mode = 'home' | 'adventure' | 'result';
 export type SceneId = 'gate' | 'survey' | 'inside' | 'confrontation' | 'loot';
 export type ActionTag = 'talk' | 'observe' | 'sneak' | 'run' | 'search' | 'fight' | 'survival';
@@ -48,6 +48,10 @@ export interface GameState {
   player: { health: number; maxHealth: number; stamina: number; maxStamina: number; courage: number; hunger: number; fatigue: number; temperature: number; resource: number; maxResource: number; attributes: Attributes };
   world: { minute: number; day: number; weather: 'clear' | 'rain' };
   npc: { hostility: number; trust: number; met: number; adaptations: Record<string, number>; remembers: string[]; stolenGear: string[] };
+  /** Current mission selection; absent in older saves means first mission. */
+  stageId?: 1 | 2;
+  /** Each important NPC remembers visits and personal grudges separately. */
+  alleyNpc?:GameState['npc'];
   attempt: number; sceneId: SceneId; flags: string[]; searchedSources: string[]; lootSearches:Record<string,number>;
   attackDeck:string[]; enemy:{id:string;name:string;health:number;maxHealth:number};
   enemyStrike?:{id:number;itemId:string;damage:number;hit:boolean}|null;

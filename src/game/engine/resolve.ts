@@ -5,6 +5,7 @@ import { calculateActionPreview, bagWeight, getVisibleActions, isSkillCompatible
 import { makeInitialState } from '../state/initial';
 import { remainingSearches } from './lootLimits';
 import { EQUIPMENT_SLOTS } from '../data/equipment';
+import { getEquippedDefense, mitigateCounterDamage } from '../data/equipmentEffects';
 import type { GameState, Outcome, ProfessionId, LootDrop } from '../types';
 
 export type GameAction =
@@ -201,7 +202,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
             s.lastEvent+= ' 他終於失去了抵抗能力，現在可以搜查現場。';
           }
         }else{
-          const counter=5+Math.floor(s.npc.hostility/24);
+          const counter=mitigateCounterDamage(5+Math.floor(s.npc.hostility/24),getEquippedDefense(s));
           s.player.health=clamp(s.player.health-counter,0,s.player.maxHealth);
           s.lastEvent=`我用「${cardName}」反擊失手，被對方擊中，生命 -${counter}；他的生命仍是 ${s.enemy.health}/${s.enemy.maxHealth}。`;
           if(s.player.health<=0)resolveOutcome(s,'defeat');

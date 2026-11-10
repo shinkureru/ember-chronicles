@@ -56,15 +56,18 @@ export const getSceneVariation=(state:GameState):ActionChoice[]=>{
   if(!scene)return [];
   const extras=SCENE_VARIANTS[state.sceneId];
   const attempt=Math.max(0,state.attempt);
-  const chosen=extras[(attempt+(hash(state.sceneId)%extras.length))%extras.length]!;
-  if(state.sceneId==='loot')return [...scene.actions,chosen];
+  // Surface more than four actual narrative decisions. Choices are still stable per attempt
+  // and each scene retains its guaranteed progression route.
+  const first=(attempt+(hash(state.sceneId)%extras.length))%extras.length;
+  const chosen=Array.from({length:Math.min(3,extras.length)},(_,n)=>extras[(first+n)%extras.length]!);
   const base=scene.actions;
+  if(state.sceneId==='loot')return [...base,...chosen];
   if(state.sceneId==='inside'){
     const rot=(attempt+1)%base.length;
-    return [base[3]!,base[rot]!,base[(rot+1)%3]!,chosen].filter((c,i,a)=>a.findIndex(x=>x.id===c.id)===i);
+    return [base[3]!,base[rot]!,base[(rot+1)%3]!,...chosen].filter((choice,i,list)=>list.findIndex(x=>x.id===choice.id)===i);
   }
-  if(state.sceneId==='confrontation')return [base[0]!,base[1+(attempt%2)]!,chosen];
-  if(state.sceneId==='gate')return [base[1]!,base[attempt%2===0?0:2]!,chosen];
+  if(state.sceneId==='confrontation')return [base[0]!,base[1+(attempt%2)]!,...chosen];
+  if(state.sceneId==='gate')return [base[1]!,base[attempt%2===0?0:2]!,...chosen];
   const start=attempt%base.length;
-  return [base[start]!,base[(start+1)%base.length]!,chosen];
+  return [base[start]!,base[(start+1)%base.length]!,...chosen];
 };

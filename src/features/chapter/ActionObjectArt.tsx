@@ -47,6 +47,12 @@ export default function ActionObjectArt({kind,className=''}:{kind:string;classNa
       <path d="M98 82 Q76 119 89 168 L85 271 Q125 293 163 271 L159 168 Q174 119 153 82 Z" fill="#404040"/>
       <path d="M90 158 H161 M90 240 H161" strokeWidth="3"/>
    </g>:null}
+   {kind==='keyring'?<g {...stroke}>
+     <circle cx="122" cy="112" r="57" strokeWidth="12"/>
+     <circle cx="122" cy="112" r="31" strokeWidth="6" opacity=".5"/>
+     <path d="M94 156L71 224H89V245H108V220L133 161 M143 164L171 255H151V279H136V248L126 160" strokeWidth="10"/>
+     <path d="M80 224H108 M142 250H171" strokeWidth="6"/>
+    </g>:null}
    {kind==='knife'?<g {...stroke}>
      <path d="M81 40 L177 40 L177 204 L94 224 Q77 189 81 40 Z" fill="#797979"/>
      <rect x="99" y="220" width="64" height="90" rx="9" fill="#2c2c2c"/><circle cx="132" cy="270" r="4" fill="#a9a9a9"/>

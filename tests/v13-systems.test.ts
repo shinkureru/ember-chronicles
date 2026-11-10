@@ -64,6 +64,20 @@ describe('v1.3: anti-spam enemy counter',()=>{
   expect(finish.enemyCounter).toBeNull();
   expect(finish.enemyStrike).toBeNull();
  });
+ it('a lethal enemy hit still exposes the HIT phase before the defeat transition',()=>{
+  const initial=prepare();
+  const waiting=gameReducer(initial,{type:'CHOOSE',choiceId:'attack_pen_thrust',skillId:null});
+  // Force a fatal but legitimate pending hit; its impact remains one committed event.
+  const s={...waiting,player:{...waiting.player,health:1},enemyCounter:waiting.enemyCounter?{...waiting.enemyCounter,hit:true,damage:8,phase:'throwing' as const}:null};
+  const hit=gameReducer(s,{type:'ENEMY_COUNTER_HIT'});
+  expect(hit.enemyCounter?.phase).toBe('hit');
+  expect(hit.mode).toBe('adventure');
+  expect(hit.player.health).toBe(0);
+  const ended=gameReducer(hit,{type:'ENEMY_COUNTER_FINISH'});
+  expect(ended.mode).toBe('result');
+  expect(ended.outcome).toBe('defeat');
+  expect(ended.enemyCounter).toBeNull();
+ });
  it('no pending counterattack may survive an immediate lethal player attack',()=>{
   const s=prepare();s.enemy.health=1;
   const result=gameReducer(s,{type:'CHOOSE',choiceId:'attack_pen_thrust',skillId:null});

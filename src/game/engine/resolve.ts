@@ -266,7 +266,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
         return s;
       }
       if(isSuccess&&choice.lootSource){
-        addLoot(s,choice.lootSource);
+        s.lastLoot=addLoot(s,choice.lootSource);
         // 裝備屬於同一個 NPC 的持久資產，取完前可以繼續拿
         if(choice.lootSource==='npcGear'&&INITIAL_NPC_GEAR.every(id=>s.npc.stolenGear.includes(id))&&!s.searchedSources.includes('npcGear'))s.searchedSources.push('npcGear');
       }else{

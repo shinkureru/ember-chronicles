@@ -58,7 +58,7 @@ export default function ChapterPage(){
 
  useEffect(()=>()=>{if(flightTimer.current!==null)window.clearTimeout(flightTimer.current);if(afterTimer.current!==null)window.clearTimeout(afterTimer.current);},[]);
  const performUse=(origin:{x:number;y:number},choice:ActionChoice,chosenSkill:string|null)=>{
-  if(executing)return;
+  if(executing||s.enemyCounter)return;
   const dispatchChoice=()=>{
    dispatch({type:'CHOOSE',choiceId:choice.id,skillId:chosenSkill});
    setChosenId(null);setSkillId(null);
@@ -79,7 +79,7 @@ export default function ChapterPage(){
   }else dispatchChoice();
  };
  const requestUse=(origin:{x:number;y:number})=>{
-  if(!current||executing)return;
+  if(!current||executing||s.enemyCounter){if(s.enemyCounter)playCue('warning');return;}
   if(usableSkillCount>0&&!skillId&&!skipSkillPrompt){
    setPendingOrigin(origin);setRememberSkip(false);setSkillPrompt(true);playCue('warning');return;
   }
@@ -107,7 +107,7 @@ export default function ChapterPage(){
   </div>}
   <section className={`scene-art scene-art--${s.sceneId} phase--${worldPhaseToken(s.world.minute)} ${s.sceneId==='confrontation'||combatHold?'scene-art--combat':''}`} aria-label={`${scene.location}的環境場景`}>
    <SceneArtwork scene={combatHold&&s.enemy.health===0?'confrontation':s.sceneId}/>
-   {(s.sceneId==='confrontation'||combatHold)&&<EnemyPresence health={s.enemy.health} maxHealth={s.enemy.maxHealth} name={s.enemy.name}/>}
+   {(s.sceneId==='confrontation'||combatHold)&&<EnemyPresence health={s.enemy.health} maxHealth={s.enemy.maxHealth} name={s.enemy.name} windup={s.enemyCounter?.phase==='windup'}/>}
    <div className="scene-art__caption"><span className="scene-art__pin"/> {scene.location}<span> · 第 {s.attempt} 次來訪</span></div>
   </section>
   <section className="story-panel story-panel--compact"><div className="story-panel__top"><span className="eyebrow">SCENE / {scene.label}</span><span>{s.npc.met>1?'對方記得我':'初次接觸'}</span></div>
@@ -116,6 +116,11 @@ export default function ChapterPage(){
 
    {s.sceneId==='loot'&&<div className="story-panel__hint"><Search size={12}/>搜刮會推進世界時間</div>}
   </section>
+  {s.enemyCounter&&<div className="enemy-counter__status" role="status">{
+    s.enemyCounter.phase==='waiting'?'對方準備反擊 · 2 秒後行動':
+    s.enemyCounter.phase==='windup'?'對方正準備出手':
+    s.enemyCounter.phase==='throwing'?'敵方投擲中': '反擊結算中'
+   }<small>可以選擇下一個行動，反擊結束前無法執行。</small></div>}
   <ActionDecision actions={actions} state={s} selected={current} skillId={skillId} skillCount={usableSkillCount} busy={executing||s.sceneId==='confrontation'&&s.enemy.health===0}
     onSelect={action=>{if(action.id==='loot_exit'){setConfirmLootExit(true);playCue('open');return;}setChosenId(action.id);setSkillId(null);playCue('select')}}
     onBack={()=>{setChosenId(null);setSkillId(null);playCue('open')}}
@@ -141,7 +146,7 @@ export default function ChapterPage(){
       <button className="primary-button primary-button--full game-sheet__confirm" onClick={()=>{setShowHand(false);playCue('confirm')}}>確認附加 · 返回行動卡</button>
     </div>
   </div>}
-  {s.enemyStrike&&s.sceneId==='confrontation'&&<EnemyCounterProjectile key={s.enemyStrike.id} strike={s.enemyStrike}/>}
+  {s.enemyStrike&&s.enemyCounter&&s.sceneId==='confrontation'&&<EnemyCounterProjectile key={s.enemyStrike.id} strike={s.enemyStrike}/>}
   <ThoughtWhisper state={s} paused={!!cinematic||showStory||showHand||showSettings||showRetreat||skillPrompt||confirmLootExit}/>
   {cinematic&&<MissionTransition kind={cinematic} enemyName={s.enemy.name} onFinish={()=>setCinematic(null)}/>}
   {flight&&<AttackProjectile flight={flight}/>}

@@ -16,6 +16,9 @@ import GameSettingsDialog from '../settings/GameSettingsDialog';
 import EnemyPresence from './EnemyPresence';
 import AttackProjectile, { type AttackFlight } from './AttackProjectile';
 import { ATTACK_CARDS } from '../../game/data/attacks';
+import SceneArtwork from './SceneArtwork';
+import ThoughtWhisper from './ThoughtWhisper';
+import MissionTransition, { type MissionTransitionKind } from './MissionTransition';
 export default function ChapterPage(){
  const {state:s,dispatch}=useGame();
  const [chosenId,setChosenId]=useState<string|null>(null);
@@ -24,7 +27,6 @@ export default function ChapterPage(){
  const [confirmLootExit,setConfirmLootExit]=useState(false);
  const [showStory,setShowStory]=useState(false);
  const [showHand,setShowHand]=useState(false);
- const [thoughtPage,setThoughtPage]=useState(0);
  const [showSettings,setShowSettings]=useState(false);
  const [handOpenCount,setHandOpenCount]=useState(0);
  const [skillPrompt,setSkillPrompt]=useState(false);
@@ -34,6 +36,15 @@ export default function ChapterPage(){
  const [flight,setFlight]=useState<AttackFlight|null>(null);
  const [executing,setExecuting]=useState(false);
  const [combatHold,setCombatHold]=useState(false);
+ const [cinematic,setCinematic]=useState<MissionTransitionKind|null>(()=>s.mode==='adventure'&&s.sceneId==='gate'?'entry':null);
+ const lastScene=useRef(s.sceneId);
+ useEffect(()=>{
+  if(lastScene.current!==s.sceneId){
+   if(s.sceneId==='confrontation')setCinematic('enemy');
+   lastScene.current=s.sceneId;
+  }
+ },[s.sceneId]);
+
  const flightTimer=useRef<number|null>(null);
  const afterTimer=useRef<number|null>(null);
  const scene=getSceneContent(s), actions=getVisibleActions(s);
@@ -41,7 +52,7 @@ export default function ChapterPage(){
  const current:ActionChoice|null=actions.find(a=>a.id===chosenId)??null;
  const preview=current?calculateActionPreview(s,current,skillId):null;
  const usableSkillCount=current?s.hand.filter(id=>{const card=CARDS[id];return !!card&&isSkillCompatible(current,card)&&s.player.resource>=card.resourceCost}).length:0;
- useEffect(()=>{setChosenId(null);setSkillId(null);setThoughtPage(0);setShowHand(false);setConfirmLootExit(false);},[s.sceneId,s.attempt]);
+ useEffect(()=>{setChosenId(null);setSkillId(null);setShowHand(false);setConfirmLootExit(false);},[s.sceneId,s.attempt]);
 
  useEffect(()=>()=>{if(flightTimer.current!==null)window.clearTimeout(flightTimer.current);if(afterTimer.current!==null)window.clearTimeout(afterTimer.current);},[]);
  const performUse=(origin:{x:number;y:number},choice:ActionChoice,chosenSkill:string|null)=>{
@@ -78,7 +89,6 @@ export default function ChapterPage(){
   if(pendingOrigin&&current)performUse(pendingOrigin,current,skillId);
   setPendingOrigin(null);
  };
- useEffect(()=>{if(showStory||showHand||showSettings||showRetreat||skillPrompt)return;const timer=window.setInterval(()=>setThoughtPage(p=>(p+1)%ambientLines.length),5500);return()=>window.clearInterval(timer);},[s.sceneId,s.attempt,ambientLines.length,showStory,showHand,showSettings,showRetreat,skillPrompt]);
  if(!s.profession)return <div className="page-stack"><section className="surface-card"><h2>先選擇你的職業</h2><p>到第一章地圖完成角色建立後，即可開始調查。</p><NavLink to="/" className="primary-button">前往地圖 <ArrowRight size={16}/></NavLink></section></div>;
  if(s.mode==='result'){
    const success=s.outcome==='victory';
@@ -101,11 +111,15 @@ export default function ChapterPage(){
     <div className="enemy-hud__top"><span>ENEMY / {s.enemy.name}</span><strong>{s.enemy.health} / {s.enemy.maxHealth} HP</strong></div>
     <div className="enemy-hud__track" role="progressbar" aria-label="敵人生命" aria-valuemin={0} aria-valuemax={s.enemy.maxHealth} aria-valuenow={s.enemy.health}><i style={{width:`${s.enemy.health/s.enemy.maxHealth*100}%`}}/></div>
   </div>}
-  <section className={`scene-art scene-art--${s.sceneId} phase--${worldPhaseToken(s.world.minute)} ${(s.sceneId==='confrontation'||combatHold)?'scene-art--combat':''}`} aria-label={`${scene.location}的環境場景`}><div className="scene-art__halo"/><div className="scene-art__atmosphere"/><div className="scene-art__warehouse"><div className="scene-art__building"><span>舊物流站</span><div className="scene-art__windows"><i/><i/><i/></div></div><div className="scene-art__door"/></div><div className="scene-art__person scene-art__person--shadow"><span/></div>{(s.sceneId==='confrontation'||combatHold)&&<EnemyPresence health={s.enemy.health} maxHealth={s.enemy.maxHealth} name={s.enemy.name}/>}<div className="scene-art__floor"/><div className="scene-art__caption"><span className="scene-art__pin"/> {scene.location}<span> · 第 {s.attempt} 次來訪</span></div></section>
+  <section className={`scene-art scene-art--${s.sceneId} phase--${worldPhaseToken(s.world.minute)} ${s.sceneId==='confrontation'||combatHold?'scene-art--combat':''}`} aria-label={`${scene.location}的環境場景`}>
+   <SceneArtwork scene={s.sceneId}/>
+   {(s.sceneId==='confrontation'||combatHold)&&<EnemyPresence health={s.enemy.health} maxHealth={s.enemy.maxHealth} name={s.enemy.name}/>}
+   <div className="scene-art__caption"><span className="scene-art__pin"/> {scene.location}<span> · 第 {s.attempt} 次來訪</span></div>
+  </section>
   <section className="story-panel story-panel--compact"><div className="story-panel__top"><span className="eyebrow">SCENE / {scene.label}</span><span>{s.npc.met>1?'對方記得我':'初次接觸'}</span></div>
    <p className="story-panel__thought">{scene.narration}</p>
    {scene.npcText&&<p className="story-panel__compact-npc"><strong>阿忠：</strong>{scene.npcText}</p>}
-   <div className="ambient-carousel" aria-label="場景內心獨白"><div className="ambient-carousel__heading"><span>我的心聲</span><span>{thoughtPage+1} / {ambientLines.length}</span></div><p key={`${s.sceneId}-${thoughtPage}`} className="ambient-carousel__line" aria-live="off">「{ambientLines[thoughtPage]??ambientLines[0]}」</p></div>
+
    {s.sceneId==='loot'&&<div className="story-panel__hint"><Search size={12}/>搜刮會推進世界時間</div>}
   </section>
   <ActionDecision actions={actions} state={s} selected={current} skillId={skillId} skillCount={usableSkillCount} busy={executing}
@@ -133,6 +147,8 @@ export default function ChapterPage(){
       <button className="primary-button primary-button--full game-sheet__confirm" onClick={()=>{setShowHand(false);playCue('confirm')}}>確認附加 · 返回行動卡</button>
     </div>
   </div>}
+  <ThoughtWhisper state={s} paused={!!cinematic||showStory||showHand||showSettings||showRetreat||skillPrompt||confirmLootExit}/>
+  {cinematic&&<MissionTransition kind={cinematic} enemyName={s.enemy.name} onFinish={()=>setCinematic(null)}/>}
   {flight&&<AttackProjectile flight={flight}/>}
   {skillPrompt&&<div className="skill-confirm-overlay" role="presentation">
    <section className="skill-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="提醒附加技能卡">

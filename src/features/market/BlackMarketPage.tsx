@@ -6,7 +6,7 @@ import { ITEMS } from '../../game/data/items';
 import { ATTACK_CARDS } from '../../game/data/attacks';
 import { MARKET_VENDORS, getVendorStockKey, marketSellPrice } from '../../game/data/marketVendors';
 import { playCue } from '../../audio/sound';
-import { bagWeight } from '../../game/engine/rules';
+import { bagWeight, worldPhaseToken, worldPhase, worldClock } from '../../game/engine/rules';
 import MarketPortrait from './MarketPortrait';
 
 export default function BlackMarketPage(){
@@ -27,10 +27,10 @@ export default function BlackMarketPage(){
    {MARKET_VENDORS.map(v=><button key={v.id} type="button" aria-pressed={vendor.id===v.id} className={vendor.id===v.id?'is-active':''}
      onClick={()=>{setVendorId(v.id);playCue('select')}}><MarketPortrait face={v.face} name={v.name}/><span>{v.name}</span></button>)}
   </nav>
-  <section className="market-vendor-profile">
+  <section className={`market-vendor-profile phase--${worldPhaseToken(s.world.minute)}`} aria-label={`黑市交易 · ${worldPhase(s.world.minute)} ${worldClock(s.world.minute)}`}>
    <MarketPortrait face={vendor.face} name={vendor.name}/>
    <div><strong>{vendor.name}</strong><small>{vendor.role}</small><p>{vendor.line}</p>
-    <span className="market-vendor-profile__favor"><HeartHandshake size={12}/>黑市聲望 {s.economy.blackMarketFavor}/100</span></div>
+    <span className="market-vendor-profile__favor"><HeartHandshake size={12}/>黑市聲望 {s.economy.blackMarketFavor}/100 · {worldPhase(s.world.minute)} {worldClock(s.world.minute)}</span></div>
   </section>
   <nav className="market-v09__tabs" aria-label="交易分類">
    <button type="button" className={tab==='buy'?'is-active':''} onClick={()=>setTab('buy')}><ShoppingBag size={14}/>買物資</button>
@@ -51,7 +51,7 @@ export default function BlackMarketPage(){
       return <div className="market-v09__row" key={id}>
        <span className="market-v09__row-icon">{card.emoji}</span>
        <div><strong>{card.name}</strong><small>{cardMode==='sell'? `複本 ${data?.copies??0} 張 · 收購 ${price}`:`升級素材 · ${price} 舊幣`}</small></div>
-       <button type="button" disabled={disabled} onClick={()=>{dispatch(cardMode==='sell'?{type:'MARKET_SELL',cardId:id}:{type:'MARKET_BUY',cardId:id});playCue(cardMode==='sell'?'loot':'confirm')}}>{cardMode==='sell'?'出售':'購買'}</button>
+       <button type="button" disabled={disabled} onClick={()=>{dispatch(cardMode==='sell'?{type:'MARKET_SELL',vendorId:vendor.id,cardId:id}:{type:'MARKET_BUY',vendorId:vendor.id,cardId:id});playCue(cardMode==='sell'?'loot':'confirm')}}>{cardMode==='sell'?'出售':'購買'}</button>
       </div>;
     }
     if(!item)return null;

@@ -37,9 +37,14 @@ export default function ChapterMapPage(){
     setSelected(sequence);
     if(sequence>s.chapterProgress.unlocked)return;
     if(implementation==='playable'){
+      if(s.mode!=='home'){
+        playCue('locked');
+        setStageNotice('目前還在任務或結算流程中。先完成任務並返回地圖，才能重新進行事前準備。');
+        return;
+      }
       setStageNotice('');
       playCue('confirm');
-      navigate(s.mode==='home'?'/preparation':'/chapter');
+      navigate('/preparation');
       return;
     }
     playCue('locked');

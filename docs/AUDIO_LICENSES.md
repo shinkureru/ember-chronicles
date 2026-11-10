@@ -62,3 +62,15 @@ src/audio/
 
 所有檔案由遊戲整合播放，可商用且不強制署名。音檔還沒準備好、網路離線或瀏覽器無法解碼時保留原先的合成效果，不會造成選項無法執行。**各段音效仍需於實際裝置上聆聽與音量校正；檔名匹配不等於最終品質驗收。**
 
+
+
+## Prototype v1.4 — 實際納入的 Kenney 介面音效（2026-11-11）
+
+- 資料來源：[Kenney UI Audio（GitHub 鏡像）](https://github.com/Calinou/kenney-ui-audio) / [原版 Kenney 介面音效](https://kenney.nl/assets/interface-sounds)。
+- 音效鏡像的 [LICENSE.txt](https://github.com/Calinou/kenney-ui-audio/blob/master/LICENSE.txt) 明確標示 CC0、允許商業用途，不要求署名。原始官方 [Kenney 支援說明](https://kenney.nl/support) 亦說明其資產頁面素材皆採 CC0。
+- 本次實際匯入 GitHub 專案的來源：`addons/kenney_ui_audio/` 下列檔案，均未改動其內容（`public/audio/kenney-ui/`）：`click1.wav`、`click3.wav`、`click5.wav`、`rollover2.wav`、`switch10.wav`、`switch14.wav`、`mouseclick1.wav`、`mouserelease1.wav`。
+- 實際操作映射：一般點擊 `click5`、選擇 `click3`、確認 `switch10`、鎖定／警告 `switch14`、開啟 `mouserelease1`、檢查 `rollover2`、對話 `click1`。
+- 原已在 v1.1 匯入的 Kenney RPG Audio OGG 繼續使用，保留原始 CC0 授權記錄。讀取失敗時播放程式自製合成音，不會無聲。
+- v1.4 場景 BGM 為 `soundscapes.ts` 與 `sound.ts` 的**本專案全新程序式作曲**，無任何第三方曲目、商業歌曲、現有作品旋律的拷貝；已讓交戰節奏與主題旋律明顯不同。音樂本身不依賴外部 CDN。
+- 在 OpenGameArt 找到多個標示 CC0 的候選音樂，例如 https://opengameart.org/content/ancient-caverns-horror-ambient-loop、https://opengameart.org/content/chiptune-battle-music，但 **v1.4 並未納入這些檔案**，以避免聲音風格不符與事後難以追溯音源。
+- 對於未來行動版／付費上架，仍應保存素材原檔、授權聲明與提供者網址，並進行最終法務檢視。

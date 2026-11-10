@@ -64,10 +64,19 @@ export default function ChapterMapPage(){
     <button type="button" aria-label="查看左邊關卡" onClick={()=>viewport.current?.scrollBy({left:-300,behavior:'smooth'})}><ArrowLeft size={17}/></button>
     <button type="button" aria-label="查看右邊關卡" onClick={()=>viewport.current?.scrollBy({left:300,behavior:'smooth'})}><ArrowRight size={17}/></button></div></div>
    <div className="map-viewport city-map-viewport" ref={viewport}
-    onPointerDown={e=>{if(e.pointerType==='mouse'&&!(e.target as Element).closest('button,a')){drag.current={active:true,start:e.clientX,initial:e.currentTarget.scrollLeft};e.currentTarget.setPointerCapture(e.pointerId);}}}
-    onPointerMove={e=>{if(drag.current.active)e.currentTarget.scrollLeft=drag.current.initial-(e.clientX-drag.current.start);}}
-    onPointerUp={()=>{drag.current.active=false;}}
-    onPointerCancel={()=>{drag.current.active=false;}}
+    onPointerDown={e=>{
+     if(e.pointerType!=='mouse'||(e.target as Element).closest('button,a'))return;
+     drag.current={active:true,start:e.clientX,initial:e.currentTarget.scrollLeft};
+     e.currentTarget.style.scrollBehavior='auto';
+     e.currentTarget.setPointerCapture(e.pointerId);
+     e.preventDefault();
+    }}
+    onPointerMove={e=>{
+     if(!drag.current.active)return;
+     e.currentTarget.scrollLeft=drag.current.initial-(e.clientX-drag.current.start);
+    }}
+    onPointerUp={e=>{drag.current.active=false;e.currentTarget.style.scrollBehavior='';if(e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId)}}
+    onPointerCancel={e=>{drag.current.active=false;e.currentTarget.style.scrollBehavior=''}}
     tabIndex={0} aria-label="可左右拖曳查看十二個關卡的城市地圖">
     <div className="map-canvas city-map-canvas" style={{zoom:mapScale}}>
      <div className="city-map-backdrop" style={{backgroundImage:`linear-gradient(180deg,#02070d0c,#030a19aa),url(${import.meta.env.BASE_URL}chapter01-city.svg)`}} aria-hidden="true"/>

@@ -152,13 +152,16 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if(hit){
         s.player.health=clamp(s.player.health-damage,0,s.player.maxHealth);
         s.lastEvent=`對方把「${ITEMS[itemId]?.name??'工具'}」扔向我。我被擊中，生命 -${damage}！`;
-        if(s.player.health<=0){s.enemyCounter=null;s.enemyStrike=null;resolveOutcome(s,'defeat');}
+        // Keep HIT state visible long enough for full-screen damage shake, even if lethal.
+        // Defeat resolves after the final impact phase.
       }else s.lastEvent='對方扔來的物品擦身而過，我閃開了。';
       return s;
     }
     case 'ENEMY_COUNTER_FINISH':{
       if(s.mode!=='adventure'||s.enemyCounter?.phase!=='hit')return state;
+      const fatal=s.player.health<=0;
       s.enemyCounter=null;s.enemyStrike=null;
+      if(fatal)resolveOutcome(s,'defeat');
       return s;
     }
     case 'START_ATTEMPT':{

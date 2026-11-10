@@ -1,0 +1,162 @@
+/* v1.0-c — one fixed merchant per time phase, trading across an in-world tabletop. */
+.market-viewport--v10{
+  display:flex!important;flex-direction:column!important;gap:7px!important;
+  height:100%;min-height:0;overflow:hidden!important;padding:0 1px!important;
+  color:#f2f2f2;position:relative;
+}
+.market-v10__heading{
+  flex:0 0 44px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.market-v10__heading h1{font:800 23px 'Noto Serif TC',serif;line-height:1.1}
+.market-v10__wallet{display:flex;align-items:center;gap:5px;font:800 16px Inter,sans-serif}
+.market-v10__wallet small{font:400 10px 'Noto Sans TC',sans-serif;color:#b6b6b6}
+.market-v10__scene{
+  flex:1 1 0;min-height:0;position:relative;isolation:isolate;overflow:hidden;
+  background:linear-gradient(160deg,var(--phase-sky),#050608 75%);
+  border:1px solid #626262;border-radius:10px;
+}
+.market-v10__world-light{
+  position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse at 41% 13%,var(--phase-glow) -80%,transparent 71%),
+             linear-gradient(125deg,#000a,transparent 65%,#0008);
+  opacity:.76;
+}
+.market-v10__vendor{position:absolute;inset:0 0 43%;z-index:1}
+.market-v10__portrait{
+  position:absolute;left:3%;bottom:-6%;height:101%;width:52%;
+  display:grid;place-items:center;overflow:hidden;mask-image:linear-gradient(to bottom,#000 65%,transparent 98%);
+  -webkit-mask-image:linear-gradient(to bottom,#000 65%,transparent 98%);
+}
+.market-v10__portrait svg{
+  width:100%;height:100%;object-fit:contain;
+  filter:grayscale(.86) contrast(1.13) drop-shadow(0 13px 20px #000);
+}
+.market-v10__identity{
+  position:absolute;top:10%;right:6%;width:42%;
+  display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right;
+  text-shadow:0 2px 7px #000;
+}
+.market-v10__identity>span{font:600 9px Inter,sans-serif;letter-spacing:.13em;color:#bfc3c7}
+.market-v10__identity strong{font-size:clamp(16px,4vw,24px);font-weight:900;color:#f5f5f5}
+.market-v10__identity small{font-size:10px;color:#c8c8c8}
+.market-v10__quote{
+  position:absolute;right:5%;top:44%;width:44%;
+  font-size:clamp(10px,2.5vw,12px);line-height:1.55;color:#e0e0e0;
+  text-shadow:0 2px 6px #000;max-height:43%;overflow-y:auto;
+}
+.market-v10__counter{
+  position:absolute;z-index:2;inset:53% 0 0;
+  display:flex;flex-direction:column;gap:5px;padding:9px 12px 10px;
+  background:linear-gradient(175deg,#424448 0%,#18191b 13%,#0b0c0f 40%,#050608 100%);
+  border-top:3px solid #88878a;
+  box-shadow:0 -10px 25px #000b,inset 0 5px 14px #aaa1;
+}
+.market-v10__counter::before{
+  content:"";pointer-events:none;position:absolute;inset:0;
+  background:repeating-linear-gradient(5deg,transparent 0 39px,#fff1 40px,transparent 42px 82px);
+  opacity:.35;
+}
+.market-v10__counter-edge{
+  flex:0 0 16px;position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:space-between;
+  font:600 9px Inter,sans-serif;color:#cecece;letter-spacing:.11em;
+}
+.market-v10__counter-edge span:last-child{display:flex;align-items:center;gap:4px}
+.market-v10__goods{
+  flex:1 1 0;position:relative;z-index:2;display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(65px,1fr);
+  align-items:stretch;gap:7px;min-height:0;
+  overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#777 #171717;
+  padding:8px 4px 10px;
+}
+.market-v10__object{
+  --goods-shift:0px;--goods-tilt:0deg;
+  min-width:0;min-height:0;border:1px solid #7778;background:#11191ecc;
+  border-radius:6px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;
+  padding:5px 2px;color:#eaeaea;text-align:center;overflow:hidden;
+  transform:translateY(var(--goods-shift)) rotate(var(--goods-tilt));
+  transition:background .18s,scale .15s,border-color .15s;
+}
+.market-v10__object:hover,.market-v10__object:focus-visible{background:#29333c;border-color:#d8d8d8;scale:1.035}
+.market-v10__object:active{scale:.96}
+.market-v10__object.is-unavailable{opacity:.47}
+.market-v10__object-art{
+  font-size:clamp(25px,6.8vw,37px);line-height:1.15;filter:grayscale(.8);
+  text-shadow:0 5px 8px #000;display:block;
+}
+.market-v10__object strong{font-size:10px;line-height:1.2;max-width:100%;overflow-wrap:anywhere}
+.market-v10__object small{font:600 9px Inter,sans-serif;color:#c6d1d7;display:flex;gap:3px;align-items:center}
+.market-v10__empty{grid-column:1/-1;align-self:center;text-align:center;font-size:11px;color:#aaa}
+.market-v10__tabs{
+  flex:0 0 39px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;
+}
+.market-v10__tabs button,.market-v10__card-mode button{
+  min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;
+  background:#111;border:1px solid #595959;color:#c0c0c0;border-radius:5px;
+  font-size:12px;line-height:1.3;
+}
+.market-v10__tabs button.is-active,.market-v10__card-mode button.is-active{
+  background:#d7d7d7;border-color:#e6e6e6;color:#101010;font-weight:800;
+}
+.market-v10__card-mode{flex:0 0 32px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.market-v10__footer{
+  flex:0 0 auto;min-height:24px;display:flex;align-items:center;gap:5px;line-height:1.3;
+  font-size:10px;color:#aaa;padding:2px;
+}
+.market-v10__footer span{flex:1;text-align:right;color:#929292;font-size:9px}
+.market-v10__overlay{
+  position:fixed;inset:0;z-index:140;background:#000c;display:grid;place-items:center;
+  padding:18px;backdrop-filter:blur(4px);
+}
+.market-v10__detail{
+  width:min(100%,360px);max-height:82dvh;min-height:0;padding:20px 18px 17px;
+  background:#08090b;border:1px solid #a3adb2;border-radius:10px;
+  display:flex;flex-direction:column;align-items:center;gap:11px;
+  text-align:center;box-shadow:0 25px 65px #000,0 0 20px #ffffff1e;
+  overflow-y:auto;position:relative;animation:market-detail-in .3s ease-out both,market-detail-float 5.2s 0.3s ease-in-out infinite;
+}
+.market-v10__close{
+  position:absolute;top:9px;right:9px;width:32px;height:32px;display:grid;place-items:center;
+  padding:0;background:#17191d;border:1px solid #565a5f;border-radius:5px;color:#eee;
+}
+.market-v10__detail-kicker{align-self:flex-start;font:700 9px Inter,sans-serif;letter-spacing:.13em;color:#a9bbc7}
+.market-v10__detail-art{display:grid;place-items:center;min-height:90px;font-size:78px;line-height:1.2;filter:grayscale(.65);text-shadow:0 4px 17px #ccc5}
+.market-v10__detail h2{font:900 21px 'Noto Serif TC',serif;line-height:1.3}
+.market-v10__detail p{font-size:12px;color:#d1d1d1;line-height:1.65}
+.market-v10__detail-facts{
+  width:100%;display:flex;flex-direction:column;border-top:1px solid #4c4c4c;
+  border-bottom:1px solid #4c4c4c;padding:7px 0;gap:5px;
+}
+.market-v10__detail-facts span{display:flex;justify-content:space-between;gap:9px;font-size:11px;color:#a8a8a8}
+.market-v10__detail-facts strong{color:#eee;font-size:12px}
+.market-v10__detail .market-v10__trade-status{font-size:10px;color:#a8c9ae}
+.market-v10__detail .market-v10__trade-status.is-disabled{color:#f29d9d}
+.market-v10__trade{
+  width:100%;min-height:43px;padding:8px;border:1px solid #e0e0e0;background:#dedede;
+  color:#111;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.market-v10__trade:disabled{opacity:.4;background:#333;color:#ccc}
+@keyframes market-detail-in{from{opacity:0;transform:translateY(18px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes market-detail-float{0%,100%{translate:0 1px}50%{translate:0 -6px}}
+@media(max-height:695px){
+ .market-v10__heading{flex-basis:34px}
+ .market-v10__heading h1{font-size:18px}
+ .market-v10__tabs{flex-basis:32px}
+ .market-v10__footer span{display:none}
+ .market-v10__goods{grid-auto-rows:minmax(54px,1fr)}
+ .market-v10__object-art{font-size:24px}
+ .market-v10__vendor{bottom:47%}
+ .market-v10__counter{top:53%;padding:5px 8px}
+ .market-v10__identity strong{font-size:16px}
+ .market-v10__quote{font-size:10px}
+}
+@media(max-width:365px){
+ .market-v10__object strong{font-size:9px}
+ .market-v10__quote{width:47%;right:3%}
+ .market-v10__identity{right:3%}
+ .market-v10__footer{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ .market-v10__detail{animation:none!important;translate:0!important}
+ .market-v10__object{transition:none}
+}

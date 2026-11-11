@@ -154,7 +154,7 @@ export default function BlackMarketPage(){
     </div>}
     {mode===null?
      <div className="market-v13__waiting"><Handshake size={31}/><strong>隔著牆，交易才有機會開始。</strong><p>「先聽聽他打算買什麼，或者賣些什麼。」</p></div>:
-     <div className="market-v12__offers" role="group" ref={offersRef}
+     <div className="market-v12__offers" role="group" tabIndex={0} ref={offersRef}
        aria-label={mode==='buy'?'可上下滾動或拖曳的販售商品':'可上下滾動或拖曳的商人收購商品'}
        onPointerDown={startDrag} onPointerMove={dragMove} onPointerUp={stopDrag} onPointerCancel={stopDrag}>
       {filteredOffers.map((offer,i)=><button type="button" key={offer.type+offer.id}

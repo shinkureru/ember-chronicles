@@ -70,3 +70,23 @@
 ## 8. 新對話快速接手提示
 
 「請先透過 GitHub 讀取 `shinkureru/ember-chronicles` 的最新 main、所有未合併 PR、`docs/PROJECT_HANDOFF.md`、`docs/AI_CONTEXT.md`、最新版本實作文件、實際程式碼及 CI。比對這份交接檔是否過期，列出已合併、尚未合併、待人工驗收和待定案的事項，**先報告，勿直接動手改程式**。」
+
+
+---
+
+## 9. 2026-11-11 第二輪需求與分批更新（此段保留為即時交接，勿誤認 PR 已合併）
+
+**實際 main 狀態**：前一批 PR #16（v1.5.1 戰鬥數字 10 HP、物品 SVG）已合併，merge SHA `16415a4a83938e44ee16f4ea8239fa530d1148a7`。以下兩個 PR 獨立以此為起點開發，**目前仍應視為待驗收分支**：
+
+- **PR #17：`feature/v1.6a-whisper-npc-memory`**，https://github.com/shinkureru/ember-chronicles/pull/17  
+  主角第一人稱 OS 同時只一則、排除剛才相同句、間距拉長；NPC 前十次被玩家用實際攻擊牌擊倒的獨立記憶、用過的武器手段、敵意與攻擊適應變化。和平繞過與重訪不改寫 NPC 的戰鬥心理 OS。人物故事保留現況等待使用者原創主線。驗收：`docs/V16A_NPC_MEMORY_OS.md`。GitHub Actions 首輪 CI 成功（run 43028372922）。
+- **PR #18：`feature/v1.6b-level-rest-balance`**，https://github.com/shinkureru/ember-chronicles/pull/18  
+  玩家起始生命/體力均 10/10；18 項永久可升級屬性初始 0；已存檔的舊值按比例與已成長增量換算。新增等級 XP、每遊戲日相同有效行動只給一次經驗、每日總 XP 上限、升級可分配點數；出租床位三種服務共用每天兩次限制，休息前進度條預覽生命與體力與最佳休息建議，使用百分比以適應不同生命/體力上限。戰敗採偏輕度 B：留下 1 HP + 外傷 + 2 小時、不沒收裝備、金錢、任務進度，保留線索；回城不免費補血。驗收：`docs/V16B_GROWTH_INN.md`、`tests/v16b-rest-xp-growth.test.ts`。**CI 與手機/舊存檔驗收狀態必須重新查詢，請勿猜測已通過**。
+
+### 跨對話特別注意
+
+1. **PR #17、#18 是兩條不同開發線**，各自基於已合併的 PR #16 main；在兩條 PR 未合併前，不可單靠 main 認定新的功能可用。兩邊 UI/型別可能需要在兩次合併時解決小衝突。
+2. 早期 v1.5 的 `README.md`、`FEATURE_STATUS.md` 仍有過時內容；優先看這份交接、最新 PR、實際程式碼及 CI。
+3. 配樂目前還沒替換：使用者將自行從 OpenGameArt、itch.io 等選擇並附上音檔和原始作品網址；**必須逐首驗證授權**。優先 CC0 1.0，CC BY 要署名，CC BY-NC 不採用，Free Download/Royalty-Free 不可直接視為無授權限制。存放授權來源於 `docs/V15_MUSIC_LICENSES.md` 等相關文件。
+4. 下一步仍需逐項手機實機檢查 OS 節奏、NPC 戰敗記憶、10 體力行動成本、XP 防刷與升級、床位預覽/每日兩次上限，及長期數值曲線。
+5. 以上需求可能仍須回合制手感調整；**不要擅自大範圍重設職業、NPC、劇情、戰鬥或音訊**。逐批建立 PR，先綁定驗收再討論下批。

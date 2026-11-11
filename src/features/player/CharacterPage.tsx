@@ -86,9 +86,10 @@ export default function CharacterPage(){
      <div className="character-tab-stat"><span>第二關 · 後巷灰衣守望者</span><strong>來訪 {s.alleyNpc?.met??0} 次</strong><small>敵意 {s.alleyNpc?.hostility??18} · 交涉適應 {s.alleyNpc?.adaptations.talk??0}</small></div>
     </div>
     <p>倉庫記憶：{s.npc.remembers.length?s.npc.remembers.length+' 項事件已記住':'尚未發生特殊事件'}；後巷記憶：{s.alleyNpc?.remembers.length??0} 項事件已記住。</p>
-    {([{label:'倉庫管理員阿忠',npc:s.npc},{label:'後巷灰衣守望者',npc:s.alleyNpc}] as const).map(({label,npc})=>npc?<article key={label} className="npc-defeat-record">
+    {([{label:'倉庫管理員阿忠',npc:s.npc,id:'warehouse_guard'},{label:'後巷灰衣守望者',npc:s.alleyNpc,id:'alley_watchman'}] as const).map(({label,npc,id})=>npc?<article key={label} className="npc-defeat-record">
       <strong>{label} · 被我擊敗 {npc.combatDefeats??0} 次</strong>
       <small>攻擊適應 {npc.adaptations.fight??0}/12 · 敵意 {npc.hostility}/100</small>
+      <small>我在此敵人手上失敗 {npc.playerDefeats??0} 次 · 下次關鍵判定 +{s.insightByEnemy?.[id]??0}%（僅限此敵人）</small>
       {npc.defeatMemories?.length?<div className="npc-defeat-record__log">
        {npc.defeatMemories.slice().reverse().map(memory=><p key={memory.count}>
         <span>第 {memory.count} 次 · {memory.method}</span>

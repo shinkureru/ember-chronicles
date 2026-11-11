@@ -3,16 +3,16 @@ import type { GameState } from '../types';
 
 /** Ten distinct thoughts per NPC's first ten COMBAT defeats. Peaceful bypasses do not change them. */
 export const DEFEAT_THOUGHTS=[
- '這個人已經摸清我出手的節奏……下次不能再輕敵。',
- '他又回來了。上次那個動作，我明明已經記住。',
- '那件工具居然能傷到我。距離必須重新抓。',
- '我開始分不清，他到底是僥倖還是真的看透我。',
- '只要他靠近，我就想起前幾次倒下的感覺。',
- '他的攻擊順序變了，我原本準備的防備全落空。',
- '我不該再被他的表情騙過，得先看他手裡拿什麼。',
- '這次失手讓我確定：那個人很懂得利用環境。',
- '我記得所有敗北。下一次我一定先守住自己的破綻。',
- '十次了。我不能再用最初那一套應付這個人。',
+ '他用「{method}」傷到了我。下次不能再輕敵。',
+ '又是「{method}」。我以為自己早就看透那個動作。',
+ '「{method}」竟然也能把我逼倒，得重新估算距離。',
+ '這次是「{method}」。他到底是運氣好，還是看穿我了？',
+ '看到他拿出「{method}」，我又想起前幾次的痛。',
+ '他用「{method}」改了出手順序，我的防備又落空了。',
+ '那件「{method}」才是真正的威脅，我不能只看他的眼神。',
+ '「{method}」配上這個地形，他比我更懂這裡的破綻。',
+ '他又靠「{method}」擊倒我。我不會忘記這一次。',
+ '第十次，還是輸給「{method}」。原本的反擊方式已經沒用了。',
 ] as const;
 
 export interface DefeatMemory {
@@ -29,12 +29,13 @@ export const rememberCombatDefeat=(s:GameState,cardId:string):void=>{
  const method=ATTACK_CARDS[cardId]?.name??'未知的攻擊';
  npc.combatDefeats=count;
  // Fighting adaptation already participates in calculateActionPreview().
- npc.adaptations.fight=Math.min(12,(npc.adaptations.fight??0)+2);
- npc.hostility=Math.min(100,npc.hostility+2);
+ const oldAdaptation=npc.adaptations.fight??0,oldHostility=npc.hostility;
+ npc.adaptations.fight=Math.min(12,oldAdaptation+2);
+ npc.hostility=Math.min(100,oldHostility+2);
  const entry:DefeatMemory={
   count,method,
-  thought:DEFEAT_THOUGHTS[Math.min(DEFEAT_THOUGHTS.length-1,count-1)]!,
-  effect:`攻擊適應 +2（累計 ${npc.adaptations.fight}）；敵意 +2（目前 ${npc.hostility}）`,
+  thought:DEFEAT_THOUGHTS[Math.min(DEFEAT_THOUGHTS.length-1,count-1)]!.replace('{method}',method),
+  effect:`攻擊適應 +${npc.adaptations.fight-oldAdaptation}（累計 ${npc.adaptations.fight}）；敵意 +${npc.hostility-oldHostility}（目前 ${npc.hostility}）`,
  };
  npc.defeatMemories=[...(npc.defeatMemories??[]),entry].slice(-10);
 };

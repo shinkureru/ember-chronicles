@@ -1,6 +1,7 @@
 import { makeInitialState } from './initial';
 import { STARTER_ATTACK_CARDS, makeInitialEnemy } from '../data/attacks';
 import { LOOT_LIMITS } from '../engine/lootLimits';
+import { makeInitialProgression } from '../engine/progression';
 import type { GameState } from '../types';
 const KEY='ember-chronicles-prototype-v1';
 export const loadGame=():GameState=>{
@@ -32,9 +33,19 @@ export const loadGame=():GameState=>{
     const trainedLevels=Math.max(0,Math.round((oldMax-100)/5));
     const newMax=10+trainedLevels;
     const newHealth=Math.max(0,Math.min(newMax,Math.round(old.player.health/oldMax*newMax)));
+    const legacyGrowth=old.growthRulesVersion!==2;
+    const oldStaminaMax=Math.max(1,old.player.maxStamina);
+    const oldStaminaLevels=Math.max(0,Math.round((oldStaminaMax-80)/4));
+    const convertedStaminaMax=10+oldStaminaLevels;
+    const convertedStamina=Math.max(0,Math.min(convertedStaminaMax,Math.round(old.player.stamina/oldStaminaMax*convertedStaminaMax)));
+    const convertedAttributes=Object.fromEntries(Object.entries(old.player.attributes).map(([id,value])=>[id,Math.max(0,Math.min(20,Number(value)-10))])) as GameState['player']['attributes'];
     return { ...old,
-      hpRulesVersion:2,
-      player:legacyHealth?{...old.player,maxHealth:newMax,health:newHealth}:old.player,
+      hpRulesVersion:2,growthRulesVersion:2,progression:old.progression??makeInitialProgression(),
+      player:{
+       ...old.player,
+       ...(legacyHealth?{maxHealth:newMax,health:newHealth}:{}),
+       ...(legacyGrowth?{maxStamina:convertedStaminaMax,stamina:convertedStamina,attributes:convertedAttributes}:{}),
+      },
       town:{visits:{},lastTrainingDay:0,lastRumorDay:0,lastCanteenTalkDay:0,socialPoiseUntil:0,upgrades:{},wear:{},quests:{},...old.town},
       conditions:{wounds:0,infection:0,poisoning:0,illness:0,...old.conditions},
       stageId:old.stageId??1,alleyNpc:old.alleyNpc??{hostility:18,trust:12,met:0,adaptations:{},remembers:[],stolenGear:[]},attackDeck,enemy:old.enemy??makeInitialEnemy(old.stageId??1),ownedCards,warehouse,lootSearches,

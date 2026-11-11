@@ -39,7 +39,7 @@ describe('v0.8 encounter variation without dead ends',()=>{
 });
 describe('v0.8 limited repeatable scavenging',()=>{
  it('lets the player search the same pockets three times, then removes the action',()=>{
-  let s=makeInitialState('journalist');s.mode='adventure';s.attempt=1;s.sceneId='loot';
+  let s=makeInitialState('journalist');s.mode='adventure';s.attempt=1;s.sceneId='loot';s.flags.push('won_by_combat');s.enemy.health=0;
   expect(remainingSearches(s,'pockets')).toBe(3);
   for(let i=0;i<3;i++){
    expect(getVisibleActions(s).some(a=>a.id==='loot_pockets')).toBe(true);

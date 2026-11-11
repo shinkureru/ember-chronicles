@@ -10,6 +10,7 @@ export default function MissionTransition({
  const finishRef=useRef(onFinish);
  useEffect(()=>{finishRef.current=onFinish},[onFinish]);
  useEffect(()=>{
+  if(kind==='defeat')return; // Only the player may dismiss the defeat result.
   const timer=window.setTimeout(()=>finishRef.current(),TRANSITION_DURATION[kind]);
   return()=>window.clearTimeout(timer);
  },[kind]);
@@ -42,6 +43,6 @@ export default function MissionTransition({
     <p>{summary??(kind==='victory'?'終於可以離開這裡了。':'我至少還記得這次發生的事。')}</p>
     <small>{kind==='victory'?'戰利品將自動整理至倉庫。':kind==='defeat'?'本次新線索已記錄，物品不會遺失。':'撤退代價與現有情報已保存。'}</small>
    </div>}
-  <button type="button" className="mission-cinematic__skip" onClick={()=>finishRef.current()}>{completed?'立即返回地圖':'略過'} <span>›</span></button>
+  <button type="button" className="mission-cinematic__skip" onClick={()=>finishRef.current()}>{kind==='defeat'?'結束戰敗 · 返回地圖':completed?'立即返回地圖':'略過'} <span>›</span></button>
  </div>;
 }

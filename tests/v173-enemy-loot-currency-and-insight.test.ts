@@ -44,17 +44,15 @@ describe('v1.7.3 per-enemy failure reflections and one-time chance bonus',()=>{
  it('tracks failures separately and never transfers the first-enemy bonus to the next',()=>{
   let s=makeInitialState('journalist');
   s.mode='adventure';s.attempt=1;s.stageId=1;
-  s=gameReducer(s,{type:'RETREAT'}); // can fail; use an explicit guaranteed fatal counter next
-  if(s.mode!=='result'){
-   s.player.health=1;s.enemyCounter={id:12,itemId:'radio',damage:6,hit:true,phase:'throwing'};
-   s=gameReducer(s,{type:'ENEMY_COUNTER_HIT'});
-   s=gameReducer(s,{type:'ENEMY_COUNTER_FINISH'});
-  }
+  s.player.health=1;s.enemyCounter={id:12,itemId:'radio',damage:6,hit:true,phase:'throwing'};
+  s=gameReducer(s,{type:'ENEMY_COUNTER_HIT'});
+  s=gameReducer(s,{type:'ENEMY_COUNTER_FINISH'});
   expect(s.mode).toBe('result');
   const old=s.insightByEnemy?.warehouse_guard??0;
   expect(old).toBeGreaterThan(0);
   const firstCount=s.npc.playerDefeats??0;
   s=gameReducer(s,{type:'RETURN_HUB'});
+  s.chapterProgress.unlocked=2;
   s=gameReducer(s,{type:'SELECT_STAGE',stageId:2});
   s=gameReducer(s,{type:'START_ATTEMPT'});
   expect(activeEnemyInsight(s)).toBe(0);

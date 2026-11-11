@@ -56,6 +56,8 @@ export interface TownProgress {
 export interface SurvivorConditions { wounds:number;infection:number;poisoning:number;illness:number }
 export interface GameState {
   version: 1;
+  /** 2 = low-HP balance; missing on v1.5 and older saves. */
+  hpRulesVersion?: 2;
   mode: Mode;
   profession: ProfessionId | null;
   player: { health: number; maxHealth: number; stamina: number; maxStamina: number; courage: number; hunger: number; fatigue: number; temperature: number; resource: number; maxResource: number; attributes: Attributes };

@@ -23,7 +23,7 @@ describe('v0.8 encounter variation without dead ends',()=>{
    const s=makeInitialState('journalist');s.mode='adventure';s.attempt=attempt;
    s.sceneId='confrontation';
    expect(getVisibleActions(s).some(a=>a.id==='fight_talk')).toBe(true);
-   s.sceneId='loot';
+   s.sceneId='loot';s.flags.push('won_by_combat');s.enemy.health=0;
    expect(getVisibleActions(s).some(a=>a.id==='loot_exit')).toBe(true);
   }
  });

@@ -50,10 +50,13 @@ describe('劇情規則',()=>{
    expect(p.chance).toBeLessThan(50);
    s.rngSeed=500;
    const failed=gameReducer(s,{type:'CHOOSE',choiceId:'fight_talk',skillId:null});
-   expect(failed.mode).toBe('result');
+   expect(failed.mode).toBe('adventure');
+   expect(failed.sceneId).toBe('confrontation');
+   expect(failed.enemyCounter?.phase).toBe('waiting');
+   expect(failed.flags).toContain('negotiation_rejected');
    expect(failed.bag.flashlight).toBe(1);
-   expect(failed.clues.length).toBe(1);
-   expect(failed.insightBonus).toBe(6);
+   expect(failed.clues.length).toBe(0);
+   expect(failed.insightBonus).toBe(0);
  });
  it('倉庫只轉移容許容量，剩餘物品不會消失',()=>{
    let s=makeInitialState('journalist');s.mode='result';s.bag={vest:5,flashlight:5};s.warehouseCapacity=1;

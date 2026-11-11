@@ -57,7 +57,7 @@ export default function SkillHand({choice,skillId,onChange,layoutSeed=0}:{
     <strong className={projected>state.player.resource?'change--better':projected<state.player.resource?'change--worse':'change--same'}>{projected} / {state.player.maxResource}</strong>
   </div>
   <div className="skill-scatter__wrap">
-    <div className="skill-scatter__track" ref={trackRef} role="group" aria-label="可上下拖曳與滑動的附加技能卡，每列三張" onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
+    <div className="skill-scatter__track" ref={trackRef} tabIndex={0} role="group" aria-label="可上下拖曳與滑動的附加技能卡，每列三張" onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
       <button type="button" style={phase(layoutSeed,0)} className={`skill-tile skill-tile--scatter skill-tile--none ${!skillId?'is-selected':''}`} onClick={()=>selectSkill(null)}>
         <div className="skill-tile__illustration"><span>∅</span></div><strong>不附加</strong><small className="skill-tile__resource">0 <ProfessionResourceIcon profession={state.profession} size={13}/></small>
       </button>

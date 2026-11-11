@@ -10,6 +10,7 @@ import { playCue } from '../../audio/sound';
 import { bagWeight, worldPhaseToken, worldPhase, worldClock } from '../../game/engine/rules';
 import MarketPortrait from './MarketPortrait';
 import SurvivorFigure from '../../components/SurvivorFigure';
+import ItemArt from '../../components/ItemArt';
 
 type Mode='buy'|'sell';
 type Kind='all'|'item'|'card';
@@ -137,7 +138,7 @@ export default function BlackMarketPage(){
        onClick={()=>{setSelectedId(offer.id);playCue('select')}}
        aria-label={`${offer.name}，${offer.price} 舊幣`}>
        <span className="market-v12__offer-type">{offer.type==='card'?'CARD':'ITEM'}</span>
-       <span className="market-v12__offer-icon" aria-hidden="true">{offer.emoji}</span>
+       <span className="market-v12__offer-icon" aria-hidden="true">{offer.type==='item'?<ItemArt id={offer.id}/>:offer.emoji}</span>
        <strong>{offer.name}</strong>
        <small>{offer.price} <Coins size={10}/></small>
       </button>)}
@@ -156,7 +157,7 @@ export default function BlackMarketPage(){
    <section className="market-v10__detail" role="dialog" aria-modal="true" aria-label={selected.name+'交易資訊'}>
     <button className="market-v10__close" type="button" aria-label="關閉商品資訊" onClick={()=>setSelectedId(null)}><X size={20}/></button>
     <span className="market-v10__detail-kicker">BLACK MARKET / {selected.type==='card'?'CARD':'SUPPLY'}</span>
-    <span className="market-v10__detail-art" aria-hidden="true">{selected.emoji}</span>
+    <span className="market-v10__detail-art" aria-hidden="true">{selected.type==='item'?<ItemArt id={selected.id}/>:selected.emoji}</span>
     <h2>{selected.name}</h2><p>{selected.description}</p>
     <div className="market-v10__detail-facts">
      <span>交易價格 <strong>{selected.price} 舊幣</strong></span>

@@ -41,12 +41,27 @@ export interface ActionPreview {
   damage?:number; attackAvailable?:boolean;
   warnings: { title: string; detail: string; remedy: string }[];
 }
+export type TownFacilityId='inn'|'clinic'|'workshop'|'tavern'|'training'|'noticeboard'|'laundry'|'canteen';
+export type TownQuestStatus='accepted'|'completed';
+export interface TownProgress {
+ visits:Partial<Record<TownFacilityId,number>>;
+ lastTrainingDay:number;
+ lastRumorDay:number;
+ lastCanteenTalkDay:number;
+ socialPoiseUntil:number;
+ upgrades:Record<string,number>;
+ wear:Record<string,number>;
+ quests:Record<string,TownQuestStatus>;
+}
+export interface SurvivorConditions { wounds:number;infection:number;poisoning:number;illness:number }
 export interface GameState {
   version: 1;
   mode: Mode;
   profession: ProfessionId | null;
   player: { health: number; maxHealth: number; stamina: number; maxStamina: number; courage: number; hunger: number; fatigue: number; temperature: number; resource: number; maxResource: number; attributes: Attributes };
   world: { minute: number; day: number; weather: 'clear' | 'rain' };
+  town?:TownProgress;
+  conditions?:SurvivorConditions;
   npc: { hostility: number; trust: number; met: number; adaptations: Record<string, number>; remembers: string[]; stolenGear: string[] };
   /** Current mission selection; absent in older saves means first mission. */
   stageId?: 1 | 2;

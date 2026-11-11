@@ -1,6 +1,7 @@
-import { ArrowDown, ArrowDownRight, ArrowUpRight, Minus, Sparkles } from 'lucide-react';
+import { ArrowDown, ArrowDownRight, ArrowUpRight, Minus } from 'lucide-react';
 import { useGame } from '../../app/GameContext';
 import { CARDS } from '../../game/data/cards';
+import ProfessionResourceIcon from '../../components/ProfessionResourceIcon';
 import { PROFESSIONS } from '../../game/data/professions';
 import { getSkillComparison } from '../../game/engine/skillComparison';
 import type { ActionChoice, SkillCard } from '../../game/types';
@@ -13,7 +14,7 @@ export default function SkillComparison({choice,skillId}:{choice:ActionChoice;sk
   const skill=skillId?CARDS[skillId]??null:null;
   const resourceName=state.profession?PROFESSIONS[state.profession].resourceName:'技能資源';
   return <section className="skill-comparison" aria-label="技能附加前後數值比較">
-    <div className="skill-comparison__resource"><Sparkles size={14}/><strong>{resourceName}</strong><span className={data.resourceAfter>data.resourceBefore?'change--better':data.resourceAfter<data.resourceBefore?'change--worse':'change--same'}>{data.resourceBefore} / {state.player.maxResource} → {data.resourceAfter} / {state.player.maxResource}</span></div>
+    <div className="skill-comparison__resource"><ProfessionResourceIcon profession={state.profession} size={14}/><strong>{resourceName}</strong><span className={data.resourceAfter>data.resourceBefore?'change--better':data.resourceAfter<data.resourceBefore?'change--worse':'change--same'}>{data.resourceBefore} / {state.player.maxResource} → {data.resourceAfter} / {state.player.maxResource}</span></div>
     <div className="skill-comparison__card"><span>原始行動卡</span><strong>{choice.title}</strong><div className="skill-comparison__numbers"><span>成功 {data.original.chance}%</span><span>體力 -{data.original.staminaCost}</span><span>膽量 {signed(data.original.courageDelta)}</span><span>時間 +{data.original.minutes} 分</span><span>資源 {data.resourceBefore}</span></div></div>
     <div className="skill-comparison__arrow"><ArrowDown size={18}/><span>{describe(skill)}</span></div>
     <div className="skill-comparison__card skill-comparison__card--enhanced"><span>技能附加後 · 預計結果</span><strong>{choice.title}</strong><div className="skill-comparison__metrics">

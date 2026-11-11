@@ -77,7 +77,7 @@ describe('v0.8 interrupting notices',()=>{
  });
  it('interrupts for critical injuries and new clues',()=>{
   const a=makeInitialState('journalist'),b=structuredClone(a);
-  b.player.health=74;b.clues.push('發現守衛換班的時間。');
+  b.player.health=2;b.clues.push('發現守衛換班的時間。');
   const notices=majorStateChanges(a,b);
   expect(notices.some(n=>n.kind==='danger')).toBe(true);
   expect(notices.some(n=>n.title==='關鍵情報')).toBe(true);

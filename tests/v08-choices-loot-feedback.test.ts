@@ -58,6 +58,9 @@ describe('v0.8 limited repeatable scavenging',()=>{
   s.mode='result';s.outcome='victory';s=gameReducer(s,{type:'RETURN_HUB'});
   s=gameReducer(s,{type:'START_ATTEMPT'});
   expect(s.lootSearches).toEqual({});
+  // A fresh attempt requires defeating the same NPC again before looting them.
+  expect(remainingSearches(s,'npcGear')).toBe(0);
+  s.sceneId='loot';s.flags.push('won_by_combat');s.enemy.health=0;
   expect(remainingSearches(s,'npcGear')).toBe(2);
  });
  it('never consumes a scavenging attempt when inventory weight blocks pickup',()=>{

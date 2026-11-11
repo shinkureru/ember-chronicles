@@ -1,4 +1,5 @@
 import { CARDS } from '../data/cards';
+import { townAbsoluteMinute } from '../data/town';
 import { getPeacefulResolutionCap } from './encounterBalance';
 import { ITEMS } from '../data/items';
 import { SCENES } from '../data/scenes';
@@ -103,6 +104,7 @@ export const calculateActionPreview=(state:GameState,choice:ActionChoice,skillId
   const lowStaminaPenalty=state.player.stamina<staminaCost?24:0;
   const fearPenalty=state.player.courage<40 && choice.tags.some(t=>t==='talk'||t==='fight')?7:0;
   const clueBonus=Math.min(24,state.clues.length*5);
+  const groomedBonus=choice.tags.includes('talk')&&(state.town?.socialPoiseUntil??0)>townAbsoluteMinute(state)?5:0;
   const routeBonus=state.flags.includes('route_known')&&choice.tags.some(t=>t==='sneak'||t==='run')?8:0;
   const heardBonus=state.flags.includes('heard_steps')&&choice.tags.includes('talk')?8:0;
   const hostilityPenalty=choice.tags.includes('talk')?Math.max(0,Math.floor((currentNpc.hostility-25)/8)):0;
@@ -110,7 +112,7 @@ export const calculateActionPreview=(state:GameState,choice:ActionChoice,skillId
   const rawChance=!weaponAvailable?0:choice.baseChance===100?100:Math.round(clamp(
     choice.baseChance+specialtyBonus(state,choice.tags)+attributeBonus(state,choice.tags)+
     (validSkill?validSkill.chanceBonus+(skillLevel-1)*3:0)+clueBonus+state.insightBonus+routeBonus+heardBonus-
-    npcPenalty-overweightPenalty-tiredPenalty-lowStaminaPenalty-hostilityPenalty-fearPenalty,
+    npcPenalty-overweightPenalty-tiredPenalty-lowStaminaPenalty-hostilityPenalty-fearPenalty+groomedBonus,
     5,95));
   const crisisCap=getPeacefulResolutionCap(state,choice);
   const chance=crisisCap===null?rawChance:Math.min(rawChance,crisisCap);

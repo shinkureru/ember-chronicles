@@ -18,13 +18,10 @@ export const majorStateChanges=(previous:GameState,current:GameState):Notice[]=>
  const result:Notice[]=[];
  const add=(title:string,detail:string,kind:Notice['kind']='major')=>
   result.push({id:++nextId,title,detail,kind});
+ // MissionTransition owns the entire result screen; never stack a short-lived
+ // duplicate "defeat" popup that disappears automatically after 3.3 seconds.
  const ended=previous.mode!==current.mode&&current.mode==='result';
- if(ended){
-  const extra=current.chapterProgress.unlocked>previous.chapterProgress.unlocked?
-    ` 第 ${current.chapterProgress.unlocked} 關已解鎖。`:'';
-  add(current.outcome==='victory'?'任務完成':current.outcome==='defeat'?'戰敗':'已撤退',
-    (current.lastEvent??'這次事件已經結束。')+extra,current.outcome==='defeat'?'danger':'major');
- }
+ if(ended||current.mode==='result')return [];
  const lost=previous.player.health-current.player.health;
  // Result screens already present serious injuries and gained clues; do not stack several modals.
  const criticalThreshold=Math.max(1,Math.ceil(current.player.maxHealth*.2));
@@ -64,6 +61,8 @@ export default function GameFeedback(){
   }
   if(state.player.stamina<old.player.stamina&&old.player.stamina-state.player.stamina>=8)playCue('breath');
   if(state.player.health<old.player.health)playCue('injury');
+  // Discard any queued notices when the persistent mission result takes over.
+  if(state.mode==='result'){setQueue([]);setPickups([]);return;}
   if(notable.length)setQueue(q=>[...q,...notable].slice(0,5));
   // A committed loot event plays exactly once: global time ticks do not replay it.
   const found=state.mode==='adventure'&&state.log.length>old.log.length?state.lastLoot:null;

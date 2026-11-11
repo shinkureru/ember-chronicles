@@ -1,5 +1,22 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-12 最新追蹤：v1.7.2 旅店與戰敗介面修正（優先於下方歷史段落）
+
+**基準確認：** 兩批 PR #19 (v1.7.0) 與 PR #20 (v1.7.1) **已合併**。GitHub Pages 已成功部署 main 的 `46ab986b15f4b16024cb0cc72e8a03d38e63d1e2`，使用者截圖的版本標示是 `v1.7.1 · 46ab986`。故此輪「旅店大卡點了沒反應／戰敗畫面會自動關閉」為真實的互動問題，不是漏合併或瀏覽器仍在看舊版本。
+
+**正在修復（待驗收，勿當作已上線）：**
+- **PR #21**：https://github.com/shinkureru/ember-chronicles/pull/21
+- 分支：`fix/v1.7.2-inn-and-defeat-persistence`，檢查 `docs/V172_INN_DEFEAT_FIX.md` 與 `tests/v172-inn-and-defeat-regressions.test.ts`。
+- 根本原因一：`TownPage` 大型旅店設施卡片只有切換已經預設選取的 `facility='inn'`，沒有呼叫 `setRestDialog`。PR #19 的 Portal 修正只作用於**下方的床位服務按鈕**。修復後點大卡立即開啟，視窗有三種床位選單，預覽與真實扣款／回血使用同一 selected id。
+- 根本原因二：`MissionTransition` 戰敗結果本身略過自動 timer，但 `GameFeedback` 同時生成一張 3.3 秒後消失的短暫「戰敗」通知。修復後 `TRANSITION_DURATION.defeat=null` 並且不再重複彈出結果短通知；`RETURN_HUB` 僅玩家按右下角按鈕時才發出。
+- 新版維持原存檔 KEY 及資料結構，未改戰鬥數值、其他城鎮服務或人物劇情；發行版號沿用 `v1.7.2`，是否全面改用 `v0.x.x` 留後續獨立處理。
+- 驗收：**先確認本 PR 的 TypeScript build/Vitest 成功、再由使用者合併、Pages success、遊戲頁首新 Commit 短碼**；手機/桌面實機檢查旅店大卡、三房型、每日兩次限制、戰敗畫面停留與點擊後返回。
+
+> 下方的「2026-11-11 最新交接」等標題是歷史快照，其中「PR #19/#20 尚未合併」的敘述已過期。以此最新段落及即時 GitHub 為準。
+
+---
+
+
 ## 2026-11-11 最新交接（優先閱讀）
 
 **實際 main 起點：** v1.6b 的 PR #17、#18 已合併；建立此輪分支時 main 為 `3d8e6333dc2f4e2af85adf1b8788fff4ef67b6de`。以下兩批新功能 **尚待 PR 合併和手機人工驗收**，不能說已在正式 Pages 上線。

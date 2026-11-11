@@ -27,7 +27,10 @@ export const majorStateChanges=(previous:GameState,current:GameState):Notice[]=>
  }
  const lost=previous.player.health-current.player.health;
  // Result screens already present serious injuries and gained clues; do not stack several modals.
- if(!ended&&(lost>=15||previous.player.health>20&&current.player.health<=20))
+ const criticalThreshold=Math.max(1,Math.ceil(current.player.maxHealth*.2));
+ // Avoid stacking a modal over every 4-6 HP combat hit in the 10 HP system.
+ if(!ended&&(lost>=Math.max(15,Math.ceil(current.player.maxHealth*.6))||
+   previous.player.health>criticalThreshold&&current.player.health<=criticalThreshold))
   add('嚴重受傷',`生命 ${previous.player.health} → ${current.player.health}`, 'danger');
  if(!ended&&previous.player.courage>=40&&current.player.courage<40)
   add('膽量跌破臨界值','畏縮狀態已觸發；休息或完成勇氣事件可恢復。','danger');

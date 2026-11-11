@@ -2,6 +2,7 @@ import { TOWN_SERVICES,isTownOpen,townAbsoluteMinute } from '../data/town';
 import type { AttributeId,GameState,TownProgress,SurvivorConditions } from '../types';
 import { ITEMS } from '../data/items';
 import { clamp } from './rules';
+import {clinicTreatmentPreview} from './clinic';
 import { isRestService,previewInnRest,remainingDailyRest } from './innRest';
 
 export const ensureTownProgress=(s:GameState):TownProgress=>{
@@ -81,11 +82,21 @@ export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,item
    message=`我休息了一陣子，生命 +${preview.healthGain}、體力 +${preview.staminaGain}。越疲憊時身體對休息的反應越明顯。`;
    break;
   }
-  case 'clinic_wounds':conds.wounds=Math.max(0,conds.wounds-2);p.health=restore(p.health,25,p.maxHealth);message='傷口清理好了。繃帶壓住疼痛，至少不會繼續流血。';break;
-  case 'clinic_infection':conds.infection=Math.max(0,conds.infection-2);p.health=restore(p.health,12,p.maxHealth);message='醫師替我處理感染，提醒我別再忽視發炎的徵兆。';break;
-  case 'clinic_poison':conds.poisoning=Math.max(0,conds.poisoning-2);p.stamina=restore(p.stamina,15,p.maxStamina);message='中毒症狀有所緩解，呼吸終於穩定下來。';break;
-  case 'clinic_illness':conds.illness=Math.max(0,conds.illness-2);p.fatigue=restore(p.fatigue,-12,100);message='診療結束後，身體裡那種難熬的沉重感少了許多。';break;
-  case 'clinic_general':p.health=restore(p.health,18,p.maxHealth);message='我接受了一次基本診察，至少能安心繼續移動。';break;
+  case 'clinic_wounds':
+  case 'clinic_infection':
+  case 'clinic_poison':
+  case 'clinic_illness':
+  case 'clinic_general':{
+   const preview=clinicTreatmentPreview(s,id);
+   p.health=preview.resultingHealth;p.stamina=preview.resultingStamina;
+   p.fatigue=restore(p.fatigue,preview.fatigue,100);
+   conds.wounds=restore(conds.wounds,preview.wounds,100);
+   conds.infection=restore(conds.infection,preview.infection,100);
+   conds.poisoning=restore(conds.poisoning,preview.poisoning,100);
+   conds.illness=restore(conds.illness,preview.illness,100);
+   message=`診療完成：生命 +${preview.health}、體力 +${preview.stamina}，症狀已依療程處理。`;
+   break;
+  }
   case 'workshop_repair':town.wear[itemId!]=100;message=`「${ITEMS[itemId!]?.name??itemId}」恢復了完整的耐久度。`;break;
   case 'workshop_upgrade':{
    const material=consumeOneMaterial(s,['tape','wire_piece']);

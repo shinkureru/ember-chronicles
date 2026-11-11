@@ -24,7 +24,17 @@ export const loadGame=():GameState=>{
       for(const [id,count] of Object.entries(starter))if(!((old.bag[id]??0)>0)&&!((warehouse[id]??0)>0))warehouse[id]=count;
     }
     const lootSearches=old.lootSearches??Object.fromEntries((old.searchedSources??[]).map(id=>[id,LOOT_LIMITS[id]??1]));
+    // Convert existing 100-HP saves once, retaining the same health ratio and every
+    // earned +5 old-health training bonus as +1 new-health capacity.
+    // A marker prevents the conversion from running again after saving.
+    const legacyHealth=old.hpRulesVersion!==2;
+    const oldMax=Math.max(1,old.player.maxHealth);
+    const trainedLevels=Math.max(0,Math.round((oldMax-100)/5));
+    const newMax=10+trainedLevels;
+    const newHealth=Math.max(0,Math.min(newMax,Math.round(old.player.health/oldMax*newMax)));
     return { ...old,
+      hpRulesVersion:2,
+      player:legacyHealth?{...old.player,maxHealth:newMax,health:newHealth}:old.player,
       town:{visits:{},lastTrainingDay:0,lastRumorDay:0,lastCanteenTalkDay:0,socialPoiseUntil:0,upgrades:{},wear:{},quests:{},...old.town},
       conditions:{wounds:0,infection:0,poisoning:0,illness:0,...old.conditions},
       stageId:old.stageId??1,alleyNpc:old.alleyNpc??{hostility:18,trust:12,met:0,adaptations:{},remembers:[],stolenGear:[]},attackDeck,enemy:old.enemy??makeInitialEnemy(old.stageId??1),ownedCards,warehouse,lootSearches,

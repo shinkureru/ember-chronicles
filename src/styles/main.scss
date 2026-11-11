@@ -62,3 +62,11 @@
 .app-header__version{margin-left:auto;white-space:nowrap;font:600 10px/1.2 Inter,sans-serif;letter-spacing:.04em;color:#c7c2bc;border:1px solid #50474a;border-radius:6px;padding:7px 8px;background:#151318}
 .app-header__version small{color:#998f91;font:500 9px Inter,sans-serif}
 @media(max-width:380px){.app-header__version{padding:5px;font-size:9px}.app-header__version small{display:none}}
+
+/* v1.7: hostile speech above the enemy, never obstructing controls. */
+.scene-art .enemy-taunt-bubble{position:absolute;right:3%;top:7%;z-index:25;display:grid;gap:3px;max-width:min(66%,230px);min-width:120px;padding:8px 11px;border-radius:12px 12px 3px 12px;background:#151315ee;border:1px solid #9e7778;box-shadow:0 7px 23px #000c;color:#f1dddd;pointer-events:none;animation:enemy-taunt-enter .23s ease-out}
+.enemy-taunt-bubble small{font-size:10px;color:#c8a09c;letter-spacing:.04em}
+.enemy-taunt-bubble span{font:600 13px/1.6 'Noto Serif TC',serif;word-break:break-all}
+@keyframes enemy-taunt-enter{from{opacity:0;transform:translateY(8px) scale(.95)}to{opacity:1;transform:none}}
+@media(max-height:720px){.scene-art .enemy-taunt-bubble{top:2%;right:1%;padding:5px 8px}.enemy-taunt-bubble span{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.scene-art .enemy-taunt-bubble{animation:none}}

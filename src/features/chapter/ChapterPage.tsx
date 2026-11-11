@@ -110,13 +110,14 @@ export default function ChapterPage(){
  const npc=s.stageId===2?(s.alleyNpc??s.npc):s.npc;
  const stageVisit=s.stageId===2?(s.alleyNpc?.met??1):s.npc.met;
  return <div className="chapter-live">
-  <div className="chapter-kicker"><span>CHAPTER 01 · MISSION {String(s.stageId??1).padStart(2,'0')} · {scene.label} · {worldPhase(s.world.minute)}</span><div className="chapter-kicker__controls"><button type="button" onClick={()=>setShowBag(true)} aria-label="打開任務背包"><Backpack size={15}/>背包</button><button type="button" onClick={()=>setShowStory(true)} aria-label="閱讀完整劇情"><BookOpenText size={15}/>全文</button><button type="button" onClick={()=>setShowSettings(true)} aria-label="遊戲設定"><Settings2 size={16}/>設定</button></div></div>
+  <div className="chapter-kicker"><span>CHAPTER 01 · MISSION {String(s.stageId??1).padStart(2,'0')} · {scene.label} · {worldPhase(s.world.minute)}</span><div className="chapter-kicker__controls"><button type="button" onClick={()=>setShowStory(true)} aria-label="閱讀完整劇情"><BookOpenText size={15}/>全文</button><button type="button" onClick={()=>setShowSettings(true)} aria-label="遊戲設定"><Settings2 size={16}/>設定</button></div></div>
   <Hud/>
   {(s.sceneId==='confrontation'||combatHold)&&<div className="enemy-hud" aria-label="敵人生命值">
     <div className="enemy-hud__top"><span>ENEMY / {s.enemy.name}</span><strong>{s.enemy.health} / {s.enemy.maxHealth} HP</strong></div>
     <div className="enemy-hud__track" role="progressbar" aria-label="敵人生命" aria-valuemin={0} aria-valuemax={s.enemy.maxHealth} aria-valuenow={s.enemy.health}><i style={{width:`${s.enemy.health/s.enemy.maxHealth*100}%`}}/></div>
   </div>}
   <section className={`scene-art scene-art--${s.sceneId} phase--${worldPhaseToken(s.world.minute)} ${s.sceneId==='confrontation'||combatHold?'scene-art--combat':''}`} aria-label={`${scene.location}的環境場景`}>
+   <button type="button" className="chapter-bag-access" onClick={()=>{setShowBag(true);playCue('open')}} aria-label="查看背包與更換裝備"><Backpack size={18}/><span>查看背包</span></button>
    {s.stageId===2?<AlleySceneArtwork scene={combatHold&&s.enemy.health===0?'confrontation':s.sceneId}/>:
      <SceneArtwork scene={combatHold&&s.enemy.health===0?'confrontation':s.sceneId}/>}
    {(s.sceneId==='confrontation'||combatHold)&&<EnemyPresence health={s.enemy.health} maxHealth={s.enemy.maxHealth} name={s.enemy.name} variant={s.stageId===2?'alley':'warehouse'} windup={s.enemyCounter?.phase==='windup'}/>}

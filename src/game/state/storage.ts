@@ -24,7 +24,10 @@ export const loadGame=():GameState=>{
       for(const [id,count] of Object.entries(starter))if(!((old.bag[id]??0)>0)&&!((warehouse[id]??0)>0))warehouse[id]=count;
     }
     const lootSearches=old.lootSearches??Object.fromEntries((old.searchedSources??[]).map(id=>[id,LOOT_LIMITS[id]??1]));
-    return { ...old, stageId:old.stageId??1,alleyNpc:old.alleyNpc??{hostility:18,trust:12,met:0,adaptations:{},remembers:[],stolenGear:[]},attackDeck,enemy:old.enemy??makeInitialEnemy(old.stageId??1),ownedCards,warehouse,lootSearches,
+    return { ...old,
+      town:{visits:{},lastTrainingDay:0,lastRumorDay:0,lastCanteenTalkDay:0,socialPoiseUntil:0,upgrades:{},wear:{},quests:{},...old.town},
+      conditions:{wounds:0,infection:0,poisoning:0,illness:0,...old.conditions},
+      stageId:old.stageId??1,alleyNpc:old.alleyNpc??{hostility:18,trust:12,met:0,adaptations:{},remembers:[],stolenGear:[]},attackDeck,enemy:old.enemy??makeInitialEnemy(old.stageId??1),ownedCards,warehouse,lootSearches,
       chapterProgress: old.chapterProgress ?? { completed: old.npc?.remembers?.includes('player_victory')?[1]:[], unlocked:old.npc?.remembers?.includes('player_victory')?2:1 },
       economy: {...(old.economy??{coins:120,blackMarketFavor:0,marketPurchases:0}),marketStock:old.economy?.marketStock??{}},
       equipment: old.equipment ?? {head:null,body:null,hands:null,mainHand:null,utility:null,accessory:null},

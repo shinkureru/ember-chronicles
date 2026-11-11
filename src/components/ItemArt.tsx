@@ -7,6 +7,29 @@ import { ITEMS } from '../game/data/items';
  * Remaining emoji are used only for objects whose native emoji is unambiguous.
  */
 const exactArt:Record<string,ReactNode>={
+ sterile_bandage:<>
+  <ellipse cx="25" cy="39" rx="17" ry="18" fill="#d6d4cd" stroke="#8d9998"/><ellipse cx="25" cy="39" rx="7" ry="9" fill="#525960"/>
+  <path d="M25 22h25v33H25" stroke="#e0ddd7" fill="#b7b9b4" strokeWidth="4"/><path d="M34 23v31M43 23v31" stroke="#7c8586"/>
+  <rect x="35" y="7" width="23" height="15" rx="2" fill="#788991"/><path d="M46 10v9M42 14h8" stroke="#e4e4dd" strokeWidth="3"/>
+ </>,
+ antiseptic_kit:<>
+  <rect x="14" y="14" width="36" height="46" rx="6" fill="#56666c" stroke="#c6cccb"/>
+  <path d="M23 14v-7h18v7" stroke="#b8c1c3"/><rect x="19" y="28" width="26" height="24" rx="2" fill="#b8c4c2"/>
+  <path d="M32 33v14M25 40h14" stroke="#7e4549" strokeWidth="5"/>
+ </>,
+ antidote_injector:<>
+  <g transform="rotate(-34 32 32)">
+   <rect x="25" y="13" width="14" height="30" rx="2" fill="#b6cbd0" stroke="#60747b"/>
+   <path d="M25 29h14M25 35h14M28 17v17" stroke="#618f8e" strokeWidth="2"/>
+   <path d="M32 43v15M27 58h10M32 13V6M24 6h16" stroke="#dae6e5" strokeWidth="3"/>
+  </g>
+ </>,
+ pain_relief:<>
+  <rect x="13" y="10" width="38" height="46" rx="4" fill="#64666b" stroke="#b8aeaa"/>
+  <rect x="19" y="18" width="26" height="30" rx="2" fill="#929da5"/>
+  {[0,1,2].map(i=><g key={i}><ellipse cx="26" cy={24+i*9} rx="4" ry="3" fill="#ded2bc"/><ellipse cx="38" cy={24+i*9} rx="4" ry="3" fill="#ded2bc"/></g>)}
+ </>,
+
  bandage:<>
   <path d="M14 39h27v13H14z" fill="#b9b6ae"/><path d="M14 39v13M23 39v13M32 39v13" stroke="#77716e" strokeWidth="1.6"/>
   <ellipse cx="14" cy="45.5" rx="10" ry="13" fill="#e1ddd5"/><ellipse cx="14" cy="45.5" rx="5" ry="7" fill="#615c5a"/>

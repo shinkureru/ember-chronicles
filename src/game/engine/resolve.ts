@@ -1,4 +1,7 @@
 import { getScheduledVendorId } from '../data/marketSchedule';
+import { TOWN_QUESTS, townQuestReady } from '../data/town';
+import { applyTownService,ensureTownProgress,ensureConditions } from './townActions';
+import type { AttributeId } from '../types';
 import { CARDS, getUpgradeRequirement } from '../data/cards';
 import { ATTACK_CARDS, attackStatus, getAttackDamage, MAX_ATTACK_DECK, makeInitialEnemy } from '../data/attacks';
 import { ITEMS, LOOT_POOLS, INITIAL_NPC_GEAR } from '../data/items';
@@ -29,6 +32,9 @@ export type GameAction =
   | {type:'MARKET_SELL';vendorId:string;cardId:string}
   | {type:'MARKET_BUY';vendorId:string;cardId:string}
   | {type:'REST_TOWN'}
+  | {type:'TOWN_SERVICE';serviceId:string;attribute?:AttributeId;itemId?:string}
+  | {type:'TOWN_ACCEPT_QUEST';questId:string}
+  | {type:'TOWN_COMPLETE_QUEST';questId:string}
   | {type:'EQUIP_ITEM';slot:string;itemId:string}
   | {type:'UNEQUIP_ITEM';slot:string}
   | {type:'PROTECT_ITEM';itemId:string}
@@ -172,6 +178,12 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       const {itemId,damage,hit}=s.enemyCounter;
       if(hit){
         s.player.health=clamp(s.player.health-damage,0,s.player.maxHealth);
+        if(damage>0){
+          const conditions=ensureConditions(s);
+          conditions.wounds=Math.min(6,conditions.wounds+1);
+          const wornId=s.equipment.body??s.equipment.head??s.equipment.hands;
+          if(wornId){const town=ensureTownProgress(s);town.wear[wornId]=Math.max(15,(town.wear[wornId]??100)-6);}
+        }
         s.lastEvent=`對方把「${ITEMS[itemId]?.name??'工具'}」扔向我。我被擊中，生命 -${damage}！`;
         // Keep HIT state visible long enough for full-screen damage shake, even if lethal.
         // Defeat resolves after the final impact phase.
@@ -412,6 +424,42 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.economy.coins-=price;s.economy.marketPurchases+=1;
       s.ownedCards[action.cardId]!.copies+=1;
       s.lastEvent=`我花了 ${price} 枚舊幣取得「${card.name}」重複卡。這筆錢本來可以換很多補給。`;
+      return s;
+    }
+    case 'TOWN_SERVICE':{
+      const result=applyTownService(s,action.serviceId,action.attribute,action.itemId);
+      if(!result)return state;
+      advanceTime(s,result.minutes);
+      return s;
+    }
+    case 'TOWN_ACCEPT_QUEST':{
+      if(s.mode!=='home')return state;
+      const quest=TOWN_QUESTS.find(q=>q.id===action.questId),town=ensureTownProgress(s);
+      if(!quest||town.quests[quest.id])return state;
+      town.quests[quest.id]='accepted';
+      s.lastEvent=`我接下了「${quest.title}」。完成條件後，再回公告欄交付即可。`;
+      s.log.push(`承接委託：${quest.title}`);
+      return s;
+    }
+    case 'TOWN_COMPLETE_QUEST':{
+      if(s.mode!=='home')return state;
+      const quest=TOWN_QUESTS.find(q=>q.id===action.questId),town=ensureTownProgress(s);
+      if(!quest||town.quests[quest.id]!=='accepted'||!townQuestReady(s,quest))return state;
+      if(quest.requirement.kind==='item'){
+        const id=quest.requirement.itemId??'',qty=quest.requirement.quantity??1;
+        let left=qty;
+        for(const bucket of [s.bag,s.warehouse]){
+          const n=Math.min(left,bucket[id]??0);bucket[id]=(bucket[id]??0)-n;
+          if(bucket[id]===0)delete bucket[id];left-=n;
+        }
+        if(left!==0)throw Error('Quest inventory preview drift');
+      }
+      town.quests[quest.id]='completed';
+      s.economy.coins+=quest.rewardCoins;
+      s.player.attributes[quest.rewardAttribute]=Math.min(20,s.player.attributes[quest.rewardAttribute]+1);
+      s.lastEvent=quest.ending+` 得到 ${quest.rewardCoins} 舊幣及一項永久屬性成長。`;
+      s.log.push(`委託完成：「${quest.title}」。`);
+      advanceTime(s,10);
       return s;
     }
     case 'REST_TOWN':{

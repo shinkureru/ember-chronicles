@@ -126,7 +126,7 @@ export default function ChapterPage(){
    {s.sceneId==='loot'&&<div className="story-panel__hint"><Search size={12}/>搜刮會推進世界時間</div>}
   </section>
   {s.enemyCounter&&<div className="enemy-counter__status" role="status">{
-    s.enemyCounter.phase==='waiting'?'對方準備反擊 · 2 秒後行動':
+    s.enemyCounter.phase==='waiting'?'對方準備反擊 · 0.5 秒後行動':
     s.enemyCounter.phase==='windup'?'對方正準備出手':
     s.enemyCounter.phase==='throwing'?'敵方投擲中': '反擊結算中'
    }<small>可以選擇下一個行動，反擊結束前無法執行。</small></div>}

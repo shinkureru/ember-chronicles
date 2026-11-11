@@ -8,7 +8,7 @@ export const WORLD_TICK_REAL_MS=10000;
 export const WORLD_TICK_GAME_MINUTES=5;
 /** Central phase timing. The reducer is the single source of truth; timers never roll damage. */
 export const COUNTER_PHASE_MS={
- waiting:2000, windup:650, throwing:480, hit:650
+ waiting:500, windup:650, throwing:480, hit:650
 } as const;
 type PauseReason='route'|'dialog';
 interface GameContextValue {

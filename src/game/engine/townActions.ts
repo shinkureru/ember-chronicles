@@ -47,7 +47,7 @@ const restore=(now:number,amount:number,max:number)=>clamp(now+amount,0,max);
 const consumeOneMaterial=(s:GameState,ids:string[]):string|null=>{
  for(const id of ids)for(const storage of [s.bag,s.warehouse]){
   if((storage[id]??0)<=0)continue;
-  storage[id]--;
+  storage[id]=(storage[id]??0)-1;
   if(storage[id]===0)delete storage[id];
   return id;
  }

@@ -27,7 +27,7 @@ export const ensureClinicProgress=(s:GameState):ClinicProgress=>{
 export const clinicUnitPrice=(s:GameState,id:string)=>{
  const item=CLINIC_SUPPLIES.find(x=>x.id===id);
  if(!item)return 0;
- return Math.max(1,Math.ceil(item.price*(1-Math.min(15,getClinicProgress(s).favor)*.01)));
+ return Math.max(1,Math.round(item.price*(1-Math.min(15,getClinicProgress(s).favor)*.01)));
 };
 export const clinicBuyBlock=(s:GameState,id:string):string|null=>{
  const item=CLINIC_SUPPLIES.find(x=>x.id===id);

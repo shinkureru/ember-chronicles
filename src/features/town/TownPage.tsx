@@ -58,7 +58,7 @@ export default function TownPage(){
    {TOWN_FACILITIES.map(f=>{
     const TileIcon=facilityIcons[f.id],selected=facility===f.id,available=isTownOpen(f.id,s.world.minute);
     return <button type="button" key={f.id} className={`town-v15__tile ${selected?'is-active':''}`} aria-pressed={selected}
-     onClick={()=>{setFacility(f.id);if(f.id==='clinic')setClinicOpen(true);playCue('select')}}>
+     onClick={()=>{setFacility(f.id);if(f.id==='inn')setRestDialog('rest_cot');if(f.id==='clinic')setClinicOpen(true);playCue('select')}}>
      <span className="town-v15__tile-icon"><TileIcon size={21}/></span>
      <span className="town-v15__tile-text"><strong>{f.name}</strong><small>{available?'營業中':'已打烊'} · 到訪 {town?.visits[f.id]??0} 次</small></span>
      <ChevronRight size={14}/>
@@ -119,6 +119,6 @@ export default function TownPage(){
   </footer>
   {clinicOpen&&<ClinicDialog onClose={()=>setClinicOpen(false)}/>}
   {restDialog&&<InnRestDialog serviceId={restDialog} onClose={()=>setRestDialog(null)}
-   onConfirm={()=>{enact(restDialog);setRestDialog(null)}}/>}
+   onConfirm={selectedBed=>{enact(selectedBed);setRestDialog(null)}}/>}
  </div>;
 }

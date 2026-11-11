@@ -7,6 +7,7 @@ import ViewTabs from '../../components/ViewTabs';
 import PageStepper from '../../components/PageStepper';
 import { WAREHOUSE_PAGE_SIZE } from '../../game/data/uiConfig';
 import { playCue } from '../../audio/sound';
+import ItemArt from '../../components/ItemArt';
 
 export default function WarehousePage(){
  const {state:s,dispatch}=useGame();
@@ -54,7 +55,7 @@ export default function WarehousePage(){
      const disabled=where==='bag'?(inUse||isFavorite||!enoughRoom):!enoughRoom;
      return <div className="item-row warehouse-v11__row" key={id}>
       <button type="button" className="warehouse-v11__inspect" onClick={()=>{setSelectedId(id);playCue('open')}} aria-label={`查看${item.name}詳細資料`}>
-       <span className="item-row__emoji">{item.emoji}</span>
+       <span className="item-row__emoji"><ItemArt id={id}/></span>
        <span className="warehouse-v11__row-content"><strong>{item.name} ×{count}</strong><small>{item.weight} kg / 個</small></span>
        <Info size={14} className="warehouse-v11__info"/>
       </button>
@@ -71,7 +72,7 @@ export default function WarehousePage(){
   {selected&&<div className="warehouse-v11__overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setSelectedId(null)}}>
    <section className="warehouse-v11__detail" role="dialog" aria-modal="true" aria-label={selected.name+'物品資訊'}>
     <button type="button" className="warehouse-v11__close" aria-label="關閉物品資訊" onClick={()=>setSelectedId(null)}><X size={20}/></button>
-    <small>INVENTORY / {selected.type.toUpperCase()}</small><div className="warehouse-v11__detail-art">{selected.emoji}</div>
+    <small>INVENTORY / {selected.type.toUpperCase()}</small><div className="warehouse-v11__detail-art"><ItemArt id={selected.id}/></div>
     <h2>{selected.name}</h2><p>{selected.description}</p>
     <dl><div><dt>目前位置</dt><dd>{where==='bag'?'隨身背包':'據點倉庫'}</dd></div><div><dt>持有數量</dt><dd>{qty} 件</dd></div><div><dt>單件重量</dt><dd>{selected.weight} kg</dd></div><div><dt>狀態</dt><dd>{equipped?'已穿戴':protectedItem?'常用物品':'一般物資'}</dd></div></dl>
     {moveReason&&<p className="warehouse-v11__warning">{moveReason}</p>}

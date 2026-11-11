@@ -8,6 +8,8 @@ import { ITEMS } from '../../game/data/items';
 import { TOWN_FACILITIES,TOWN_SERVICES,TOWN_QUESTS,isTownOpen,townKeeper,townQuestReady,townAbsoluteMinute } from '../../game/data/town';
 import { getTownServiceLock,getTrainingFee } from '../../game/engine/townActions';
 import type { AttributeId,TownFacilityId } from '../../game/types';
+import InnRestDialog from './InnRestDialog';
+import {isRestService,remainingDailyRest,type RestServiceId} from '../../game/engine/innRest';
 
 const facilityIcons:Record<TownFacilityId,typeof BedDouble>={
  inn:BedDouble,clinic:HeartPulse,workshop:Wrench,tavern:Wine,training:Target,noticeboard:ClipboardList,laundry:Droplets,canteen:UtensilsCrossed,
@@ -20,6 +22,7 @@ const skillGroups:{name:string;attributes:AttributeId[]}[]=[
 export default function TownPage(){
  const {state:s,dispatch}=useGame();
  const [facility,setFacility]=useState<TownFacilityId>('inn');
+ const [restDialog,setRestDialog]=useState<RestServiceId|null>(null);
  const [attribute,setAttribute]=useState<AttributeId>('observation');
  const [selectedGear,setSelectedGear]=useState('');
  const active=TOWN_FACILITIES.find(x=>x.id===facility)!;
@@ -66,6 +69,7 @@ export default function TownPage(){
    </header>
    <div className="town-v15__keeper"><span><MessageCircle size={14}/> {townKeeper(facility,s.world.minute)}</span><p>{active.greeting}</p></div>
    {!open&&<p className="town-v15__closed"><LockKeyhole size={14}/>目前不營業；開放時間 {String(active.hours[0]).padStart(2,'0')}:00–{active.hours[1]===24?'24':String(active.hours[1]).padStart(2,'0')}:00</p>}
+   {facility==='inn'&&<p className="inn-rest-remaining">本日剩餘出租床位休息：{remainingDailyRest(s)}/2 次。不同床位共用每日上限；入睡前可預覽實際恢復數值。</p>}
    {facility==='training'&&<div className="town-v15__selector"><label htmlFor="town-attribute">今天要訓練的永久屬性</label>
     <select id="town-attribute" value={attribute} onChange={e=>setAttribute(e.target.value as AttributeId)}>
      {skillGroups.map(group=><optgroup key={group.name} label={group.name}>{group.attributes.map(id=><option value={id} key={id}>{ATTRIBUTE_LABELS[id]} · Lv.{s.player.attributes[id]}</option>)}</optgroup>)}
@@ -99,7 +103,7 @@ export default function TownPage(){
         <div><strong>{service.name}</strong><p>{service.summary}</p>
          <small><Coins size={12}/> {fee} 舊幣 <Clock3 size={12}/> {service.minutes} 分鐘</small>
         </div>
-        <button type="button" disabled={!!reason} onClick={()=>enact(service.id)}>{reason?<LockKeyhole size={15}/>:<ChevronRight size={17}/>}<span>{reason?'不可用':'執行'}</span></button>
+        <button type="button" disabled={!!reason} onClick={()=>isRestService(service.id)?setRestDialog(service.id):enact(service.id)}>{reason?<LockKeyhole size={15}/>:<ChevronRight size={17}/>}<span>{reason?'不可用':'執行'}</span></button>
         {reason&&<p className="town-v15__reason"><Info size={12}/>{reason}</p>}
        </article>;
       })}
@@ -111,5 +115,7 @@ export default function TownPage(){
     {(town?.socialPoiseUntil??0)>townAbsoluteMinute(s)&&<p><Sparkles size={14}/>整潔儀容效果中：交涉成功率 +5%，剩餘 {town!.socialPoiseUntil-townAbsoluteMinute(s)} 遊戲分鐘。</p>}
     {s.lastEvent&&<p className="town-v15__latest"><BookText size={14}/>{s.lastEvent}</p>}
   </footer>
+  {restDialog&&<InnRestDialog serviceId={restDialog} onClose={()=>setRestDialog(null)}
+   onConfirm={()=>{enact(restDialog);setRestDialog(null)}}/>}
  </div>;
 }

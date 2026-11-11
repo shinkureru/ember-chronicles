@@ -110,7 +110,7 @@ export default function ChapterPage(){
  const npc=s.stageId===2?(s.alleyNpc??s.npc):s.npc;
  const stageVisit=s.stageId===2?(s.alleyNpc?.met??1):s.npc.met;
  return <div className="chapter-live">
-  <div className="chapter-kicker"><span>CHAPTER 01 · MISSION {String(s.stageId??1).padStart(2,'0')} · {scene.label} · {worldPhase(s.world.minute)}</span><div className="chapter-kicker__controls"><button type="button" onClick={()=>setShowBag(true)} aria-label="打開任務背包"><Backpack size={15}/>背包</button><button type="button" onClick={()=>setShowStory(true)}><BookOpenText size={15}/>全文</button><button type="button" onClick={()=>setShowSettings(true)} aria-label="遊戲設定"><Settings2 size={16}/>設定</button></div></div>
+  <div className="chapter-kicker"><span>CHAPTER 01 · MISSION {String(s.stageId??1).padStart(2,'0')} · {scene.label} · {worldPhase(s.world.minute)}</span><div className="chapter-kicker__controls"><button type="button" onClick={()=>setShowBag(true)} aria-label="打開任務背包"><Backpack size={15}/>背包</button><button type="button" onClick={()=>setShowStory(true)} aria-label="閱讀完整劇情"><BookOpenText size={15}/>全文</button><button type="button" onClick={()=>setShowSettings(true)} aria-label="遊戲設定"><Settings2 size={16}/>設定</button></div></div>
   <Hud/>
   {(s.sceneId==='confrontation'||combatHold)&&<div className="enemy-hud" aria-label="敵人生命值">
     <div className="enemy-hud__top"><span>ENEMY / {s.enemy.name}</span><strong>{s.enemy.health} / {s.enemy.maxHealth} HP</strong></div>

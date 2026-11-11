@@ -70,3 +70,5 @@
 @keyframes enemy-taunt-enter{from{opacity:0;transform:translateY(8px) scale(.95)}to{opacity:1;transform:none}}
 @media(max-height:720px){.scene-art .enemy-taunt-bubble{top:2%;right:1%;padding:5px 8px}.enemy-taunt-bubble span{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.scene-art .enemy-taunt-bubble{animation:none}}
+
+@import "v17-clinic";

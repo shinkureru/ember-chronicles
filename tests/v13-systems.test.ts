@@ -88,7 +88,7 @@ describe('v1.3: anti-spam enemy counter',()=>{
 });
 describe('v1.3: pickup feedback',()=>{
  it('commits the exact found item to lastLoot only on successful searches',()=>{
-  const s=makeInitialState('journalist');s.mode='adventure';s.sceneId='loot';
+  const s=makeInitialState('journalist');s.mode='adventure';s.sceneId='loot';s.flags.push('won_by_combat');s.enemy.health=0;
   const next=gameReducer(s,{type:'CHOOSE',choiceId:'loot_pocket',skillId:null});
   if(next.lastLoot){
    expect(ITEMS[next.lastLoot.itemId]).toBeDefined();

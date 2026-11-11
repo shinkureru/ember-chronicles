@@ -1,0 +1,11 @@
+
+/* v1.6a NPC combat learning log */
+.npc-defeat-record{margin-top:12px;padding:12px;border:1px solid #494348;border-radius:9px;background:#17171a}
+.npc-defeat-record>strong{display:block;font-size:13px;color:#eee2de}
+.npc-defeat-record>small{display:block;margin:4px 0 10px;color:#c9b9b5}
+.npc-defeat-record__log{max-height:250px;overflow-y:auto;display:grid;gap:7px}
+.npc-defeat-record__log p{margin:0!important;padding:8px 9px;border-left:2px solid #835c61;background:#231e22;color:#d3c9c6;font-size:11px;line-height:1.6}
+.npc-defeat-record__log span,.npc-defeat-record__log em,.npc-defeat-record__log small{display:block}
+.npc-defeat-record__log span{color:#ddc0b5;font-weight:700}
+.npc-defeat-record__log em{font-style:normal;padding:3px 0}
+.npc-defeat-record__log small{color:#b8abaa}

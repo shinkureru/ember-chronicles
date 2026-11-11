@@ -49,12 +49,13 @@ const nextRand=(state:GameState)=>{
   state.rngSeed=(Math.imul(1664525,state.rngSeed)+1013904223)>>>0;
   return state.rngSeed/4294967296;
 };
-const advanceTime=(s:GameState,minutes:number)=>{
+const advanceTime=(s:GameState,minutes:number,restorative=false)=>{
   const total=s.world.minute+minutes;
   s.world.day+=Math.floor(total/1440);
   s.world.minute=total%1440;
   s.player.hunger=clamp(s.player.hunger+Math.floor(minutes/15),0,100);
-  s.player.fatigue=clamp(s.player.fatigue+Math.floor(minutes/12),0,100);
+  // Sleep, medical rest and washing are restorative despite taking world time.
+  if(!restorative)s.player.fatigue=clamp(s.player.fatigue+Math.floor(minutes/12),0,100);
 };
 const drawCards=(s:GameState,count:number)=>{
   for(let i=0;i<count;i++){
@@ -429,7 +430,8 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
     case 'TOWN_SERVICE':{
       const result=applyTownService(s,action.serviceId,action.attribute,action.itemId);
       if(!result)return state;
-      advanceTime(s,result.minutes);
+      const restorative=['rest_cot','rest_private','rest_short','clinic_illness','bath','wash_clothes'].includes(action.serviceId);
+      advanceTime(s,result.minutes,restorative);
       return s;
     }
     case 'TOWN_ACCEPT_QUEST':{
@@ -464,7 +466,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
     }
     case 'REST_TOWN':{
       if(s.mode==='adventure'||s.economy.coins<15)return state;
-      s.economy.coins-=15;advanceTime(s,120);
+      s.economy.coins-=15;advanceTime(s,120,true);
       s.player.stamina=clamp(s.player.stamina+35,0,s.player.maxStamina);
       s.player.health=clamp(s.player.health+12,1,s.player.maxHealth);
       s.player.fatigue=clamp(s.player.fatigue-22,0,100);

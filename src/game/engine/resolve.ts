@@ -290,6 +290,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if(s.profession==='courier'&&choice.tags.includes('run')&&isSuccess)s.player.resource=Math.min(s.player.maxResource,s.player.resource+1);
       if(s.profession==='infiltrator'&&choice.tags.includes('sneak')&&isSuccess)s.player.resource=Math.min(s.player.maxResource,s.player.resource+1);
       if(choice.attackCardId){
+        if(!s.flags.includes('attacked_enemy'))s.flags.push('attacked_enemy');
         const cardName=ATTACK_CARDS[choice.attackCardId]?.name??choice.title;
         if(isSuccess){
           const damage=getAttackDamage(s,choice.attackCardId);

@@ -12,7 +12,8 @@ describe('v1.6a: NPC remembers battle outcomes, not harmless repeated visits',()
   expect(new Set(s.npc.defeatMemories!.map(x=>x.thought)).size).toBe(10);
   expect(s.npc.defeatMemories![0]?.method).toBe('鋼筆突刺');
   expect(s.npc.adaptations.fight).toBe(12);
-  expect(s.npc.defeatMemories![9]?.thought).toBe(DEFEAT_THOUGHTS[9]);
+  expect(s.npc.defeatMemories![9]?.thought).toBe(DEFEAT_THOUGHTS[9].replace('{method}','鋼筆突刺'));
+  expect(s.npc.defeatMemories![9]?.effect).toContain('攻擊適應 +0');
   expect(s.npc.hostility).toBe(38);
  });
  it('stores first and second chapter separately',()=>{

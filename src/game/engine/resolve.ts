@@ -456,7 +456,9 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
     case 'CLINIC_BUY_ITEM':{
       if(clinicBuyBlock(s,action.itemId))return state;
       const item=CLINIC_SUPPLIES.find(x=>x.id===action.itemId)!;
-      const price=clinicUnitPrice(s,item.id),clinic=ensureClinicProgress((ensureTownProgress(s),s));
+      const price=clinicUnitPrice(s,item.id);
+      ensureTownProgress(s);
+      const clinic=ensureClinicProgress(s);
       const stockKey=`${s.world.day}:${item.id}`;
       s.economy.coins-=price;
       clinic.purchases[stockKey]=(clinic.purchases[stockKey]??0)+1;
@@ -483,7 +485,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       let remaining=q.quantity;
       for(const storage of [s.bag,s.warehouse]){
         const qty=Math.min(remaining,storage[q.id]??0);
-        if(qty){storage[q.id]-=qty;remaining-=qty;if(storage[q.id]===0)delete storage[q.id];}
+        if(qty){storage[q.id]=(storage[q.id]??0)-qty;remaining-=qty;if(storage[q.id]===0)delete storage[q.id];}
       }
       if(remaining!==0)throw Error('clinic quest inventory mismatch');
       clinic.completedDay=s.world.day;
@@ -613,7 +615,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       const preview=previewConsumable(s,action.itemId);
       if(!preview?.canUse)return state;
       s.player=preview.player;s.conditions=preview.conditions;
-      s.bag[action.itemId]-=1;
+      s.bag[action.itemId]=(s.bag[action.itemId]??0)-1;
       if(s.bag[action.itemId]===0)delete s.bag[action.itemId];
       s.lastEvent=`我使用了「${ITEMS[action.itemId]!.name}」：${preview.changes.map(x=>x.label+(x.amount>0?'+':'')+x.amount).join('、')}。`;
       awardExperience(s,`use:${action.itemId}`,1);

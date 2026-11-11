@@ -5,6 +5,8 @@ import { ITEMS } from './items';
  * Each requires an actual item in the character's bag at the time it is played.
  */
 export const ATTACK_CARDS:Record<string,AttackCard>={
+  hook_snap:{id:'hook_snap',name:'掛鉤勾擊',description:'把藏在外套裡的小掛鉤握緊，趁對方靠近時擋開。',detail:'需要隨身掛鉤。',emoji:'🪝',profession:'infiltrator',requiredItemId:'hook',damage:7,baseChance:75,staminaCost:4,rarity:'normal'},
+  pocket_tool:{id:'pocket_tool',name:'折疊工具格擋',description:'折疊工具能擋下一次近身的威嚇。',detail:'需要折疊工具。',emoji:'🛠️',profession:'infiltrator',requiredItemId:'folding_tool',damage:8,baseChance:69,staminaCost:5,rarity:'normal'},
   pen_thrust:{id:'pen_thrust',name:'鋼筆突刺',description:'我握緊鋼筆，試著迫使對方退開。',detail:'短距離突刺。需要背包中有鋼筆。',emoji:'🖊️',profession:'journalist',requiredItemId:'pen',damage:7,baseChance:76,staminaCost:4,rarity:'normal'},
   notebook_slam:{id:'notebook_slam',name:'記事本猛擊',description:'這本厚記事本也許能讓他分心一瞬。',detail:'以隨身記事本揮擊。需要記事本。',emoji:'📓',profession:'journalist',requiredItemId:'notebook',damage:5,baseChance:86,staminaCost:3,rarity:'normal'},
   flashlight_strike:{id:'flashlight_strike',name:'手電筒格擋反擊',description:'我能用手電筒擋開他的手，再試著反擊。',detail:'需要照明手電筒。',emoji:'🔦',requiredItemId:'flashlight',damage:8,baseChance:69,staminaCost:5,rarity:'rare'},
@@ -18,9 +20,12 @@ export const ATTACK_CARDS:Record<string,AttackCard>={
 export const STARTER_ATTACK_CARDS:Record<ProfessionId,string[]>={
   journalist:['pen_thrust','notebook_slam','flashlight_strike','camera_swing','ruler_hit'],
   courier:['wrench_hit','screwdriver_guard','flashlight_strike','radio_bash','bottle_bash'],
+  infiltrator:['hook_snap','pocket_tool','flashlight_strike','radio_bash','bottle_bash'],
 };
 export const MAX_ATTACK_DECK=5;
-export const makeInitialEnemy=()=>({id:'warehouse_guard',name:'倉庫管理員・阿忠',health:28,maxHealth:28});
+export const makeInitialEnemy=(stageId:1|2=1)=>stageId===2?
+  ({id:'alley_watchman',name:'灰夾克・巷口守望者',health:36,maxHealth:36}):
+  ({id:'warehouse_guard',name:'倉庫管理員・阿忠',health:28,maxHealth:28});
 export const isAttackOwned=(state:GameState,id:string)=>!!ATTACK_CARDS[id]&&!!state.ownedCards[id];
 export const attackStatus=(state:GameState,id:string)=>{
   const card=ATTACK_CARDS[id],item=card&&ITEMS[card.requiredItemId];

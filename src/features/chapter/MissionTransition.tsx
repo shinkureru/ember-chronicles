@@ -3,9 +3,9 @@ import EnemyPresence from './EnemyPresence';
 export type MissionTransitionKind='entry'|'enemy'|'victory'|'defeat'|'retreat';
 export const TRANSITION_DURATION:Record<MissionTransitionKind,number>={entry:2500,enemy:3400,victory:3800,defeat:3600,retreat:3000};
 export default function MissionTransition({
- kind,enemyName,onFinish,summary
+ kind,enemyName,onFinish,summary,stageId=1
 }:{
- kind:MissionTransitionKind;enemyName:string;onFinish:()=>void;summary?:string|null;
+ kind:MissionTransitionKind;enemyName:string;onFinish:()=>void;summary?:string|null;stageId?:1|2;
 }){
  const finishRef=useRef(onFinish);
  useEffect(()=>{finishRef.current=onFinish},[onFinish]);
@@ -19,21 +19,21 @@ export default function MissionTransition({
    kind==='entry'?'進入任務':kind==='enemy'?enemyName+'出現':kind==='victory'?'任務完成':kind==='defeat'?'任務戰敗':'已撤退'}>
   <div className="mission-cinematic__grain" aria-hidden="true"/>
   {kind==='entry'?<div className="mission-cinematic__entry">
-    <span>CHAPTER 01 / MISSION 01</span>
-    <strong>失蹤的倉庫員工</strong>
-    <p>南區 · 舊物流站</p>
+    <span>CHAPTER 01 / MISSION {String(stageId).padStart(2,'0')}</span>
+    <strong>{stageId===2?'後巷的目擊者':'失蹤的倉庫員工'}</strong>
+    <p>{stageId===2?'南區 · 暗巷與破舊電話亭':'南區 · 舊物流站'}</p>
     <i/>
-    <small>「我還是來了……」</small>
+    <small>{stageId===2?'「這條巷子藏著不肯開口的人。」':'「我還是來了……」'}</small>
    </div>:kind==='enemy'?<div className="mission-cinematic__enemy">
     <div className="mission-cinematic__enemy-background" aria-hidden="true">
-     <EnemyPresence health={100} maxHealth={100} name={enemyName}/>
+     <EnemyPresence health={100} maxHealth={100} name={enemyName} variant={stageId===2?'alley':'warehouse'}/>
     </div>
     <div className="mission-cinematic__enemy-foreground">
      <span className="mission-cinematic__warning">ENCOUNTER / HOSTILE CONTACT</span>
      <span className="mission-cinematic__enemy-label">敵人現身</span>
      <strong>{enemyName}</strong>
-     <p>「我守的東西，誰也別想從這裡帶出去。」</p>
-     <small>座右銘：守住秘密，才能守住自己的命。</small>
+     <p>{stageId===2?'「那天你什麼也沒看見，最好永遠記住這句話。」':'「我守的東西，誰也別想從這裡帶出去。」'}</p>
+     <small>{stageId===2?'座右銘：活下去的人，最懂得什麼該忘記。':'座右銘：守住秘密，才能守住自己的命。'}</small>
     </div>
    </div>:<div className="mission-cinematic__ending">
     <span>{kind==='victory'?'MISSION CLEAR':kind==='defeat'?'MISSION FAILED':'MISSION WITHDRAWN'}</span>

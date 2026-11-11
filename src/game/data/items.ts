@@ -1,5 +1,11 @@
 import type { ItemDef } from '../types';
 export const ITEMS: Record<string, ItemDef> = {
+  hook:{id:'hook',name:'隨身掛鉤',emoji:'🪝',type:'tool',weight:0.19,description:'滲透者常用的金屬掛鉤，可以在短距離抵擋敵人動作。'},
+  folding_tool:{id:'folding_tool',name:'折疊工具',emoji:'🛠️',type:'tool',weight:0.35,description:'隱藏在衣袋中的多用途折疊工具，能用於防禦與急用維修。'},
+  torn_photo:{id:'torn_photo',name:'半張破損照片',emoji:'🖼️',type:'misc',weight:0.04,description:'後巷牆縫找到的照片碎片，隱約拍到一台廂型車與公寓門牌。'},
+  vehicle_note:{id:'vehicle_note',name:'模糊的車號紙',emoji:'🧾',type:'misc',weight:0.02,description:'車號被水泡得模糊，仍可辨認最後幾個字元。'},
+  wire_piece:{id:'wire_piece',name:'沾水的電線',emoji:'🧵',type:'tool',weight:0.12,description:'從廢棄電話亭拆下的電線；可用於小型修理。'},
+  torn_gloves:{id:'torn_gloves',name:'破損皮手套',emoji:'🧤',type:'gear',weight:0.15,description:'後巷常見工作手套；布料磨損，但仍能保護雙手。'},
   pen:{id:'pen',name:'隨身鋼筆',emoji:'🖊️',type:'tool',weight:0.04,description:'記者常用鋼筆。鋼筆突刺所需物品。'},
   notebook:{id:'notebook',name:'厚皮記事本',emoji:'📓',type:'tool',weight:0.24,description:'記者的採訪筆記，記事本猛擊所需物品。'},
   camera:{id:'camera',name:'隨身相機',emoji:'📷',type:'tool',weight:0.9,description:'帶有長背帶的相機，可用於相機甩擊。'},
@@ -35,6 +41,10 @@ export const LOOT_POOLS: Record<string, string[]> = {
   desk:['notes','badge','receipt','batteries','card_question','memorychip','pen','notebook','metal_ruler','camera','card_pen'],
   shelves:['biscuit','water','canned','tape','gloves','rope','firstaid','handwarm','wrench','screwdriver','card_wrench'],
   pockets:['keyring','notes','receipt','bandage','card_route','radio','pen'],
+  alley_bin:['torn_photo','biscuit','vehicle_note','wire_piece','card_route','bandage'],
+  alley_wall:['torn_photo','vehicle_note','memorychip','card_question','wire_piece','badge'],
+  alley_bag:['water','canned','firstaid','torn_gloves','hook','folding_tool','card_pen','card_wrench'],
+  alley_pockets:['vehicle_note','batteries','torn_photo','bandage','receipt','radio'],
 };
 export const INITIAL_NPC_GEAR=['flashlight','vest','radio'];
 export const WAREHOUSE_CAPACITY_KG = 30;

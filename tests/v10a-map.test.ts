@@ -7,9 +7,9 @@ describe('v1.0-a cinematic map contract',()=>{
   expect(CHAPTER_ONE.stages.map(s=>s.sequence)).toEqual(Array.from({length:12},(_,i)=>i+1));
   expect(CHAPTER_ONE.stages.every(s=>s.x>=0&&s.x<=1540&&s.y>=0&&s.y<=430)).toBe(true);
  });
- it('does not accidentally unlock unreleased story chapters',()=>{
+ it('unlocks the first mission only and exposes two authored playable missions',()=>{
   const state=makeInitialState('journalist');
   expect(state.chapterProgress.unlocked).toBe(1);
-  expect(CHAPTER_ONE.stages.filter(n=>n.implementation==='playable').map(n=>n.sequence)).toEqual([1]);
+  expect(CHAPTER_ONE.stages.filter(n=>n.implementation==='playable').map(n=>n.sequence)).toEqual([1,2]);
  });
 });

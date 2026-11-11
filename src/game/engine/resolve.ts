@@ -13,6 +13,7 @@ import type { GameState, Outcome, ProfessionId, LootDrop } from '../types';
 export type GameAction =
   | {type:'SELECT_PROFESSION';profession:ProfessionId}
   | {type:'START_ATTEMPT'}
+  | {type:'SELECT_STAGE';stageId:1|2}
   | {type:'WORLD_CLOCK_TICK';minutes?:number}
   | {type:'ENEMY_COUNTER_WINDUP'}
   | {type:'ENEMY_COUNTER_THROW'}
@@ -37,6 +38,7 @@ export type GameAction =
   | {type:'DEBUG';patch:{kind:'health'|'stamina'|'courage'|'resource'|'minute';value:number}}
   | {type:'RESET'};
 
+const activeNpc=(s:GameState)=>s.stageId===2?(s.alleyNpc??s.npc):s.npc;
 const nextRand=(state:GameState)=>{
   state.rngSeed=(Math.imul(1664525,state.rngSeed)+1013904223)>>>0;
   return state.rngSeed/4294967296;
@@ -91,10 +93,11 @@ const addLoot=(s:GameState,source:string):LootDrop|null=>{
 };
 const resolveOutcome=(s:GameState,outcome:Outcome)=>{
   s.outcome=outcome;s.mode='result';
+  const npc=activeNpc(s),isAlley=s.stageId===2;
   if(outcome==='defeat'){
     s.player.health=clamp(s.player.health-18,1,s.player.maxHealth);
-    s.npc.remembers=Array.from(new Set([...s.npc.remembers,'defeated_player']));
-    s.npc.adaptations.talk=Math.min(12,(s.npc.adaptations.talk??0)+3);
+    npc.remembers=Array.from(new Set([...npc.remembers,isAlley?'alley_defeat':'defeated_player']));
+    npc.adaptations.talk=Math.min(12,(npc.adaptations.talk??0)+3);
     const clueNo=s.clues.length+1;
     const fragments=[
       '我終於注意到，管理員每次接近對講機前都會先看向側門。',
@@ -103,19 +106,32 @@ const resolveOutcome=(s:GameState,outcome:Outcome)=>{
       '管理員真正害怕的似乎不是陌生人，而是出貨紀錄被查出問題。',
       '我逐漸摸清對方說話時避開的敏感話題。',
     ];
-    const clue=fragments[(clueNo-1)%fragments.length]!+`（第 ${clueNo} 次失敗反思）`;
+    const alleyFragments=[
+      '巷口的守望者始終盯著排水溝。他大概怕有人從那個方向靠近。',
+      '那名目擊者說的車號有個數字和倉庫紀錄對不上。',
+      '我發現舊電話亭後面的鐵梯可以躲過第一輪巡邏。',
+      '守望者聽到公寓兩個字，表情明顯變了。',
+      '牆上的拖行痕跡被人故意遮住，這更能確定目擊者沒有說完。',
+    ];
+    const clue=(isAlley?alleyFragments:fragments)[(clueNo-1)%(isAlley?alleyFragments:fragments).length]!+`（第 ${clueNo} 次失敗反思）`;
     s.clues.push(clue);
     s.insightBonus=6; // 單次下一局的有效判定加成；不會因為重複失敗無限累加
     s.lastEvent=`我失敗了，但想明白了一件事：${clue} 下一次首次關鍵判定額外 +6 個百分點。`;
   }else if(outcome==='retreat'){
-    s.npc.remembers=Array.from(new Set([...s.npc.remembers,'player_retreat']));
+    npc.remembers=Array.from(new Set([...npc.remembers,isAlley?'alley_retreat':'player_retreat']));
     s.insightBonus=Math.max(s.insightBonus,2);
     s.lastEvent='我先撤退了。雖然沒弄清全部情況，至少記住了一點動線。下次首次關鍵判定可獲得 +2 個百分點；多次撤退無法疊加這項加成。';
   }else{
-    if(!s.chapterProgress.completed.includes(1))s.chapterProgress.completed.push(1);
-    s.chapterProgress.unlocked=Math.max(s.chapterProgress.unlocked,2);
-    s.npc.remembers=Array.from(new Set([...s.npc.remembers,'player_victory']));
-    s.lastEvent='我成功離開了倉庫。這次找到的物資都還在，應該回去整理一下。';
+    const mission=s.stageId===2?2:1;
+    if(!s.chapterProgress.completed.includes(mission))s.chapterProgress.completed.push(mission);
+    s.chapterProgress.completed.sort((a,b)=>a-b);
+    s.chapterProgress.unlocked=Math.max(s.chapterProgress.unlocked,Math.min(12,mission+1));
+    npc.remembers=Array.from(new Set([...npc.remembers,isAlley?'alley_victory':'player_victory']));
+    if(isAlley){
+      const clue='後巷目擊者留下的線索指向一棟無人接聽的公寓，以及凌晨出入的深色廂型車。';
+      if(!s.clues.includes(clue))s.clues.push(clue);
+      s.lastEvent='我離開了那條暗巷，取得了通往第三關「無人接聽」的新線索。目擊者現在知道我會再回來。';
+    }else s.lastEvent='我成功離開了倉庫。這次找到的物資都還在，應該回去整理一下。';
   }
   s.log.push(`${outcome==='victory'?'任務成功':outcome==='defeat'?'戰敗':'主動撤退'}：第 ${s.attempt} 次挑戰。`);
 };
@@ -124,6 +140,11 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
   if(action.type==='SELECT_PROFESSION')return makeInitialState(action.profession);
   const s:GameState=structuredClone(state);
   switch(action.type){
+    case 'SELECT_STAGE':{
+      if(s.mode!=='home'||action.stageId>s.chapterProgress.unlocked)return state;
+      s.stageId=action.stageId;
+      return s;
+    }
     case 'WORLD_CLOCK_TICK':{
       // World time advances even on map and during missions. Do not mutate other events.
       // Five in-game minutes per ten seconds of visible unpaused play.
@@ -175,12 +196,15 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
         s.warehouse[itemId!]=(s.warehouse[itemId!]??0)-1;if(s.warehouse[itemId!]===0)delete s.warehouse[itemId!];
         s.bag[itemId!]=(s.bag[itemId!]??0)+1;
       }
-      s.attempt+=1;s.npc.met+=1;s.mode='adventure';s.sceneId='gate';
-      s.flags=[];s.searchedSources=[];s.lootSearches={};s.outcome=null;s.lastLoot=null;s.lastEvent=null;s.enemy=makeInitialEnemy();s.enemyStrike=null;s.enemyCounter=null;
+      s.attempt+=1;
+      if(s.stageId===2){if(!s.alleyNpc)s.alleyNpc={hostility:18,trust:12,met:0,adaptations:{},remembers:[],stolenGear:[]};s.alleyNpc.met+=1;}
+      else s.npc.met+=1;
+      s.mode='adventure';s.sceneId='gate';
+      s.flags=[];s.searchedSources=[];s.lootSearches={};s.outcome=null;s.lastLoot=null;s.lastEvent=null;s.enemy=makeInitialEnemy(s.stageId??1);s.enemyStrike=null;s.enemyCounter=null;
       s.hand=[];s.discardPile=[];s.drawPile=[...s.activeDeck];
       drawCards(s,3);
       s.player.resource=clamp(s.player.resource+2,0,s.player.maxResource);
-      s.log.push(`第 ${s.attempt} 次前往倉庫。`);
+      s.log.push(`第 ${s.stageId===2?'二':'一'} 關、第 ${s.stageId===2?s.alleyNpc?.met:s.npc.met} 次進入${s.stageId===2?'後巷':'倉庫'}。`);
       return s;
     }
     case 'PREPARE_ATTACK_CARD':{
@@ -212,6 +236,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
     case 'CHOOSE':{
       if(s.mode!=='adventure'||s.enemyCounter||s.sceneId==='confrontation'&&s.enemy.health<=0)return state;
       s.enemyStrike=null;
+      const npc=activeNpc(s);
       const choice=getVisibleActions(s).find(c=>c.id===action.choiceId);
       if(!choice)return state;
       if(choice.attackCardId&&(!s.attackDeck.includes(choice.attackCardId)||!attackStatus(s,choice.attackCardId).inBag))return state;
@@ -233,14 +258,16 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       const suffix=skill?`（附加「${skill.name}」）`:'';
       s.log.push(`${choice.title}${suffix}：${isSuccess?'成功':'失敗'}，判定成功率 ${preview.chance}%`);
       const hostility=isSuccess?(choice.npcHostilitySuccess??0):(choice.npcHostilityFailure??0);
-      s.npc.hostility=clamp(s.npc.hostility+hostility,0,100);
+      npc.hostility=clamp(npc.hostility+hostility,0,100);
       const flags=isSuccess?choice.flagsOnSuccess:choice.flagsOnFailure;
       if(flags)s.flags=Array.from(new Set([...s.flags,...flags]));
-      if(s.flags.includes('bluff_exposed'))s.npc.remembers=Array.from(new Set([...s.npc.remembers,'bluff_exposed']));
-      if(s.flags.includes('caught_sneaking'))s.npc.remembers=Array.from(new Set([...s.npc.remembers,'caught_sneaking']));
-      if(choice.tags.includes('talk')&&!isSuccess)s.npc.adaptations.talk=Math.min(12,(s.npc.adaptations.talk??0)+2);
+      if(s.flags.includes('bluff_exposed'))npc.remembers=Array.from(new Set([...npc.remembers,'bluff_exposed']));
+      if(s.flags.includes('caught_sneaking'))npc.remembers=Array.from(new Set([...npc.remembers,'caught_sneaking']));
+      if(s.flags.includes('alley_spotted'))npc.remembers=Array.from(new Set([...npc.remembers,'alley_spotted']));
+      if(choice.tags.includes('talk')&&!isSuccess)npc.adaptations.talk=Math.min(12,(npc.adaptations.talk??0)+2);
       if(s.profession==='journalist'&&choice.tags.includes('observe')&&isSuccess)s.player.resource=Math.min(s.player.maxResource,s.player.resource+1);
       if(s.profession==='courier'&&choice.tags.includes('run')&&isSuccess)s.player.resource=Math.min(s.player.maxResource,s.player.resource+1);
+      if(s.profession==='infiltrator'&&choice.tags.includes('sneak')&&isSuccess)s.player.resource=Math.min(s.player.maxResource,s.player.resource+1);
       if(choice.attackCardId){
         const cardName=ATTACK_CARDS[choice.attackCardId]?.name??choice.title;
         if(isSuccess){
@@ -257,11 +284,11 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
 
         // One explicit enemy turn after an attempted weapon attack while the guard remains standing.
         // Items are drawn from his still-held gear; no infinite spam or inventory deletion.
-        const available=['radio','flashlight','keyring'].filter(id=>!s.npc.stolenGear.includes(id));
+        const available=(s.stageId===2?['wire_piece','flashlight','batteries']:['radio','flashlight','keyring']).filter(id=>!npc.stolenGear.includes(id));
         const itemId=available[Math.floor(nextRand(s)*available.length)]??'keyring';
         const hit=!isSuccess||nextRand(s)<.68;
-        const rawDamage=itemId==='flashlight'?8:itemId==='radio'?6:4;
-        const damage=hit?mitigateCounterDamage(rawDamage+Math.floor(s.npc.hostility/40),getEquippedDefense(s)):0;
+        const rawDamage=itemId==='flashlight'?8:itemId==='radio'||itemId==='wire_piece'?6:4;
+        const damage=hit?mitigateCounterDamage(rawDamage+Math.floor(npc.hostility/40),getEquippedDefense(s)):0;
         // Store the rolled attack once, then play it in distinct timed phases.
         // Health is only deducted at the on-screen impact; the player cannot bypass the queued counter.
         s.enemyCounter={id:s.attempt*1000+s.log.length,itemId,damage,hit,phase:'waiting'};
@@ -271,7 +298,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if(isSuccess&&choice.lootSource){
         s.lastLoot=addLoot(s,choice.lootSource);
         // 裝備屬於同一個 NPC 的持久資產，取完前可以繼續拿
-        if(choice.lootSource==='npcGear'&&INITIAL_NPC_GEAR.every(id=>s.npc.stolenGear.includes(id))&&!s.searchedSources.includes('npcGear'))s.searchedSources.push('npcGear');
+        if(choice.lootSource==='npcGear'&&INITIAL_NPC_GEAR.every(id=>npc.stolenGear.includes(id))&&!s.searchedSources.includes('npcGear'))s.searchedSources.push('npcGear');
       }else{
         s.lastEvent=isSuccess?'我完成了這個行動。接下來該怎麼辦？':'事情沒有照我想的發展。我得面對新的局面。';
       }
@@ -280,7 +307,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if(outcome)resolveOutcome(s,outcome);
       else if(nextScene)s.sceneId=nextScene;
       // 有效關卡中的部分觀察行為恢復些許專屬資源，且不重複給予相同地點的情報
-      if(isSuccess&&choice.id==='gate_observe')s.lastEvent='我看清楚了側門與巡邏路線。這或許能幫助下一步行動。';
+      if(isSuccess&&(choice.id==='gate_observe'||choice.id==='alley_gate_scan'))s.lastEvent='我看清楚了側門與巡邏路線。這或許能幫助下一步行動。';
       return s;
     }
     case 'RETREAT':{
@@ -292,7 +319,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       const passed=nextRand(s)*100<preview.chance;
       s.log.push(`嘗試撤退（${preview.chance}%）：${passed?'成功':'失敗'}`);
       if(passed){resolveOutcome(s,'retreat');}
-      else {s.npc.hostility=clamp(s.npc.hostility+8,0,100);resolveOutcome(s,'defeat');}
+      else {const npc=activeNpc(s);npc.hostility=clamp(npc.hostility+8,0,100);resolveOutcome(s,'defeat');}
       return s;
     }
     case 'RETURN_HUB':{

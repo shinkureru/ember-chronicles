@@ -16,7 +16,7 @@ const HUB_ACTIONS=[
 const connections=CHAPTER_ONE.stages.map(point=>`${point.x},${point.y}`).join(' ');
 /** World navigation stays panoramic even though the app itself uses a fixed portrait viewport. */
 export default function ChapterMapPage(){
- const {state:s}=useGame(),navigate=useNavigate();
+ const {state:s,dispatch}=useGame(),navigate=useNavigate();
  const viewport=useRef<HTMLDivElement|null>(null);
  const drag=useRef({active:false,start:0,initial:0});
  const [mapScale,setMapScale]=useState(.75);
@@ -47,7 +47,9 @@ export default function ChapterMapPage(){
  const enter=(sequence:number,implementation:string)=>{
   setSelected(sequence);
   if(sequence>s.chapterProgress.unlocked){playCue('locked');return;}
-  if(implementation==='playable'&&s.mode==='home'){playCue('confirm');navigate('/preparation');return;}
+  if(implementation==='playable'&&s.mode==='home'){
+    dispatch({type:'SELECT_STAGE',stageId:sequence as 1|2});playCue('confirm');navigate('/preparation');return;
+  }
   playCue('locked');
   setStageNotice(implementation==='planned'
     ?`第 ${sequence} 關還在製作中，路線與章節順序已先公開。`

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 /** Always visible above the combat scene, with a hit response driven by committed HP. */
-export default function EnemyPresence({health,maxHealth,name,windup=false}:{health:number;maxHealth:number;name:string;windup?:boolean}){
+export default function EnemyPresence({health,maxHealth,name,windup=false,variant='warehouse'}:{health:number;maxHealth:number;name:string;windup?:boolean;variant?:'warehouse'|'alley'}){
  const previous=useRef(health);
  const [impact,setImpact]=useState<{id:number;damage:number}|null>(null);
  useEffect(()=>{
@@ -26,6 +26,7 @@ export default function EnemyPresence({health,maxHealth,name,windup=false}:{heal
       <path d="M95 82 L107 111 L122 81 L133 83 L112 146 L83 90 Z" fill="#191919" stroke="#858585" strokeWidth="2"/>
       <path d="M90 21 Q112 7 132 29 L135 61 Q127 84 110 83 Q92 83 86 61 Z" fill="url(#enemyFace)" stroke="#777" strokeWidth="3"/>
       <path d="M88 39 Q84 7 113 9 Q142 14 135 41 L121 29 L103 34 L89 37 Z" fill="#111"/>
+      {variant==='alley'&&<g><path d="M58 89Q108 58 159 88L167 183L145 193L72 194L53 176Z" fill="#293039" stroke="#879098" strokeWidth="3"/><path d="M83 89L113 147L140 89M95 89L78 183M135 91L151 181" fill="none" stroke="#bcc4ca" strokeWidth="3" opacity=".65"/><path d="M87 33L96 12L122 12L143 33L138 51L111 33L91 49Z" fill="#16191c" stroke="#777d81" strokeWidth="2"/><path d="M92 52L102 50M121 50L132 52" stroke="#050608" strokeWidth="4"/></g>}
       <path d="M98 52 L107 49 M118 49 L127 52 M108 66 L119 68" stroke="#161616" strokeWidth="3"/>
       <rect x="88" y="138" width="41" height="21" rx="2" fill="#171717" stroke="#888" strokeWidth="2"/>
       <path d="M98 143 H119 M103 149 H116" stroke="#777" strokeWidth="2"/>

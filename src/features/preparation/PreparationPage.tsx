@@ -6,10 +6,12 @@ import { ATTACK_CARDS, MAX_ATTACK_DECK, attackStatus, getAttackDamage } from '..
 import { ITEMS } from '../../game/data/items';
 import { playCue } from '../../audio/sound';
 import { bagWeight } from '../../game/engine/rules';
+import { CHAPTER_ONE } from '../../game/data/maps/ch01';
 
 export default function PreparationPage(){
  const {state:s,dispatch}=useGame(),navigate=useNavigate();
  const [confirm,setConfirm]=useState(false);
+ const mission=CHAPTER_ONE.stages[(s.stageId??1)-1]!;
  const ids=Object.keys(ATTACK_CARDS).filter(id=>!!s.ownedCards[id]);
  let projectedWeight=bagWeight(s.bag);
  const invalid:string[]=[];
@@ -33,7 +35,7 @@ export default function PreparationPage(){
    begin();
  };
  return <div className="page-stack viewport-page preparation-page">
-  <header className="preparation-header"><div><span className="eyebrow">MISSION LOADOUT / CHAPTER 01</span><h1>事前準備</h1><p>我應該先想清楚，這次要把什麼帶進去。</p></div><Link to="/" aria-label="返回地圖"><ArrowLeft size={18}/></Link></header>
+  <header className="preparation-header"><div><span className="eyebrow">MISSION LOADOUT / CHAPTER 01</span><h1>事前準備 · {mission.name}</h1><p>我應該先想清楚，這次要把什麼帶進去。</p></div><Link to="/" aria-label="返回地圖"><ArrowLeft size={18}/></Link></header>
   <section className="preparation-slots" aria-label="本次攻擊牌組">
     <div className="preparation-slots__heading"><strong>已挑選的攻擊牌</strong><span>{s.attackDeck.length} / {MAX_ATTACK_DECK}</span></div>
     <div className="preparation-slots__grid">

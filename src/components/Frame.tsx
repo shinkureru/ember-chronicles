@@ -14,11 +14,11 @@ export default function Frame({children}:{children:ReactNode}){
    return()=>pauseClock('route',false);
   },[location.pathname,pauseClock]);
   useEffect(()=>{
-    const scene:SoundscapeId=inMission?(state.mode==='result'?'result':state.sceneId):
+    const scene:SoundscapeId=inMission?(state.mode==='result'?'result':state.stageId===2?`alley_${state.sceneId}` as SoundscapeId:state.sceneId):
       location.pathname==='/town'?'town':location.pathname==='/black-market'?'market':
       location.pathname==='/warehouse'?'warehouse':'map';
     setAudioScene(scene);
-  },[location.pathname,inMission,state.mode,state.sceneId]);
+  },[location.pathname,inMission,state.mode,state.sceneId,state.stageId]);
   useEffect(()=>{
     const onPress=(event:PointerEvent)=>{
       const target=event.target;

@@ -6,7 +6,7 @@ type Whisper={id:number;text:string;x:number;y:number;tilt:number};
 /** Sparse, context-aware first-person OS. Floats above the scene without consuming layout.
  * No external AI required, and nothing blocks pointer input. */
 const contextualThoughts=(s:GameState):string[]=>{
- const lines=getAmbientThoughts(s.sceneId,s.attempt,s.world.minute,12);
+ const lines=getAmbientThoughts(s.sceneId,s.attempt,s.world.minute,12,s.stageId);
  if(s.player.courage<40)lines.push('我的心跳得太快了。我得控制住。');
  if(s.player.health<35)lines.push('傷口還在疼，我不能再硬撐。');
  if(s.player.stamina<20)lines.push('我已經快沒力氣了……先想清楚。');

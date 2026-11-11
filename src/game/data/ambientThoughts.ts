@@ -19,8 +19,15 @@ export const AMBIENT_THOUGHTS: Record<SceneId,string[]> = {
  '我應該趕快找完，總覺得有人要來了。','抽屜裡還剩下一些沒看過的文件。','我得分清楚哪些東西真的值得帶走。','遠處傳來一聲門軸摩擦的尖響。','這些東西原本應該屬於別人。','我突然意識到自己在這裡待得太久。','口袋裡的鑰匙撞在一起，聲音太大了。','一件裝備看起來實用，卻可能拖慢我的腳步。','我把耳朵轉向走廊，等了幾秒。','還有時間嗎？我不太確定。','貨架底下有一個被踢進去的盒子。','我不知道下一班巡邏什麼時候會到。','有張紙的邊緣沾著新鮮的灰塵。','我得先保住已經找到的東西。','那盞燈忽然暗了一下。','我把背包壓緊，避免東西碰撞。','地板上的腳印比剛才多了一組。','外面似乎有車剛停下來。','我真想知道這些貨物原本要送去哪裡。','再多搜查一處，也許會有收穫。','我不確定自己能不能扛得動更多東西。','這些東西拿走後，對方一定會發現。','我現在應該先決定最重要的是什麼。','如果有人突然進來，我至少需要空出一隻手。'
  ]
 };
-export const getAmbientThoughts=(scene:SceneId,attempt:number,minute:number,count=6):string[]=>{
- const pool=AMBIENT_THOUGHTS[scene];
+const ALLEY_THOUGHTS:Record<SceneId,string[]>={
+ gate:['這條巷子比舊物流站更窄。','燈光在牆上留下不自然的影子。','我總覺得有人藏在那扇窗後。','腳邊的積水沾了灰色的油污。','那台車是從這裡開走的嗎？','我不能讓對方認出我。'],
+ survey:['水溝旁的腳印突然不見了。','倒下的垃圾桶像有人故意推倒。','如果我從左邊走，攝影機應該看不見。','這裡的雨水居然是溫的。','我可能漏掉一小張紙。','鞋子踏在積水裡的聲音太大了。'],
+ inside:['那人不敢看向牆上的照片。','他的袖口有一道新鮮刮痕。','電話亭裡的聽筒是誰扯斷的？','我應該先讓他相信我。','他隱瞞的不是車號，可能是乘客。','我不能再逼得太緊。'],
+ confrontation:['退路被堵住了，我得冷靜。','他口袋裡的東西比我想像的沉。','我得找回剛才看到的盲點。','旁邊的鐵梯也許還能用。','我不想在這裡倒下。','他在看什麼？那道車痕嗎？'],
+ loot:['照片的背面有沒有字？','我聽見遠處輪胎壓過水坑。','還有多少時間能仔細翻找？','這個帆布包比看起來重。','那些不完整的證據也許才最有價值。','得離開，不能在這裡太久。'],
+};
+export const getAmbientThoughts=(scene:SceneId,attempt:number,minute:number,count=6,stageId:1|2=1):string[]=>{
+ const pool=stageId===2?ALLEY_THOUGHTS[scene]:AMBIENT_THOUGHTS[scene];
  const offset=((attempt*7+Math.floor(minute/60))%pool.length+pool.length)%pool.length;
  return Array.from({length:Math.min(count,pool.length)},(_,i)=>pool[(offset+i*5)%pool.length]!);
 };

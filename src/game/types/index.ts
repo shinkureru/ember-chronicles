@@ -58,7 +58,7 @@ export interface TownProgress {
 }
 export interface SurvivorConditions { wounds:number;infection:number;poisoning:number;illness:number }
 export interface NpcDefeatMemory {count:number;method:string;thought:string;effect:string}
-export interface NpcState {hostility:number;trust:number;met:number;adaptations:Record<string,number>;remembers:string[];stolenGear:string[];combatDefeats?:number;defeatMemories?:NpcDefeatMemory[]}
+export interface NpcState {hostility:number;trust:number;met:number;adaptations:Record<string,number>;remembers:string[];stolenGear:string[];combatDefeats?:number;defeatMemories?:NpcDefeatMemory[];playerDefeats?:number}
 export interface LevelProgression {level:number;xp:number;totalXp:number;points:number;dailyAwards:Record<string,number>}
 export interface GameState {
   version: 1;
@@ -82,7 +82,7 @@ export interface GameState {
   attackDeck:string[]; enemy:{id:string;name:string;health:number;maxHealth:number};
   enemyStrike?:{id:number;itemId:string;damage:number;hit:boolean}|null;
   enemyCounter?:{id:number;itemId:string;damage:number;hit:boolean;phase:'waiting'|'windup'|'throwing'|'hit'}|null;
-  clues: string[]; insightBonus: number;
+  clues: string[]; insightBonus: number; /** Outstanding one-time chance boost by opponent (old insightBonus is legacy). */ insightByEnemy?:Record<string,number>;
   bag: Record<string, number>; warehouse: Record<string, number>; warehouseCapacity: number;
   protectedItems: string[];
   ownedCards: Record<string, { copies: number; level: number }>;

@@ -10,6 +10,8 @@ export const makeInitialState=(profession:ProfessionId|null=null):GameState=>{
     version:1,mode:'home',profession,
     player:{health:100,maxHealth:100,stamina:80,maxStamina:80,courage:55,hunger:20,fatigue:12,temperature:36.5,resource:6,maxResource:6,attributes:{...INITIAL_ATTRIBUTES}},
     world:{minute:16*60+20,day:1,weather:'clear'},
+    town:{visits:{},lastTrainingDay:0,lastRumorDay:0,lastCanteenTalkDay:0,socialPoiseUntil:0,upgrades:{},wear:{},quests:{}},
+    conditions:{wounds:0,infection:0,poisoning:0,illness:0},
     npc:{hostility:18,trust:15,met:0,adaptations:{},remembers:[],stolenGear:[]},
     stageId:1,alleyNpc:{hostility:18,trust:12,met:0,adaptations:{},remembers:[],stolenGear:[]},
     attempt:0,sceneId:'gate',flags:[],searchedSources:[],lootSearches:{},clues:[],insightBonus:0,

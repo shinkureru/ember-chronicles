@@ -86,6 +86,17 @@ export default function CharacterPage(){
      <div className="character-tab-stat"><span>第二關 · 後巷灰衣守望者</span><strong>來訪 {s.alleyNpc?.met??0} 次</strong><small>敵意 {s.alleyNpc?.hostility??18} · 交涉適應 {s.alleyNpc?.adaptations.talk??0}</small></div>
     </div>
     <p>倉庫記憶：{s.npc.remembers.length?s.npc.remembers.length+' 項事件已記住':'尚未發生特殊事件'}；後巷記憶：{s.alleyNpc?.remembers.length??0} 項事件已記住。</p>
+    {([{label:'倉庫管理員阿忠',npc:s.npc},{label:'後巷灰衣守望者',npc:s.alleyNpc}] as const).map(({label,npc})=>npc?<article key={label} className="npc-defeat-record">
+      <strong>{label} · 被我擊敗 {npc.combatDefeats??0} 次</strong>
+      <small>攻擊適應 {npc.adaptations.fight??0}/12 · 敵意 {npc.hostility}/100</small>
+      {npc.defeatMemories?.length?<div className="npc-defeat-record__log">
+       {npc.defeatMemories.slice().reverse().map(memory=><p key={memory.count}>
+        <span>第 {memory.count} 次 · {memory.method}</span>
+        <em>「{memory.thought}」</em>
+        <small>{memory.effect}</small>
+       </p>)}
+      </div>:<p>尚未被我以戰鬥手段擊敗；和平迴避不會改寫這裡的心理紀錄。</p>}
+     </article>:null)}
     <div className="clue-list">{s.clues.slice().reverse().map((line,i)=><p key={i}>{line}</p>)}{s.clues.length===0&&<p>還沒有取得關鍵線索。</p>}</div>
   </section>}
   {tab==='story'&&<section className="character-tab-content viewport-list">

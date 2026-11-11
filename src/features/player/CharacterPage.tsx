@@ -9,6 +9,7 @@ import { ITEMS } from '../../game/data/items';
 import type { AttributeId } from '../../game/types';
 import { playCue } from '../../audio/sound';
 import SurvivorFigure from '../../components/SurvivorFigure';
+import { getProgression,xpNeededForLevel } from '../../game/engine/progression';
 const categories:Record<string,{title:string;ids:AttributeId[];Icon:typeof HeartPulse}>={
  physical:{title:'身體與生存',['ids']:['maxHealth','maxStamina','mobility','melee','endurance','climate'],Icon:HeartPulse},
  mental:{title:'觀察與思維',ids:['observation','reasoning','memory','focus','adaptability','planning'],Icon:Brain},
@@ -24,6 +25,7 @@ export default function CharacterPage(){
  const ownedItems=[...new Set([...Object.keys(s.bag),...Object.keys(s.warehouse)])];
  const available=ownedItems.filter(id=>selected.allowed.includes(id));
  const category=categories[tab];
+ const progression=getProgression(s);
  return <div className="page-stack character-page viewport-page character-viewport character-viewport--v09">
   <header className="character-page__header"><div><span className="eyebrow">CHARACTER / SURVIVOR</span><h1>人物檔案</h1></div><span>{profession.name} · 防禦 {getEquippedDefense(s)}</span></header>
   <nav className="character-page__tabs" aria-label="人物資料分頁">
@@ -57,7 +59,12 @@ export default function CharacterPage(){
    </div>
   </section>}
   {category&&<section className="character-tab-content viewport-list"><h2><category.Icon size={19}/>{category.title}</h2>
-    <div className="character-tab-content__stats">{category.ids.map(id=><div className="character-tab-stat" key={id}><span>{ATTRIBUTE_LABELS[id]}</span><strong>{s.player.attributes[id]}</strong><small>永久成長屬性</small></div>)}</div>
+    <div className="character-progression">
+     <strong>角色 Lv.{progression.level} · XP {progression.xp}/{xpNeededForLevel(progression.level)} · 可分配點數 {progression.points}</strong>
+     <div className="character-progression__meter"><i style={{width:`${Math.min(100,100*progression.xp/xpNeededForLevel(progression.level))}%`}}/></div>
+     <small>首次完成各種行動可獲得 XP；同一天重複相同行動不會再獲得經驗。</small>
+    </div>
+    <div className="character-tab-content__stats">{category.ids.map(id=><div className="character-tab-stat" key={id}><span>{ATTRIBUTE_LABELS[id]}</span><strong>{s.player.attributes[id]}</strong><small>永久成長屬性</small><button type="button" disabled={progression.points<=0||s.player.attributes[id]>=20||s.mode!=='home'} onClick={()=>dispatch({type:'ALLOCATE_POINT',attribute:id})}>使用 1 點升級</button></div>)}</div>
     <p>每種屬性都有獨立成長方向。進行不同關卡或劇情選擇時，會逐步累積擅長領域。</p>
   </section>}
   {tab==='town'&&<section className="character-tab-content viewport-list">

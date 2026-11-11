@@ -482,7 +482,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if(clinicQuestBlock(s,true))return state;
       ensureTownProgress(s);
       const clinic=ensureClinicProgress(s),q=getClinicQuest(s);
-      let remaining=q.quantity;
+      let remaining:number=q.quantity;
       for(const storage of [s.bag,s.warehouse]){
         const qty=Math.min(remaining,storage[q.id]??0);
         if(qty){storage[q.id]=(storage[q.id]??0)-qty;remaining-=qty;if(storage[q.id]===0)delete storage[q.id];}

@@ -32,7 +32,12 @@ export default function Frame({children}:{children:ReactNode}){
     document.addEventListener('pointerdown',onPress,{passive:true});
     return()=>document.removeEventListener('pointerdown',onPress);
   },[]);
-  return <div className={`desktop-world ${inMission?'desktop-world--mission':''}`}><div className="desktop-world__accent desktop-world__accent--left"/><div className="desktop-world__accent desktop-world__accent--right"/>
+  return <div className={`desktop-world ${inMission?'desktop-world--mission':''}`}
+     onCopy={event=>{
+      const target=event.target;
+      if(target instanceof Element&&target.closest('input,textarea,select,[contenteditable="true"],[role="textbox"]'))return;
+      event.preventDefault();
+     }}><div className="desktop-world__accent desktop-world__accent--left"/><div className="desktop-world__accent desktop-world__accent--right"/>
     <div className={`game-frame ${inMission?'game-frame--mission':''} ${state.enemyCounter?.phase==='hit'&&state.enemyCounter.hit?'game-frame--damaged':''}`}>
       {!inMission&&<header className="app-header">
         <NavLink to="/" className="app-header__brand"><span className="brand-mark"><Skull size={17}/></span><span><strong>餘燼紀事</strong><small>EMBER CHRONICLES</small></span></NavLink>

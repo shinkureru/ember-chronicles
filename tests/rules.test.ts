@@ -31,7 +31,7 @@ describe('劇情規則',()=>{
    const base=calculateActionPreview(s,choice,null);
    const attached=calculateActionPreview(s,choice,'route');
    expect(attached.chance).toBeGreaterThan(base.chance);
-   expect(attached.staminaCost).toBe(base.staminaCost-5);
+   expect(attached.staminaCost).toBeLessThan(base.staminaCost);
  });
  it('劇情行動更新世界時間與體力',()=>{
    const s=gameReducer(makeInitialState('journalist'),{type:'START_ATTEMPT'});

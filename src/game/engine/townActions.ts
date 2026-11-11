@@ -2,6 +2,7 @@ import { TOWN_SERVICES,isTownOpen,townAbsoluteMinute } from '../data/town';
 import type { AttributeId,GameState,TownProgress,SurvivorConditions } from '../types';
 import { ITEMS } from '../data/items';
 import { clamp } from './rules';
+import { isRestService,previewInnRest,remainingDailyRest } from './innRest';
 
 export const ensureTownProgress=(s:GameState):TownProgress=>{
  if(!s.town)s.town={visits:{},lastTrainingDay:0,lastRumorDay:0,lastCanteenTalkDay:0,socialPoiseUntil:0,upgrades:{},wear:{},quests:{}};
@@ -11,13 +12,14 @@ export const ensureConditions=(s:GameState):SurvivorConditions=>{
  if(!s.conditions)s.conditions={wounds:0,infection:0,poisoning:0,illness:0};
  return s.conditions;
 };
-export const getTrainingFee=(s:GameState,attribute:AttributeId):number=>42+Math.max(0,s.player.attributes[attribute]-10)*11;
+export const getTrainingFee=(s:GameState,attribute:AttributeId):number=>42+Math.max(0,s.player.attributes[attribute])*11;
 export const getTownServiceLock=(s:GameState,id:string,attribute?:AttributeId,itemId?:string):string|null=>{
  if(s.mode!=='home')return '任務期間無法離開戰場使用城鎮服務';
  const service=TOWN_SERVICES.find(x=>x.id===id);
  if(!service)return '找不到這項服務';
  if(!isTownOpen(service.facility,s.world.minute))return '這間設施在目前時段沒有營業';
  const town=s.town;
+ if(isRestService(id)&&remainingDailyRest(s)<=0)return '今日已休息兩次，請等到下一個遊戲日';
  if(id==='train'){
   if(!attribute||!(attribute in s.player.attributes))return '先選擇要提升的永久屬性';
   if(s.player.attributes[attribute]>=20)return '這項永久屬性已達訓練上限 20';
@@ -62,10 +64,23 @@ export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,item
  s.economy.coins-=fee;
  town.visits[service.facility]=(town.visits[service.facility]??0)+1;
  let message='';
+ // Record the day BEFORE the sleep time is advanced, so crossing midnight
+ // still spends a rest opportunity on the day the player went to bed.
+ if(isRestService(id)){
+  if(town.lastRestDay!==s.world.day){town.lastRestDay=s.world.day;town.restsToday=0;}
+  town.restsToday=(town.restsToday??0)+1;
+ }
  switch(id){
-  case 'rest_cot':p.health=restore(p.health,12,p.maxHealth);p.stamina=restore(p.stamina,35,p.maxStamina);p.fatigue=restore(p.fatigue,-22,100);message='我租下了普通床位。暫時安全的兩個小時，終於讓疲憊退去。';break;
-  case 'rest_private':p.health=restore(p.health,24,p.maxHealth);p.stamina=restore(p.stamina,55,p.maxStamina);p.fatigue=restore(p.fatigue,-38,100);p.courage=restore(p.courage,10,100);message='單人房的門可以反鎖。我睡得比任何一次都深。';break;
-  case 'rest_short':p.stamina=restore(p.stamina,18,p.maxStamina);p.fatigue=restore(p.fatigue,-10,100);message='我在角落短暫打盹，稍微找回一些力氣。';break;
+  case 'rest_cot':
+  case 'rest_private':
+  case 'rest_short':{
+   const preview=previewInnRest(s,id);
+   p.health=preview.predictedHealth;p.stamina=preview.predictedStamina;
+   p.fatigue=restore(p.fatigue,id==='rest_private'?-38:id==='rest_cot'?-22:-10,100);
+   if(id==='rest_private')p.courage=restore(p.courage,10,100);
+   message=`我休息了一陣子，生命 +${preview.healthGain}、體力 +${preview.staminaGain}。越疲憊時身體對休息的反應越明顯。`;
+   break;
+  }
   case 'clinic_wounds':conds.wounds=Math.max(0,conds.wounds-2);p.health=restore(p.health,25,p.maxHealth);message='傷口清理好了。繃帶壓住疼痛，至少不會繼續流血。';break;
   case 'clinic_infection':conds.infection=Math.max(0,conds.infection-2);p.health=restore(p.health,12,p.maxHealth);message='醫師替我處理感染，提醒我別再忽視發炎的徵兆。';break;
   case 'clinic_poison':conds.poisoning=Math.max(0,conds.poisoning-2);p.stamina=restore(p.stamina,15,p.maxStamina);message='中毒症狀有所緩解，呼吸終於穩定下來。';break;
@@ -90,7 +105,7 @@ export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,item
    town.lastTrainingDay=s.world.day;
    p.attributes[attribute!]+=1;
    if(attribute==='maxHealth'){p.maxHealth+=1;p.health=restore(p.health,1,p.maxHealth);}
-   if(attribute==='maxStamina'){p.maxStamina+=4;p.stamina=restore(p.stamina,4,p.maxStamina);}
+   if(attribute==='maxStamina'){p.maxStamina+=1;p.stamina=restore(p.stamina,1,p.maxStamina);}
    message=`今天我專心練習了一項能力。「${attribute}」永久提升至 ${p.attributes[attribute!]}，明天才能再訓練。`;break;
   }
   case 'bath':p.courage=restore(p.courage,12,100);p.fatigue=restore(p.fatigue,-8,100);town.socialPoiseUntil=townAbsoluteMinute(s)+service.minutes+180;message='洗去灰塵與疲倦。我看起來總算比較像個可以信任的人，短時間交涉更順利。';break;

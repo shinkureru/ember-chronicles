@@ -1,0 +1,35 @@
+/* v1.6b: growth & inn rest prediction */
+.inn-rest-remaining{margin:0 13px 12px;padding:8px 10px;border:1px solid #68545a;border-radius:8px;background:#281d24;color:#e2c8bd;font-size:12px;line-height:1.5}
+.inn-rest-backdrop{position:fixed;inset:0;z-index:300;background:#000b;display:grid;place-items:center;padding:14px}
+.inn-rest-dialog{width:min(94vw,480px);max-height:90dvh;overflow-y:auto;background:#15151a;color:#eee4e0;border:1px solid #806669;border-radius:14px;padding:17px;box-shadow:0 12px 70px #000}
+.inn-rest-dialog header{display:flex;align-items:center;gap:10px;border-bottom:1px solid #574b50;padding-bottom:12px}
+.inn-rest-dialog header>div{flex:1}
+.inn-rest-dialog header h3{font:700 20px 'Noto Serif TC',serif;margin:2px 0}
+.inn-rest-dialog header small{font-size:10px;letter-spacing:2px;color:#bfa6a0}
+.inn-rest-dialog header button{background:transparent;border:1px solid #615559;color:#dfd1ca;border-radius:7px;min-width:36px;height:36px}
+.inn-rest-dialog>p{font-size:12px;line-height:1.8;color:#bcb3b2;margin:13px 0}
+.inn-rest-values{display:grid;gap:14px;margin:14px 0}
+.inn-rest-values>div{padding:12px;background:#222126;border:1px solid #544a4f;border-radius:8px}
+.inn-rest-values strong,.inn-rest-values span{display:flex;align-items:center;gap:5px;font-size:12px}
+.inn-rest-values span{font-size:14px;margin:8px 0}
+.inn-rest-values span b{color:#edbdb9}
+.inn-rest-values small{font-size:10px;color:#beb2b1}
+.inn-rest-meter{height:9px;border-radius:9px;background:#423539;overflow:hidden;margin-bottom:7px}
+.inn-rest-meter i{display:block;height:100%;background:#d5747c;transition:width .28s}
+.inn-rest-meter--stamina i{background:#8db5a9}
+.inn-rest-advice{border-left:3px solid #b99b7f;padding:11px;background:#272329;color:#e1cdbc;font-size:12px;line-height:1.8}
+.inn-rest-advice small{display:block;color:#9e999a;font-size:10px;margin-top:6px}
+.inn-rest-cost{display:flex;flex-wrap:wrap;gap:9px;padding:12px 0;color:#c4bcb5;font-size:11px}
+.inn-rest-cost span{display:flex;align-items:center;gap:5px}
+.inn-rest-dialog footer{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.inn-rest-dialog footer button{border:1px solid #a48b88;border-radius:7px;background:#252429;color:#fff;min-height:44px;font-size:12px}
+.inn-rest-dialog footer button:last-child{background:#c4aaa4;color:#201e1e;font-weight:800}
+.inn-rest-dialog footer button:disabled{opacity:.5;cursor:not-allowed}
+.inn-rest-blocked{color:#e4a6a5!important}
+.character-progression{padding:12px;border:1px solid #64535a;border-radius:8px;background:#241e25;margin-bottom:12px;display:grid;gap:8px}
+.character-progression strong{font-size:12px}
+.character-progression small{font-size:10px;color:#b9b1b0}
+.character-progression__meter{height:7px;overflow:hidden;background:#51464c;border-radius:8px}
+.character-progression__meter i{height:100%;display:block;background:#e3b69d}
+.character-tab-stat button{margin-top:5px;border:1px solid #71666c;background:#372e35;color:#e7d5c7;border-radius:5px;min-height:28px;padding:4px 7px;font-size:10px}
+.character-tab-stat button:disabled{opacity:.38}

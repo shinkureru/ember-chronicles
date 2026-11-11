@@ -26,9 +26,9 @@ export const TOWN_FACILITIES:TownFacility[]=[
  {id:'canteen',name:'公共食堂',subtitle:'FOOD / SOCIAL LIFE',icon:'utensils',description:'吃飽可以減輕飢餓與疲勞，也有機會聽到附近居民的閒談。',keeper:'食堂師傅・吳阿嬤',lateKeeper:'早班備餐・阿仁',greeting:'「趁熱吃。想知道什麼，就坐著慢慢聽。」',hours:[5,22]},
 ];
 export const TOWN_SERVICES:TownService[]=[
- {id:'rest_cot',facility:'inn',name:'普通床位',summary:'生命 +12、體力 +35、疲勞 −22',coins:15,minutes:120},
- {id:'rest_private',facility:'inn',name:'安靜單人房',summary:'生命 +24、體力 +55、疲勞 −38、膽量 +10',coins:40,minutes:180},
- {id:'rest_short',facility:'inn',name:'短暫打盹',summary:'體力 +18、疲勞 −10',coins:7,minutes:65},
+ {id:'rest_cot',facility:'inn',name:'普通床位',summary:'依目前體力比例預估生命恢復；體力恢復至滿、疲勞 −22',coins:15,minutes:120},
+ {id:'rest_private',facility:'inn',name:'安靜單人房',summary:'高品質睡眠：依體力比例恢復更多生命，體力補滿、疲勞 −38、膽量 +10',coins:40,minutes:180},
+ {id:'rest_short',facility:'inn',name:'短暫打盹',summary:'短暫休息：恢復部分體力與少量生命、疲勞 −10',coins:7,minutes:65},
  {id:'clinic_wounds',facility:'clinic',name:'外傷清創與包紮',summary:'外傷 −2、生命 +25',coins:25,minutes:50},
  {id:'clinic_infection',facility:'clinic',name:'感染治療',summary:'感染 −2、生命 +12',coins:34,minutes:90},
  {id:'clinic_poison',facility:'clinic',name:'中毒處置',summary:'中毒 −2、體力 +15',coins:42,minutes:75},

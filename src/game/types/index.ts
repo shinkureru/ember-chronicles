@@ -52,14 +52,20 @@ export interface TownProgress {
  upgrades:Record<string,number>;
  wear:Record<string,number>;
  quests:Record<string,TownQuestStatus>;
+ lastRestDay?:number;
+ restsToday?:number;
 }
 export interface SurvivorConditions { wounds:number;infection:number;poisoning:number;illness:number }
 export interface NpcDefeatMemory {count:number;method:string;thought:string;effect:string}
 export interface NpcState {hostility:number;trust:number;met:number;adaptations:Record<string,number>;remembers:string[];stolenGear:string[];combatDefeats?:number;defeatMemories?:NpcDefeatMemory[]}
+export interface LevelProgression {level:number;xp:number;totalXp:number;points:number;dailyAwards:Record<string,number>}
 export interface GameState {
   version: 1;
   /** 2 = low-HP balance; missing on v1.5 and older saves. */
   hpRulesVersion?: 2;
+  /** Current ten-stamina and zero-base-attribute scale; absence means old scale. */
+  growthRulesVersion?: 2;
+  progression?:LevelProgression;
   mode: Mode;
   profession: ProfessionId | null;
   player: { health: number; maxHealth: number; stamina: number; maxStamina: number; courage: number; hunger: number; fatigue: number; temperature: number; resource: number; maxResource: number; attributes: Attributes };

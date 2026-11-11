@@ -39,7 +39,7 @@ export const attackStatus=(state:GameState,id:string)=>{
 export const getAttackDamage=(state:GameState,id:string):number=>{
   const card=ATTACK_CARDS[id];if(!card)return 0;
   const level=state.ownedCards[id]?.level??1;
-  const bonus=Math.max(0,Math.floor((state.player.attributes.melee-10)/4));
+  const bonus=Math.max(0,Math.floor(state.player.attributes.melee/4));
   const gearUpgrade=(state.equipment.mainHand===card.requiredItemId||state.equipment.utility===card.requiredItemId)?(state.town?.upgrades[card.requiredItemId]??0)*2:0;
   return Math.min(99,card.damage+Math.max(0,level-1)*2+bonus+gearUpgrade);
 };

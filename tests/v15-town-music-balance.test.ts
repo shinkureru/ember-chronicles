@@ -46,10 +46,10 @@ describe('v1.5: town facilities are actually functional',()=>{
   expect(isTownOpen('tavern',9*60)).toBe(false);
  });
  it('changes real player stats, currency and in-game time',()=>{
-  let s=makeInitialState('journalist');s.player.health=3;s.player.fatigue=45;s.player.stamina=32;
+  let s=makeInitialState('journalist');s.player.health=3;s.player.fatigue=45;s.player.stamina=8;
   const before=s.economy.coins;
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'rest_cot'});
-  expect(s.player.health).toBe(10);expect(s.player.stamina).toBe(67);
+  expect(s.player.health).toBe(5);expect(s.player.stamina).toBe(10);
   expect(s.player.fatigue).toBe(23);
   expect(s.economy.coins).toBe(before-15);
   expect(s.world.minute).toBe(16*60+20+120);
@@ -69,14 +69,14 @@ describe('v1.5: town facilities are actually functional',()=>{
   const before=s.player.attributes.observation;
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'train',attribute:'observation'});
   expect(s.player.attributes.observation).toBe(before+1);
-  expect(s.player.attributes.persuasion).toBe(10);
+  expect(s.player.attributes.persuasion).toBe(0);
   expect(s.town?.lastTrainingDay).toBe(1);
   const same=s;
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'train',attribute:'persuasion'});
   expect(s).toBe(same);
   s={...s,world:{...s.world,day:2,minute:16*60}};
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'train',attribute:'persuasion'});
-  expect(s.player.attributes.persuasion).toBe(11);
+  expect(s.player.attributes.persuasion).toBe(1);
  });
  it('workshop requires materials and applies measurable armor bonus',()=>{
   let s=makeInitialState('journalist');s.bag.cap=1;s.bag.tape=1;

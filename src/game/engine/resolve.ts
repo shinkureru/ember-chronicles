@@ -91,6 +91,17 @@ const addLoot=(s:GameState,source:string):LootDrop|null=>{
   }
   const pool=LOOT_POOLS[source]??[];
   if(pool.length===0)return null;
+  // 18% of successful finite searches yield a small amount of old currency.
+  // Currency is not a backpack item and cannot be farmed after the source is exhausted.
+  if(nextRand(s)<.18){
+    const coins=2+Math.floor(nextRand(s)*4);
+    s.economy.coins+=coins;
+    s.lootSearches[source]=(s.lootSearches[source]??0)+1;
+    if(remainingSearches(s,source)===0&&!s.searchedSources.includes(source))s.searchedSources.push(source);
+    s.lastEvent=`我從現場找到 ${coins} 枚舊幣。這些零錢至少夠換一點補給。`;
+    s.log.push(`搜查 ${source}：獲得 ${coins} 舊幣`);
+    return null;
+  }
   const itemId=pool[Math.floor(nextRand(s)*pool.length)]!;
   const def=ITEMS[itemId]!;
   if(bagWeight(s.bag)+def.weight>15){s.lastEvent=`我看到「${def.name}」，但背包快裝不下了。得先整理物品。`;return null;}

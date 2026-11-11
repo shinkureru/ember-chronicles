@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { playCue } from '../../audio/sound';
 import ActionObjectArt from './ActionObjectArt';
 import { ITEMS } from '../../game/data/items';
+import { DAMAGE_FEEDBACK_MS } from './combatFeedbackTiming';
 import type { GameState } from '../../game/types';
 
 /** A new attack id spawns one visual throw toward the player's camera.
@@ -12,7 +13,7 @@ export default function EnemyCounterProjectile({strike}:{strike:NonNullable<Game
   setShow(true);
   playCue('warning');
   const hit=window.setTimeout(()=>playCue(strike.hit?'impact':'sneakStep'),470);
-  const close=window.setTimeout(()=>setShow(false),2750);
+  const close=window.setTimeout(()=>setShow(false),DAMAGE_FEEDBACK_MS.incoming);
   return()=>{window.clearTimeout(hit);window.clearTimeout(close)};
  },[strike.id,strike.hit]);
  if(!show)return null;

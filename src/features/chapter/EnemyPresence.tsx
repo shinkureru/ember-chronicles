@@ -8,7 +8,7 @@ export default function EnemyPresence({health,maxHealth,name,windup=false,varian
    previous.current=health;
    if(damage<=0)return;
    setImpact({id:Date.now(),damage});
-   const timer=window.setTimeout(()=>setImpact(null),900);
+   const timer=window.setTimeout(()=>setImpact(null),2400);
    return()=>window.clearTimeout(timer);
  },[health]);
  const injured=health<maxHealth;

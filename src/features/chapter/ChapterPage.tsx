@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowRight, BookOpenText, Layers3, Search, Settings2, ShieldAlert, Sparkles, X } from 'lucide-react';
+import { ArrowRight, Backpack, BookOpenText, Layers3, Search, Settings2, ShieldAlert, Sparkles, X } from 'lucide-react';
 import { NavLink, Navigate, useNavigate } from 'react-router-dom';
 import { useGame } from '../../app/GameContext';
 import Hud from '../../components/Hud';
@@ -22,6 +22,7 @@ import ThoughtWhisper from './ThoughtWhisper';
 import MissionTransition, { type MissionTransitionKind } from './MissionTransition';
 import EnemyCounterProjectile from './EnemyCounterProjectile';
 import EnemyTaunt from './EnemyTaunt';
+import FieldBagDialog from './FieldBagDialog';
 import { DAMAGE_FEEDBACK_MS } from './combatFeedbackTiming';
 export default function ChapterPage(){
  const {state:s,dispatch}=useGame();
@@ -33,6 +34,7 @@ export default function ChapterPage(){
  const [showStory,setShowStory]=useState(false);
  const [showHand,setShowHand]=useState(false);
  const [showSettings,setShowSettings]=useState(false);
+ const [showBag,setShowBag]=useState(false);
  const [handOpenCount,setHandOpenCount]=useState(0);
  const [skillPrompt,setSkillPrompt]=useState(false);
  const [skipSkillPrompt,setSkipSkillPrompt]=useState(()=>{try{return localStorage.getItem('ember-skip-skill-warning-v08')==='yes'}catch{return false}});
@@ -108,7 +110,7 @@ export default function ChapterPage(){
  const npc=s.stageId===2?(s.alleyNpc??s.npc):s.npc;
  const stageVisit=s.stageId===2?(s.alleyNpc?.met??1):s.npc.met;
  return <div className="chapter-live">
-  <div className="chapter-kicker"><span>CHAPTER 01 · MISSION {String(s.stageId??1).padStart(2,'0')} · {scene.label} · {worldPhase(s.world.minute)}</span><div className="chapter-kicker__controls"><button type="button" onClick={()=>setShowStory(true)}><BookOpenText size={15}/>全文</button><button type="button" onClick={()=>setShowSettings(true)} aria-label="遊戲設定"><Settings2 size={16}/>設定</button></div></div>
+  <div className="chapter-kicker"><span>CHAPTER 01 · MISSION {String(s.stageId??1).padStart(2,'0')} · {scene.label} · {worldPhase(s.world.minute)}</span><div className="chapter-kicker__controls"><button type="button" onClick={()=>setShowBag(true)} aria-label="打開任務背包"><Backpack size={15}/>背包</button><button type="button" onClick={()=>setShowStory(true)}><BookOpenText size={15}/>全文</button><button type="button" onClick={()=>setShowSettings(true)} aria-label="遊戲設定"><Settings2 size={16}/>設定</button></div></div>
   <Hud/>
   {(s.sceneId==='confrontation'||combatHold)&&<div className="enemy-hud" aria-label="敵人生命值">
     <div className="enemy-hud__top"><span>ENEMY / {s.enemy.name}</span><strong>{s.enemy.health} / {s.enemy.maxHealth} HP</strong></div>
@@ -159,7 +161,7 @@ export default function ChapterPage(){
     </div>
   </div>}
   {lastStrike&&s.sceneId==='confrontation'&&<EnemyCounterProjectile key={lastStrike.id} strike={lastStrike}/>}
-  <ThoughtWhisper state={s} paused={!!cinematic||showStory||showHand||showSettings||showRetreat||skillPrompt||confirmLootExit}/>
+  <ThoughtWhisper state={s} paused={!!cinematic||showStory||showHand||showSettings||showBag||showRetreat||skillPrompt||confirmLootExit}/>
   {cinematic&&<MissionTransition kind={cinematic} enemyName={s.enemy.name} stageId={s.stageId??1} onFinish={()=>setCinematic(null)}/>}
   {flight&&<AttackProjectile flight={flight}/>}
   {skillPrompt&&<div className="skill-confirm-overlay" role="presentation">
@@ -172,6 +174,7 @@ export default function ChapterPage(){
    </section>
   </div>}
   {showStory&&<div className="game-sheet-backdrop" role="presentation" onClick={()=>setShowStory(false)}><div className="game-story-modal" role="dialog" aria-label="劇情與警告詳情" aria-modal="true" onClick={e=>e.stopPropagation()}><div className="game-sheet__top"><h3><BookOpenText size={17}/>劇情紀錄</h3><button onClick={()=>setShowStory(false)} aria-label="關閉劇情詳情"><X size={19}/></button></div><p>{scene.narration}</p>{scene.npcText&&<blockquote>{s.stageId===2?'守望者':'阿忠'}：{scene.npcText}</blockquote>}{s.lastEvent&&<p>{s.lastEvent}</p>}{current&&<section className="story-action-details"><h4>目前選擇：{current.title}</h4><p>{current.thought}</p><p>{current.detail}</p></section>}<h4>場景心聲</h4>{ambientLines.map((line,i)=><p key={i}>「{line}」</p>)}{preview?.warnings.map(w=><div className="warning-panel" key={w.title}><ShieldAlert size={17}/><div><strong>{w.title}</strong><p>{w.detail}</p><small>恢復：{w.remedy}</small></div></div>)}{s.clues.length>0&&<p className="story-clues"><Sparkles size={14}/>已掌握 {s.clues.length} 條線索</p>}</div></div>}
+  {showBag&&<FieldBagDialog onClose={()=>setShowBag(false)}/>}
   {showRetreat&&<RetreatDialog onClose={()=>setShowRetreat(false)}/>}
   {showSettings&&<GameSettingsDialog onClose={()=>setShowSettings(false)}/>}
  </div>;

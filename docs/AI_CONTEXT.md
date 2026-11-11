@@ -141,3 +141,13 @@
 - 音訊：新增八個 Kenney UI Audio CC0 WAV，已分配到不同操作家族；探索／交戰使用原創程序旋律，後巷五首聲景，戰鬥加強低音節奏與切換；授權清單見 `docs/AUDIO_LICENSES.md`。
 - 保留舊 localStorage v1 key，遷移補上 stageId/alleyNpc，不清玩家過往進度。
 - 詳細驗收：`docs/V14_IMPLEMENTATION.md`；v1.5 再討論正式完整世界觀及更多後續任務。
+
+
+### v1.5｜CC0 背景配樂、低交涉機率與深度城鎮
+- `src/audio/licensedMusic.ts` 建立原始作者授權明確的 OGG 映射表（OpenGameArt CC0、已打包到 `public/audio/cc0-music/`），`src/audio/sound.ts` 停用程序式 BGM，改成實錄配樂交叉淡入淡出。音效維持 Kenney CC0。授權與來源 `docs/V15_MUSIC_LICENSES.md`。
+- `src/game/engine/encounterBalance.ts`：在 confrontation 選擇不使用攻擊卡直接去 loot 的交涉／迴避選項，依個別敵人到訪次數給上限：首次 14%、第 10 次 50%、第 15 次 70% 封頂。交涉失敗轉敵人攻擊預備動畫並禁止同場無限重試交涉。
+- 城鎮 8 設施、16 種服務、5 種支線委託；真實花費舊幣與世界時間。動作規則 `src/game/engine/townActions.ts`、設施／任務 `src/game/data/town.ts`、UI `src/features/town/TownPage.tsx`、CSS `src/styles/_v15.scss`。
+- 人物永久屬性：訓練每遊戲日只提升 18 種其中一項，支線一次性獎勵；物品修復耐久、改良防禦／傷害、外傷診療、食堂與澡堂即時狀態／短期 buff；人物檔案有城鎮成長分頁。
+- 舊 `GameState.version=1` localStorage 不變，`town` 與 `conditions` 可選且由 `src/game/state/storage.ts` 遷移。
+- AI 美術尚未開始替換，建議的 WebP 分層、角色一致性與 Steam / 台灣商用注意事項見 `docs/AI_ART_PIPELINE.md`。不要宣稱已完成美術生成。
+- 驗收測試 `tests/v15-town-music-balance.test.ts`。詳細規格 `docs/V15_TOWN_IMPLEMENTATION.md`。

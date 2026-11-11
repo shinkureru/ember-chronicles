@@ -3,7 +3,8 @@
  * Kenney RPG Audio and Kenney UI Audio (CC0) supplement 100% original MIDI-free synthesized music.
  * AudioContext requires a user gesture on mobile browsers.
  */
-import { SOUNDSCAPES, type SoundscapeId } from './soundscapes';
+import type { SoundscapeId } from './soundscapes';
+import { SCENE_TRACKS,musicPath,type LicensedTrackId } from './licensedMusic';
 
 export type SoundCue='tap'|'select'|'confirm'|'locked'|'open'|'loot'|'reward'|'card'|
   'warning'|'injury'|'impact'|'breath'|'footsteps'|'retreat'|'defeat'|'victory'|
@@ -76,12 +77,15 @@ const readSettings=():AudioSettings=>{
 let config=readSettings();
 let context:AudioContext|null=null;
 let musicGain:GainNode|null=null, ambienceGain:GainNode|null=null,effectsGain:GainNode|null=null;
-let sceneNodes:AudioNode[]=[];
-let melodyTimer:ReturnType<typeof setInterval>|null=null;
-let ambienceTimer:ReturnType<typeof setInterval>|null=null;
 let scene:SoundscapeId|null=null;
 let desiredScene:SoundscapeId='map';
-let step=0;
+let activeMusic:HTMLAudioElement|null=null;
+let activeMusicId:LicensedTrackId|null=null;
+let fadingMusic:HTMLAudioElement|null=null;
+let musicFade:ReturnType<typeof setInterval>|null=null;
+let fadeStep=0;
+let audioUnlocked=false;
+const targetMusicVolume=()=>config.muted?0:Math.max(0,Math.min(1,config.master*config.music*.68));
 let lastTap=0;
 
 export const getAudioSettings=():AudioSettings=>({...config});
@@ -91,6 +95,8 @@ export const updateAudioSettings=(change:Partial<AudioSettings>)=>{
   config={...config,...change};
   for(const k of ['master','music','ambience','effects'] as const)config[k]=clamp01(config[k]);
   try{localStorage.setItem(KEY,JSON.stringify(config));}catch{/* Storage optional */}
+  if(config.muted){activeMusic?.pause();fadingMusic?.pause();}
+  else if(audioUnlocked){if(activeMusic?.paused)void activeMusic.play().catch(()=>{});startScene();}
   applyVolumes();
   if(typeof window!=='undefined')window.dispatchEvent(new Event('ember-audio-settings'));
 };
@@ -99,7 +105,8 @@ function applyVolumes(){
   const m=config.muted?0:config.master;
   const at=context.currentTime;
   // The entire mix feeds a compressor; noticeably louder than v0.4, without hard clipping.
-  musicGain?.gain.setTargetAtTime(m*config.music*.62,at,.04);
+  if(activeMusic&&!musicFade)activeMusic.volume=targetMusicVolume();
+  if(fadingMusic&&!musicFade)fadingMusic.volume=0;
   ambienceGain?.gain.setTargetAtTime(m*config.ambience*.48,at,.04);
   effectsGain?.gain.setTargetAtTime(m*config.effects*.96,at,.018);
 }
@@ -188,68 +195,51 @@ export const playCue=(cue:SoundCue)=>{
     case 'victory':note(ctx,294,.36,.24);note(ctx,392,.39,.24,{delay:.14});note(ctx,466,.55,.28,{delay:.30});break;
   }
 };
+/** All scene music comes from self-hosted CC0 OGG assets. Short crossfades prevent abrupt cuts. */
 function stopScene(){
-  if(melodyTimer){clearInterval(melodyTimer);melodyTimer=null;}
-  if(ambienceTimer){clearInterval(ambienceTimer);ambienceTimer=null;}
-  for(const node of sceneNodes){
-    try{if(node instanceof OscillatorNode||node instanceof AudioBufferSourceNode)node.stop();node.disconnect();}catch{/* Already ended */}
-  }
-  sceneNodes=[];scene=null;step=0;
-}
-function playSceneStep(ctx:AudioContext,id:SoundscapeId){
-  const preset=SOUNDSCAPES[id],beat=step++%preset.melody.length;
-  const semitone=preset.melody[beat];
-  // Original dark tonal motifs, not sampled from any existing composition.
-  // Counterpoint + octave echo establish an audible melody over heartbeat-like bass.
-  if(semitone!==null&&semitone!==undefined){
-    const frequency=preset.tonic*4*Math.pow(2,semitone/12);
-    const battle=id==='confrontation'||id==='alley_confrontation';
-    note(ctx,frequency,battle?.41:.69,battle?.30:.25,{into:musicGain!,type:battle?'sawtooth':'triangle',attack:.02});
-    note(ctx,frequency*2,battle?.22:.36,.055,{into:musicGain!,type:'sine',delay:battle?.06:.1});
-    if(beat===3||beat===7)note(ctx,frequency*.75,.82,.09,{into:musicGain!,type:'triangle',delay:.16});
-  }
-  if(beat%2===0)note(ctx,preset.tonic*2,Math.min(.72,preset.beat*.9),.13+preset.tension*.055,
-    {into:musicGain!,type:'triangle',attack:.07});
-  if(preset.tension>.76){
-    // Short dry, mechanical hits: intentionally distinct from the exploration score.
-    noise(ctx,.07,.07+preset.tension*.06,750,{into:musicGain!,highpass:beat%2===0});
-    if(beat%4===2)note(ctx,preset.tonic*8,.11,.09,{into:musicGain!,type:'square',attack:.016});
-  }
+ if(musicFade){clearInterval(musicFade);musicFade=null;}
+ fadingMusic?.pause();fadingMusic=null;
+ activeMusic?.pause();activeMusic=null;activeMusicId=null;
+ scene=null;
 }
 function startScene(){
-  const ctx=createContext();if(!ctx||config.muted||scene===desiredScene)return;
-  stopScene();scene=desiredScene;
-  if(scene==='silence')return;
-  const preset=SOUNDSCAPES[scene];
-  // Barely audible pitched air underneath melody rather than a loud constant drone.
-  const drone=ctx.createOscillator(),volume=ctx.createGain(),filter=ctx.createBiquadFilter();
-  drone.type='sine';drone.frequency.value=preset.tonic;
-  filter.type='lowpass';filter.frequency.value=170;
-  volume.gain.value=.045+preset.tension*.03;
-  drone.connect(filter);filter.connect(volume);volume.connect(musicGain!);drone.start();
-  sceneNodes.push(drone,filter,volume);
-  playSceneStep(ctx,scene);
-  melodyTimer=setInterval(()=>{if(context?.state==='running'&&!config.muted&&scene)playSceneStep(context,scene);},preset.beat*1000);
-  ambienceTimer=setInterval(()=>{
-    if(!context||context.state!=='running'||config.muted)return;
-    if(preset.texture==='drips'){
-      const f=440+Math.random()*280;
-      note(context,f,.18,.12,{into:ambienceGain!});
-      note(context,f*.70,.30,.05,{into:ambienceGain!,delay:.16});
-    }else if(preset.texture==='industrial'){
-      noise(context,.20,.18,500,{into:ambienceGain!});
-      note(context,76,.34,.07,{into:ambienceGain!,type:'triangle',delay:.05});
-    }else if(preset.texture==='wind'||preset.texture==='rain'){
-      noise(context,1.8,.10,400,{into:ambienceGain!});
-    }else{
-      noise(context,.65,.035,260,{into:ambienceGain!});
-    }
-  },2400);
+ if(!audioUnlocked||typeof window==='undefined'||config.muted)return;
+ const chosen=SCENE_TRACKS[desiredScene];
+ if(scene===desiredScene&&activeMusic)return;
+ scene=desiredScene;
+ if(musicFade){clearInterval(musicFade);musicFade=null;}
+ if(fadingMusic){fadingMusic.pause();fadingMusic=null;}
+ if(!chosen){stopScene();scene=desiredScene;return;}
+ if(chosen===activeMusicId&&activeMusic){applyVolumes();return;}
+ const previous=activeMusic;
+ const next=new Audio(musicPath(chosen));
+ next.loop=true;
+ next.preload='auto';
+ next.volume=0;
+ activeMusic=next;activeMusicId=chosen;
+ fadingMusic=previous;
+ void next.play().catch(()=>{audioUnlocked=false;});
+ fadeStep=0;
+ musicFade=setInterval(()=>{
+  fadeStep=Math.min(1,fadeStep+.11);
+  const ease=fadeStep*fadeStep*(3-2*fadeStep);
+  if(activeMusic===next)next.volume=Math.min(1,targetMusicVolume()*ease);
+  if(previous)previous.volume=Math.min(1,targetMusicVolume()*(1-ease));
+  if(fadeStep>=1){
+   previous?.pause();if(fadingMusic===previous)fadingMusic=null;
+   if(musicFade){clearInterval(musicFade);musicFade=null;}
+  }
+ },55);
 }
-export const setAudioScene=(id:SoundscapeId)=>{desiredScene=id;if(context?.state==='running')startScene();};
+export const setAudioScene=(id:SoundscapeId)=>{desiredScene=id;if(audioUnlocked)startScene();};
 export const unlockAudio=()=>{
-  if(config.muted)return;
-  const ctx=createContext();if(!ctx)return;
-  void ctx.resume().then(()=>{FOLEY_ASSETS.forEach(id=>queueFoley(ctx,id));startScene();}).catch(()=>{/* Autoplay restriction */});
+ if(config.muted)return;
+ const ctx=createContext();if(!ctx)return;
+ audioUnlocked=true;
+ void ctx.resume().then(()=>{
+  FOLEY_ASSETS.forEach(id=>queueFoley(ctx,id));
+  if(activeMusic?.paused)void activeMusic.play().catch(()=>{audioUnlocked=false;});
+  startScene();
+ }).catch(()=>{/* Browsers require a gesture */});
 };
-export const disposeAudio=()=>{stopScene();if(context)void context.close();context=null;musicGain=null;ambienceGain=null;effectsGain=null;};
+export const disposeAudio=()=>{stopScene();audioUnlocked=false;if(context)void context.close();context=null;musicGain=null;ambienceGain=null;effectsGain=null;};

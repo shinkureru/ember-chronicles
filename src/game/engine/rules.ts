@@ -1,4 +1,6 @@
 import { CARDS } from '../data/cards';
+import { townAbsoluteMinute } from '../data/town';
+import { getPeacefulResolutionCap } from './encounterBalance';
 import { ITEMS } from '../data/items';
 import { SCENES } from '../data/scenes';
 import { ALLEY_SCENES, getAlleySceneActions } from '../data/chapters/ch01-alley/scenes';
@@ -35,7 +37,7 @@ export const isSkillCompatible = (action:ActionChoice, card?:SkillCard):boolean 
 export const getVisibleActions = (state:GameState):ActionChoice[]=>{
   const scene=(state.stageId===2?ALLEY_SCENES:SCENES)[state.sceneId];
   if(!scene)return [];
-  const story=(state.stageId===2?getAlleySceneActions(state):getSceneVariation(state)).filter(action=>!action.lootSource||remainingSearches(state,action.lootSource)>0);
+  const story=(state.stageId===2?getAlleySceneActions(state):getSceneVariation(state)).filter(action=>(!action.lootSource||remainingSearches(state,action.lootSource)>0)&&!(state.flags.includes('negotiation_rejected')&&state.sceneId==='confrontation'&&action.tags.includes('talk')&&action.successScene==='loot'));
   if(state.sceneId!=='confrontation'||state.mode!=='adventure'||state.enemy.health<=0)return story;
   const attacks=state.attackDeck.map(id=>createAttackChoice(state,id)).filter((a):a is ActionChoice=>a!==null);
   return [...story,...attacks];
@@ -102,15 +104,18 @@ export const calculateActionPreview=(state:GameState,choice:ActionChoice,skillId
   const lowStaminaPenalty=state.player.stamina<staminaCost?24:0;
   const fearPenalty=state.player.courage<40 && choice.tags.some(t=>t==='talk'||t==='fight')?7:0;
   const clueBonus=Math.min(24,state.clues.length*5);
+  const groomedBonus=choice.tags.includes('talk')&&(state.town?.socialPoiseUntil??0)>townAbsoluteMinute(state)?5:0;
   const routeBonus=state.flags.includes('route_known')&&choice.tags.some(t=>t==='sneak'||t==='run')?8:0;
   const heardBonus=state.flags.includes('heard_steps')&&choice.tags.includes('talk')?8:0;
   const hostilityPenalty=choice.tags.includes('talk')?Math.max(0,Math.floor((currentNpc.hostility-25)/8)):0;
   const weaponAvailable=!choice.attackCardId||attackStatus(state,choice.attackCardId).inBag;
-  const chance=!weaponAvailable?0:choice.baseChance===100?100:Math.round(clamp(
+  const rawChance=!weaponAvailable?0:choice.baseChance===100?100:Math.round(clamp(
     choice.baseChance+specialtyBonus(state,choice.tags)+attributeBonus(state,choice.tags)+
     (validSkill?validSkill.chanceBonus+(skillLevel-1)*3:0)+clueBonus+state.insightBonus+routeBonus+heardBonus-
-    npcPenalty-overweightPenalty-tiredPenalty-lowStaminaPenalty-hostilityPenalty-fearPenalty,
+    npcPenalty-overweightPenalty-tiredPenalty-lowStaminaPenalty-hostilityPenalty-fearPenalty+groomedBonus,
     5,95));
+  const crisisCap=getPeacefulResolutionCap(state,choice);
+  const chance=crisisCap===null?rawChance:Math.min(rawChance,crisisCap);
   const warnings:ActionPreview['warnings']=[];
   if(!weaponAvailable)warnings.push({title:'缺少所需武器',detail:'對應物品尚未放進背包，無法使用這張攻擊牌。',remedy:'可在關卡內取得武器，或回據點從倉庫備妥。'});
   if(projectedCourage<40&&state.player.courage>=40)warnings.push({title:'膽量將跌破 40',detail:'可能進入「畏縮」狀態，面對威嚇類事件時較不利。',remedy:'可透過休息、情緒安撫或完成勇氣事件恢復。'});

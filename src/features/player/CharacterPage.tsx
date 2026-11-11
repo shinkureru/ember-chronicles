@@ -29,7 +29,7 @@ export default function CharacterPage(){
   <nav className="character-page__tabs" aria-label="人物資料分頁">
    {[
     {id:'equipment',label:'全身裝備'},{id:'physical',label:'身體'},{id:'mental',label:'思維'},
-    {id:'social',label:'社交'},{id:'record',label:'NPC 記憶'},{id:'story',label:'人物故事'},
+    {id:'social',label:'社交'},{id:'town',label:'城鎮成長'},{id:'record',label:'NPC 記憶'},{id:'story',label:'人物故事'},
    ].map(item=><button key={item.id} type="button" aria-current={tab===item.id?'page':undefined} className={tab===item.id?'is-active':''} onClick={()=>{setTab(item.id);playCue('select')}}>{item.label}</button>)}
   </nav>
   {tab==='equipment'&&<section className="equipment-panel viewport-list character-equipment--v09">
@@ -59,6 +59,17 @@ export default function CharacterPage(){
   {category&&<section className="character-tab-content viewport-list"><h2><category.Icon size={19}/>{category.title}</h2>
     <div className="character-tab-content__stats">{category.ids.map(id=><div className="character-tab-stat" key={id}><span>{ATTRIBUTE_LABELS[id]}</span><strong>{s.player.attributes[id]}</strong><small>永久成長屬性</small></div>)}</div>
     <p>每種屬性都有獨立成長方向。進行不同關卡或劇情選擇時，會逐步累積擅長領域。</p>
+  </section>}
+  {tab==='town'&&<section className="character-tab-content viewport-list">
+    <h2><Shield size={19}/>城鎮培養紀錄</h2>
+    <p>城鎮訓練與支線委託已直接作用於永久屬性。每日最多完成一次屬性專項訓練，每項最高 Lv.20。</p>
+    <div className="character-tab-content__stats">
+     <div className="character-tab-stat"><span>今日訓練</span><strong>{s.town?.lastTrainingDay===s.world.day?'已完成':'可訓練'}</strong><small>於城鎮訓練場所選擇 18 項之一</small></div>
+     <div className="character-tab-stat"><span>完成委託</span><strong>{Object.values(s.town?.quests??{}).filter(v=>v==='completed').length} 件</strong><small>不同委託獎勵不同的永久屬性</small></div>
+     <div className="character-tab-stat"><span>身體狀況</span><strong>外傷 {s.conditions?.wounds??0}</strong><small>感染 {s.conditions?.infection??0} · 中毒 {s.conditions?.poisoning??0} · 疾病 {s.conditions?.illness??0}</small></div>
+     <div className="character-tab-stat"><span>裝備改良</span><strong>{Object.values(s.town?.upgrades??{}).reduce((sum,x)=>sum+x,0)} 階</strong><small>回城鎮工坊可修復或改良已裝備的物品</small></div>
+    </div>
+    <p>所有永久屬性變動都會同步影響冒險判定。訓練時數、物資和貨幣是成長的實際成本。</p>
   </section>}
   {tab==='record'&&<section className="character-tab-content viewport-list">
     <h2><BookOpenText size={19}/>NPC 記憶</h2>

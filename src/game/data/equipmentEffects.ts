@@ -16,5 +16,12 @@ export const EQUIPMENT_EFFECTS:Record<string,{defense:number;description:string}
  handwarm:{defense:0,description:'緊急保暖用品'},
 };
 export const getEquippedDefense=(state:GameState):number=>Object.values(state.equipment)
- .reduce((sum,id)=>sum+(id?EQUIPMENT_EFFECTS[id]?.defense??0:0),0);
+ .reduce((sum,id)=>{
+  if(!id)return sum;
+  const base=EQUIPMENT_EFFECTS[id]?.defense??0;
+  if(!base)return sum;
+  const durability=(state.town?.wear[id]??100)/100;
+  const upgrade=state.town?.upgrades[id]??0;
+  return sum+Math.max(0,Math.round(base*durability)+upgrade*2);
+ },0);
 export const mitigateCounterDamage=(raw:number,defense:number):number=>Math.max(1,raw-Math.floor(Math.max(0,defense)/3));

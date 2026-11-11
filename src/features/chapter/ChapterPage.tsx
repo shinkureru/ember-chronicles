@@ -21,6 +21,7 @@ import AlleySceneArtwork from './AlleySceneArtwork';
 import ThoughtWhisper from './ThoughtWhisper';
 import MissionTransition, { type MissionTransitionKind } from './MissionTransition';
 import EnemyCounterProjectile from './EnemyCounterProjectile';
+import EnemyTaunt from './EnemyTaunt';
 import { DAMAGE_FEEDBACK_MS } from './combatFeedbackTiming';
 export default function ChapterPage(){
  const {state:s,dispatch}=useGame();
@@ -117,6 +118,8 @@ export default function ChapterPage(){
    {s.stageId===2?<AlleySceneArtwork scene={combatHold&&s.enemy.health===0?'confrontation':s.sceneId}/>:
      <SceneArtwork scene={combatHold&&s.enemy.health===0?'confrontation':s.sceneId}/>}
    {(s.sceneId==='confrontation'||combatHold)&&<EnemyPresence health={s.enemy.health} maxHealth={s.enemy.maxHealth} name={s.enemy.name} variant={s.stageId===2?'alley':'warehouse'} windup={s.enemyCounter?.phase==='windup'}/>}
+   <EnemyTaunt active={s.sceneId==='confrontation'&&s.enemy.health>0&&!s.enemyCounter&&!s.flags.includes('attacked_enemy')&&!cinematic}
+     enemyName={s.enemy.name} stageId={s.stageId??1}/>
    <div className="scene-art__caption"><span className="scene-art__pin"/> {scene.location}<span> · 第 {stageVisit} 次來訪</span></div>
   </section>
   <section className="story-panel story-panel--compact"><div className="story-panel__top"><span className="eyebrow">SCENE / {scene.label}</span><span>{npc.met>1?'對方記得我':'初次接觸'}</span></div>

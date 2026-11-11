@@ -1,5 +1,21 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-12｜第三輪九項回饋（優先閱讀）
+
+**已部署的起點：** main `a861f5ad03e89c8fa6f141b4b4a1f56081620edb`，v1.7.2；PR #21 已合併且部署成功。下方 PR #22 / #23 均為**尚未合併、未部署**，不能以 CI 成功當成實機驗收。
+
+- **PR #22** `fix/v1.7.3-encounter-loot-insight`：https://github.com/shinkureru/ember-chronicles/pull/22  
+  ①非暴力通關不能再搜 NPC 口袋或取走穿戴裝備，仍可搜現場；②有效有限次的搜索 18% 機率得 2～5 舊幣，入錢包不占負重；③失敗反思次數、下一次首次關鍵判定 +6/+2 依每名敵人獨立儲存、獨立消耗；舊存檔遷移。詳見 `docs/V173_ENCOUNTER_ECONOMY_INSIGHT.md` 與 `tests/v173-enemy-loot-currency-and-insight.test.ts`。
+- **PR #23** `feature/v1.7.4-ui-interactions`：https://github.com/shinkureru/ember-chronicles/pull/23  
+  ①旅店文字最小高度；②關卡場景左側明確標示「查看背包」；③附加技能卡三欄兩列預覽、超過六張可上下滑動、職業專屬資源圖案與簡潔扣點圖示；④黑市預設購買、鼠標拖曳垂直商品清單、隱藏 scrollbar；⑤閃避成功改場景中央大字；⑥停用遊戲文字選取/複製但保留表單編輯。詳見 `docs/V173_UI_INTERACTIONS.md` 與 `tests/v173-portrait-interactions.test.ts`。
+
+**合併順序：先 #22 再 #23。** #23 分支建立在 #22 的程式上，目前暫時以 main 為 base 觸發整合測試，故在 #22 合併前 Files changed 會包含第一批。兩 PR 目前 package 版本同為 **v1.7.3**，避免分支同時改版號引發衝突；合併與 Pages 發布後以頁首 **Git 短碼**區分。不得自行 Merge。若 main 更新，先重新檢查 PR 合併狀態與 CI。
+
+**回歸測試和重要規則：** 不允許和平通關搜敵人物品的漏洞；舊幣搜索必須消耗來源搜索額度；每名 NPC 的失敗反思和一次加成不得轉移到其他敵人。新 UI 保留桌面滑鼠拖曳和手機手指原生滾動；無法用 CSS 阻止從開發者工具複製原始文字。**完成開發、CI 通過與實機驗收分別記錄。**
+
+---
+
+
 ## 2026-11-12 最新追蹤：v1.7.2 旅店與戰敗介面修正（優先於下方歷史段落）
 
 **基準確認：** 兩批 PR #19 (v1.7.0) 與 PR #20 (v1.7.1) **已合併**。GitHub Pages 已成功部署 main 的 `46ab986b15f4b16024cb0cc72e8a03d38e63d1e2`，使用者截圖的版本標示是 `v1.7.1 · 46ab986`。故此輪「旅店大卡點了沒反應／戰敗畫面會自動關閉」為真實的互動問題，不是漏合併或瀏覽器仍在看舊版本。

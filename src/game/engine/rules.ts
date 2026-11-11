@@ -6,6 +6,7 @@ import { SCENES } from '../data/scenes';
 import { ALLEY_SCENES, getAlleySceneActions } from '../data/chapters/ch01-alley/scenes';
 import { getSceneVariation } from '../data/chapters/ch01-warehouse/sceneVariants';
 import { remainingSearches } from './lootLimits';
+import {activeEnemyInsight} from './encounterAccess';
 import { createAttackChoice, attackStatus, getAttackDamage } from '../data/attacks';
 import type { ActionChoice, ActionPreview, ActionTag, GameState, SceneDef, SkillCard } from '../types';
 
@@ -106,7 +107,8 @@ export const calculateActionPreview=(state:GameState,choice:ActionChoice,skillId
   const tiredPenalty=state.player.fatigue>=70?7:state.player.fatigue>=50?3:0;
   const lowStaminaPenalty=state.player.stamina<staminaCost?24:0;
   const fearPenalty=state.player.courage<40 && choice.tags.some(t=>t==='talk'||t==='fight')?7:0;
-  const clueBonus=Math.min(24,state.clues.length*5);
+  // Failed-encounter reflections must not provide permanent cross-NPC chance boosts.
+  const clueBonus=Math.min(24,state.clues.filter(clue=>!clue.includes('失敗反思')).length*5);
   const groomedBonus=choice.tags.includes('talk')&&(state.town?.socialPoiseUntil??0)>townAbsoluteMinute(state)?5:0;
   const routeBonus=state.flags.includes('route_known')&&choice.tags.some(t=>t==='sneak'||t==='run')?8:0;
   const heardBonus=state.flags.includes('heard_steps')&&choice.tags.includes('talk')?8:0;
@@ -114,7 +116,7 @@ export const calculateActionPreview=(state:GameState,choice:ActionChoice,skillId
   const weaponAvailable=!choice.attackCardId||attackStatus(state,choice.attackCardId).inBag;
   const rawChance=!weaponAvailable?0:choice.baseChance===100?100:Math.round(clamp(
     choice.baseChance+specialtyBonus(state,choice.tags)+attributeBonus(state,choice.tags)+
-    (validSkill?validSkill.chanceBonus+(skillLevel-1)*3:0)+clueBonus+state.insightBonus+routeBonus+heardBonus-
+    (validSkill?validSkill.chanceBonus+(skillLevel-1)*3:0)+clueBonus+activeEnemyInsight(state)+routeBonus+heardBonus-
     npcPenalty-overweightPenalty-tiredPenalty-lowStaminaPenalty-hostilityPenalty-fearPenalty+groomedBonus,
     5,95));
   const crisisCap=getPeacefulResolutionCap(state,choice);

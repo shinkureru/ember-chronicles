@@ -77,7 +77,7 @@ export default function GameFeedback(){
    if(gained){pickupItem=gained[0];quantity=gained[1]-(old.bag[gained[0]]??0);}
   }
   const item=pickupItem?ITEMS[pickupItem]:undefined;
-  if(item&&quantity>0)setPickups(q=>[...q,{id:++nextPickupId,emoji:item.emoji,name:item.name,quantity}].slice(0,8));
+  if(item&&quantity>0)setPickups(q=>[...q,{id:++nextPickupId,itemId:item.id,name:item.name,quantity}].slice(0,8));
  },[state]);
  useEffect(()=>{
   if(!notice)return;

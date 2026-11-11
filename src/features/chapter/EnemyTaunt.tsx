@@ -17,9 +17,9 @@ export default function EnemyTaunt({active,enemyName,stageId}:{active:boolean;en
    setLine(ENEMY_TAUNTS[index]!);
    timeout=setTimeout(()=>setLine(null),ENEMY_TAUNT_DURATION_MS);
   };
-  const start=setTimeout(choose,2500);
-  const interval=setInterval(choose,ENEMY_TAUNT_INTERVAL_MS);
-  return()=>{clearTimeout(start);clearInterval(interval);if(timeout)clearTimeout(timeout);};
+  let interval:ReturnType<typeof setInterval>|undefined;
+  const start=setTimeout(()=>{choose();interval=setInterval(choose,ENEMY_TAUNT_INTERVAL_MS)},2500);
+  return()=>{clearTimeout(start);if(interval)clearInterval(interval);if(timeout)clearTimeout(timeout);};
  },[active,stageId]);
  if(!active||!line)return null;
  return <div className="enemy-taunt-bubble" role="status" aria-label={enemyName+'：'+line}>

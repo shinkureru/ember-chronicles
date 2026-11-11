@@ -55,3 +55,7 @@
  .clinic-dialog__card>div,.field-bag__item>div{min-width:120px}
  .clinic-dialog__item-art,.field-bag__art{font-size:32px;width:46px;height:49px}
 }
+
+/* The compact battle header now carries Backpack / Story / Settings. */
+.chapter-kicker__controls{display:flex;align-items:center;gap:7px;flex:none}
+@media(max-width:490px){.chapter-kicker__controls button{font-size:0;min-width:27px;justify-content:center;padding:3px}.chapter-kicker__controls button svg{width:17px;height:17px}}

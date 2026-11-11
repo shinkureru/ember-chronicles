@@ -56,6 +56,8 @@ export interface TownProgress {
  restsToday?:number;
 }
 export interface SurvivorConditions { wounds:number;infection:number;poisoning:number;illness:number }
+export interface NpcDefeatMemory {count:number;method:string;thought:string;effect:string}
+export interface NpcState {hostility:number;trust:number;met:number;adaptations:Record<string,number>;remembers:string[];stolenGear:string[];combatDefeats?:number;defeatMemories?:NpcDefeatMemory[]}
 export interface LevelProgression {level:number;xp:number;totalXp:number;points:number;dailyAwards:Record<string,number>}
 export interface GameState {
   version: 1;
@@ -70,7 +72,7 @@ export interface GameState {
   world: { minute: number; day: number; weather: 'clear' | 'rain' };
   town?:TownProgress;
   conditions?:SurvivorConditions;
-  npc: { hostility: number; trust: number; met: number; adaptations: Record<string, number>; remembers: string[]; stolenGear: string[] };
+  npc: NpcState;
   /** Current mission selection; absent in older saves means first mission. */
   stageId?: 1 | 2;
   /** Each important NPC remembers visits and personal grudges separately. */

@@ -1,5 +1,21 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-11 最新交接（優先閱讀）
+
+**實際 main 起點：** v1.6b 的 PR #17、#18 已合併；建立此輪分支時 main 為 `3d8e6333dc2f4e2af85adf1b8788fff4ef67b6de`。以下兩批新功能 **尚待 PR 合併和手機人工驗收**，不能說已在正式 Pages 上線。
+
+1. **PR #19** `feature/v1.7-build-combat-inn-qa`，依據 `docs/V17_QUALITY_AND_COMBAT.md`：頁首顯示版號及 GitHub 部署 Commit 短碼；出租床位預覽視窗 Portal 修復（滿 HP/體力仍可打開）；戰敗結果由玩家手動離開；敵方反擊等待 0.5 秒；敵方開始戰鬥前的 20 種 10 秒間隔嘲諷。https://github.com/shinkureru/ember-chronicles/pull/19
+2. **PR #20** `feature/v1.7-clinic-field-bag`，依據 `docs/V171_CLINIC_FIELD_BAG.md`：地下診所自製場景、療程預覽、每日任務與好感、四種專賣藥品；任務中打開背包、使用補給、換裝和物品可用性限制。https://github.com/shinkureru/ember-chronicles/pull/20
+
+**合併依賴：** PR #20 是建立在 PR #19 的分支上。**先合併 #19 再把 #20 的 Base 由 feature branch 改為 main**，重新檢查無衝突及 GitHub Actions 全部成功後才能合併 #20；避免單獨提前將 #20 合到 main。
+
+**授權與美術：** BGM 仍由使用者自行選擇，傳入實際音檔及原作者授權網址才能納入，不要把下載免費視為 CC0。人物原創故事留待使用者提交，不擅自編寫。
+
+**實作與驗收區別：** 新 PR 建置與自動測試通過 ≠ GitHub Pages 正式部署或手機操作驗收通過。合併後需按文件的 QA 清單確認。
+
+---
+
+
 > 這是**目前狀態的入口文件**，供新的 ChatGPT 對話、開發者及協作工具快速接手。請以 GitHub 最新 `main`、最新 PR、測試紀錄和實際程式碼重新核對；這份文件不取代程式碼。  
 > 最後人工同步：2026-11-11（Asia/Taipei）。此時 `main` 基線 Commit：`d1ddb46479605ae4746ed8d73f3aa8ea646e8e5d`（v1.5.0 / PR #15）。此 SHA 是**快照基線**，不是永遠不變的最新版。
 

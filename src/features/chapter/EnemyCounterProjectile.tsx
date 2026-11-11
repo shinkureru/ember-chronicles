@@ -12,7 +12,7 @@ export default function EnemyCounterProjectile({strike}:{strike:NonNullable<Game
   setShow(true);
   playCue('warning');
   const hit=window.setTimeout(()=>playCue(strike.hit?'impact':'sneakStep'),470);
-  const close=window.setTimeout(()=>setShow(false),1120);
+  const close=window.setTimeout(()=>setShow(false),2750);
   return()=>{window.clearTimeout(hit);window.clearTimeout(close)};
  },[strike.id,strike.hit]);
  if(!show)return null;

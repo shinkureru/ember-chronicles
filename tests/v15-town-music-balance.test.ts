@@ -46,20 +46,20 @@ describe('v1.5: town facilities are actually functional',()=>{
   expect(isTownOpen('tavern',9*60)).toBe(false);
  });
  it('changes real player stats, currency and in-game time',()=>{
-  let s=makeInitialState('journalist');s.player.health=47;s.player.fatigue=45;s.player.stamina=32;
+  let s=makeInitialState('journalist');s.player.health=3;s.player.fatigue=45;s.player.stamina=32;
   const before=s.economy.coins;
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'rest_cot'});
-  expect(s.player.health).toBe(59);expect(s.player.stamina).toBe(67);
+  expect(s.player.health).toBe(10);expect(s.player.stamina).toBe(67);
   expect(s.player.fatigue).toBe(23);
   expect(s.economy.coins).toBe(before-15);
   expect(s.world.minute).toBe(16*60+20+120);
   expect(s.town?.visits.inn).toBe(1);
  });
  it('medical treatment actually resolves wounds and requires a condition to perform',()=>{
-  let s=makeInitialState('journalist');s.player.health=45;s.conditions!.wounds=3;
+  let s=makeInitialState('journalist');s.player.health=2;s.conditions!.wounds=3;
   expect(getTownServiceLock(s,'clinic_wounds')).toBeNull();
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'clinic_wounds'});
-  expect(s.conditions?.wounds).toBe(1);expect(s.player.health).toBe(70);
+  expect(s.conditions?.wounds).toBe(1);expect(s.player.health).toBe(10);
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'clinic_wounds'});
   expect(s.conditions?.wounds).toBe(0);
   expect(getTownServiceLock(s,'clinic_wounds')).not.toBeNull();

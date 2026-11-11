@@ -1,4 +1,5 @@
 import { getScheduledVendorId } from '../data/marketSchedule';
+import { awardExperience,allocatePoint } from './progression';
 import { TOWN_QUESTS, townQuestReady } from '../data/town';
 import { applyTownService,ensureTownProgress,ensureConditions } from './townActions';
 import type { AttributeId } from '../types';
@@ -31,6 +32,7 @@ export type GameAction =
   | {type:'MARKET_BUY_ITEM';vendorId:string;itemId:string}
   | {type:'MARKET_SELL';vendorId:string;cardId:string}
   | {type:'MARKET_BUY';vendorId:string;cardId:string}
+  | {type:'ALLOCATE_POINT';attribute:AttributeId}
   | {type:'REST_TOWN'}
   | {type:'TOWN_SERVICE';serviceId:string;attribute?:AttributeId;itemId?:string}
   | {type:'TOWN_ACCEPT_QUEST';questId:string}
@@ -102,7 +104,10 @@ const resolveOutcome=(s:GameState,outcome:Outcome)=>{
   s.outcome=outcome;s.mode='result';
   const npc=activeNpc(s),isAlley=s.stageId===2;
   if(outcome==='defeat'){
-    s.player.health=clamp(s.player.health-18,1,s.player.maxHealth);
+    s.player.health=1;
+    ensureConditions(s).wounds=Math.max(1,s.conditions?.wounds??0);
+    // A defeat costs two in-world hours plus treatment planning, but never gear or coins.
+    advanceTime(s,120,true);
     npc.remembers=Array.from(new Set([...npc.remembers,isAlley?'alley_defeat':'defeated_player']));
     npc.adaptations.talk=Math.min(12,(npc.adaptations.talk??0)+3);
     const clueNo=s.clues.length+1;
@@ -130,6 +135,7 @@ const resolveOutcome=(s:GameState,outcome:Outcome)=>{
     s.lastEvent='我先撤退了。雖然沒弄清全部情況，至少記住了一點動線。下次首次關鍵判定可獲得 +2 個百分點；多次撤退無法疊加這項加成。';
   }else{
     const mission=s.stageId===2?2:1;
+    awardExperience(s,`mission:win:${mission}`,24);
     if(!s.chapterProgress.completed.includes(mission))s.chapterProgress.completed.push(mission);
     s.chapterProgress.completed.sort((a,b)=>a-b);
     s.chapterProgress.unlocked=Math.max(s.chapterProgress.unlocked,Math.min(12,mission+1));
@@ -267,6 +273,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
         drawCards(s,1);
       }
       const isSuccess=preview.chance===100 || nextRand(s)*100<preview.chance;
+      awardExperience(s,`action:${s.stageId??1}:${choice.id}`,isSuccess?5:2);
       if(preview.chance<100&&s.insightBonus>0)s.insightBonus=0;
       const suffix=skill?`（附加「${skill.name}」）`:'';
       s.log.push(`${choice.title}${suffix}：${isSuccess?'成功':'失敗'}，判定成功率 ${preview.chance}%`);
@@ -360,9 +367,8 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
         if(moved>0){s.warehouse[id]=(s.warehouse[id]??0)+moved;s.bag[id]=qty-moved;if(s.bag[id]===0)delete s.bag[id];}
       }
       advanceTime(s,35);
-      s.player.stamina=clamp(s.player.stamina+28,0,s.player.maxStamina);
-      s.player.health=clamp(s.player.health+10,1,s.player.maxHealth);
-      s.player.fatigue=clamp(s.player.fatigue-10,0,100);
+      // Returning to the hub is not free healing. The player must use the inn,
+      // supplies or clinic. Keep the one-HP defeat state until treatment.
       s.mode='home';s.lastEvent=bagWeight(s.bag)>0?'已自動整理戰利品；部分物品因保護設定或倉庫容量，仍保留在背包中。':'戰利品已自動入倉，常用裝備會保留在身上。';
       return s;
     }
@@ -380,6 +386,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.economy.marketPurchases+=1;
       s.bag[item.id]=(s.bag[item.id]??0)+1;
       s.lastEvent=`我向「${vendor.name}」購買了「${item.name}」，花掉 ${offer.price} 枚舊幣。`;
+      awardExperience(s,`market:buy-item:${vendor.id}:${item.id}`,3);
       return s;
     }
     case 'MARKET_SELL_ITEM':{
@@ -399,6 +406,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.economy.coins+=gain;
       s.economy.blackMarketFavor=Math.min(100,s.economy.blackMarketFavor+1);
       s.lastEvent=`我把「${item.name}」賣給「${vendor.name}」，得到 ${gain} 枚舊幣。`;
+      awardExperience(s,`market:sell-item:${vendor.id}:${item.id}`,3);
       return s;
     }
     case 'MARKET_SELL':{
@@ -412,6 +420,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       owned.copies-=1;s.economy.coins+=earnings;
       s.economy.blackMarketFavor=Math.min(100,s.economy.blackMarketFavor+(card.rarity==='normal'?2:5));
       s.lastEvent=`黑市收下了「${card.name}」重複卡，支付 ${earnings} 枚舊幣。`;
+      awardExperience(s,`market:sell-card:${vendor.id}:${card.id}`,3);
       return s;
     }
     case 'MARKET_BUY':{
@@ -425,11 +434,13 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.economy.coins-=price;s.economy.marketPurchases+=1;
       s.ownedCards[action.cardId]!.copies+=1;
       s.lastEvent=`我花了 ${price} 枚舊幣取得「${card.name}」重複卡。這筆錢本來可以換很多補給。`;
+      awardExperience(s,`market:buy-card:${vendor.id}:${card.id}`,3);
       return s;
     }
     case 'TOWN_SERVICE':{
       const result=applyTownService(s,action.serviceId,action.attribute,action.itemId);
       if(!result)return state;
+      awardExperience(s,`town:${action.serviceId}`,6);
       const restorative=['rest_cot','rest_private','rest_short','clinic_illness','bath','wash_clothes'].includes(action.serviceId);
       advanceTime(s,result.minutes,restorative);
       return s;
@@ -441,6 +452,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       town.quests[quest.id]='accepted';
       s.lastEvent=`我接下了「${quest.title}」。完成條件後，再回公告欄交付即可。`;
       s.log.push(`承接委託：${quest.title}`);
+      awardExperience(s,`quest:accept:${quest.id}`,8);
       return s;
     }
     case 'TOWN_COMPLETE_QUEST':{
@@ -461,16 +473,20 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.player.attributes[quest.rewardAttribute]=Math.min(20,s.player.attributes[quest.rewardAttribute]+1);
       s.lastEvent=quest.ending+` 得到 ${quest.rewardCoins} 舊幣及一項永久屬性成長。`;
       s.log.push(`委託完成：「${quest.title}」。`);
+      awardExperience(s,`quest:complete:${quest.id}`,22);
       advanceTime(s,10);
       return s;
     }
     case 'REST_TOWN':{
-      if(s.mode==='adventure'||s.economy.coins<15)return state;
-      s.economy.coins-=15;advanceTime(s,120,true);
-      s.player.stamina=clamp(s.player.stamina+35,0,s.player.maxStamina);
-      s.player.health=clamp(s.player.health+12,1,s.player.maxHealth);
-      s.player.fatigue=clamp(s.player.fatigue-22,0,100);
-      s.lastEvent='我在城鎮的一角休息了兩小時，總算恢復了一點精神。';
+      const result=applyTownService(s,'rest_cot');
+      if(!result)return state;
+      awardExperience(s,'town:rest_cot',6);
+      advanceTime(s,result.minutes,true);
+      return s;
+    }
+    case 'ALLOCATE_POINT':{
+      if(!allocatePoint(s,action.attribute))return state;
+      s.lastEvent='我將升級獲得的一點能力點數投入了永久屬性。';
       return s;
     }
     case 'EQUIP_ITEM':{
@@ -544,14 +560,15 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if((s.bag[action.itemId]??0)<=0)return state;
       if(action.itemId==='biscuit'||action.itemId==='canned'){
         s.player.hunger=clamp(s.player.hunger-20,0,100);
-        s.player.stamina=clamp(s.player.stamina+5,0,s.player.maxStamina);
+        s.player.stamina=clamp(s.player.stamina+1,0,s.player.maxStamina);
       }else if(action.itemId==='water'){
-        s.player.stamina=clamp(s.player.stamina+7,0,s.player.maxStamina);
+        s.player.stamina=clamp(s.player.stamina+2,0,s.player.maxStamina);
       }else if(action.itemId==='firstaid'||action.itemId==='bandage'){
         s.player.health=clamp(s.player.health+(action.itemId==='firstaid'?20:8),0,s.player.maxHealth);
       }else return state;
       s.bag[action.itemId]=(s.bag[action.itemId]??0)-1;if(s.bag[action.itemId]===0)delete s.bag[action.itemId];
       s.lastEvent=`我使用了「${ITEMS[action.itemId]!.name}」，感覺稍微好一些。`;
+      awardExperience(s,`use:${action.itemId}`,1);
       advanceTime(s,3);
       return s;
     }

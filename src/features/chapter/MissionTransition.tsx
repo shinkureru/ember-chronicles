@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import EnemyPresence from './EnemyPresence';
 export type MissionTransitionKind='entry'|'enemy'|'victory'|'defeat'|'retreat';
-export const TRANSITION_DURATION:Record<MissionTransitionKind,number>={entry:2500,enemy:3400,victory:3800,defeat:3600,retreat:3000};
+/** No timeout for defeat. The player must explicitly press the exit button. */
+export const TRANSITION_DURATION:Record<MissionTransitionKind,number|null>={entry:2500,enemy:3400,victory:3800,defeat:null,retreat:3000};
 export default function MissionTransition({
  kind,enemyName,onFinish,summary,stageId=1
 }:{
@@ -10,8 +11,9 @@ export default function MissionTransition({
  const finishRef=useRef(onFinish);
  useEffect(()=>{finishRef.current=onFinish},[onFinish]);
  useEffect(()=>{
-  if(kind==='defeat')return; // Only the player may dismiss the defeat result.
-  const timer=window.setTimeout(()=>finishRef.current(),TRANSITION_DURATION[kind]);
+  const duration=TRANSITION_DURATION[kind];
+  if(duration===null)return;
+  const timer=window.setTimeout(()=>finishRef.current(),duration);
   return()=>window.clearTimeout(timer);
  },[kind]);
  const completed=kind==='victory'||kind==='defeat'||kind==='retreat';

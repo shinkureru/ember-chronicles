@@ -51,7 +51,7 @@ describe('v0.8 limited repeatable scavenging',()=>{
   expect(getVisibleActions(s).some(a=>a.id==='loot_exit')).toBe(true);
  });
  it('keeps persistent NPC gear distinct from each attempt’s search allowances',()=>{
-  let s=makeInitialState('journalist');s.mode='adventure';s.attempt=1;s.sceneId='loot';
+  let s=makeInitialState('journalist');s.mode='adventure';s.attempt=1;s.sceneId='loot';s.flags.push('won_by_combat');s.enemy.health=0;
   s=gameReducer(s,{type:'CHOOSE',choiceId:'loot_gear',skillId:null});
   expect(s.npc.stolenGear.length).toBe(1);
   expect(remainingSearches(s,'npcGear')).toBe(2);

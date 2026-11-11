@@ -5,7 +5,7 @@ import type { SoundscapeId } from './soundscapes';
  * See docs/V15_MUSIC_LICENSES.md for original upstream evidence and links. */
 export const LICENSED_TRACKS={
  darkShrine:{filename:'oga-dark-shrine.ogg',title:'Dark Shrine Loop',author:'qubodup (based on yd)',source:'https://opengameart.org/content/dark-shrine-loop',license:'CC0-1.0'},
- cityPulse:{filename:'busy-cyberworld.ogg',title:'Sci-fi City — Busy Cyberworld',author:'OpenGameArt CC0 contributor',source:'https://opengameart.org/content/scifi-city-ambient-loop',license:'CC0-1.0'},
+ cityPulse:{filename:'busy-cyberworld.ogg',title:'Sci-fi City — Busy Cyberworld',author:'TinyWorlds',source:'https://opengameart.org/content/scifi-city-ambient-loop',license:'CC0-1.0'},
  nightMenu:{filename:'qubodup-menu-loop.ogg',title:'Menu Music Loop (Tiggo)',author:'qubodup',source:'https://opengameart.org/content/two-simple-game-music-loops',license:'CC0-1.0'},
  battle:{filename:'qubodup-battle-loop.ogg',title:'Level Music Loop (Tigrun)',author:'qubodup',source:'https://opengameart.org/content/two-simple-game-music-loops',license:'CC0-1.0'},
  refuge:{filename:'wipics-menu-loop.ogg',title:'Menu Music',author:'wipics',source:'https://opengameart.org/content/menu-music-1',license:'CC0-1.0'},

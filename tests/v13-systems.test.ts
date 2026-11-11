@@ -43,8 +43,8 @@ describe('v1.3: anti-spam enemy counter',()=>{
   s.sceneId='confrontation';s.rngSeed=0;
   return s;
  };
- it('waits two seconds before windup, then throws and resolves hit once',()=>{
-  expect(COUNTER_PHASE_MS.waiting).toBe(2000);
+ it('waits half a second before windup, then throws and resolves hit once',()=>{
+  expect(COUNTER_PHASE_MS.waiting).toBe(500);
   const before=prepare();
   const after=gameReducer(before,{type:'CHOOSE',choiceId:'attack_pen_thrust',skillId:null});
   expect(after.enemyCounter?.phase).toBe('waiting');

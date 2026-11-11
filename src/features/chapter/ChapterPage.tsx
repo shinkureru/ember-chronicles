@@ -21,6 +21,7 @@ import AlleySceneArtwork from './AlleySceneArtwork';
 import ThoughtWhisper from './ThoughtWhisper';
 import MissionTransition, { type MissionTransitionKind } from './MissionTransition';
 import EnemyCounterProjectile from './EnemyCounterProjectile';
+import { DAMAGE_FEEDBACK_MS } from './combatFeedbackTiming';
 export default function ChapterPage(){
  const {state:s,dispatch}=useGame();
  const navigate=useNavigate();
@@ -78,7 +79,7 @@ export default function ChapterPage(){
    flightTimer.current=window.setTimeout(()=>{
     setCombatHold(true);setFlight(null);
     dispatchChoice();
-    afterTimer.current=window.setTimeout(()=>{setCombatHold(false);setExecuting(false)},2650);
+    afterTimer.current=window.setTimeout(()=>{setCombatHold(false);setExecuting(false)},DAMAGE_FEEDBACK_MS.enemyFallHold);
    },510);
    playCue('card');
   }else dispatchChoice();

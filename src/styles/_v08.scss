@@ -147,7 +147,7 @@
 .enemy-presence__damage{
  position:absolute;left:45%;top:24%;color:#ff5151;font:900 24px Inter,sans-serif;
  text-shadow:0 1px 1px #000,0 0 9px #000;
- animation:enemy-damage .9s ease-out both;
+ animation:enemy-damage 2.4s ease-out both;
 }
 @keyframes enemy-impact{
  0%,100%{transform:none;filter:drop-shadow(0 5px 8px #000)}
@@ -156,7 +156,7 @@
  40%{transform:translate(-6px,2px) rotate(-4deg)}
  60%{transform:translate(2px,0) rotate(1deg)}
 }
-@keyframes enemy-damage{0%{opacity:0;transform:translateY(8px) scale(.7)}30%{opacity:1;transform:translateY(-7px) scale(1.1)}100%{opacity:0;transform:translateY(-29px) scale(.9)}}
+@keyframes enemy-damage{0%{opacity:0;transform:translateY(8px) scale(.7)}12%{opacity:1;transform:translateY(-7px) scale(1.1)}86%{opacity:1;transform:translateY(-19px) scale(1)}100%{opacity:0;transform:translateY(-24px) scale(.98)}}
 .combat-projectile{
  position:fixed;z-index:120;pointer-events:none;width:64px;height:86px;
  transform:translate(-50%,-50%);color:#e0e0e0;

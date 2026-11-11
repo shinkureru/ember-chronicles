@@ -7,7 +7,7 @@
 1. **PR #19** `feature/v1.7-build-combat-inn-qa`，依據 `docs/V17_QUALITY_AND_COMBAT.md`：頁首顯示版號及 GitHub 部署 Commit 短碼；出租床位預覽視窗 Portal 修復（滿 HP/體力仍可打開）；戰敗結果由玩家手動離開；敵方反擊等待 0.5 秒；敵方開始戰鬥前的 20 種 10 秒間隔嘲諷。https://github.com/shinkureru/ember-chronicles/pull/19
 2. **PR #20** `feature/v1.7-clinic-field-bag`，依據 `docs/V171_CLINIC_FIELD_BAG.md`：地下診所自製場景、療程預覽、每日任務與好感、四種專賣藥品；任務中打開背包、使用補給、換裝和物品可用性限制。https://github.com/shinkureru/ember-chronicles/pull/20
 
-**合併依賴：** PR #20 是建立在 PR #19 的分支上。**先合併 #19 再把 #20 的 Base 由 feature branch 改為 main**，重新檢查無衝突及 GitHub Actions 全部成功後才能合併 #20；避免單獨提前將 #20 合到 main。
+**合併依賴：** PR #20 是建立在 PR #19 的分支上。**PR #20 目前以 main 為 Base 以啟動 CI，故在 #19 合併之前會暫時顯示兩批變更；必須先合併 #19 再合併 #20**，並在主分支更新後重新確認 GitHub Actions 與合併狀態；避免單獨提前將 #20 合到 main。
 
 **授權與美術：** BGM 仍由使用者自行選擇，傳入實際音檔及原作者授權網址才能納入，不要把下載免費視為 CC0。人物原創故事留待使用者提交，不擅自編寫。
 

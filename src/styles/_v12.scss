@@ -50,7 +50,7 @@
  position:absolute;left:50%;bottom:21%;transform:translateX(-50%);
  font:900 clamp(18px,5vw,26px) 'Noto Sans TC',sans-serif;
  color:#efeeee;text-shadow:0 0 12px #000,0 2px 7px #000;
- white-space:nowrap;opacity:0;animation:counter-text 1.1s ease both;
+ white-space:nowrap;opacity:0;animation:counter-text 2.65s ease both;
 }
 .enemy-counter--hit .enemy-counter__text{color:#ff8e97}
 @keyframes counter-camera-throw{
@@ -68,7 +68,7 @@
 }
 @keyframes counter-speed{15%{opacity:.8}75%{opacity:.4}100%{opacity:0}}
 @keyframes counter-impact-vignette{0%,45%{opacity:0}65%{opacity:.8}100%{opacity:0}}
-@keyframes counter-text{0%,50%{opacity:0}70%{opacity:1}100%{opacity:0}}
+@keyframes counter-text{0%,16%{opacity:0}23%,91%{opacity:1}100%{opacity:0}}
 
 /* Enemy portrait is permanently BEHIND title and spoken text. */
 .mission-cinematic--entry .mission-cinematic__entry{animation:mission-arrive-v12 2.5s ease both}

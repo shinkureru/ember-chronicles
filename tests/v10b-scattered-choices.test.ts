@@ -29,6 +29,8 @@ describe('v1.0-b unlimited horizontal choice rail',()=>{
  it('actual story choices may exceed four without losing required progression paths',()=>{
   for(const scene of ['gate','survey','inside','confrontation','loot'] as const){
    const s=makeInitialState('journalist');s.mode='adventure';s.attempt=3;s.sceneId=scene;
+   // Enemy-only loot is legal only in a real combat takedown.
+   if(scene==='loot'){s.flags.push('won_by_combat');s.enemy.health=0;}
    const actions=getVisibleActions(s);
    expect(actions.length).toBeGreaterThan(4);
    expect(new Set(actions.map(a=>a.id)).size).toBe(actions.length);

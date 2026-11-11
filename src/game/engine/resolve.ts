@@ -5,6 +5,7 @@ import { applyTownService,ensureTownProgress,ensureConditions } from './townActi
 import type { AttributeId } from '../types';
 import { CARDS, getUpgradeRequirement } from '../data/cards';
 import { ATTACK_CARDS, attackStatus, getAttackDamage, MAX_ATTACK_DECK, makeInitialEnemy } from '../data/attacks';
+import { rememberCombatDefeat } from '../data/npcDefeatMemory';
 import { ITEMS, LOOT_POOLS, INITIAL_NPC_GEAR } from '../data/items';
 import { calculateActionPreview, bagWeight, getVisibleActions, isSkillCompatible, retreatPreview, clamp } from './rules';
 import { makeInitialState } from '../state/initial';
@@ -295,6 +296,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
           s.enemy.health=clamp(s.enemy.health-damage,0,s.enemy.maxHealth);
           s.lastEvent=`我用「${cardName}」命中對方，造成 ${damage} 點傷害；對方剩下 ${s.enemy.health}/${s.enemy.maxHealth} 生命。`;
           if(s.enemy.health===0){
+            rememberCombatDefeat(s,choice.attackCardId);
             s.flags=Array.from(new Set([...s.flags,'won_by_combat']));
             s.sceneId='loot';
             s.lastEvent+=' 對方倒在地上，終於失去抵抗能力。';

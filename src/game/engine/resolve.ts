@@ -1,4 +1,6 @@
 import { getScheduledVendorId } from '../data/marketSchedule';
+import { CLINIC_SUPPLIES,clinicBuyBlock,clinicUnitPrice,clinicQuestBlock,ensureClinicProgress,getClinicQuest } from './clinic';
+import { previewConsumable } from './consumables';
 import { awardExperience,allocatePoint } from './progression';
 import { TOWN_QUESTS, townQuestReady } from '../data/town';
 import { applyTownService,ensureTownProgress,ensureConditions } from './townActions';
@@ -36,6 +38,9 @@ export type GameAction =
   | {type:'ALLOCATE_POINT';attribute:AttributeId}
   | {type:'REST_TOWN'}
   | {type:'TOWN_SERVICE';serviceId:string;attribute?:AttributeId;itemId?:string}
+  | {type:'CLINIC_BUY_ITEM';itemId:string}
+  | {type:'CLINIC_ACCEPT_DAILY'}
+  | {type:'CLINIC_COMPLETE_DAILY'}
   | {type:'TOWN_ACCEPT_QUEST';questId:string}
   | {type:'TOWN_COMPLETE_QUEST';questId:string}
   | {type:'EQUIP_ITEM';slot:string;itemId:string}
@@ -448,6 +453,50 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       advanceTime(s,result.minutes,restorative);
       return s;
     }
+    case 'CLINIC_BUY_ITEM':{
+      if(clinicBuyBlock(s,action.itemId))return state;
+      const item=CLINIC_SUPPLIES.find(x=>x.id===action.itemId)!;
+      const price=clinicUnitPrice(s,item.id);
+      ensureTownProgress(s);
+      const clinic=ensureClinicProgress(s);
+      const stockKey=`${s.world.day}:${item.id}`;
+      s.economy.coins-=price;
+      clinic.purchases[stockKey]=(clinic.purchases[stockKey]??0)+1;
+      s.bag[item.id]=(s.bag[item.id]??0)+1;
+      s.town!.visits.clinic=(s.town!.visits.clinic??0)+1;
+      s.lastEvent=`我向診所購買了「${ITEMS[item.id]?.name}」，花費 ${price} 枚舊幣。`;
+      awardExperience(s,`clinic:buy:${item.id}`,5);
+      advanceTime(s,5);
+      return s;
+    }
+    case 'CLINIC_ACCEPT_DAILY':{
+      if(clinicQuestBlock(s,false))return state;
+      ensureTownProgress(s);
+      const clinic=ensureClinicProgress(s),q=getClinicQuest(s);
+      clinic.acceptedDay=s.world.day;
+      s.lastEvent=`我接下診所今日委託「${q.title}」。`;
+      awardExperience(s,'clinic:accept-daily',4);
+      return s;
+    }
+    case 'CLINIC_COMPLETE_DAILY':{
+      if(clinicQuestBlock(s,true))return state;
+      ensureTownProgress(s);
+      const clinic=ensureClinicProgress(s),q=getClinicQuest(s);
+      let remaining:number=q.quantity;
+      for(const storage of [s.bag,s.warehouse]){
+        const qty=Math.min(remaining,storage[q.id]??0);
+        if(qty){storage[q.id]=(storage[q.id]??0)-qty;remaining-=qty;if(storage[q.id]===0)delete storage[q.id];}
+      }
+      if(remaining!==0)throw Error('clinic quest inventory mismatch');
+      clinic.completedDay=s.world.day;
+      clinic.favor=Math.min(30,clinic.favor+q.favor);
+      s.economy.coins+=q.coins;
+      s.town!.visits.clinic=(s.town!.visits.clinic??0)+1;
+      s.lastEvent=`我完成「${q.title}」，取得 ${q.coins} 舊幣，診所好感 +${q.favor}；藥品折扣改善了。`;
+      awardExperience(s,'clinic:complete-daily',14);
+      advanceTime(s,10);
+      return s;
+    }
     case 'TOWN_ACCEPT_QUEST':{
       if(s.mode!=='home')return state;
       const quest=TOWN_QUESTS.find(q=>q.id===action.questId),town=ensureTownProgress(s);
@@ -493,8 +542,8 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       return s;
     }
     case 'EQUIP_ITEM':{
-      if(s.mode==='adventure')return state;
-      const hasBag=(s.bag[action.itemId]??0)>0,hasStock=(s.warehouse[action.itemId]??0)>0;
+      if(s.mode==='result'||s.mode==='adventure'&&s.enemyCounter)return state;
+      const hasBag=(s.bag[action.itemId]??0)>0,hasStock=s.mode==='home'&&(s.warehouse[action.itemId]??0)>0;
       if(!ITEMS[action.itemId]||(!hasBag&&!hasStock)||!EQUIPMENT_SLOTS.some(slot=>slot.id===action.slot&&slot.allowed.includes(action.itemId)))return state;
       if(Object.entries(s.equipment).some(([slot,id])=>slot!==action.slot&&id===action.itemId))return state;
       if(!hasBag){
@@ -507,14 +556,16 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if(previous&&!Object.values(s.equipment).includes(previous))s.protectedItems=s.protectedItems.filter(id=>id!==previous);
       if(!s.protectedItems.includes(action.itemId))s.protectedItems.push(action.itemId);
       s.lastEvent=`我將「${ITEMS[action.itemId]!.name}」指定為常用裝備。`;
+      if(s.mode==='adventure')advanceTime(s,2);
       return s;
     }
     case 'UNEQUIP_ITEM':{
-      if(s.mode==='adventure')return state;
+      if(s.mode==='result'||s.mode==='adventure'&&s.enemyCounter)return state;
       const id=s.equipment[action.slot];if(!id)return state;
       s.equipment[action.slot]=null;
       if(!Object.values(s.equipment).includes(id))s.protectedItems=s.protectedItems.filter(item=>item!==id);
       s.lastEvent='我卸下了常用裝備。';
+      if(s.mode==='adventure')advanceTime(s,2);
       return s;
     }
     case 'UPGRADE_CARD':{
@@ -560,17 +611,13 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.lastEvent=`我從倉庫領出了「${ITEMS[action.itemId]!.name}」。`;return s;
     }
     case 'USE_ITEM':{
-      if((s.bag[action.itemId]??0)<=0)return state;
-      if(action.itemId==='biscuit'||action.itemId==='canned'){
-        s.player.hunger=clamp(s.player.hunger-20,0,100);
-        s.player.stamina=clamp(s.player.stamina+1,0,s.player.maxStamina);
-      }else if(action.itemId==='water'){
-        s.player.stamina=clamp(s.player.stamina+2,0,s.player.maxStamina);
-      }else if(action.itemId==='firstaid'||action.itemId==='bandage'){
-        s.player.health=clamp(s.player.health+(action.itemId==='firstaid'?20:8),0,s.player.maxHealth);
-      }else return state;
-      s.bag[action.itemId]=(s.bag[action.itemId]??0)-1;if(s.bag[action.itemId]===0)delete s.bag[action.itemId];
-      s.lastEvent=`我使用了「${ITEMS[action.itemId]!.name}」，感覺稍微好一些。`;
+      if(s.mode==='result'||s.mode==='adventure'&&s.enemyCounter||(s.bag[action.itemId]??0)<=0)return state;
+      const preview=previewConsumable(s,action.itemId);
+      if(!preview?.canUse)return state;
+      s.player=preview.player;s.conditions=preview.conditions;
+      s.bag[action.itemId]=(s.bag[action.itemId]??0)-1;
+      if(s.bag[action.itemId]===0)delete s.bag[action.itemId];
+      s.lastEvent=`我使用了「${ITEMS[action.itemId]!.name}」：${preview.changes.map(x=>x.label+(x.amount>0?'+':'')+x.amount).join('、')}。`;
       awardExperience(s,`use:${action.itemId}`,1);
       advanceTime(s,3);
       return s;

@@ -59,7 +59,7 @@ describe('v1.5: town facilities are actually functional',()=>{
   let s=makeInitialState('journalist');s.player.health=2;s.conditions!.wounds=3;
   expect(getTownServiceLock(s,'clinic_wounds')).toBeNull();
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'clinic_wounds'});
-  expect(s.conditions?.wounds).toBe(1);expect(s.player.health).toBe(10);
+  expect(s.conditions?.wounds).toBe(1);expect(s.player.health).toBe(6);
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'clinic_wounds'});
   expect(s.conditions?.wounds).toBe(0);
   expect(getTownServiceLock(s,'clinic_wounds')).not.toBeNull();

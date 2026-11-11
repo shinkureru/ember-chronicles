@@ -34,6 +34,10 @@ export const ITEMS: Record<string, ItemDef> = {
   badge:{id:'badge',name:'訪客證',emoji:'🎫',type:'misc',weight:0.02,description:'不知道是否仍然有效。'},
   receipt:{id:'receipt',name:'褪色收據',emoji:'🧾',type:'misc',weight:0.01,description:'上面的金額似乎被人劃掉。'},
   handwarm:{id:'handwarm',name:'暖暖包',emoji:'🔥',type:'tool',weight:0.08,description:'低溫天氣下很有用。'},
+  sterile_bandage:{id:'sterile_bandage',name:'無菌敷料組',emoji:'🩹',type:'medical',weight:0.18,description:'診所專售的無菌敷料。包紮有效、減少外傷。'},
+  antiseptic_kit:{id:'antiseptic_kit',name:'抗感染處置包',emoji:'🧴',type:'medical',weight:0.35,description:'診所配製的清潔與抗感染套組。'},
+  antidote_injector:{id:'antidote_injector',name:'緊急解毒針',emoji:'💉',type:'medical',weight:0.12,description:'密封一次性注射器，解毒且恢復部分體力。'},
+  pain_relief:{id:'pain_relief',name:'鎮痛藥盒',emoji:'💊',type:'medical',weight:0.1,description:'診所專售的鎮痛錠，舒緩疼痛與疲勞。'},
   scarf:{id:'scarf',name:'舊羊毛圍巾',emoji:'🧣',type:'gear',weight:0.35,description:'厚實但略顯陳舊。'},
   rope:{id:'rope',name:'捆貨繩索',emoji:'🪢',type:'tool',weight:0.6,description:'倉庫常見的貨物固定工具。'},
 };

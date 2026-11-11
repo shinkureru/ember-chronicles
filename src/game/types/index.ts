@@ -54,6 +54,7 @@ export interface TownProgress {
  quests:Record<string,TownQuestStatus>;
  lastRestDay?:number;
  restsToday?:number;
+ clinic?:import('../engine/clinic').ClinicProgress;
 }
 export interface SurvivorConditions { wounds:number;infection:number;poisoning:number;illness:number }
 export interface NpcDefeatMemory {count:number;method:string;thought:string;effect:string}

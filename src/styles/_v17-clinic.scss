@@ -1,0 +1,61 @@
+/* v1.7 second batch: underground clinic and field inventory modal */
+.clinic-overlay,.field-bag-overlay{position:fixed;inset:0;z-index:600;display:grid;place-items:center;padding:10px;background:#040507dc;backdrop-filter:blur(6px)}
+.clinic-dialog,.field-bag-dialog{width:min(96vw,590px);max-height:94dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden;background:#11141a;color:#ede9e2;border:1px solid #776c73;border-radius:13px;box-shadow:0 15px 70px #000}
+.clinic-dialog__head,.field-bag-dialog>header{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:14px;border-bottom:1px solid #474850;flex:none}
+.clinic-dialog__head>div,.field-bag-dialog>header>div{flex:1}
+.clinic-dialog__head h2,.field-bag-dialog>header h2{font:700 20px/1.2 'Noto Serif TC',serif;margin:4px 0;display:flex;align-items:center;gap:8px}
+.clinic-dialog__head small,.field-bag-dialog>header small{font-size:9px;letter-spacing:1.1px;color:#b9adae}
+.clinic-dialog__head>button,.field-bag-dialog>header>button{width:34px;height:34px;display:grid;place-items:center;border:1px solid #675e64;background:#25242b;border-radius:6px;color:#eee}
+.clinic-dialog__scene{height:clamp(110px,22dvh,195px);position:relative;flex:none;overflow:hidden;border-bottom:1px solid #676365}
+.clinic-dialog__scene svg{width:100%;height:100%;display:block}
+.clinic-dialog__scene>span{position:absolute;bottom:8px;right:10px;left:10px;display:block;padding:6px 8px;background:#121317d6;border-radius:4px;color:#e6ddd6;font:11px/1.6 'Noto Serif TC',serif}
+.clinic-dialog__meta,.field-bag__status{display:flex;gap:9px;align-items:center;justify-content:space-between;padding:10px 13px;flex-wrap:wrap;border-bottom:1px solid #3d4048;color:#c6bbc1;font-size:11px}
+.clinic-dialog__meta strong,.field-bag__status span{display:flex;align-items:center;gap:3px}
+.clinic-dialog__tabs,.field-bag__tabs{padding:9px 12px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;border-bottom:1px solid #45434a;flex:none}
+.field-bag__tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.clinic-dialog__tabs button,.field-bag__tabs button{border:1px solid #56565e;background:#24242b;color:#c8c5c6;border-radius:6px;min-height:40px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px}
+.clinic-dialog__tabs button[aria-pressed=true],.field-bag__tabs button[aria-pressed=true]{color:#fff;border-color:#bba7a3;background:#514148}
+.clinic-dialog__content,.field-bag__content{padding:11px;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#66545d transparent}
+.clinic-dialog__cards,.field-bag__items,.field-bag__gear{display:grid;gap:8px}
+.clinic-dialog__card,.field-bag__item{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border:1px solid #454c53;background:#1b2228;padding:11px;border-radius:9px}
+.clinic-dialog__card>div,.field-bag__item>div{flex:1;min-width:150px;display:grid;gap:5px}
+.clinic-dialog__card strong,.field-bag__item strong{font-size:13px;color:#f1e6e2}
+.clinic-dialog__card small,.field-bag__item p{font-size:11px;color:#c0b6b6;line-height:1.6;margin:0}
+.clinic-dialog__card span:not(.clinic-dialog__item-art){display:inline-flex;align-items:center;gap:5px;font-size:10px;color:#dcc5ad}
+.clinic-dialog__card button,.field-bag__item button,.clinic-dialog__daily button,.field-bag__unequip{border:1px solid #a08b86;background:#c3a9a1;color:#1b1b1b;border-radius:6px;padding:8px;min-height:37px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:4px}
+.clinic-dialog__card button:disabled,.field-bag__item button:disabled,.clinic-dialog__daily button:disabled,.field-bag__unequip:disabled{opacity:.35;cursor:not-allowed}
+.clinic-dialog__hint{width:100%;color:#e5a99f!important;border-top:1px solid #51464c;padding-top:5px}
+.clinic-dialog__item-art,.field-bag__art{font-size:42px;display:flex;align-items:center;justify-content:center;width:58px;height:62px;flex:none;border:1px solid #5d656c;background:#252e35;border-radius:7px}
+.clinic-dialog__daily{display:grid;gap:11px;padding:14px;background:#1e242b;border:1px solid #565058;border-radius:9px}
+.clinic-dialog__kicker{font-size:10px;letter-spacing:2px;color:#cbb1a9}
+.clinic-dialog__daily h3{font:700 20px 'Noto Serif TC',serif;margin:0}
+.clinic-dialog__daily p{font-size:12px;line-height:1.8;color:#cac4c1;margin:0}
+.clinic-dialog__reward{display:flex;align-items:center;gap:7px;color:#ecd2b0!important;flex-wrap:wrap}
+.clinic-dialog__daily>small{font-size:10px;color:#b9b1b0}
+.clinic-dialog__last,.field-bag__last{font-size:11px;line-height:1.5;color:#d9c5be;padding:8px 12px;background:#2b242a;border-top:1px solid #554d51;max-height:65px;overflow-y:auto;margin:0}
+.clinic-dialog>footer,.field-bag-dialog>footer{flex:none;padding:9px 13px;border-top:1px solid #424248;display:flex;justify-content:flex-end}
+.clinic-dialog>footer button,.field-bag-dialog>footer button{min-height:37px;padding:7px 16px;border:1px solid #877577;background:#343037;border-radius:6px;color:#f2e9e7;font-size:12px}
+.town-clinic-entrance{width:100%;display:flex;align-items:center;gap:9px;justify-content:space-between;color:#f4e4d9;background:#3d3038;border:1px solid #a18c8c;border-radius:8px;padding:15px 12px;font-size:12px;text-align:left}
+.field-bag__locked{display:flex;gap:6px;align-items:center;margin:0;padding:10px 12px;background:#4a2930;color:#f1b7b1;font-size:11px;line-height:1.5}
+.field-bag__slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.field-bag__slots button{display:grid;gap:5px;justify-items:start;border:1px solid #55535c;background:#222329;color:#dbd2d0;border-radius:7px;padding:8px;min-height:55px;text-align:left}
+.field-bag__slots button[aria-pressed=true]{border-color:#bea0a3;background:#47343e}
+.field-bag__slots button small{font-size:10px;color:#c2acac}
+.field-bag__slots button strong{font-size:11px}
+.field-bag__gear>p,.field-bag__gear>small,.field-bag__items>p{font-size:11px;color:#bdb7b4;line-height:1.6;margin:4px}
+.field-bag__unequip{justify-self:start;background:#3a3339!important;color:#f0dcda!important}
+@media(max-width:400px){
+ .clinic-overlay,.field-bag-overlay{padding:5px}
+ .clinic-dialog,.field-bag-dialog{width:100%;max-height:98dvh;border-radius:8px}
+ .clinic-dialog__head h2,.field-bag-dialog>header h2{font-size:17px}
+ .clinic-dialog__scene{height:115px}
+ .clinic-dialog__tabs,.field-bag__tabs{padding:6px}
+ .clinic-dialog__tabs button,.field-bag__tabs button{font-size:10px}
+ .clinic-dialog__card,.field-bag__item{padding:8px;gap:6px}
+ .clinic-dialog__card>div,.field-bag__item>div{min-width:120px}
+ .clinic-dialog__item-art,.field-bag__art{font-size:32px;width:46px;height:49px}
+}
+
+/* The compact battle header now carries Backpack / Story / Settings. */
+.chapter-kicker__controls{display:flex;align-items:center;gap:7px;flex:none}
+@media(max-width:490px){.chapter-kicker__controls button{font-size:0;min-width:27px;justify-content:center;padding:3px}.chapter-kicker__controls button svg{width:17px;height:17px}}

@@ -9,6 +9,7 @@ import { TOWN_FACILITIES,TOWN_SERVICES,TOWN_QUESTS,isTownOpen,townKeeper,townQue
 import { getTownServiceLock,getTrainingFee } from '../../game/engine/townActions';
 import type { AttributeId,TownFacilityId } from '../../game/types';
 import InnRestDialog from './InnRestDialog';
+import ClinicDialog from './ClinicDialog';
 import {isRestService,remainingDailyRest,type RestServiceId} from '../../game/engine/innRest';
 
 const facilityIcons:Record<TownFacilityId,typeof BedDouble>={
@@ -23,6 +24,7 @@ export default function TownPage(){
  const {state:s,dispatch}=useGame();
  const [facility,setFacility]=useState<TownFacilityId>('inn');
  const [restDialog,setRestDialog]=useState<RestServiceId|null>(null);
+ const [clinicOpen,setClinicOpen]=useState(false);
  const [attribute,setAttribute]=useState<AttributeId>('observation');
  const [selectedGear,setSelectedGear]=useState('');
  const active=TOWN_FACILITIES.find(x=>x.id===facility)!;
@@ -56,7 +58,7 @@ export default function TownPage(){
    {TOWN_FACILITIES.map(f=>{
     const TileIcon=facilityIcons[f.id],selected=facility===f.id,available=isTownOpen(f.id,s.world.minute);
     return <button type="button" key={f.id} className={`town-v15__tile ${selected?'is-active':''}`} aria-pressed={selected}
-     onClick={()=>{setFacility(f.id);playCue('select')}}>
+     onClick={()=>{setFacility(f.id);if(f.id==='clinic')setClinicOpen(true);playCue('select')}}>
      <span className="town-v15__tile-icon"><TileIcon size={21}/></span>
      <span className="town-v15__tile-text"><strong>{f.name}</strong><small>{available?'營業中':'已打烊'} · 到訪 {town?.visits[f.id]??0} 次</small></span>
      <ChevronRight size={14}/>
@@ -82,7 +84,7 @@ export default function TownPage(){
     </select>
     <small>改良需要一份工業膠帶或沾水電線。升級防具增加防禦，升級對應主手工具增加攻擊傷害。</small>
    </div>}
-   {facility==='noticeboard'?<div className="town-v15__quests">
+   {facility==='clinic'?<div className="town-v15__services"><button type="button" className="town-clinic-entrance" onClick={()=>setClinicOpen(true)}><HeartPulse size={18}/>進入地下診所 · 診療／每日委託／專屬藥房 <ChevronRight size={16}/></button></div>:facility==='noticeboard'?<div className="town-v15__quests">
      {TOWN_QUESTS.map(quest=>{
       const status=town?.quests[quest.id],ready=townQuestReady(s,quest);
       return <article className={`town-v15__quest ${status==='completed'?'is-done':''}`} key={quest.id}>
@@ -115,6 +117,7 @@ export default function TownPage(){
     {(town?.socialPoiseUntil??0)>townAbsoluteMinute(s)&&<p><Sparkles size={14}/>整潔儀容效果中：交涉成功率 +5%，剩餘 {town!.socialPoiseUntil-townAbsoluteMinute(s)} 遊戲分鐘。</p>}
     {s.lastEvent&&<p className="town-v15__latest"><BookText size={14}/>{s.lastEvent}</p>}
   </footer>
+  {clinicOpen&&<ClinicDialog onClose={()=>setClinicOpen(false)}/>}
   {restDialog&&<InnRestDialog serviceId={restDialog} onClose={()=>setRestDialog(null)}
    onConfirm={()=>{enact(restDialog);setRestDialog(null)}}/>}
  </div>;

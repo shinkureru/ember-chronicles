@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { DAMAGE_FEEDBACK_MS } from './combatFeedbackTiming';
 /** Always visible above the combat scene, with a hit response driven by committed HP. */
 export default function EnemyPresence({health,maxHealth,name,windup=false,variant='warehouse'}:{health:number;maxHealth:number;name:string;windup?:boolean;variant?:'warehouse'|'alley'}){
  const previous=useRef(health);
@@ -8,7 +9,7 @@ export default function EnemyPresence({health,maxHealth,name,windup=false,varian
    previous.current=health;
    if(damage<=0)return;
    setImpact({id:Date.now(),damage});
-   const timer=window.setTimeout(()=>setImpact(null),2400);
+   const timer=window.setTimeout(()=>setImpact(null),DAMAGE_FEEDBACK_MS.outgoing);
    return()=>window.clearTimeout(timer);
  },[health]);
  const injured=health<maxHealth;

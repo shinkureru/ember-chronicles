@@ -295,6 +295,16 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
         s.lastEvent+=' 對方正準備反擊，我得提防他接下來的動作。';
         return s;
       }
+      if(!isSuccess&&s.sceneId==='confrontation'&&!choice.attackCardId&&choice.tags.includes('talk')&&choice.successScene==='loot'){
+        // One failed negotiation transitions into combat. The enemy gets their regular
+        // wind-up/counter animation, not an instant "mission failed" popup.
+        s.flags=Array.from(new Set([...s.flags,'negotiation_rejected']));
+        const itemId=s.stageId===2?'wire_piece':'radio';
+        const rawDamage=itemId==='radio'?6:5;
+        s.enemyCounter={id:s.attempt*1000+s.log.length,itemId,damage:mitigateCounterDamage(rawDamage+Math.floor(npc.hostility/40),getEquippedDefense(s)),hit:true,phase:'waiting'};
+        s.lastEvent='交涉失敗。對方再也不肯聽我的解釋，已經準備動手。我要想辦法防禦或反擊。';
+        return s;
+      }
       if(isSuccess&&choice.lootSource){
         s.lastLoot=addLoot(s,choice.lootSource);
         // 裝備屬於同一個 NPC 的持久資產，取完前可以繼續拿

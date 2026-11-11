@@ -1,4 +1,6 @@
 import {BedDouble,HeartPulse,Clock3,Coins,X} from 'lucide-react';
+import {createPortal} from 'react-dom';
+import {useEffect} from 'react';
 import { useGame } from '../../app/GameContext';
 import { TOWN_SERVICES } from '../../game/data/town';
 import { previewInnRest,remainingDailyRest,type RestServiceId } from '../../game/engine/innRest';
@@ -7,10 +9,11 @@ import { getTownServiceLock } from '../../game/engine/townActions';
 export default function InnRestDialog({serviceId,onClose,onConfirm}:{serviceId:RestServiceId;onClose:()=>void;onConfirm:()=>void}){
  const {state:s}=useGame();
  const preview=previewInnRest(s,serviceId);
+ useEffect(()=>{const onEscape=(event:KeyboardEvent)=>{if(event.key==='Escape')onClose()};document.addEventListener('keydown',onEscape);return()=>document.removeEventListener('keydown',onEscape)},[onClose]);
  const service=TOWN_SERVICES.find(x=>x.id===serviceId)!;
  const blocked=getTownServiceLock(s,serviceId);
  const percent=(x:number,max:number)=>Math.round(x/Math.max(1,max)*100);
- return <div className="inn-rest-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
+ return createPortal(<div className="inn-rest-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
   <section className="inn-rest-dialog" role="dialog" aria-modal="true" aria-label="出租床位恢復預測">
    <header><BedDouble size={22}/><div><small>REST / PREVIEW</small><h3>{service.name}</h3></div>
     <button type="button" onClick={onClose} aria-label="關閉休息預覽"><X size={18}/></button></header>
@@ -30,5 +33,5 @@ export default function InnRestDialog({serviceId,onClose,onConfirm}:{serviceId:R
    {blocked&&<p className="inn-rest-blocked">{blocked}</p>}
    <footer><button type="button" onClick={onClose}>暫時不休息</button><button type="button" disabled={!!blocked} onClick={onConfirm}>確認休息</button></footer>
   </section>
- </div>;
+ </div>,document.body);
 }

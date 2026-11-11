@@ -103,7 +103,7 @@ export default function TownPage(){
         <div><strong>{service.name}</strong><p>{service.summary}</p>
          <small><Coins size={12}/> {fee} 舊幣 <Clock3 size={12}/> {service.minutes} 分鐘</small>
         </div>
-        <button type="button" disabled={!!reason} onClick={()=>isRestService(service.id)?setRestDialog(service.id):enact(service.id)}>{reason?<LockKeyhole size={15}/>:<ChevronRight size={17}/>}<span>{reason?'不可用':'執行'}</span></button>
+        <button type="button" disabled={!!reason&&!isRestService(service.id)} onClick={()=>isRestService(service.id)?setRestDialog(service.id):enact(service.id)}>{reason&&!isRestService(service.id)?<LockKeyhole size={15}/>:<ChevronRight size={17}/>}<span>{isRestService(service.id)?'預覽休息':reason?'不可用':'執行'}</span></button>
         {reason&&<p className="town-v15__reason"><Info size={12}/>{reason}</p>}
        </article>;
       })}

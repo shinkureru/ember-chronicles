@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useReducer,
 import { gameReducer, type GameAction } from '../game/engine/resolve';
 import { loadGame, saveGame } from '../game/state/storage';
 import type { GameState } from '../game/types';
+import { DAMAGE_FEEDBACK_MS } from '../features/chapter/combatFeedbackTiming';
 
 export const WORLD_TICK_REAL_MS=10000;
 export const WORLD_TICK_GAME_MINUTES=5;
@@ -37,7 +38,9 @@ export const GameProvider=({children}:PropsWithChildren)=>{
   const action:GameAction=phase==='waiting'?{type:'ENEMY_COUNTER_WINDUP'}:
    phase==='windup'?{type:'ENEMY_COUNTER_THROW'}:
    phase==='throwing'?{type:'ENEMY_COUNTER_HIT'}:{type:'ENEMY_COUNTER_FINISH'};
-  const timer=window.setTimeout(()=>dispatch(action),COUNTER_PHASE_MS[phase]);
+  // A fatal blow must finish showing the exact HP loss before the defeat cutscene.
+  const hold=phase==='hit'&&state.player.health<=0?DAMAGE_FEEDBACK_MS.lethalHitPause:COUNTER_PHASE_MS[phase];
+  const timer=window.setTimeout(()=>dispatch(action),hold);
   return()=>window.clearTimeout(timer);
  },[state.mode,state.enemyCounter?.id,state.enemyCounter?.phase]);
  const value=useMemo(()=>({state,dispatch,pauseClock}),[state,pauseClock]);

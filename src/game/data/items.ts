@@ -21,7 +21,7 @@ export const ITEMS: Record<string, ItemDef> = {
   biscuit:{id:'biscuit',name:'乾糧餅乾',emoji:'🍪',type:'food',weight:0.15,description:'容易攜帶的補給。'},
   canned:{id:'canned',name:'罐頭食品',emoji:'🥫',type:'food',weight:0.4,description:'可以保存一段時間的食物。'},
   firstaid:{id:'firstaid',name:'簡易急救包',emoji:'🩹',type:'medical',weight:0.65,description:'用於處理小型傷勢。'},
-  bandage:{id:'bandage',name:'繃帶',emoji:'🩺',type:'medical',weight:0.1,description:'常見的傷口護理用品。'},
+  bandage:{id:'bandage',name:'繃帶',emoji:'🩹',type:'medical',weight:0.1,description:'常見的傷口護理用品。'},
   tape:{id:'tape',name:'工業膠帶',emoji:'🧵',type:'tool',weight:0.2,description:'在維修與簡單固定時有用。'},
   batteries:{id:'batteries',name:'備用電池',emoji:'🔋',type:'tool',weight:0.18,description:'可用於一般電池設備。'},
   screwdriver:{id:'screwdriver',name:'十字螺絲起子',emoji:'🪛',type:'tool',weight:0.22,description:'一般維修工具。'},

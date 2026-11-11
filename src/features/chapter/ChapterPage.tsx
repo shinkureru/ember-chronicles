@@ -4,7 +4,7 @@ import { NavLink, Navigate, useNavigate } from 'react-router-dom';
 import { useGame } from '../../app/GameContext';
 import Hud from '../../components/Hud';
 import { getSceneContent, getVisibleActions, calculateActionPreview, worldPhase, worldPhaseToken, isSkillCompatible } from '../../game/engine/rules';
-import type { ActionChoice } from '../../game/types';
+import type { ActionChoice, GameState } from '../../game/types';
 import ActionDecision from './ActionDecision';
 import SkillHand from './SkillHand';
 import SkillComparison from './SkillComparison';
@@ -21,6 +21,7 @@ import AlleySceneArtwork from './AlleySceneArtwork';
 import ThoughtWhisper from './ThoughtWhisper';
 import MissionTransition, { type MissionTransitionKind } from './MissionTransition';
 import EnemyCounterProjectile from './EnemyCounterProjectile';
+import { DAMAGE_FEEDBACK_MS } from './combatFeedbackTiming';
 export default function ChapterPage(){
  const {state:s,dispatch}=useGame();
  const navigate=useNavigate();
@@ -39,6 +40,7 @@ export default function ChapterPage(){
  const [flight,setFlight]=useState<AttackFlight|null>(null);
  const [executing,setExecuting]=useState(false);
  const [combatHold,setCombatHold]=useState(false);
+ const [lastStrike,setLastStrike]=useState<GameState['enemyStrike']>(null);
  const [cinematic,setCinematic]=useState<MissionTransitionKind|null>(()=>s.mode==='adventure'&&s.sceneId==='gate'?'entry':null);
  const lastScene=useRef(s.sceneId);
  useEffect(()=>{
@@ -58,6 +60,9 @@ export default function ChapterPage(){
  useEffect(()=>{setChosenId(null);setSkillId(null);setShowHand(false);setConfirmLootExit(false);},[s.sceneId,s.attempt]);
 
  useEffect(()=>()=>{if(flightTimer.current!==null)window.clearTimeout(flightTimer.current);if(afterTimer.current!==null)window.clearTimeout(afterTimer.current);},[]);
+ // Preserve the on-screen damage number after the reducer clears its short attack phase.
+ useEffect(()=>{if(s.enemyStrike)setLastStrike(s.enemyStrike);},[s.enemyStrike?.id]);
+ useEffect(()=>setLastStrike(null),[s.attempt,s.stageId]);
  const performUse=(origin:{x:number;y:number},choice:ActionChoice,chosenSkill:string|null)=>{
   if(executing||s.enemyCounter)return;
   const dispatchChoice=()=>{
@@ -74,7 +79,7 @@ export default function ChapterPage(){
    flightTimer.current=window.setTimeout(()=>{
     setCombatHold(true);setFlight(null);
     dispatchChoice();
-    afterTimer.current=window.setTimeout(()=>{setCombatHold(false);setExecuting(false)},1750);
+    afterTimer.current=window.setTimeout(()=>{setCombatHold(false);setExecuting(false)},DAMAGE_FEEDBACK_MS.enemyFallHold);
    },510);
    playCue('card');
   }else dispatchChoice();
@@ -150,7 +155,7 @@ export default function ChapterPage(){
       <button className="primary-button primary-button--full game-sheet__confirm" onClick={()=>{setShowHand(false);playCue('confirm')}}>確認附加 · 返回行動卡</button>
     </div>
   </div>}
-  {s.enemyStrike&&s.enemyCounter&&s.sceneId==='confrontation'&&<EnemyCounterProjectile key={s.enemyStrike.id} strike={s.enemyStrike}/>}
+  {lastStrike&&s.sceneId==='confrontation'&&<EnemyCounterProjectile key={lastStrike.id} strike={lastStrike}/>}
   <ThoughtWhisper state={s} paused={!!cinematic||showStory||showHand||showSettings||showRetreat||skillPrompt||confirmLootExit}/>
   {cinematic&&<MissionTransition kind={cinematic} enemyName={s.enemy.name} stageId={s.stageId??1} onFinish={()=>setCinematic(null)}/>}
   {flight&&<AttackProjectile flight={flight}/>}

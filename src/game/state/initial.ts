@@ -7,8 +7,8 @@ import type { GameState, ProfessionId } from '../types';
 export const makeInitialState=(profession:ProfessionId|null=null):GameState=>{
   const deck=profession?STARTER_CARDS[profession]:[];
   return {
-    version:1,mode:'home',profession,
-    player:{health:100,maxHealth:100,stamina:80,maxStamina:80,courage:55,hunger:20,fatigue:12,temperature:36.5,resource:6,maxResource:6,attributes:{...INITIAL_ATTRIBUTES}},
+    version:1,hpRulesVersion:2,mode:'home',profession,
+    player:{health:10,maxHealth:10,stamina:80,maxStamina:80,courage:55,hunger:20,fatigue:12,temperature:36.5,resource:6,maxResource:6,attributes:{...INITIAL_ATTRIBUTES}},
     world:{minute:16*60+20,day:1,weather:'clear'},
     town:{visits:{},lastTrainingDay:0,lastRumorDay:0,lastCanteenTalkDay:0,socialPoiseUntil:0,upgrades:{},wear:{},quests:{}},
     conditions:{wounds:0,infection:0,poisoning:0,illness:0},

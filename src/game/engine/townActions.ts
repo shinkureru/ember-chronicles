@@ -89,7 +89,7 @@ export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,item
   case 'train':{
    town.lastTrainingDay=s.world.day;
    p.attributes[attribute!]+=1;
-   if(attribute==='maxHealth'){p.maxHealth+=5;p.health=restore(p.health,5,p.maxHealth);}
+   if(attribute==='maxHealth'){p.maxHealth+=1;p.health=restore(p.health,1,p.maxHealth);}
    if(attribute==='maxStamina'){p.maxStamina+=4;p.stamina=restore(p.stamina,4,p.maxStamina);}
    message=`今天我專心練習了一項能力。「${attribute}」永久提升至 ${p.attributes[attribute!]}，明天才能再訓練。`;break;
   }

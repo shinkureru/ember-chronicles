@@ -84,7 +84,7 @@ const specialtyBonus=(state:GameState,tags:ActionTag[]) => {
 const attributeBonus=(state:GameState,tags:ActionTag[])=>{
   const attr=state.player.attributes;
   const relevant=tags.includes('run')?'mobility':tags.includes('talk')?'persuasion':tags.includes('search')||tags.includes('observe')?'observation':tags.includes('sneak')?'adaptability':tags.includes('fight')?'melee':'resilience';
-  return Math.round((attr[relevant]-10)*0.8);
+  return Math.round(attr[relevant]*0.8);
 };
 const adaptationKey=(tags:ActionTag[])=>
   tags.includes('talk')?'talk':tags.includes('sneak')?'sneak':tags.includes('run')?'run':tags.includes('fight')?'fight':'observe';
@@ -92,7 +92,10 @@ export const calculateActionPreview=(state:GameState,choice:ActionChoice,skillId
   const skill=skillId?CARDS[skillId]:undefined;
   const validSkill=skill&&isSkillCompatible(choice,skill)&&state.hand.includes(skill.id)&&state.player.resource>=skill.resourceCost?skill:undefined;
   const skillLevel=validSkill?(state.ownedCards[validSkill.id]?.level??1):1;
-  const staminaCost=Math.max(0,choice.staminaCost-(validSkill?.staminaSaved??0)-(validSkill&&validSkill.staminaSaved?Math.floor((skillLevel-1)/2):0));
+  // Story/action cards were authored against an 80-point stamina pool. Convert
+  // after the skill discount so 10-point characters retain several meaningful turns.
+  const originalCost=Math.max(0,choice.staminaCost-(validSkill?.staminaSaved??0)-(validSkill&&validSkill.staminaSaved?Math.floor((skillLevel-1)/2):0));
+  const staminaCost=Math.ceil(originalCost/8);
   const courageDelta=choice.courageDelta+(validSkill?.courageSaved??0)+(validSkill&&validSkill.courageSaved?Math.floor((skillLevel-1)/2):0);
   const projectedStamina=clamp(state.player.stamina-staminaCost,0,state.player.maxStamina);
   const projectedCourage=clamp(state.player.courage+courageDelta,0,100);
@@ -119,7 +122,7 @@ export const calculateActionPreview=(state:GameState,choice:ActionChoice,skillId
   const warnings:ActionPreview['warnings']=[];
   if(!weaponAvailable)warnings.push({title:'缺少所需武器',detail:'對應物品尚未放進背包，無法使用這張攻擊牌。',remedy:'可在關卡內取得武器，或回據點從倉庫備妥。'});
   if(projectedCourage<40&&state.player.courage>=40)warnings.push({title:'膽量將跌破 40',detail:'可能進入「畏縮」狀態，面對威嚇類事件時較不利。',remedy:'可透過休息、情緒安撫或完成勇氣事件恢復。'});
-  if(projectedStamina<=10&&state.player.stamina>10)warnings.push({title:'體力即將見底',detail:'後續逃跑及衝刺會較不容易成功。',remedy:'可返回安全地點休息或使用補給。'});
+  if(projectedStamina<=Math.ceil(state.player.maxStamina*.2)&&state.player.stamina>Math.ceil(state.player.maxStamina*.2))warnings.push({title:'體力即將見底',detail:'後續逃跑及衝刺會較不容易成功。',remedy:'可返回安全地點休息或使用補給。'});
   if(state.player.fatigue>=70)warnings.push({title:'疲勞偏高',detail:'部分需要集中注意力的行動成功率降低。',remedy:'可以在安全地點休息。'});
   return {chance,staminaCost,courageDelta,minutes:choice.minutes,resourceCost:validSkill?.resourceCost??0,projectedStamina,projectedCourage,warnings,
     damage:choice.attackCardId&&weaponAvailable?getAttackDamage(state,choice.attackCardId):undefined,
@@ -130,9 +133,9 @@ export const bagWeight=(bag:Record<string,number>):number=>
 export const remainingWarehouseCapacity=(s:GameState)=>Math.max(0,s.warehouseCapacity-bagWeight(s.warehouse));
 export const retreatPreview=(state:GameState)=>{
   const excess=Math.max(0,bagWeight(state.bag)-10);
-  const lowStamina=state.player.stamina<25?16:0;
+  const lowStamina=state.player.stamina<Math.ceil(state.player.maxStamina*.3)?16:0;
   const speed=state.profession==='courier'?12:state.profession==='infiltrator'?8:0;
   const sceneRisk=state.sceneId==='confrontation'?18:state.sceneId==='loot'?5:0;
-  const chance=Math.round(clamp(64+speed+Math.round((state.player.attributes.mobility-10)*0.8)-lowStamina-Math.ceil(excess*3)-sceneRisk+Math.min(8,state.clues.length*2),5,95));
-  return {chance,staminaCost:6,courageLoss:state.sceneId==='gate'?6:3,minutes:8};
+  const chance=Math.round(clamp(64+speed+Math.round(state.player.attributes.mobility*0.8)-lowStamina-Math.ceil(excess*3)-sceneRisk+Math.min(8,state.clues.length*2),5,95));
+  return {chance,staminaCost:1,courageLoss:state.sceneId==='gate'?6:3,minutes:8};
 };

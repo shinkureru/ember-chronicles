@@ -64,3 +64,29 @@ export const clinicTreatmentPreview=(s:GameState,id:string)=>{
  return {fee,health,stamina,fatigue,wounds,infection,poisoning,illness,
   resultingHealth:clamp(p.health+health,0,p.maxHealth),resultingStamina:clamp(p.stamina+stamina,0,p.maxStamina)};
 };
+
+
+export type ClinicOutcomeKey='health'|'stamina'|'fatigue'|'wounds'|'infection'|'poisoning'|'illness';
+export interface ClinicTreatmentOutcome{
+ key:ClinicOutcomeKey;
+ label:string;
+ before:number;
+ after:number;
+ max?:number;
+}
+/** Read-only post-treatment projection, derived from the SAME preview used by
+ * the TOWN_SERVICE reducer. Never deducts coins or changes the active save. */
+export const clinicTreatmentOutcomes=(s:GameState,id:string):ClinicTreatmentOutcome[]=>{
+ const preview=clinicTreatmentPreview(s,id);
+ const p=s.player,c=s.conditions??{wounds:0,infection:0,poisoning:0,illness:0};
+ const all:ClinicTreatmentOutcome[]=[
+  {key:'health',label:'生命 HP',before:p.health,after:preview.resultingHealth,max:p.maxHealth},
+  {key:'stamina',label:'體力 ST',before:p.stamina,after:preview.resultingStamina,max:p.maxStamina},
+  {key:'fatigue',label:'疲勞',before:p.fatigue,after:clamp(p.fatigue+preview.fatigue,0,100)},
+  {key:'wounds',label:'外傷',before:c.wounds,after:clamp(c.wounds+preview.wounds,0,100)},
+  {key:'infection',label:'感染',before:c.infection,after:clamp(c.infection+preview.infection,0,100)},
+  {key:'poisoning',label:'中毒',before:c.poisoning,after:clamp(c.poisoning+preview.poisoning,0,100)},
+  {key:'illness',label:'疾病',before:c.illness,after:clamp(c.illness+preview.illness,0,100)},
+ ];
+ return all.filter(outcome=>outcome.after!==outcome.before);
+};

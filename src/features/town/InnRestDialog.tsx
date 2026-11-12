@@ -5,11 +5,13 @@ import { useGame } from '../../app/GameContext';
 import { TOWN_SERVICES } from '../../game/data/town';
 import { previewInnRest,remainingDailyRest,type RestServiceId } from '../../game/engine/innRest';
 import { getTownServiceLock } from '../../game/engine/townActions';
+import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
 
 const BED_OPTIONS:RestServiceId[]=['rest_cot','rest_private','rest_short'];
 export default function InnRestDialog({serviceId,onClose,onConfirm}:{serviceId:RestServiceId;onClose:()=>void;onConfirm:(selected:RestServiceId)=>void}){
  const {state:s,pauseClock}=useGame();
  const [selected,setSelected]=useState<RestServiceId>(serviceId);
+ const innerScroll=useVerticalDragScroll();
  const preview=previewInnRest(s,selected);
  useEffect(()=>{
   pauseClock('dialog',true);
@@ -24,7 +26,12 @@ export default function InnRestDialog({serviceId,onClose,onConfirm}:{serviceId:R
   <section className="inn-rest-dialog" role="dialog" aria-modal="true" aria-label="出租床位恢復預測">
    <header><BedDouble size={22}/><div><small>REST / PREVIEW</small><h3>{service.name}</h3></div>
     <button type="button" onClick={onClose} aria-label="關閉休息預覽"><X size={18}/></button></header>
-   <p>選擇休息方式，先查看真正會回復多少生命、體力與需要支付的舊幣。</p>
+   <div className="inn-rest-dialog__scroll" ref={innerScroll.scrollRef} tabIndex={0} role="region"
+    aria-label="出租床位恢復預覽，可上下拖曳查看"
+    onPointerDown={innerScroll.onPointerDown} onPointerMove={innerScroll.onPointerMove}
+    onPointerUp={innerScroll.onPointerUp} onPointerCancel={innerScroll.onPointerCancel}
+    onClickCapture={innerScroll.onClickCapture}>
+    <p>選擇休息方式，先查看真正會回復多少生命、體力與需要支付的舊幣。</p>
    <div className="inn-rest-options" role="group" aria-label="選擇床位與休息方式">
     {BED_OPTIONS.map(id=>{
      const bed=TOWN_SERVICES.find(item=>item.id===id)!;
@@ -52,6 +59,7 @@ export default function InnRestDialog({serviceId,onClose,onConfirm}:{serviceId:R
    </div>
    <div className="inn-rest-cost"><span><Coins size={14}/>{service.coins} 舊幣</span><span><Clock3 size={14}/>{service.minutes} 分鐘</span><span>今日剩餘 {remainingDailyRest(s)}/2 次</span></div>
    {blocked&&<p className="inn-rest-blocked">{blocked}</p>}
+   </div>
    <footer><button type="button" onClick={onClose}>暫時不休息</button><button type="button" disabled={!!blocked} onClick={()=>onConfirm(selected)}>確認休息</button></footer>
   </section>
  </div>,document.body);

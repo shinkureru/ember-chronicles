@@ -62,6 +62,6 @@ describe('v0.8.2 card archive interaction and rarity distinctions',()=>{
   expect(ui).toContain('LV.${variant.level}');
   expect(ui).toContain('×{variant.quantity}');
   expect(ui).toContain('setSelectedLevel(variant.level)');
-  expect(JSON.parse(src('package.json')).version).toBe('0.8.2');
+  expect(JSON.parse(src('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });

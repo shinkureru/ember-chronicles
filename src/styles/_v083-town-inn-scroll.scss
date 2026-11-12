@@ -1,0 +1,98 @@
+/* v0.8.3: entire town is the vertical scroll surface. Do not lock it to
+ * viewport-page's overflow:hidden after an expanded medical status panel. */
+.app-main > .page-stack.town-v15.viewport-page{
+ display:flex!important;
+ flex-direction:column;
+ height:100%!important;
+ min-height:0!important;
+ overflow-y:auto!important;
+ overflow-x:hidden!important;
+ overscroll-behavior-y:contain;
+ touch-action:pan-y;
+ cursor:grab;
+ scrollbar-width:none!important;
+ -ms-overflow-style:none;
+ padding-right:1px;
+}
+.app-main > .town-v15::-webkit-scrollbar{display:none!important;width:0!important}
+.app-main > .town-v15:active{cursor:grabbing}
+.app-main > .town-v15:focus-visible{outline:2px solid #dbb5a8;outline-offset:-2px}
+.town-v15 > .town-v15__intro,
+.town-v15 > .town-vitals,
+.town-v15 > .town-v15__facilities,
+.town-v15 > .town-v15__detail,
+.town-v15 > .town-v15__footer{
+ flex:0 0 auto!important;
+ min-height:0;
+}
+.town-v15 .town-v15__facilities{overflow:visible!important;grid-auto-rows:minmax(70px,auto)}
+.town-v15 .town-vitals__detail{overflow:visible}
+.town-v15 .town-v15__tile{min-height:74px}
+
+/* Rest preview: the action footer is ALWAYS reachable at any zoom/height.
+ * Place just the preview content in an inner drag-scroll pane, instead
+ * of scrolling the entire modal out of view. */
+.inn-rest-backdrop{padding:clamp(7px,1.5dvh,14px);min-height:0}
+.inn-rest-backdrop .inn-rest-dialog{
+ display:flex!important;
+ flex-direction:column!important;
+ width:min(95vw,540px);
+ height:min(92dvh,790px)!important;
+ max-height:calc(100dvh - 16px)!important;
+ min-height:0!important;
+ overflow:hidden!important;
+ padding:clamp(10px,2dvh,17px);
+}
+.inn-rest-dialog > header{flex:0 0 auto;min-height:58px;gap:10px}
+.inn-rest-dialog > .inn-rest-dialog__scroll{
+ flex:1 1 auto;min-height:0;
+ overflow-y:auto;overflow-x:hidden;
+ scrollbar-width:none;-ms-overflow-style:none;
+ overscroll-behavior-y:contain;
+ touch-action:pan-y;cursor:grab;
+ padding:10px 4px 14px 0;
+}
+.inn-rest-dialog__scroll::-webkit-scrollbar{display:none!important;width:0!important}
+.inn-rest-dialog__scroll:active{cursor:grabbing}
+.inn-rest-dialog__scroll:focus-visible{outline:2px solid #d5b2a5;outline-offset:-2px}
+.inn-rest-dialog__scroll>p:first-child{font-size:12px;line-height:1.7;color:#c8b9b6;margin:5px 0 12px}
+.inn-rest-dialog__scroll .inn-rest-options{margin:7px 0 13px}
+.inn-rest-dialog__scroll .inn-rest-values{margin:12px 0}
+.inn-rest-dialog__scroll .inn-rest-advice{
+ box-sizing:border-box;
+ min-height:unset!important;
+ height:auto;
+ padding:11px 12px!important;
+ line-height:1.65;
+ overflow-wrap:anywhere;
+}
+.inn-rest-dialog__scroll .inn-rest-advice small{
+ min-height:0!important;
+ display:block;
+ margin-top:6px;
+ line-height:1.65;
+}
+.inn-rest-dialog__scroll .inn-rest-cost{min-height:35px;margin:5px 0;padding:9px 0 5px;flex-wrap:wrap}
+.inn-rest-dialog__scroll .inn-rest-blocked{margin:6px 0 10px;line-height:1.5}
+.inn-rest-dialog > footer{
+ flex:0 0 auto;
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+ gap:9px;min-height:56px;
+ padding:10px 0 0;
+ margin-top:0;
+ border-top:1px solid #57484f;
+ background:#15151a;
+}
+.inn-rest-dialog > footer button{width:100%;min-width:0;min-height:45px!important;white-space:normal}
+@media(max-width:370px){
+ .inn-rest-backdrop .inn-rest-dialog{padding:10px}
+ .inn-rest-dialog > header h3{font-size:17px}
+ .inn-rest-dialog__scroll .inn-rest-options button{min-height:68px}
+}
+@media(max-height:670px){
+ .inn-rest-backdrop .inn-rest-dialog{height:calc(100dvh - 14px)!important;max-height:calc(100dvh - 14px)!important}
+ .inn-rest-dialog > header{min-height:49px}
+ .inn-rest-dialog__scroll .inn-rest-values>div{padding:9px}
+ .inn-rest-dialog__scroll .inn-rest-advice{padding:9px!important}
+}

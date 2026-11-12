@@ -25,7 +25,7 @@ describe('v0.8.8 safe return-to-main navigation',()=>{
   expect(frame).toContain('<ReturnMainLink/>');
   expect(frame).toContain("const inMission=state.mode!=='home'");
   const routes=read('src/app/App.tsx');
-  const special=frame.match(/returnInsidePage=\\[([^\\]]+)\\]/)?.[1]??'';
+  const special=frame.split('const returnInsidePage=')[1]?.split(';')[0]??'';
   for(const path of ['/town','/warehouse','/character','/settings','/dev']){
    expect(routes).toContain(`path="${path}"`);
    expect(special).not.toContain(path);

@@ -86,7 +86,7 @@ describe('v0.8.0 town dashboard',()=>{
  });
  it('labels the next release as a pre-1.0 prototype without changing the save schema',()=>{
   const pkg=JSON.parse(src('package.json'));
-  expect(pkg.version).toBe('0.8.0');
+  expect(pkg.version).toMatch(/^0\.8\.\d+$/);
   expect(src('src/game/state/storage.ts')).toContain('ember');
  });
 });

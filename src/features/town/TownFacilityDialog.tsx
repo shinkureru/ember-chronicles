@@ -43,7 +43,7 @@ export default function TownFacilityDialog({facility,onClose}:{facility:Secondar
   setHasAction(true);
   playCue(serviceId==='train'?'reward':'confirm');
  };
- return createPortal(<div className="town-facility-overlay" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)onClose()}}>
+ return createPortal(<div className="town-facility-overlay" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)onClose()}} onPointerDown={event=>event.stopPropagation()} onPointerMove={event=>event.stopPropagation()} onPointerUp={event=>event.stopPropagation()}>
   <section className="town-facility-dialog" role="dialog" aria-modal="true" aria-label={active.name}>
    <header className="town-facility-dialog__head">
     <span className="town-v15__scene-icon"><Icon size={27}/></span>

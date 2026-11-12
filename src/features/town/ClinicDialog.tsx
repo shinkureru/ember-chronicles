@@ -5,7 +5,7 @@ import {useGame} from '../../app/GameContext';
 import {playCue} from '../../audio/sound';
 import {TOWN_SERVICES} from '../../game/data/town';
 import {ITEMS} from '../../game/data/items';
-import {CLINIC_SUPPLIES,CLINIC_TREATMENTS,clinicBuyBlock,clinicQuestBlock,clinicTreatmentPreview,clinicUnitPrice,getClinicProgress,getClinicQuest} from '../../game/engine/clinic';
+import {CLINIC_SUPPLIES,CLINIC_TREATMENTS,clinicBuyBlock,clinicQuestBlock,clinicTreatmentPreview,clinicTreatmentOutcomes,clinicUnitPrice,getClinicProgress,getClinicQuest} from '../../game/engine/clinic';
 import {getTownServiceLock} from '../../game/engine/townActions';
 import ItemArt from '../../components/ItemArt';
 import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
@@ -49,6 +49,15 @@ export default function ClinicDialog({onClose}:{onClose:()=>void}){
  const click=(action:Parameters<typeof dispatch>[0])=>{dispatch(action);playCue('confirm')};
  const stock=(id:string)=>(s.bag[id]??0)+(s.warehouse[id]??0);
  const treatmentList=CLINIC_TREATMENTS.map(id=>TOWN_SERVICES.find(x=>x.id===id)!);
+ // Only actionable needs: no duplicate of the full four-gauge town dashboard.
+ const c=s.conditions??{wounds:0,infection:0,poisoning:0,illness:0};
+ const triageNeeds=[
+  s.player.health<s.player.maxHealth?`生命 ${s.player.health}/${s.player.maxHealth}`:null,
+  c.wounds>0?`外傷 ${c.wounds} 層`:null,
+  c.infection>0?`感染 ${c.infection} 層`:null,
+  c.poisoning>0?`中毒 ${c.poisoning} 層`:null,
+  c.illness>0?`疾病 ${c.illness} 層`:null,
+ ].filter((text):text is string=>text!==null);
  return createPortal(<div className="clinic-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
   <section className="clinic-dialog" role="dialog" aria-modal="true" aria-label="地下診所">
    <header className="clinic-dialog__head">
@@ -67,27 +76,39 @@ export default function ClinicDialog({onClose}:{onClose:()=>void}){
     onPointerDown={dragScroll.onPointerDown} onPointerMove={dragScroll.onPointerMove}
     onPointerUp={dragScroll.onPointerUp} onPointerCancel={dragScroll.onPointerCancel}
     onClickCapture={dragScroll.onClickCapture}>
-    {tab==='treatment'&&<div className="clinic-dialog__cards">
+    {tab==='treatment'&&<div className="clinic-dialog__treatment">
+     <section className="clinic-dialog__triage" aria-label="目前就診重點">
+      <div className="clinic-dialog__triage-heading"><Activity size={17}/><strong>目前需要處理</strong><small>只列出有異常的項目</small></div>
+      <div className="clinic-dialog__triage-list">
+       {triageNeeds.length?triageNeeds.map(text=><span key={text}>{text}</span>):
+        <span className="clinic-dialog__triage-clear">目前沒有明顯需要處理的傷勢</span>}
+      </div>
+      <p>下方顯示療程直接改善的數值；治療所需時間可能另增加飢餓或疲勞。</p>
+     </section>
+     <div className="clinic-dialog__cards">
      {treatmentList.map(service=>{
       const preview=clinicTreatmentPreview(s,service.id);
       const blocked=getTownServiceLock(s,service.id);
-      const changes=[
-       preview.health>0?`HP +${preview.health}（${s.player.health} → ${preview.resultingHealth}）`:null,
-       preview.stamina>0?`體力 +${preview.stamina}`:null,
-       preview.wounds<0?`外傷 ${preview.wounds}`:null,
-       preview.infection<0?`感染 ${preview.infection}`:null,
-       preview.poisoning<0?`中毒 ${preview.poisoning}`:null,
-       preview.illness<0?`疾病 ${preview.illness}`:null,
-       preview.fatigue<0?`疲勞 ${preview.fatigue}`:null,
-      ].filter(Boolean);
-      return <article className="clinic-dialog__card" key={service.id}>
-       <div><strong>{service.name}</strong><small>{changes.join(' · ')||'目前沒有需要恢復的項目'}</small>
+      const outcomes=clinicTreatmentOutcomes(s,service.id);
+      return <article className="clinic-dialog__card clinic-dialog__card--treatment" key={service.id}>
+       <div className="clinic-dialog__therapy-heading"><strong>{service.name}</strong><small>{service.summary}</small>
         <span><Coins size={13}/>{preview.fee} 舊幣 · {service.minutes} 分鐘</span>
        </div>
        <button type="button" disabled={!!blocked} onClick={()=>click({type:'TOWN_SERVICE',serviceId:service.id})}>接受治療 <ArrowRight size={14}/></button>
+       <div className="clinic-dialog__outcomes" aria-label={`${service.name}預計治療效果`}>
+        <span className="clinic-dialog__outcomes-label">預計治療結果</span>
+        {outcomes.length?<div className="clinic-dialog__outcome-grid">
+         {outcomes.map(outcome=><div className={`clinic-dialog__outcome clinic-dialog__outcome--${outcome.key}`} key={outcome.key}>
+          <span>{outcome.label}</span>
+          <strong>{outcome.before}{outcome.max?`/${outcome.max}`:''}<ArrowRight size={13} aria-hidden="true"/><em>{outcome.after}{outcome.max?`/${outcome.max}`:''}</em></strong>
+          <small>{outcome.after>outcome.before?`+${outcome.after-outcome.before}`:`−${outcome.before-outcome.after}`}</small>
+         </div>)}
+        </div>:<p className="clinic-dialog__outcome-empty">目前沒有可改善的項目</p>}
+       </div>
        {blocked&&<small className="clinic-dialog__hint">{blocked}</small>}
       </article>;
      })}
+     </div>
     </div>}
     {tab==='daily'&&<article className="clinic-dialog__daily">
      <span className="clinic-dialog__kicker">DAILY REQUEST / DAY {s.world.day}</span>

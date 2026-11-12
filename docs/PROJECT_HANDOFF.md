@@ -1,5 +1,20 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜最新｜第三批 v0.8.8 頁面「返回主畫面」導覽（尚待 Merge）
+
+**基準：**`main` `7f942108ed542c0a323ba70ec14046729cace01e` = v0.8.7，PR #33 已合併，當時沒有其它 open PR。上一批的城鎮八設施版型已存在於 main，不得重做。
+
+**本批唯一分支：**`feat/v0.8.8-return-main-navigation`。
+- 共用 `src/components/ReturnMainLink.tsx` 以 `<NavLink to="/">返回主畫面</NavLink>` 導向現有第一章世界地圖。透過 `state.mode==='home'` 限制，**不會 dispatch `RETURN_HUB`**。舊的 `GameRoutes` 冒險路由鎖仍有效。
+- `Frame.tsx` 針對一般非主地圖與非任務頁面在 main 之後渲染有自己高度的底部右側操作列，不覆蓋卡牌／設施；黑市、卡牌圖鑑、事前準備將元件直接放進現有 footer，不重複全域列。這些畫面仍保留原有買賣、卡牌升級與進關主要操作。
+- 冒險和結算結果時**不顯示**直接跳主地圖捷徑，返回仍透過確認撤退／任務結果原機制。主地圖本身無多餘捷徑。此批不移除原 top header，不改版本/設定入口，留在下一批。
+- 樣式 `src/styles/_v088-return-navigation.scss`，測試 `tests/v088-return-main-navigation.test.ts`，QA 文件 `docs/V088_RETURN_MAIN_NAVIGATION.md`。版本 `v0.8.8`，package/lock 同步。**不修改遊戲數值或存檔結構**。
+- 下一批 **v0.8.9** 為移除頂端 Navbar、將 Git 版本標示與設定融入主要頁面，**需等使用者 Merge 本批、Pages 部署測試且明確通知才開始**。
+- 目前此條屬「已提交分支、等待 PR CI/人工驗收」狀態，勿宣稱已上線。GitHub 當前狀態優先。
+
+---
+
+
 ## 2026-11-13｜最新｜第二批 v0.8.7 城鎮畫面結構（待 Merge）
 
 - 已確認最新 `main`：`6c3e207d10700c8aa0dedca3a25e2b3a71bb1a55`（v0.8.6，PR #32 已 Merge，使用者尚未對 v0.8.6 實機測試）。建置本分支時 open PR 數量 0。**不要因下方歷史紀錄誤以為前批尚未合併。**

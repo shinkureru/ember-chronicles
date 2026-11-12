@@ -18,6 +18,7 @@ const REPAIR_BASE:Record<ArmorSlot,{light:number;moderate:number;severe:number}>
  arms:{light:7,moderate:16,severe:30},
  legs:{light:7,moderate:16,severe:30},
 };
+export const ARMOR_ITEMS=new Set(['cap','vest','gloves','torn_gloves','arm_guard','leg_guard']);
 export const PERFECT_REPAIR_CHANCE=.25;
 export const PERFECT_REPAIR_DEFENSE=1;
 
@@ -25,7 +26,7 @@ export const PERFECT_REPAIR_DEFENSE=1;
 export const equippedArmorEntries=(s:GameState):{slot:ArmorSlot;itemId:string}[]=>
  ARMOR_SLOTS.flatMap(slot=>{
   const itemId=s.equipment[slot];
-  return itemId?[{slot,itemId}]:[];
+  return itemId&&ARMOR_ITEMS.has(itemId)?[{slot,itemId}]:[];
  });
 
 /** Old saves had wear percentage but no armor hit history. Approximate conservatively. */

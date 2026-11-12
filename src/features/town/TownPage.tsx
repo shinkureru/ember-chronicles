@@ -47,7 +47,11 @@ export default function TownPage(){
   dispatch({type:'TOWN_SERVICE',serviceId,attribute,itemId:gear||undefined});
   playCue(serviceId==='train'?'reward':serviceId.startsWith('clinic')?'searchCloth':'confirm');
  };
- return <div className={`page-stack town-page town-v15 viewport-page phase--${worldPhaseToken(s.world.minute)}`}>
+ return <div className={`page-stack town-page town-v15 viewport-page phase--${worldPhaseToken(s.world.minute)}`}
+    ref={townScroll.scrollRef} tabIndex={0} role="region" aria-label="舊街避難所設施，可上下拖曳瀏覽"
+    onPointerDown={townScroll.onPointerDown} onPointerMove={townScroll.onPointerMove}
+    onPointerUp={townScroll.onPointerUp} onPointerCancel={townScroll.onPointerCancel}
+    onClickCapture={townScroll.onClickCapture}>
   <header className="town-v15__intro">
    <span className="eyebrow">CITY SAFEHOUSE / EIGHT FACILITIES</span>
    <h1>舊街避難所</h1>

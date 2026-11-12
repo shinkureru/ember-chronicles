@@ -1,0 +1,143 @@
+/* v0.8.0 A — measured rest preview and quiet shelter indicators. */
+.inn-rest-dialog{scrollbar-width:none;-ms-overflow-style:none}
+.inn-rest-dialog::-webkit-scrollbar{display:none}
+.inn-rest-value .inn-rest-value__numbers{display:flex;gap:9px;align-items:baseline;margin:7px 0;font-size:19px;font-weight:750;line-height:1.4}
+.inn-rest-value__numbers>b{font-weight:400;font-size:14px;color:#b9a8ac}
+.inn-rest-value__numbers>em{font-style:normal;color:#f1bbc2}
+.inn-rest-value--stamina .inn-rest-value__numbers>em{color:#bce8d7}
+.inn-rest-value .inn-rest-meter{height:13px;position:relative;isolation:isolate;margin:8px 0 9px;background:#40363c;border-radius:20px;overflow:hidden}
+.inn-rest-value .inn-rest-meter>i{
+ position:absolute;top:0;bottom:0;display:block;height:100%;
+ transition:width .48s cubic-bezier(.22,.68,.23,1),left .48s cubic-bezier(.22,.68,.23,1);
+}
+.inn-rest-value--hp .inn-rest-meter__current{background:#ef5264}
+.inn-rest-value--hp .inn-rest-meter__gain{background:#ef9ca6}
+.inn-rest-value--stamina .inn-rest-meter__current{background:#54b59f}
+.inn-rest-value--stamina .inn-rest-meter__gain{background:#a9dbcf}
+.inn-rest-value .inn-rest-meter__gain{border-radius:0 20px 20px 0}
+.inn-rest-value--hp>strong{color:#ffc3cd}
+.inn-rest-value--stamina>strong{color:#b5e0cf}
+.inn-rest-advice{min-height:98px!important;padding:12px 13px;overflow-wrap:anywhere}
+.inn-rest-advice small{min-height:2.5em}
+.inn-rest-dialog .inn-rest-cost{min-height:35px}
+.inn-rest-dialog{max-height:92dvh}
+@media(max-height:740px){
+ .inn-rest-dialog{padding:13px;max-height:94dvh}
+ .inn-rest-values{gap:9px;margin:10px 0}
+ .inn-rest-values>div{padding:9px}
+ .inn-rest-dialog>p{margin:8px 0}
+ .inn-rest-advice{min-height:80px!important}
+}
+
+/* Four self-explanatory gauges: a high hunger/fatigue meter means danger. */
+.town-vitals{display:flex;flex-direction:column;gap:11px;padding:14px 15px;
+ background:linear-gradient(140deg,#1b1b21,#14161b);border:1px solid #555056;border-radius:13px}
+.town-vitals__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 17px}
+.town-vitals__stat{min-width:0;display:flex;flex-direction:column;gap:7px}
+.town-vitals__label{display:flex;align-items:center;justify-content:space-between;gap:7px;min-width:0;line-height:1.3}
+.town-vitals__label span{display:flex;gap:5px;align-items:center;font-size:11px;color:#ddd3d1;white-space:nowrap;min-width:0}
+.town-vitals__label span>svg{flex:none}
+.town-vitals__label strong{font:700 clamp(11px,3vw,14px)/1.25 Inter,'Noto Sans TC',sans-serif;font-variant-numeric:tabular-nums;color:#f7eeee;white-space:nowrap}
+.town-vitals__label small{color:#b1a5a5;font-size:10px}
+.town-vitals__track{height:9px;border-radius:9px;background:#3a3439;overflow:hidden}
+.town-vitals__track i{display:block;height:100%;border-radius:9px;transition:width .4s ease}
+.town-vitals__stat--hp .town-vitals__track i{background:#e35f70}
+.town-vitals__stat--st .town-vitals__track i{background:#54b7a5}
+.town-vitals__stat--hunger .town-vitals__track i{background:#deab5e}
+.town-vitals__stat--fatigue .town-vitals__track i{background:#a893ca}
+.town-vitals__conditions{border-top:1px solid #494149;padding-top:10px}
+.town-vitals__conditions>button{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;border:0;
+ background:none;color:#d9c8c9;text-align:left;padding:3px 0 9px}
+.town-vitals__conditions>button>span{display:flex;align-items:center;gap:6px;font-size:11px}
+.town-vitals__conditions>button>span:last-child{font-size:10px;color:#b8acaf;white-space:nowrap}
+.town-vitals__conditions button strong{font-size:10px;font-weight:600;color:#f4a1a1}
+.town-vitals__badges{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.town-vitals__badges>span{display:flex;align-items:center;justify-content:center;gap:3px;min-height:29px;
+ white-space:nowrap;padding:4px 2px;border:1px solid #55494d;border-radius:6px;background:#211f24;color:#b7a8ad;font-size:10px}
+.town-vitals__badges>span.is-active{border-color:#b66c78;color:#ffadb6;background:#3b232b}
+.town-vitals__badges svg{flex:none}
+.town-vitals__detail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:11px;animation:v080-reveal .24s ease-out}
+.town-vitals__detail article{min-width:0;padding:10px;background:#242027;border:1px solid #554a50;border-radius:8px}
+.town-vitals__detail article>div{display:flex;align-items:center;gap:5px;margin-bottom:7px;font-size:12px}
+.town-vitals__detail article>div span{margin-left:auto;font-size:10px;color:#f0b1b9}
+.town-vitals__detail article p{font-size:10px;line-height:1.65;color:#c8b9bd;overflow-wrap:anywhere}
+.town-vitals__detail .town-vitals__hint{grid-column:1/-1;display:flex;align-items:flex-start;gap:6px;
+ padding:8px 9px;border:1px solid #655349;border-radius:7px;font-size:10px;color:#cbb6a9;line-height:1.6}
+.town-vitals__hint svg{flex:none;margin-top:2px}
+@keyframes v080-reveal{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:370px){
+ .town-vitals{padding:10px}
+ .town-vitals__grid{column-gap:10px}
+ .town-vitals__label span{font-size:10px}
+ .town-vitals__badges>span{font-size:9px}
+}
+@media(max-width:345px){.town-vitals__detail{grid-template-columns:1fr}}
+
+/* A three-scene paper cutout animation; sleep music is composed inside WebAudio. */
+.rest-cinematic{
+ position:fixed;inset:0;z-index:400;overflow:hidden;isolation:isolate;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ background:radial-gradient(ellipse at 48% 34%,#3a383b,#121217 65%,#09090d);
+ color:#f4e9e5;animation:v080-rest-appear .3s ease both;
+}
+.rest-cinematic__sky{position:absolute;inset:0;overflow:hidden;pointer-events:none;
+ background:linear-gradient(180deg,#191c29 0%,#27202b 50%,#131219 100%)}
+.rest-cinematic__sky:after{content:"";position:absolute;inset:0;background:#06050c;
+ animation:v080-night-dim 4.7s ease-in-out both}
+.rest-cinematic__moon{position:absolute;right:19%;top:15%;width:32px;height:32px;border-radius:50%;
+ background:#dfd7b9;box-shadow:0 0 45px #e8d7a955}
+.rest-cinematic__glow{position:absolute;right:11%;top:11%;width:120px;height:140px;border-radius:50%;
+ background:#e6ba8640;filter:blur(55px)}
+.rest-cinematic__room{width:min(85vw,540px);height:clamp(165px,31dvh,260px);position:relative;overflow:hidden;
+ background:linear-gradient(175deg,#2d2830 0%,#211e25 65%,#19171b 65%);
+ border:1px solid #766366;border-radius:15px 15px 6px 6px;z-index:1;box-shadow:0 22px 55px #000b}
+.rest-cinematic__window{position:absolute;top:13%;right:13%;width:58px;height:66px;border:5px solid #6b6268;
+ background:linear-gradient(#1a2335,#454258);box-shadow:inset 0 0 25px #e8d6c333}
+.rest-cinematic__window:before{content:"";position:absolute;inset:-1px 45% -1px auto;width:3px;background:#716876}
+.rest-cinematic__wall{position:absolute;inset:0;border-bottom:2px solid #54454b}
+.rest-cinematic__bed{position:absolute;bottom:10%;left:16%;width:68%;height:26%;
+ border:3px solid #8c7771;background:#60555d;border-radius:9px 9px 4px 4px;transform:skewX(-6deg)}
+.rest-cinematic__pillow{position:absolute;bottom:23%;left:20%;width:21%;height:16%;border-radius:35%;
+ background:#b4a29d;z-index:3;transform:rotate(-5deg)}
+.rest-cinematic__figure{position:absolute;bottom:25%;left:30%;width:45%;height:18%;z-index:2;
+ animation:v080-breath 2.7s ease-in-out infinite}
+.rest-cinematic__head{position:absolute;left:0;top:-13px;width:38px;height:38px;background:#ba9e92;border:3px solid #302c30;border-radius:46%}
+.rest-cinematic__body{position:absolute;left:27px;right:0;top:5px;height:28px;background:#676c73;border-radius:28px 55% 11px 15px}
+.rest-cinematic__cover{position:absolute;left:37%;bottom:19%;width:42%;height:23%;z-index:4;
+ background:linear-gradient(120deg,#8a727c,#564851);clip-path:polygon(0 10%,100% 4%,100% 93%,0 100%)}
+.rest-cinematic__lamp{position:absolute;top:15%;left:12%;width:6px;height:68px;
+ background:#5b4a46;box-shadow:0 0 36px 13px #efd2aa37;animation:v080-light 4.5s ease forwards}
+.rest-cinematic__lamp:before{content:"";position:absolute;top:-7px;left:-14px;border-left:17px solid transparent;border-right:17px solid transparent;border-bottom:18px solid #a98f70}
+.rest-cinematic--rest_private .rest-cinematic__room{background:linear-gradient(175deg,#392b3a,#201e29 65%,#17151c 65%)}
+.rest-cinematic--rest_private .rest-cinematic__window{background:linear-gradient(#243447,#72828b)}
+.rest-cinematic--rest_private .rest-cinematic__figure{animation:v080-deep-breath 3.4s ease-in-out infinite}
+.rest-cinematic--rest_private .rest-cinematic__glow{background:#efd7bb55;animation:v080-light 4.5s ease forwards}
+.rest-cinematic--rest_short .rest-cinematic__room{background:linear-gradient(175deg,#302e30,#1c1a1e 65%,#161519 65%)}
+.rest-cinematic--rest_short .rest-cinematic__bed{left:23%;width:43%;height:14%;bottom:9%;background:#514c50}
+.rest-cinematic--rest_short .rest-cinematic__figure{left:34%;bottom:23%;width:19%;height:44%;transform-origin:bottom;animation:v080-nap-nod 1.6s ease-in-out infinite}
+.rest-cinematic--rest_short .rest-cinematic__figure .rest-cinematic__body{left:0;right:0;height:60%;top:30%;border-radius:16px 16px 4px 4px}
+.rest-cinematic--rest_short .rest-cinematic__figure .rest-cinematic__head{left:3%;top:2%;width:31px;height:31px}
+.rest-cinematic--rest_short .rest-cinematic__cover{display:none}
+.rest-cinematic__copy{position:relative;z-index:3;width:min(85vw,530px);padding:21px 12px;text-align:center}
+.rest-cinematic__copy>svg{color:#efd1b9;animation:v080-light 3s ease-in-out infinite alternate}
+.rest-cinematic__copy small{display:block;font-size:10px;letter-spacing:.19em;color:#a7a1ab;margin-top:7px}
+.rest-cinematic__copy h2{font:800 clamp(24px,6vw,35px)/1.5 'Noto Serif TC',serif;margin:5px 0}
+.rest-cinematic__copy p{font-size:12px;line-height:1.9;color:#cbbfbe;min-height:3.6em}
+.rest-cinematic__progress{height:5px;width:75%;margin:22px auto 12px;border-radius:8px;background:#4a4246;overflow:hidden}
+.rest-cinematic__progress i{display:block;background:linear-gradient(90deg,#bda69f,#efd9bf);height:100%;
+ animation:v080-rest-progress 4.85s linear both}
+.rest-cinematic__copy>span{display:flex;gap:6px;align-items:center;justify-content:center;font-size:10px;color:#bdb7b8}
+.rest-cinematic__skip{position:absolute;top:calc(13px + env(safe-area-inset-top));right:17px;z-index:5;
+ display:flex;align-items:center;gap:6px;padding:8px 10px;background:#222229;border:1px solid #75666a;border-radius:7px;color:#e6dad6}
+.rest-cinematic__time{position:absolute;bottom:calc(18px + env(safe-area-inset-bottom));font-size:10px;display:flex;align-items:center;gap:6px;color:#aca3a5}
+@keyframes v080-rest-appear{from{opacity:0}to{opacity:1}}
+@keyframes v080-night-dim{0%{opacity:.5}45%{opacity:.87}100%{opacity:.24}}
+@keyframes v080-breath{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-3px) scaleY(1.035)}}
+@keyframes v080-deep-breath{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-5px) scaleY(1.055)}}
+@keyframes v080-nap-nod{0%,100%{transform:rotate(0deg)}46%{transform:rotate(7deg)}66%{transform:rotate(-2deg)}}
+@keyframes v080-light{from{opacity:.9}to{opacity:.25}}
+@keyframes v080-rest-progress{from{width:0}to{width:100%}}
+@media(prefers-reduced-motion:reduce){
+ .rest-cinematic,.rest-cinematic *,.town-vitals *,.inn-rest-value *{animation:none!important;transition:none!important}
+ .rest-cinematic__progress i{width:100%}
+}

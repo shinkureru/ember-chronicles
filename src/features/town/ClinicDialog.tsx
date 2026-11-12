@@ -83,7 +83,7 @@ export default function ClinicDialog({onClose}:{onClose:()=>void}){
        {triageNeeds.length?triageNeeds.map(text=><span key={text}>{text}</span>):
         <span className="clinic-dialog__triage-clear">目前沒有明顯需要處理的傷勢</span>}
       </div>
-      <p>下方各項療程會顯示實際的治療前後變化；沒有改善的項目不會重複列出。</p>
+      <p>下方顯示療程直接改善的數值；治療所需時間可能另增加飢餓或疲勞。</p>
      </section>
      <div className="clinic-dialog__cards">
      {treatmentList.map(service=>{

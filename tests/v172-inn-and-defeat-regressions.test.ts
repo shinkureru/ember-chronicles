@@ -14,7 +14,7 @@ describe('v1.7.2 inn facility entry and recovery',()=>{
   const ui=readFileSync(new URL('../src/features/town/TownPage.tsx',import.meta.url),'utf8');
   const modal=readFileSync(new URL('../src/features/town/InnRestDialog.tsx',import.meta.url),'utf8');
   expect(ui).toContain("if(f.id==='inn')setRestDialog('rest_cot')");
-  expect(ui).toContain('onConfirm={selectedBed=>{enact(selectedBed);setRestDialog(null)}}');
+  expect(ui).toContain('onConfirm={selectedBed=>{enact(selectedBed);setRestDialog(null);setRestCinematic(selectedBed)}}');
   expect(modal).toContain("const BED_OPTIONS:RestServiceId[]=['rest_cot','rest_private','rest_short']");
   expect(modal).toContain('onClick={()=>onConfirm(selected)}');
   expect(modal).toContain('createPortal(');

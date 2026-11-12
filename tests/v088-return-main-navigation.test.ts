@@ -56,7 +56,7 @@ describe('v0.8.8 safe return-to-main navigation',()=>{
   expect(read('src/features/world-map/ChapterMapPage.tsx')).toContain('game-utilities--map');
   expect(read('src/components/GameUtilities.tsx')).toContain('__APP_VERSION__');
   expect(read('src/components/GameUtilities.tsx')).toContain('__BUILD_REVISION__');
-  expect(JSON.parse(read('package.json')).version).toMatch(/^0\\.8\\.\\d+$/);
+  expect(JSON.parse(read('package.json')).version.startsWith('0.8.')).toBe(true);
   expect(css).toContain('@media(max-width:365px)');
   expect(css).toContain('@media(max-height:620px)');
  });

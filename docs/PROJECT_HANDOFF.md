@@ -1,5 +1,16 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-12｜第六輪 Batch C 卡牌圖鑑 v0.8.2（本分支最新資訊）
+
+已完成三個依賴批次的程式與對應文件，尚需核對所有 PR 最新 CI 及合併。基準 `main:4ef2ecc`，分支順序 **A `feature/v0.8.0-rest-and-town-status` PR #26 → B `feature/v0.8.1-market-grid` PR #27 → C `feature/v0.8.2-card-archive-grid`（本 PR）**。每個階段應先確認原 PR 已合併再合併下一個；最後 Pages 顯示 `v0.8.2` 與新短 SHA，等待使用者一次實際驗收。
+
+本批卡牌圖鑑 4 欄×5 列視區、垂直拖曳/滾輪/觸控、右側沒有 scrollbar、超過 20 張才會露出下一排。**複本資料沒有自造不存在的等級**：`ownedCards[id]` 的主要等級主卡×1、未使用的基礎 LV1 複本×N 分開顯示，沒有高等版本時不可顯示假卡牌。五級依**升級等級**採灰／綠／藍／紫／金，獨立保留稀有度文字 `normal/rare/chaos`；原有升級 reducer 不變、舊存檔可沿用。詳見 `docs/V082_BATCH_C_CARD_ARCHIVE.md`、`tests/v082-card-archive-grid.test.ts`。
+
+不要將「CI 通過」記為已完成人工遊戲 QA。休息動畫需要瀏覽器音量／自動播放與過場測試，黑市／圖鑑需要桌面滑鼠與手機觸控測試。
+
+---
+
+
 ## 2026-11-12｜第六輪 Batch B 黑市 v0.8.1（本分支最新資訊）
 
 依賴 Batch A PR #26，分支 `feature/v0.8.1-market-grid`、版本 `v0.8.1`。黑市商品改**整齊固定三欄／窄幅兩欄**，取消每張商品的隨機轉角/位移；限制區域高度露出下一列，可手機觸控/電腦滑鼠按住拖曳/滾輪/鍵盤瀏覽，隱藏 scrollbar。原有購買/出售、分類、交易引擎保持不變。測試 `tests/v081-market-grid.test.ts`，詳細 `docs/V081_BATCH_B_MARKET.md`。**尚未合併到 main，不代表 Pages 已部署。** 按順序合併 A→B→C 並一起做實際瀏覽器驗收。

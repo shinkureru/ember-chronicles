@@ -15,6 +15,7 @@ import { remainingSearches } from './lootLimits';
 import {currentEnemyId,maySearchSource} from './encounterAccess';
 import { EQUIPMENT_SLOTS } from '../data/equipment';
 import { getEquippedDefense, mitigateCounterDamage } from '../data/equipmentEffects';
+import { applyArmorImpact,ARMOR_DAMAGE_STAGES,ARMOR_SLOT_NAMES,expirePerfectRepairs } from './armor';
 import { getVendorStockKey, marketSellPrice, vendorById } from '../data/marketVendors';
 import type { GameState, Outcome, ProfessionId, LootDrop } from '../types';
 
@@ -197,7 +198,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if(s.mode!=='adventure'||s.enemyCounter?.phase!=='windup')return state;
       s.enemyCounter.phase='throwing';
       s.enemyStrike={id:s.enemyCounter.id,itemId:s.enemyCounter.itemId,
-        damage:s.enemyCounter.damage,hit:s.enemyCounter.hit};
+        damage:s.enemyCounter.hit?Math.min(s.enemyCounter.damage,Math.max(0,s.player.health)):0,hit:s.enemyCounter.hit};
       return s;
     }
     case 'ENEMY_COUNTER_HIT':{
@@ -205,14 +206,17 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.enemyCounter.phase='hit';
       const {itemId,damage,hit}=s.enemyCounter;
       if(hit){
+        const lost=Math.max(0,Math.min(s.player.health,damage));
         s.player.health=clamp(s.player.health-damage,0,s.player.maxHealth);
-        if(damage>0){
+        let armorText='';
+        if(lost>0){
           const conditions=ensureConditions(s);
           conditions.wounds=Math.min(6,conditions.wounds+1);
-          const wornId=s.equipment.body??s.equipment.head??s.equipment.hands;
-          if(wornId){const town=ensureTownProgress(s);town.wear[wornId]=Math.max(15,(town.wear[wornId]??100)-6);}
+          ensureTownProgress(s);
+          const part=applyArmorImpact(s,()=>nextRand(s));
+          if(part)armorText=` ${ARMOR_SLOT_NAMES[part.slot]}的「${ITEMS[part.itemId]?.name??part.itemId}」受擊 ${part.hits}/10${part.changedStage?`，${ARMOR_DAMAGE_STAGES[part.stage]}`:''}。`;
         }
-        s.lastEvent=`對方把「${ITEMS[itemId]?.name??'工具'}」扔向我。我被擊中，生命 -${damage}！`;
+        s.lastEvent=`對方把「${ITEMS[itemId]?.name??'工具'}」扔向我。我被擊中，生命 -${lost}！${armorText}`;
         // Keep HIT state visible long enough for full-screen damage shake, even if lethal.
         // Defeat resolves after the final impact phase.
       }else s.lastEvent='對方扔來的物品擦身而過，我閃開了。';
@@ -237,6 +241,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
         s.bag[itemId!]=(s.bag[itemId!]??0)+1;
       }
       s.attempt+=1;
+      expirePerfectRepairs(s);
       if(s.stageId===2){if(!s.alleyNpc)s.alleyNpc={hostility:18,trust:12,met:0,adaptations:{},remembers:[],stolenGear:[]};s.alleyNpc.met+=1;}
       else s.npc.met+=1;
       s.mode='adventure';s.sceneId='gate';

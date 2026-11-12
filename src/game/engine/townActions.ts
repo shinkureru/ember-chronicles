@@ -4,9 +4,11 @@ import { ITEMS } from '../data/items';
 import { clamp } from './rules';
 import {clinicTreatmentPreview} from './clinic';
 import { isRestService,previewInnRest,remainingDailyRest } from './innRest';
+import {armorRepairFee,armorSlotForItem,completeArmorRepair,ensureArmorTownFields} from './armor';
 
 export const ensureTownProgress=(s:GameState):TownProgress=>{
  if(!s.town)s.town={visits:{},lastTrainingDay:0,lastRumorDay:0,lastCanteenTalkDay:0,socialPoiseUntil:0,upgrades:{},wear:{},quests:{}};
+ ensureArmorTownFields(s.town);
  return s.town;
 };
 export const ensureConditions=(s:GameState):SurvivorConditions=>{
@@ -14,6 +16,10 @@ export const ensureConditions=(s:GameState):SurvivorConditions=>{
  return s.conditions;
 };
 export const getTrainingFee=(s:GameState,attribute:AttributeId):number=>42+Math.max(0,s.player.attributes[attribute])*11;
+export const getTownServiceFee=(s:GameState,id:string,attribute?:AttributeId,itemId?:string):number=>
+ id==='train'&&attribute?getTrainingFee(s,attribute):
+ id==='workshop_repair'&&itemId?armorRepairFee(s,itemId):
+ TOWN_SERVICES.find(x=>x.id===id)?.coins??0;
 export const getTownServiceLock=(s:GameState,id:string,attribute?:AttributeId,itemId?:string):string|null=>{
  if(s.mode!=='home')return '任務期間無法離開戰場使用城鎮服務';
  const service=TOWN_SERVICES.find(x=>x.id===id);
@@ -30,7 +36,10 @@ export const getTownServiceLock=(s:GameState,id:string,attribute?:AttributeId,it
  if(id==='canteen_talk'&&town?.lastCanteenTalkDay===s.world.day)return '今天已聽過居民閒談，明天再來';
  if(id==='workshop_repair'||id==='workshop_upgrade'){
   if(!itemId||!Object.values(s.equipment).includes(itemId))return '請先在人物檔案裝備一件要處理的物品';
-  if(id==='workshop_repair'&&(town?.wear[itemId]??100)>=100)return '這件裝備目前沒有磨損';
+  if(id==='workshop_repair'){
+   if(!armorSlotForItem(s,itemId))return '只可修復已穿戴的頭部、身體、手臂或腿部防具';
+   if(armorRepairFee(s,itemId)<=0)return '這個防禦部位目前完整，不需要修理';
+  }
   if(id==='workshop_upgrade'){
    if((town?.upgrades[itemId]??0)>=3)return '這件裝備已達 III 階改良上限';
    if((s.bag.tape??0)+(s.warehouse.tape??0)+(s.bag.wire_piece??0)+(s.warehouse.wire_piece??0)<1)return '缺少工業膠帶或沾水的電線（需要 1 份材料）';
@@ -42,7 +51,7 @@ export const getTownServiceLock=(s:GameState,id:string,attribute?:AttributeId,it
  if(id==='clinic_poison'&&!(conditions?.poisoning??0))return '目前沒有中毒症狀';
  if(id==='clinic_illness'&&!(conditions?.illness??0))return '目前沒有疾病症狀';
  if(id==='clinic_general'&&s.player.health>=s.player.maxHealth)return '目前生命已完全恢復';
- const fee=id==='train'&&attribute?getTrainingFee(s,attribute):service.coins;
+ const fee=getTownServiceFee(s,id,attribute,itemId);
  if(s.economy.coins<fee)return `舊幣不足，需要 ${fee} 枚`;
  return null;
 };
@@ -61,7 +70,7 @@ export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,item
  if(getTownServiceLock(s,id,attribute,itemId))return null;
  const service=TOWN_SERVICES.find(x=>x.id===id)!;
  const town=ensureTownProgress(s),conds=ensureConditions(s),p=s.player;
- const fee=id==='train'&&attribute?getTrainingFee(s,attribute):service.coins;
+ const fee=getTownServiceFee(s,id,attribute,itemId);
  s.economy.coins-=fee;
  town.visits[service.facility]=(town.visits[service.facility]??0)+1;
  let message='';
@@ -97,7 +106,11 @@ export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,item
    message=`診療完成：生命 +${preview.health}、體力 +${preview.stamina}，症狀已依療程處理。`;
    break;
   }
-  case 'workshop_repair':town.wear[itemId!]=100;message=`「${ITEMS[itemId!]?.name??itemId}」恢復了完整的耐久度。`;break;
+  case 'workshop_repair':{
+   const perfect=completeArmorRepair(s,itemId!);
+   message=`「${ITEMS[itemId!]?.name??itemId}」修復至 100%。${perfect?'工匠完成了完美修理！下一次任務該部位防禦額外 +1。':'耐久度已恢復，能再承受接下來的衝擊。'}`;
+   break;
+  }
   case 'workshop_upgrade':{
    const material=consumeOneMaterial(s,['tape','wire_piece']);
    if(!material)throw Error('workshop material check drifted from preview');

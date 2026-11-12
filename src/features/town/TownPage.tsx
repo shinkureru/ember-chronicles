@@ -6,10 +6,12 @@ import { worldPhase,worldClock,worldPhaseToken } from '../../game/engine/rules';
 import { ATTRIBUTE_LABELS } from '../../game/data/attributes';
 import { ITEMS } from '../../game/data/items';
 import { TOWN_FACILITIES,TOWN_SERVICES,TOWN_QUESTS,isTownOpen,townKeeper,townQuestReady,townAbsoluteMinute } from '../../game/data/town';
-import { getTownServiceLock,getTrainingFee } from '../../game/engine/townActions';
+import { getTownServiceLock,getTownServiceFee } from '../../game/engine/townActions';
+import {armorSlotForItem,armorHits} from '../../game/engine/armor';
 import type { AttributeId,TownFacilityId } from '../../game/types';
 import InnRestDialog from './InnRestDialog';
 import ClinicDialog from './ClinicDialog';
+import WorkshopDialog from './WorkshopDialog';
 import {isRestService,remainingDailyRest,type RestServiceId} from '../../game/engine/innRest';
 
 const facilityIcons:Record<TownFacilityId,typeof BedDouble>={
@@ -25,13 +27,14 @@ export default function TownPage(){
  const [facility,setFacility]=useState<TownFacilityId>('inn');
  const [restDialog,setRestDialog]=useState<RestServiceId|null>(null);
  const [clinicOpen,setClinicOpen]=useState(false);
+ const [workshopOpen,setWorkshopOpen]=useState(false);
  const [attribute,setAttribute]=useState<AttributeId>('observation');
  const [selectedGear,setSelectedGear]=useState('');
  const active=TOWN_FACILITIES.find(x=>x.id===facility)!;
  const Icon=facilityIcons[facility],open=isTownOpen(facility,s.world.minute);
  const services=TOWN_SERVICES.filter(x=>x.facility===facility);
  const equipped=[...new Set(Object.values(s.equipment).filter((id):id is string=>!!id))];
- const gear=equipped.includes(selectedGear)?selectedGear:(equipped[0]??'');
+ const gear=equipped.includes(selectedGear)?selectedGear:(equipped.find(id=>!!armorSlotForItem(s,id))??equipped[0]??'');
  const town=s.town;
  const conditions=s.conditions??{wounds:0,infection:0,poisoning:0,illness:0};
  const phase=worldPhase(s.world.minute);
@@ -58,7 +61,7 @@ export default function TownPage(){
    {TOWN_FACILITIES.map(f=>{
     const TileIcon=facilityIcons[f.id],selected=facility===f.id,available=isTownOpen(f.id,s.world.minute);
     return <button type="button" key={f.id} className={`town-v15__tile ${selected?'is-active':''}`} aria-pressed={selected}
-     onClick={()=>{setFacility(f.id);if(f.id==='inn')setRestDialog('rest_cot');if(f.id==='clinic')setClinicOpen(true);playCue('select')}}>
+     onClick={()=>{setFacility(f.id);if(f.id==='inn')setRestDialog('rest_cot');if(f.id==='clinic')setClinicOpen(true);if(f.id==='workshop')setWorkshopOpen(true);playCue('select')}}>
      <span className="town-v15__tile-icon"><TileIcon size={21}/></span>
      <span className="town-v15__tile-text"><strong>{f.name}</strong><small>{available?'營業中':'已打烊'} · 到訪 {town?.visits[f.id]??0} 次</small></span>
      <ChevronRight size={14}/>
@@ -78,9 +81,10 @@ export default function TownPage(){
     </select>
     <small>每個遊戲日只能練習一項；單項上限 20。今日{town?.lastTrainingDay===s.world.day?'已使用訓練機會':'尚未訓練'}。</small>
    </div>}
-   {facility==='workshop'&&<div className="town-v15__selector"><label htmlFor="town-equipment">要處理的已裝備物品</label>
+   {facility==='workshop'&&<div className="town-v15__selector"><label htmlFor="town-equipment">改良裝備或檢查耐久</label>
+    <button type="button" className="town-workshop-entrance" onClick={()=>setWorkshopOpen(true)}><Wrench size={17}/>開啟修理工坊 · 四部位耐久與修復預覽 <ChevronRight size={15}/></button>
     <select id="town-equipment" value={gear} onChange={e=>setSelectedGear(e.target.value)}>
-     {equipped.length===0?<option value="">請先前往人物檔案裝備物品</option>:equipped.map(id=><option value={id} key={id}>{ITEMS[id]?.name??id} · 耐久 {town?.wear[id]??100}% · 改良 {town?.upgrades[id]??0}/3</option>)}
+     {equipped.length===0?<option value="">請先前往人物檔案裝備物品</option>:equipped.map(id=><option value={id} key={id}>{ITEMS[id]?.name??id} · 耐久 {town?.wear[id]??100}% · 受擊 {armorHits(s,id)} 次 · 改良 {town?.upgrades[id]??0}/3</option>)}
     </select>
     <small>改良需要一份工業膠帶或沾水電線。升級防具增加防禦，升級對應主手工具增加攻擊傷害。</small>
    </div>}
@@ -100,7 +104,7 @@ export default function TownPage(){
     </div>:<div className="town-v15__services">
       {services.map(service=>{
        const reason=getTownServiceLock(s,service.id,attribute,gear||undefined);
-       const fee=service.id==='train'?getTrainingFee(s,attribute):service.coins;
+       const fee=getTownServiceFee(s,service.id,attribute,gear||undefined);
        return <article className="town-v15__service" key={service.id}>
         <div><strong>{service.name}</strong><p>{service.summary}</p>
          <small><Coins size={12}/> {fee} 舊幣 <Clock3 size={12}/> {service.minutes} 分鐘</small>
@@ -118,6 +122,7 @@ export default function TownPage(){
     {s.lastEvent&&<p className="town-v15__latest"><BookText size={14}/>{s.lastEvent}</p>}
   </footer>
   {clinicOpen&&<ClinicDialog onClose={()=>setClinicOpen(false)}/>}
+  {workshopOpen&&<WorkshopDialog onClose={()=>setWorkshopOpen(false)}/>}
   {restDialog&&<InnRestDialog serviceId={restDialog} onClose={()=>setRestDialog(null)}
    onConfirm={selectedBed=>{enact(selectedBed);setRestDialog(null)}}/>}
  </div>;

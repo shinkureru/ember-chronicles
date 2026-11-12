@@ -30,10 +30,10 @@ describe('黑市與裝備',()=>{
   const s=makeInitialState('journalist');
   expect(gameReducer(s,{type:'MARKET_BUY',vendorId:'broker',cardId:'question'})).toBe(s);
  });
- it('六個裝備欄位有效，卸下裝備不會丟掉物品',()=>{
+ it('七個裝備欄位有效，卸下裝備不會丟掉物品',()=>{
   const s=makeInitialState('journalist');s.bag.vest=1;
   const equipped=gameReducer(s,{type:'EQUIP_ITEM',slot:'body',itemId:'vest'});
-  expect(EQUIPMENT_SLOTS).toHaveLength(6);
+  expect(EQUIPMENT_SLOTS).toHaveLength(7);
   expect(equipped.equipment.body).toBe('vest');
   const unequipped=gameReducer(equipped,{type:'UNEQUIP_ITEM',slot:'body'});
   expect(unequipped.equipment.body).toBeNull();

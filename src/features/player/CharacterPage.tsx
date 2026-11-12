@@ -5,6 +5,7 @@ import { ATTRIBUTE_LABELS } from '../../game/data/attributes';
 import { PROFESSIONS } from '../../game/data/professions';
 import { EQUIPMENT_SLOTS, type EquipmentSlot } from '../../game/data/equipment';
 import { EQUIPMENT_EFFECTS, getEquippedDefense } from '../../game/data/equipmentEffects';
+import {armorSlotForItem,armorHits,armorStage,ARMOR_DAMAGE_STAGES} from '../../game/engine/armor';
 import { ITEMS } from '../../game/data/items';
 import type { AttributeId } from '../../game/types';
 import { playCue } from '../../audio/sound';
@@ -41,7 +42,7 @@ export default function CharacterPage(){
       return <button key={e.id} type="button" className={`equipment-slot equipment-slot--${e.id} ${slot===e.id?'is-selected':''}`}
         onClick={()=>{setSlot(e.id);playCue('select')}} aria-pressed={slot===e.id} aria-label={`${e.name}：${item?.name??'未裝備'}`}>
         <span className="equipment-slot__symbol">{e.icon}</span>
-        <span className="equipment-slot__copy"><small>{e.name}</small><strong>{item?.name??'未裝備'}</strong><em>{item?EQUIPMENT_EFFECTS[item.id]?.description??'裝備功能待設定':'點選裝備'}</em></span>
+        <span className="equipment-slot__copy"><small>{e.name}</small><strong>{item?.name??'未裝備'}</strong><em>{item?(armorSlotForItem(s,item.id)?`${ARMOR_DAMAGE_STAGES[armorStage(armorHits(s,item.id))]} · ${armorHits(s,item.id)}/10 次`:EQUIPMENT_EFFECTS[item.id]?.description??'裝備功能待設定'):'點選裝備'}</em></span>
       </button>;
     })}
    </div>

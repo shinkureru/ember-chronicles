@@ -8,6 +8,7 @@ import {EQUIPMENT_SLOTS,type EquipmentSlot} from '../../game/data/equipment';
 import {bagWeight} from '../../game/engine/rules';
 import {CONSUMABLE_IDS,previewConsumable} from '../../game/engine/consumables';
 import ItemArt from '../../components/ItemArt';
+import {armorHits,armorStage,ARMOR_DAMAGE_STAGES,armorSlotForItem} from '../../game/engine/armor';
 
 export default function FieldBagDialog({onClose}:{onClose:()=>void}){
  const {state:s,dispatch,pauseClock}=useGame();
@@ -49,7 +50,7 @@ export default function FieldBagDialog({onClose}:{onClose:()=>void}){
      </div>}
      {tab==='gear'&&<div className="field-bag__gear">
       <div className="field-bag__slots">{EQUIPMENT_SLOTS.map(item=><button type="button" key={item.id}
-       aria-pressed={slot===item.id} onClick={()=>setSlot(item.id)}><small>{item.name}</small><strong>{s.equipment[item.id]?ITEMS[s.equipment[item.id]!]!.name:'未裝備'}</strong></button>)}</div>
+       aria-pressed={slot===item.id} onClick={()=>setSlot(item.id)}><small>{item.name}</small><strong>{s.equipment[item.id]?ITEMS[s.equipment[item.id]!]!.name:'未裝備'}</strong>{s.equipment[item.id]&&armorSlotForItem(s,s.equipment[item.id]!)&&<em>{ARMOR_DAMAGE_STAGES[armorStage(armorHits(s,s.equipment[item.id]!))]} · {armorHits(s,s.equipment[item.id]!)} 次受擊</em>}</button>)}</div>
       <p>目前部位：{selected.name}。只可裝備當前背包中持有的物品。更換裝備會消耗 2 分鐘遊戲時間。</p>
       {available.map(id=><article key={id} className="field-bag__item"><span className="field-bag__art"><ItemArt id={id}/></span>
        <div><strong>{ITEMS[id]?.name}</strong><p>{s.equipment[slot]===id?'目前已裝備':'可在任務中更換'}</p></div>

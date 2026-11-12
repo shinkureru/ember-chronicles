@@ -23,6 +23,7 @@ import MissionTransition, { type MissionTransitionKind } from './MissionTransiti
 import EnemyCounterProjectile from './EnemyCounterProjectile';
 import EnemyTaunt from './EnemyTaunt';
 import FieldBagDialog from './FieldBagDialog';
+import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
 import { DAMAGE_FEEDBACK_MS } from './combatFeedbackTiming';
 export default function ChapterPage(){
  const {state:s,dispatch}=useGame();
@@ -35,6 +36,7 @@ export default function ChapterPage(){
  const [showHand,setShowHand]=useState(false);
  const [showSettings,setShowSettings]=useState(false);
  const [showBag,setShowBag]=useState(false);
+ const storyDrag=useVerticalDragScroll();
  const [handOpenCount,setHandOpenCount]=useState(0);
  const [skillPrompt,setSkillPrompt]=useState(false);
  const [skipSkillPrompt,setSkipSkillPrompt]=useState(()=>{try{return localStorage.getItem('ember-skip-skill-warning-v08')==='yes'}catch{return false}});
@@ -117,7 +119,6 @@ export default function ChapterPage(){
     <div className="enemy-hud__track" role="progressbar" aria-label="敵人生命" aria-valuemin={0} aria-valuemax={s.enemy.maxHealth} aria-valuenow={s.enemy.health}><i style={{width:`${s.enemy.health/s.enemy.maxHealth*100}%`}}/></div>
   </div>}
   <section className={`scene-art scene-art--${s.sceneId} phase--${worldPhaseToken(s.world.minute)} ${s.sceneId==='confrontation'||combatHold?'scene-art--combat':''}`} aria-label={`${scene.location}的環境場景`}>
-   <button type="button" className="chapter-bag-access" onClick={()=>{setShowBag(true);playCue('open')}} aria-label="查看背包與更換裝備"><Backpack size={18}/><span>查看背包</span></button>
    {s.stageId===2?<AlleySceneArtwork scene={combatHold&&s.enemy.health===0?'confrontation':s.sceneId}/>:
      <SceneArtwork scene={combatHold&&s.enemy.health===0?'confrontation':s.sceneId}/>}
    {(s.sceneId==='confrontation'||combatHold)&&<EnemyPresence health={s.enemy.health} maxHealth={s.enemy.maxHealth} name={s.enemy.name} variant={s.stageId===2?'alley':'warehouse'} windup={s.enemyCounter?.phase==='windup'}/>}
@@ -125,12 +126,22 @@ export default function ChapterPage(){
      enemyName={s.enemy.name} stageId={s.stageId??1}/>
    <div className="scene-art__caption"><span className="scene-art__pin"/> {scene.location}<span> · 第 {stageVisit} 次來訪</span></div>
   </section>
-  <section className="story-panel story-panel--compact"><div className="story-panel__top"><span className="eyebrow">SCENE / {scene.label}</span><span>{npc.met>1?'對方記得我':'初次接觸'}</span></div>
-   <p className="story-panel__thought">{scene.narration}</p>
-   {scene.npcText&&<p className="story-panel__compact-npc"><strong>{s.stageId===2?'守望者':'阿忠'}：</strong>{scene.npcText}</p>}
-
-   {s.sceneId==='loot'&&<div className="story-panel__hint"><Search size={12}/>搜刮會推進世界時間</div>}
-  </section>
+  <div className="chapter-story-row">
+   <section className="story-panel story-panel--compact" aria-label="場景劇情">
+    <div className="story-panel__top"><span className="eyebrow">SCENE / {scene.label}</span><span>{npc.met>1?'對方記得我':'初次接觸'}</span></div>
+    <div className="story-panel__scroll" key={s.sceneId+'-'+s.stageId} ref={storyDrag.scrollRef} tabIndex={0} role="region"
+      aria-label="場景敘事及角色對話，可上下拖曳閱讀"
+      onPointerDown={storyDrag.onPointerDown} onPointerMove={storyDrag.onPointerMove}
+      onPointerUp={storyDrag.onPointerUp} onPointerCancel={storyDrag.onPointerCancel}
+      onClickCapture={storyDrag.onClickCapture}>
+     <p className="story-panel__thought">{scene.narration}</p>
+     {scene.npcText&&<p className="story-panel__compact-npc"><strong>{s.stageId===2?'守望者':'阿忠'}：</strong>{scene.npcText}</p>}
+     {s.sceneId==='loot'&&<div className="story-panel__hint"><Search size={12}/>搜刮會推進世界時間</div>}
+    </div>
+   </section>
+   <button type="button" className="chapter-bag-access" onClick={()=>{setShowBag(true);playCue('open')}}
+     aria-label="查看背包、使用物品及更換裝備"><Backpack size={31}/><span>查看背包</span></button>
+  </div>
   {s.enemyCounter&&<div className="enemy-counter__status" role="status">{
     s.enemyCounter.phase==='waiting'?'對方準備反擊 · 0.5 秒後行動':
     s.enemyCounter.phase==='windup'?'對方正準備出手':

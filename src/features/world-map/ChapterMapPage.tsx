@@ -5,6 +5,7 @@ import { useGame } from '../../app/GameContext';
 import { CHAPTER_ONE } from '../../game/data/maps/ch01';
 import { worldClock, worldPhase, worldPhaseToken } from '../../game/engine/rules';
 import { playCue } from '../../audio/sound';
+import GameUtilities from '../../components/GameUtilities';
 
 const HUB_ACTIONS=[
  {label:'城鎮',Icon:Landmark,to:'/town'},
@@ -58,7 +59,7 @@ export default function ChapterMapPage(){
  return <div className={`world-map-page world-map-page--city phase--${worldPhaseToken(s.world.minute)}`}>
   <header className="city-overview">
    <div className="city-overview__kicker"><span>CHAPTER 01 / WORLD MAP</span><span>第 {s.world.day} 日 · {worldPhase(s.world.minute)} {worldClock(s.world.minute)}</span></div>
-   <div className="city-overview__title"><div><h1>灰燼封鎖區</h1><span>THE ASHEN QUARTER</span></div><strong>01</strong></div>
+   <div className="city-overview__title"><div><h1>灰燼封鎖區</h1><span>THE ASHEN QUARTER</span></div><GameUtilities className="game-utilities--map"/></div>
    <div className="city-overview__progress"><span>章節進度</span><div className="city-overview__track"><i style={{width:`${s.chapterProgress.completed.length/stageCount*100}%`}}/></div><strong>{s.chapterProgress.completed.length} / {stageCount}</strong></div>
   </header>
   <section className="chapter-map-section chapter-map-section--city" aria-label="覆蓋在城市中的第一章十二關卡">

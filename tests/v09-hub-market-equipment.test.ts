@@ -59,7 +59,7 @@ describe('v0.9 equipment display matches combat consequences',()=>{
   expect(getEquippedDefense(s)).toBe(0);
   s.equipment.head='cap';s.equipment.body='vest';
   expect(getEquippedDefense(s)).toBe(12);
-  expect(mitigateCounterDamage(9,getEquippedDefense(s))).toBe(5);
+  expect(mitigateCounterDamage(9,getEquippedDefense(s))).toBe(6); // 35% damage-reduction cap
   expect(mitigateCounterDamage(1,99)).toBe(1);
  });
 });

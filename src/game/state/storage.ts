@@ -2,6 +2,7 @@ import { makeInitialState } from './initial';
 import { STARTER_ATTACK_CARDS, makeInitialEnemy } from '../data/attacks';
 import { LOOT_LIMITS } from '../engine/lootLimits';
 import { makeInitialProgression } from '../engine/progression';
+import {armorHitsFromWear,ARMOR_ITEMS} from '../engine/armor';
 import type { GameState } from '../types';
 const KEY='ember-chronicles-prototype-v1';
 export const loadGame=():GameState=>{
@@ -39,6 +40,17 @@ export const loadGame=():GameState=>{
     const convertedStaminaMax=10+oldStaminaLevels;
     const convertedStamina=Math.max(0,Math.min(convertedStaminaMax,Math.round(old.player.stamina/oldStaminaMax*convertedStaminaMax)));
     const convertedAttributes=Object.fromEntries(Object.entries(old.player.attributes).map(([id,value])=>[id,Math.max(0,Math.min(20,Number(value)-10))])) as GameState['player']['attributes'];
+    // Preserve every equipped item when upgrading from the former hands slot:
+    // old gloves become arm protection and the new leg slot starts empty.
+    const equipment={head:null,body:null,arms:null,legs:null,mainHand:null,utility:null,accessory:null,
+      ...old.equipment,
+      arms:old.equipment?.arms??old.equipment?.hands??null,
+      legs:old.equipment?.legs??null} as GameState['equipment'];
+    delete equipment.hands;
+    const wear=old.town?.wear??{};
+    const armorHits=old.town?.armorHits??Object.fromEntries(Object.entries(wear)
+      .filter(([id])=>ARMOR_ITEMS.has(id))
+      .map(([id,condition])=>[id,armorHitsFromWear(condition)]));
     return { ...old,
       hpRulesVersion:2,growthRulesVersion:2,progression:old.progression??makeInitialProgression(),
       player:{
@@ -46,13 +58,13 @@ export const loadGame=():GameState=>{
        ...(legacyHealth?{maxHealth:newMax,health:newHealth}:{}),
        ...(legacyGrowth?{maxStamina:convertedStaminaMax,stamina:convertedStamina,attributes:convertedAttributes}:{}),
       },
-      town:{visits:{},lastTrainingDay:0,lastRumorDay:0,lastCanteenTalkDay:0,socialPoiseUntil:0,upgrades:{},wear:{},quests:{},...old.town},
+      town:{visits:{},lastTrainingDay:0,lastRumorDay:0,lastCanteenTalkDay:0,socialPoiseUntil:0,upgrades:{},wear:{},quests:{},...old.town,armorHits,perfectRepairs:old.town?.perfectRepairs??{}},
       conditions:{wounds:0,infection:0,poisoning:0,illness:0,...old.conditions},
       insightByEnemy:old.insightByEnemy??(old.insightBonus>0?{[old.stageId===2?'alley_watchman':'warehouse_guard']:old.insightBonus}:{}),insightBonus:0,
       stageId:old.stageId??1,alleyNpc:old.alleyNpc??{hostility:18,trust:12,met:0,adaptations:{},remembers:[],stolenGear:[]},attackDeck,enemy:old.enemy??makeInitialEnemy(old.stageId??1),ownedCards,warehouse,lootSearches,
       chapterProgress: old.chapterProgress ?? { completed: old.npc?.remembers?.includes('player_victory')?[1]:[], unlocked:old.npc?.remembers?.includes('player_victory')?2:1 },
       economy: {...(old.economy??{coins:120,blackMarketFavor:0,marketPurchases:0}),marketStock:old.economy?.marketStock??{}},
-      equipment: old.equipment ?? {head:null,body:null,hands:null,mainHand:null,utility:null,accessory:null},
+      equipment,
     };
   }catch{return makeInitialState();}
 };

@@ -1,0 +1,199 @@
+/* v0.8.6 — clinic-only layout polish. Other facilities are unchanged. */
+.clinic-overlay .clinic-dialog{
+ height:min(94dvh,830px);
+ max-height:calc(100dvh - 12px);
+ min-height:0;
+ display:flex;
+ flex-direction:column;
+ overflow:hidden;
+}
+.clinic-dialog .clinic-dialog__head,
+.clinic-dialog .clinic-dialog__scene,
+.clinic-dialog .clinic-dialog__meta,
+.clinic-dialog .clinic-dialog__tabs,
+.clinic-dialog>footer{flex:0 0 auto}
+.clinic-dialog .clinic-dialog__meta{
+ min-height:34px;gap:6px 12px;justify-content:space-between;
+ padding:7px 13px;font-size:11px;
+}
+.clinic-dialog .clinic-dialog__meta strong{display:inline-flex;align-items:center;gap:5px}
+.clinic-dialog .clinic-dialog__content{
+ flex:1 1 0!important;
+ min-height:0!important;
+ overflow-y:auto!important;
+ overflow-x:hidden!important;
+ padding:10px 12px 22px;
+ scrollbar-width:none!important;
+ -ms-overflow-style:none;
+ overscroll-behavior-y:contain;
+ touch-action:pan-y;
+ cursor:grab;
+ user-select:none;-webkit-user-select:none;
+}
+.clinic-dialog .clinic-dialog__content::-webkit-scrollbar{display:none!important;width:0!important}
+.clinic-dialog .clinic-dialog__content:active{cursor:grabbing}
+.clinic-dialog .clinic-dialog__content:focus-visible{outline:2px solid #ccaaa6;outline-offset:-2px}
+/* One compact triage row, not another copy of the town's status chart. */
+.clinic-dialog .clinic-dialog__triage{
+ display:flex;flex-wrap:wrap;align-items:center;gap:5px 9px;
+ min-height:42px;
+ padding:8px 10px;
+ background:#20292e;
+ border:1px solid #4b6668;border-radius:8px;box-shadow:none;
+}
+.clinic-dialog .clinic-dialog__triage-heading{
+ flex:none;display:flex;align-items:center;gap:6px;
+ padding-right:10px;border-right:1px solid #506466;
+}
+.clinic-dialog .clinic-dialog__triage-heading svg{width:15px;height:15px}
+.clinic-dialog .clinic-dialog__triage-heading strong{font-size:11px;white-space:nowrap;color:#d0e8db}
+.clinic-dialog .clinic-dialog__triage-list{
+ min-width:0;flex:1 1 210px;
+ display:flex;flex-wrap:wrap;gap:5px;
+}
+.clinic-dialog .clinic-dialog__triage-list>span{
+ min-height:25px;display:inline-flex;align-items:center;
+ padding:3px 7px;font-size:10px;line-height:1.4;
+ border-radius:5px;
+}
+/* Match the inn's readable current → final values and its full-width
+   saturated + pale change bar. Do not repeat tiny two-column microcards. */
+.clinic-dialog__treatment{gap:9px}
+.clinic-dialog__cards{min-width:0}
+.clinic-dialog .clinic-dialog__card--treatment{
+ display:grid;
+ grid-template-columns:minmax(0,1fr) auto;
+ align-items:center;gap:9px;
+ padding:11px 12px;
+ min-width:0;
+}
+.clinic-dialog .clinic-dialog__card--treatment>.clinic-dialog__therapy-heading{
+ min-width:0!important;
+ display:grid!important;gap:3px;
+ flex:unset!important;
+}
+.clinic-dialog__therapy-heading>strong{font-size:13px!important}
+.clinic-dialog__therapy-heading>small{
+ font-size:10px!important;line-height:1.5;overflow-wrap:anywhere;
+}
+.clinic-dialog .clinic-dialog__card--treatment>button{
+ grid-column:2;grid-row:1;
+ min-height:39px;align-self:center;
+ padding:7px 10px;font-size:11px;
+ white-space:nowrap;
+}
+.clinic-dialog .clinic-dialog__card--treatment>.clinic-dialog__outcomes{
+ grid-column:1/-1;grid-row:auto;
+ display:block!important;
+ width:100%;padding-top:9px;margin:0;
+ border-top:1px solid #43535a;
+}
+.clinic-dialog__outcomes-label{
+ display:block!important;
+ margin:0 0 7px;
+ font-size:10px!important;
+ letter-spacing:.06em;
+ color:#bad4c9!important;
+}
+.clinic-dialog__outcome-grid{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ gap:9px;
+}
+.clinic-dialog .clinic-dialog__outcome{
+ display:block!important;
+ min-height:0!important;
+ min-width:0;
+ padding:10px 11px 9px;
+ background:#22252b;
+ border:1px solid #4c545d;
+ border-radius:8px;
+}
+.clinic-dialog__outcome-head{
+ display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.clinic-dialog__outcome-head strong{
+ font-size:12px!important;line-height:1.5;color:#dbe0de!important;
+}
+.clinic-dialog__outcome-head small{
+ font-size:12px!important;line-height:1.5;
+ font-weight:750;color:#f3b6c1!important;
+ white-space:nowrap;
+}
+.clinic-dialog__outcome-numbers{
+ display:flex;align-items:baseline;gap:8px;
+ margin:4px 0 7px;
+ font:750 clamp(17px,3.8vw,21px)/1.35 Inter,'Noto Sans TC',sans-serif;
+ font-variant-numeric:tabular-nums;
+}
+.clinic-dialog__outcome-numbers span{font:inherit!important;color:#f1e7e6!important}
+.clinic-dialog__outcome-numbers svg{flex:none;align-self:center;color:#a09da3}
+.clinic-dialog__outcome-numbers em{font:inherit;font-style:normal;color:#f4b9c5}
+.clinic-dialog__outcome-track{
+ height:13px;position:relative;
+ overflow:hidden;border-radius:20px;
+ background:#403940;isolation:isolate;
+}
+.clinic-dialog__outcome-track>i{
+ position:absolute;top:0;bottom:0;
+ display:block;height:100%;
+ transition:width .48s cubic-bezier(.22,.68,.23,1),left .48s cubic-bezier(.22,.68,.23,1);
+}
+.clinic-dialog__outcome-current{background:#e65f71}
+.clinic-dialog__outcome-change{background:#f2a4af}
+.clinic-dialog__outcome--health .clinic-dialog__outcome-current{background:#ef5264}
+.clinic-dialog__outcome--health .clinic-dialog__outcome-change{background:#ef9ca6}
+.clinic-dialog__outcome--stamina .clinic-dialog__outcome-current{background:#54b59f}
+.clinic-dialog__outcome--stamina .clinic-dialog__outcome-change{background:#a9dbcf}
+.clinic-dialog__outcome--stamina .clinic-dialog__outcome-head small,
+.clinic-dialog__outcome--stamina .clinic-dialog__outcome-numbers em{color:#bce8d7!important}
+.clinic-dialog__outcome--fatigue .clinic-dialog__outcome-current{background:#a08cc5}
+.clinic-dialog__outcome--fatigue .clinic-dialog__outcome-change{background:#c4b4df}
+.clinic-dialog__outcome--fatigue .clinic-dialog__outcome-head small,
+.clinic-dialog__outcome--fatigue .clinic-dialog__outcome-numbers em{color:#d2c4ea!important}
+.clinic-dialog .clinic-dialog__outcome-empty{
+ margin:0;padding:6px 0;
+ font-size:11px;line-height:1.6;
+}
+/* Stale global events never appear on open. Once a clinic action is performed,
+   brief result text wraps naturally; it must never have its own scrollbar. */
+.clinic-dialog .clinic-dialog__last{
+ flex:0 0 auto;
+ display:block;
+ min-height:0;
+ max-height:none!important;
+ height:auto;
+ overflow:visible!important;
+ padding:8px 12px;
+ margin:0;
+ font-size:11px;line-height:1.6;overflow-wrap:anywhere;
+}
+.clinic-dialog>footer{min-height:55px;padding:9px 13px}
+.clinic-dialog .clinic-dialog__card--supply{
+ user-select:none;-webkit-user-select:none;
+}
+@media(max-width:400px){
+ .clinic-overlay .clinic-dialog{
+  height:calc(100dvh - 10px);
+  max-height:calc(100dvh - 10px);
+ }
+ .clinic-dialog .clinic-dialog__scene{
+  height:clamp(86px,15dvh,116px);
+ }
+ .clinic-dialog .clinic-dialog__triage{gap:5px;padding:7px}
+ .clinic-dialog .clinic-dialog__triage-heading{padding-right:7px}
+ .clinic-dialog .clinic-dialog__triage-list{flex-basis:155px}
+ .clinic-dialog .clinic-dialog__card--treatment{padding:9px;gap:7px}
+ .clinic-dialog .clinic-dialog__card--treatment>button{padding:6px 8px;font-size:10px}
+}
+@media(max-height:650px){
+ .clinic-dialog .clinic-dialog__head{padding:9px 12px}
+ .clinic-dialog .clinic-dialog__scene{height:83px}
+ .clinic-dialog .clinic-dialog__meta{padding:5px 11px}
+ .clinic-dialog .clinic-dialog__tabs{padding:5px 9px}
+ .clinic-dialog .clinic-dialog__content{padding:8px 10px 19px}
+ .clinic-dialog>footer{min-height:47px;padding:5px 10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .clinic-dialog__outcome-track>i{transition:none!important}
+}

@@ -50,7 +50,7 @@ export const armorRepairFee=(s:GameState,id:string):number=>{
  const hits=armorHits(s,id),stage=armorStage(hits);
  const wear=armorDurability(s,id);
  if(hits<=0&&wear>=100)return 0;
- if(stage==='intact')return Math.max(3,4+hits*2);
+ if(stage==='intact')return hits<=1?3:5; // Micro-repairs stay below every light-damage quote.
  const base=REPAIR_BASE[slot][stage];
  const extra=stage==='light'?Math.max(0,hits-3)*2:stage==='moderate'?Math.max(0,hits-5)*2:0;
  return base+extra;

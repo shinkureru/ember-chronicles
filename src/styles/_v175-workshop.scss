@@ -99,7 +99,7 @@
 
 /* Seven slot choices now fit around the survivor without accidental overlap. */
 .character-viewport--v09 .equipment-slot{
- min-height:0!important;height:clamp(28px,10%,54px)!important;
+ min-height:0!important;height:clamp(36px,16%,60px)!important;
  padding:clamp(2px,.4dvh,5px) 4px!important;
 }
 .character-viewport--v09 .equipment-slot--head{top:2%;left:1.5%}

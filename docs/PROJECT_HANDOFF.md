@@ -1,5 +1,18 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜最新｜v0.8.6 第一批（診所 UI + 拖曳）
+
+- 最新已部署基準 `main`：`6c7cf70086bd15c170c7d0fd3bc760a9518c4328`（v0.8.5），**舊 PR #29、#30、#31 都已 Merge；open PR 0**。舊條目寫的「尚未部署」為歷史紀錄，勿當作最新狀態。
+- 新工作分支 `fix/v0.8.6-clinic-layout-drag` 由上述 main SHA 建立。**本輪只實作第一批**：縮短診所「待處理」狀態列、將療程的前後變化改成出租床位式同色雙色長進度條、修正診療與藥房桌面滑鼠拖曳失效、修正底部短句出現獨立捲軸與舊休息訊息殘留。診所專用 `useClinicDragScroll` 監聽 document pointermove/up，拖曳時抑制 click；手機仍使用原生觸控。
+- 變更檔案：`src/features/town/ClinicDialog.tsx`、`src/features/town/useClinicDragScroll.ts`、`src/styles/_v086-clinic-polish.scss`、`src/styles/main.scss`、`package.json`、`package-lock.json`、`tests/v086-clinic-polish.test.ts`、`docs/V086_CLINIC_LAYOUT_QA.md`、此交接檔。
+- **無數值／狀態欄位／存檔格式調整**；療程預覽保持與 `clinicTreatmentOutcomes`／`clinicTreatmentPreview` 同源。時間進行仍可能影響飢餓或疲勞，進度條呈現的是療程直接改變。
+- 後續批次依序：**v0.8.7** 城鎮八設施下方移除重複的詳細區塊並維持可操作、**v0.8.8** 主要頁面融合返回主畫面與規劃版本設定入口、**v0.8.9** 移除頂端舊 Navbar 並融入設定／版本及 RWD 檢查。
+- 用戶指定合作流程：**只交付一個 PR 就停手**，等用戶自行 Merge、確認 GitHub Pages 和測試，再由用戶明確回覆繼續下一批。**禁止擅自同輪開多個相依 PR**。本批合併與實機驗收之前，不要誤報已部署／完全驗收。
+- 本批專項文件：`docs/V086_CLINIC_LAYOUT_QA.md`。先確認 CI 自動測試，再交給使用者合併。
+
+---
+
+
 ## 2026-11-12｜v0.8.5 微批次 3：診所療程效果預覽
 
 本輪（圖 1～5 的修正）已切成三個獨立小 PR：**PR #29** `fix/v0.8.3-town-inn-scroll`（城鎮狀態展開後可拖曳到下方設施、出租床位 footer 固定）；**PR #30** `fix/v0.8.4-workshop-dialog-layout`（有裝備/空裝備同一尺寸，工坊詳情捲動）；**PR #31** `feat/v0.8.5-clinic-treatment-preview`（診所只顯示有異常的就診摘要及每張療程卡真實前後數值）。

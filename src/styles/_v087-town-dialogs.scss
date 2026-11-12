@@ -14,8 +14,8 @@
 }
 .town-facility-dialog{
  width:min(96vw,590px);
- height:min(91dvh,790px);
- max-height:calc(100dvh - 16px);
+ height:auto;
+ max-height:min(91dvh,790px);
  min-height:0;
  display:flex;flex-direction:column;
  color:#ece6e3;
@@ -61,7 +61,7 @@
 }
 .town-facility-dialog__meta>span{display:inline-flex;align-items:center;gap:5px}
 .town-facility-dialog__body{
- flex:1 1 0;min-height:0;
+ flex:1 1 auto;min-height:0;
  padding:13px 12px 20px;
  overflow-x:hidden;overflow-y:auto;
  overscroll-behavior-y:contain;
@@ -117,7 +117,7 @@
 }
 @media(max-width:400px){
  .town-facility-overlay{padding:5px}
- .town-facility-dialog{width:100%;height:calc(100dvh - 10px);max-height:calc(100dvh - 10px);border-radius:9px}
+ .town-facility-dialog{width:100%;height:auto;max-height:calc(100dvh - 10px);border-radius:9px}
  .town-facility-dialog__head{gap:8px;padding:11px 10px}
  .town-facility-dialog__head .town-v15__scene-icon{width:40px;height:44px}
  .town-facility-dialog__head>button{width:35px;height:35px}

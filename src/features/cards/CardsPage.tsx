@@ -10,6 +10,7 @@ import { PROFESSIONS } from '../../game/data/professions';
 import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
 import {buildCardArchiveVariants} from '../../game/engine/cardArchiveVariants';
 import { playCue } from '../../audio/sound';
+import ReturnMainLink from '../../components/ReturnMainLink';
 const RARITY:Record<string,string>={normal:'普通',rare:'稀有',chaos:'混沌'};
 export default function CardsPage(){
  const {state:s,dispatch}=useGame();
@@ -67,7 +68,7 @@ export default function CardsPage(){
    })}
    {!variants.length&&<div className="card-library-empty-note">目前沒有符合條件的卡牌。</div>}
   </div>
-  <div className="card-library-footer"><Sparkles size={13}/>同卡複本可升級至 V 階。攻擊卡需有對應武器，才能在關卡內使用。</div>
+  <div className="card-library-footer"><span className="card-library-footer__hint"><Sparkles size={13}/>同卡複本可升級至 V 階。攻擊卡需有對應武器，才能在關卡內使用。</span><ReturnMainLink className="return-main-link--cards"/></div>
   {selected&&<div className="card-detail-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setSelectedId(null)}}>
     <section className="card-detail-dialog" role="dialog" aria-modal="true" aria-label={`${selected.name}卡牌詳情`}>
       <header className="card-detail-dialog__head"><span className="eyebrow">CARD ARCHIVE / {selected.id.toUpperCase()}</span><button type="button" onClick={()=>setSelectedId(null)} aria-label="關閉卡牌詳情"><X size={20}/></button></header>

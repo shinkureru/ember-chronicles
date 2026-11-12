@@ -96,7 +96,7 @@ export default function GameFeedback(){
  },[pickup]);
  if(!notice&&!pickup)return null;
  const Icon=notice?.kind==='danger'?HeartCrack:Sparkles;
- const healthNumbers=notice?.title==='嚴重受傷'?notice.detail.match(/^生命 (\\d+) → (\\d+)$/):null;
+ const healthNumbers=notice?.title==='嚴重受傷'?notice.detail.match(/^生命 (\d+) → (\d+)$/):null;
  return <>
   {pickup&&<PickupFly key={pickup.id} pickup={pickup}/>}
   {notice&&<div className="critical-notice-layer" aria-live="assertive">

@@ -18,3 +18,5 @@
 
 ## 合併順序
 PR #29 → PR #30 → 本批 PR #31；前一批合併後再把下一批的 base 改回 main、確認 CI/Files changed 乾淨，勿提前刪除仍作為後續 PR base 的分支。每批獨立更新永久交接並顯示版本 v0.8.3 → v0.8.4 → v0.8.5。
+
+CI 核對：GitHub Actions 的 pull_request workflow 僅對 main 觸發，開發時可暫時以 main 為 base 觸發測試；完成後復原 stacked PR base，避免檔案 diff 混在一起。

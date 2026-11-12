@@ -1,4 +1,4 @@
-import {useEffect,useState} from 'react';
+import {useEffect,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
 import {BedDouble,Clock3,HeartPulse,Moon,Sunrise,X} from 'lucide-react';
 import {playRestLullaby,type RestLullabyKind} from '../../audio/sound';
@@ -9,13 +9,14 @@ export const REST_CINEMATIC_MS=4850;
  * GameState settlement is dispatched by the confirmation handler once only. */
 export default function RestCinematic({kind,onFinish}:{kind:RestLullabyKind;onFinish:()=>void}){
  const [complete,setComplete]=useState(false);
+ const finishRef=useRef(onFinish);finishRef.current=onFinish;
  const name=TOWN_SERVICES.find(service=>service.id===kind)?.name??'休息';
  useEffect(()=>{
   const stopMusic=playRestLullaby(kind);
   const ready=window.setTimeout(()=>setComplete(true),REST_CINEMATIC_MS-500);
-  const done=window.setTimeout(onFinish,REST_CINEMATIC_MS);
+  const done=window.setTimeout(()=>finishRef.current(),REST_CINEMATIC_MS);
   return()=>{stopMusic();window.clearTimeout(ready);window.clearTimeout(done)};
- },[kind,onFinish]);
+ },[kind]);
  const scene=kind==='rest_short'?'短暫閉目':kind==='rest_private'?'安穩入眠':'短暫安歇';
  return createPortal(<div className={`rest-cinematic rest-cinematic--${kind}`} role="dialog" aria-modal="true" aria-label={`${name}休息動畫`}>
   <div className="rest-cinematic__sky" aria-hidden="true"><span className="rest-cinematic__moon"/><span className="rest-cinematic__glow"/></div>
@@ -36,7 +37,7 @@ export default function RestCinematic({kind,onFinish}:{kind:RestLullabyKind;onFi
    <div className="rest-cinematic__progress" role="progressbar" aria-label="休息進行中" aria-valuemin={0} aria-valuemax={100} aria-valuenow={complete?100:50}><i/></div>
    <span><HeartPulse size={14}/> 生命與體力已按選擇的休息方案結算</span>
   </div>
-  <button type="button" className="rest-cinematic__skip" onClick={onFinish}><X size={15}/>跳過動畫</button>
+  <button type="button" className="rest-cinematic__skip" onClick={()=>finishRef.current()}><X size={15}/>跳過動畫</button>
   <div className="rest-cinematic__time" aria-hidden="true"><Clock3 size={16}/>時間正在流逝</div>
  </div>,document.body);
 }

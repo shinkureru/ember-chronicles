@@ -92,7 +92,8 @@ export const completeArmorRepair=(s:GameState,id:string):boolean=>{
 };
 export const perfectRepairActive=(s:GameState,id:string):boolean=>{
  const value=s.town?.perfectRepairs?.[id];
- return !!value&&value.bonus>0&&\n  (s.mode==='home'?s.attempt<value.expiresAfterAttempt:s.attempt<=value.expiresAfterAttempt);
+ return !!value&&value.bonus>0&&
+  (s.mode==='home'?s.attempt<value.expiresAfterAttempt:s.attempt<=value.expiresAfterAttempt);
 };
 /** Clean expired bonuses at mission start, or after the mission result. */
 export const expirePerfectRepairs=(s:GameState)=>{

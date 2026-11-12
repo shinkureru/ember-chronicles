@@ -1,0 +1,100 @@
+/* v0.8.4 Workshop: one stable viewport irrespective of equipped slot content.
+ * Header, illustration and footer remain fixed; only details can scroll. */
+.workshop-overlay{
+ box-sizing:border-box;
+ padding:clamp(7px,1.5dvh,12px);
+}
+.workshop-overlay .workshop-dialog{
+ box-sizing:border-box;
+ display:flex!important;
+ flex-direction:column;
+ width:min(96vw,570px)!important;
+ height:min(92dvh,850px)!important;
+ max-height:calc(100dvh - 14px)!important;
+ min-height:0!important;
+ overflow:hidden!important;
+}
+.workshop-dialog > .workshop-dialog__header{
+ flex:0 0 auto;
+ min-height:68px;
+}
+.workshop-dialog > .workshop-dialog__scene{
+ flex:0 0 clamp(85px,15dvh,133px)!important;
+ height:clamp(85px,15dvh,133px)!important;
+ min-height:0;
+}
+.workshop-dialog__scene > div{
+ min-width:0;
+ max-width:78%;
+ overflow-wrap:anywhere;
+ line-height:1.6;
+}
+.workshop-dialog__scene strong{white-space:normal;line-height:1.5}
+.workshop-dialog > .workshop-dialog__scroll{
+ flex:1 1 0!important;
+ min-height:0!important;
+ height:auto!important;
+ overflow-y:auto!important;
+ overflow-x:hidden!important;
+ scrollbar-width:none!important;
+ -ms-overflow-style:none;
+ touch-action:pan-y;
+ overscroll-behavior-y:contain;
+}
+.workshop-dialog__scroll::-webkit-scrollbar{display:none!important;width:0!important}
+.workshop-dialog__slots{grid-auto-rows:minmax(96px,auto);align-items:stretch}
+.workshop-dialog__slots > .workshop-dialog__slot{
+ box-sizing:border-box;
+ min-height:96px;
+ height:100%;
+ justify-content:center;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog__slot strong{
+ display:block;
+ min-height:2.7em;
+ line-height:1.35;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog__slot small{line-height:1.5;min-height:1.5em}
+.workshop-dialog__gear{min-width:0;align-items:center}
+.workshop-dialog__gear h3,
+.workshop-dialog__gear p{line-height:1.55;overflow-wrap:anywhere}
+.workshop-dialog__inspection{
+ box-sizing:border-box;
+ min-width:0;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog__chance{line-height:1.7}
+.workshop-dialog__empty{
+ min-height:clamp(220px,34dvh,340px);
+ justify-content:center;
+ padding:20px clamp(12px,4vw,24px);
+ box-sizing:border-box;
+}
+.workshop-dialog__empty p{max-width:38ch;overflow-wrap:anywhere}
+.workshop-dialog > footer{
+ flex:0 0 auto!important;
+ min-height:59px;
+ padding:10px 14px!important;
+ align-items:center;
+ background:#151419;
+ position:relative;
+ z-index:1;
+}
+.workshop-dialog > footer button{min-height:40px;white-space:normal;line-height:1.4}
+@media(max-width:380px){
+ .workshop-overlay .workshop-dialog{width:calc(100vw - 14px)!important}
+ .workshop-dialog__slots{grid-auto-rows:minmax(88px,auto);gap:6px}
+ .workshop-dialog__slots > .workshop-dialog__slot{min-height:88px}
+ .workshop-dialog__inspection{padding:9px;gap:9px}
+}
+@media(max-height:650px){
+ .workshop-overlay .workshop-dialog{height:calc(100dvh - 14px)!important}
+ .workshop-dialog > .workshop-dialog__header{min-height:56px;padding:9px 12px}
+ .workshop-dialog > .workshop-dialog__scene{height:70px!important;flex-basis:70px!important}
+ .workshop-dialog__scroll{padding:9px}
+ .workshop-dialog__slots{grid-auto-rows:minmax(78px,auto)}
+ .workshop-dialog__slots > .workshop-dialog__slot{min-height:78px}
+ .workshop-dialog > footer{min-height:52px;padding:6px 11px!important}
+}

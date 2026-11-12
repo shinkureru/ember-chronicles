@@ -4,6 +4,7 @@ import { ArrowLeft, Settings2, Skull } from 'lucide-react';
 import { playCue, setAudioScene, unlockAudio } from '../audio/sound';
 import { useGame } from '../app/GameContext';
 import GameFeedback from './GameFeedback';
+import ReturnMainLink from './ReturnMainLink';
 import type { SoundscapeId } from '../audio/soundscapes';
 declare const __APP_VERSION__:string;
 declare const __BUILD_REVISION__:string;
@@ -11,6 +12,7 @@ export default function Frame({children}:{children:ReactNode}){
   const location=useLocation(),{state,pauseClock}=useGame();
   const inMission=state.mode!=='home';
   const onMap=location.pathname==='/';
+  const returnInsidePage=['/black-market','/cards','/preparation'].includes(location.pathname);
   useEffect(()=>{
    pauseClock('route',location.pathname==='/settings');
    return()=>pauseClock('route',false);
@@ -46,6 +48,9 @@ export default function Frame({children}:{children:ReactNode}){
         <NavLink to="/settings" className="app-header__settings" aria-label="設定"><Settings2 size={19}/></NavLink>
       </header>}
       <main key={location.pathname} className={`app-main ${inMission?'app-main--mission':''}`} id="main">{children}</main>
+      {!inMission&&!onMap&&!returnInsidePage&&<nav className="return-main-dock" aria-label="返回主畫面導覽">
+       <ReturnMainLink/>
+      </nav>}
       {!inMission&&import.meta.env.DEV&&<div className="dev-shortcut"><NavLink to="/dev">DEV · 測試工具</NavLink></div>}
       <GameFeedback/>
     </div>

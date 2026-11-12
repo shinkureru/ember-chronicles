@@ -8,6 +8,7 @@ import {ITEMS} from '../../game/data/items';
 import {CLINIC_SUPPLIES,CLINIC_TREATMENTS,clinicBuyBlock,clinicQuestBlock,clinicTreatmentPreview,clinicUnitPrice,getClinicProgress,getClinicQuest} from '../../game/engine/clinic';
 import {getTownServiceLock} from '../../game/engine/townActions';
 import ItemArt from '../../components/ItemArt';
+import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
 type ClinicTab='treatment'|'daily'|'shop';
 
 /** Original vector illustration: an underground triage room with two examination beds. */
@@ -37,6 +38,7 @@ function ClinicScene(){
 export default function ClinicDialog({onClose}:{onClose:()=>void}){
  const {state:s,dispatch,pauseClock}=useGame();
  const [tab,setTab]=useState<ClinicTab>('treatment');
+ const dragScroll=useVerticalDragScroll();
  const clinic=getClinicProgress(s),quest=getClinicQuest(s);
  useEffect(()=>{
   pauseClock('dialog',true);
@@ -60,7 +62,11 @@ export default function ClinicDialog({onClose}:{onClose:()=>void}){
     <button type="button" aria-pressed={tab==='daily'} onClick={()=>setTab('daily')}><ClipboardList size={15}/>每日委託</button>
     <button type="button" aria-pressed={tab==='shop'} onClick={()=>setTab('shop')}><Package size={15}/>專屬藥房</button>
    </nav>
-   <div className="clinic-dialog__content">
+   <div className="clinic-dialog__content" ref={dragScroll.scrollRef} tabIndex={0}
+    role="region" aria-label="診所診療、委託和藥房內容，可上下拖曳"
+    onPointerDown={dragScroll.onPointerDown} onPointerMove={dragScroll.onPointerMove}
+    onPointerUp={dragScroll.onPointerUp} onPointerCancel={dragScroll.onPointerCancel}
+    onClickCapture={dragScroll.onClickCapture}>
     {tab==='treatment'&&<div className="clinic-dialog__cards">
      {treatmentList.map(service=>{
       const preview=clinicTreatmentPreview(s,service.id);

@@ -1,0 +1,173 @@
+/* v1.7.4 | phase A: stable scene/story split, drag browsing, vivid combat feedback. */
+
+/* Desktop mouse-drag + mobile native touch + wheel; hide only the visual scroll bar. */
+.clinic-dialog .clinic-dialog__content,
+.chapter-story-row .story-panel__scroll{
+ overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;
+ scrollbar-width:none!important;-ms-overflow-style:none;
+ touch-action:pan-y;cursor:grab;
+}
+.clinic-dialog .clinic-dialog__content::-webkit-scrollbar,
+.chapter-story-row .story-panel__scroll::-webkit-scrollbar{display:none!important;width:0}
+.clinic-dialog .clinic-dialog__content:active,
+.chapter-story-row .story-panel__scroll:active{cursor:grabbing}
+.clinic-dialog .clinic-dialog__content:focus-visible,
+.chapter-story-row .story-panel__scroll:focus-visible{outline:2px solid #d5a79e;outline-offset:-2px}
+.clinic-dialog .clinic-dialog__content{scrollbar-color:transparent transparent!important}
+
+/* Maintain a constant-sized SCENE header and let the transcript itself scroll.
+   A separate dedicated backpack card sits to the right, not over the artwork. */
+.chapter-live .chapter-story-row{
+ display:grid;grid-template-columns:minmax(0,1fr) clamp(104px,19%,130px);gap:8px;
+ flex:none;width:100%;height:clamp(102px,15dvh,138px);min-height:0;
+}
+.chapter-live .chapter-story-row .story-panel--compact{
+ display:flex!important;flex-direction:column;min-width:0;min-height:0!important;
+ width:100%;height:100%!important;max-height:none!important;overflow:hidden!important;
+ padding:9px 10px!important;border-radius:8px;
+}
+.chapter-story-row .story-panel__top{
+ flex:none;min-width:0;display:flex;gap:5px;align-items:center;
+ justify-content:space-between;margin-bottom:5px!important;
+}
+.chapter-story-row .story-panel__top .eyebrow{
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;
+}
+.chapter-story-row .story-panel__top>span:last-child{white-space:nowrap;flex:none}
+.chapter-story-row .story-panel__scroll{
+ min-width:0;min-height:0;flex:1;
+ padding:2px 6px 9px 0;
+}
+.chapter-story-row .story-panel__thought,
+.chapter-story-row .story-panel__compact-npc{
+ display:block!important;-webkit-line-clamp:unset!important;
+ max-height:none!important;overflow:visible!important;
+ font-size:clamp(10px,2.55vw,12px)!important;line-height:1.6!important;
+ overflow-wrap:anywhere;
+}
+.chapter-story-row .story-panel__compact-npc{margin-top:7px!important;color:#ddb7ae}
+.chapter-story-row .story-panel__hint{margin-top:7px}
+.chapter-live .chapter-story-row .chapter-bag-access{
+ position:static!important;transform:none!important;top:auto!important;left:auto!important;
+ width:100%;height:100%;max-width:none!important;min-width:0;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+ padding:9px 5px;border:1px solid #806b71;border-radius:9px;
+ color:#f4e8e1;background:linear-gradient(160deg,#29252d,#17171c 75%);
+ box-shadow:inset 0 1px #ffffff19,0 5px 15px #0007;
+ text-align:center;cursor:pointer;
+}
+.chapter-story-row .chapter-bag-access svg{
+ flex:none;width:clamp(25px,5vw,35px);height:clamp(25px,5vw,35px);color:#ead4c8;
+}
+.chapter-story-row .chapter-bag-access span{
+ display:block;white-space:normal;font-size:clamp(11px,2.85vw,14px);
+ font-weight:800;line-height:1.35;text-shadow:0 2px 4px #000;
+}
+.chapter-story-row .chapter-bag-access:hover{background:linear-gradient(160deg,#45333f,#292028);border-color:#d3b1a6}
+.chapter-story-row .chapter-bag-access:focus-visible{outline:3px solid #e5b6a7;outline-offset:2px}
+@media(max-height:760px){
+ .chapter-live .chapter-story-row{height:clamp(83px,12dvh,99px);gap:6px}
+ .chapter-live .chapter-story-row .story-panel--compact{padding:6px 8px!important}
+ .chapter-story-row .chapter-bag-access{gap:4px!important}
+ .chapter-story-row .chapter-bag-access svg{width:26px;height:26px}
+}
+@media(max-height:620px){
+ .chapter-live .chapter-story-row{height:78px}
+ .chapter-story-row .story-panel__top{margin-bottom:3px!important}
+ .chapter-story-row .chapter-bag-access svg{width:23px;height:23px}
+}
+@media(max-width:350px){
+ .chapter-live .chapter-story-row{grid-template-columns:minmax(0,1fr) 94px;gap:5px}
+ .chapter-story-row .story-panel__top>span:last-child{display:none}
+}
+
+/* Red, centered, nearly full-size incoming attack number. Reuses authoritative
+   damage shown by EnemyCounterProjectile, never a second simulated hit. */
+.enemy-counter--hit .enemy-counter__text{
+ position:fixed!important;top:43%!important;left:50%!important;bottom:auto!important;
+ z-index:50;transform:translate(-50%,-50%);
+ max-width:96vw;display:block;padding:clamp(11px,2.8vw,20px) clamp(15px,3.8vw,32px);
+ white-space:nowrap;
+ background:linear-gradient(145deg,#300d17f0,#170b10ec);
+ border:2px solid #ed6b79;border-radius:11px;
+ box-shadow:0 0 22px #db253a44,0 16px 46px #000c,inset 0 0 17px #ed5a5c14;
+ color:#ff8799!important;
+ font:900 clamp(32px,9vw,76px)/1.25 'Noto Serif TC','Noto Sans TC',sans-serif!important;
+ text-shadow:0 4px 14px #000,0 0 20px #e7476188;
+ letter-spacing:.025em;
+ animation:v174-hit-large 2.75s cubic-bezier(.2,.65,.28,1) both!important;
+ pointer-events:none;
+}
+@keyframes v174-hit-large{
+ 0%,9%{opacity:0;transform:translate(-50%,-50%) scale(.75)}
+ 20%{opacity:1;transform:translate(-50%,-50%) scale(1.07)}
+ 28%,77%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+ 100%{opacity:0;transform:translate(-50%,-50%) scale(.96)}
+}
+
+/* The old notice was a tall 1:1 black placeholder. Trauma becomes a compact
+   information card with distinct hierarchy, an ECG trace and a real dismiss button. */
+.critical-notice-layer{
+ z-index:195;background:rgba(0,0,0,.72);
+ backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+}
+.critical-notice{
+ width:min(92vw,392px)!important;height:auto!important;aspect-ratio:auto!important;
+ max-height:min(88dvh,460px)!important;
+ display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;
+ padding:0!important;gap:0!important;text-align:left!important;
+ border:1px solid #685961;border-radius:15px;
+ background:radial-gradient(circle at 95% 4%,#502a3340,transparent 58%),linear-gradient(#1a191e,#101014);
+ box-shadow:0 18px 60px #000e,inset 0 1px #ffffff1c;overflow:hidden;
+ animation:v174-trauma-enter .32s ease-out both!important;
+}
+.critical-notice--danger{border-color:#ac4f61;box-shadow:0 0 0 1px #932b3740,0 22px 70px #000f,0 0 40px #aa284333}
+.critical-notice__header{
+ display:flex;align-items:center;gap:12px;padding:16px 18px 15px;
+ background:linear-gradient(90deg,#63202e55,transparent);
+ border-bottom:1px solid #7c46504a;
+}
+.critical-notice__symbol{
+ flex:none;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;
+ background:#682b37;border:1px solid #ad6268;box-shadow:inset 0 0 14px #f59b8730;
+}
+.critical-notice__symbol .critical-notice__icon{color:#ffabb0}
+.critical-notice__header>div{flex:1;min-width:0}
+.critical-notice__header small{display:block;color:#d4acac;letter-spacing:.13em;font-size:9px;line-height:1.5}
+.critical-notice__header h2{font:900 clamp(20px,5.1vw,26px)/1.35 'Noto Serif TC',serif;margin:2px 0 0;color:#fff0ee}
+.critical-notice__danger{position:static!important;color:#ff8293;flex:none}
+.critical-notice__readout{
+ position:relative;display:grid;gap:6px;padding:12px 18px 6px;
+}
+.critical-notice__readout>span{font-size:11px;color:#bdb0b5}
+.critical-notice__numbers{display:flex;gap:13px;align-items:baseline}
+.critical-notice__numbers strong{font:800 clamp(24px,7vw,34px)/1.1 Inter,sans-serif;color:#f2e8e8}
+.critical-notice__numbers span{font-size:19px;color:#a9878f}
+.critical-notice__numbers .critical-notice__number--after{color:#ff899a}
+.critical-notice__pulse{
+ width:100%;height:33px;max-height:33px;color:#dd6573;
+ filter:drop-shadow(0 0 6px #ef394c7a);
+ animation:v174-ecg 2.1s ease-in-out infinite;
+}
+.critical-notice__detail{
+ margin:0!important;padding:8px 18px 13px;
+ max-height:85px!important;overflow-y:auto;
+ font-size:12px!important;line-height:1.65!important;color:#d1bfc3!important;
+}
+.critical-notice__dismiss{
+ display:flex!important;justify-content:center;align-items:center;gap:7px;
+ width:calc(100% - 36px);margin:2px 18px 17px;padding:10px!important;
+ min-height:42px;border:1px solid #9d6571!important;border-radius:8px;
+ background:linear-gradient(135deg,#82404d,#5c2734)!important;
+ color:#fff4f4!important;font-size:13px!important;font-weight:700!important;
+}
+.critical-notice__dismiss:hover{background:#994e5b!important}
+@keyframes v174-trauma-enter{
+ from{opacity:0;transform:translateY(15px) scale(.93);filter:blur(3px)}
+ to{opacity:1;transform:translateY(0) scale(1);filter:none}
+}
+@keyframes v174-ecg{0%,100%{opacity:.55}28%,57%{opacity:1}}
+@media(prefers-reduced-motion:reduce){
+ .enemy-counter--hit .enemy-counter__text{animation:none!important;opacity:1!important;transform:translate(-50%,-50%)!important}
+ .critical-notice,.critical-notice__pulse{animation:none!important}
+}

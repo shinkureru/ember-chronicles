@@ -85,7 +85,7 @@ export default function GameFeedback(){
  useEffect(()=>{
   if(!notice)return;
   playCue(notice.kind==='danger'?'warning':'reward');
-  const timer=window.setTimeout(()=>setQueue(q=>q.filter(n=>n.id!==notice.id)),notice.kind==='danger'?3300:2700);
+  const timer=window.setTimeout(()=>setQueue(q=>q.filter(n=>n.id!==notice.id)),notice.kind==='danger'?4600:2700);
   return()=>window.clearTimeout(timer);
  },[notice]);
  useEffect(()=>{
@@ -96,14 +96,26 @@ export default function GameFeedback(){
  },[pickup]);
  if(!notice&&!pickup)return null;
  const Icon=notice?.kind==='danger'?HeartCrack:Sparkles;
+ const healthNumbers=notice?.title==='嚴重受傷'?notice.detail.match(/^生命 (\d+) → (\d+)$/):null;
  return <>
   {pickup&&<PickupFly key={pickup.id} pickup={pickup}/>}
   {notice&&<div className="critical-notice-layer" aria-live="assertive">
    <section key={notice.id} className={`critical-notice critical-notice--${notice.kind}`} role="alertdialog" aria-modal="true" aria-label={notice.title}>
-    <Icon size={29} className="critical-notice__icon"/>
-    <strong>{notice.title}</strong><p>{notice.detail}</p>
-    <button type="button" aria-label="關閉重大事件提示" onClick={()=>setQueue(q=>q.slice(1))}><X size={18}/>關閉</button>
-    {notice.kind==='danger'&&<AlertTriangle size={15} className="critical-notice__danger"/>}
+    <header className="critical-notice__header">
+     <span className="critical-notice__symbol"><Icon size={29} className="critical-notice__icon"/></span>
+     <div><small>{notice.kind==='danger'?'TRAUMA / CRITICAL CONDITION':'EVENT / NOTIFICATION'}</small><h2>{notice.title}</h2></div>
+     {notice.kind==='danger'&&<AlertTriangle size={18} className="critical-notice__danger"/>}
+    </header>
+    {healthNumbers?<div className="critical-notice__readout">
+     <span>生命狀態 / HP</span>
+     <div className="critical-notice__numbers"><strong>{healthNumbers[1]}</strong><span>→</span><strong className="critical-notice__number--after">{healthNumbers[2]}</strong></div>
+     <svg className="critical-notice__pulse" viewBox="0 0 320 44" preserveAspectRatio="none" aria-hidden="true">
+      <polyline fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinejoin="round"
+       points="0,23 55,23 70,18 85,30 99,6 117,40 132,23 183,23 201,16 216,29 231,23 320,23"/>
+     </svg>
+    </div>:<p className="critical-notice__detail">{notice.detail}</p>}
+    {healthNumbers&&<p className="critical-notice__detail">傷勢已影響生存狀態，請評估撤退與治療。</p>}
+    <button type="button" className="critical-notice__dismiss" aria-label="關閉重大事件提示" onClick={()=>setQueue(q=>q.slice(1))}><X size={16}/>關閉提示</button>
    </section>
  </div>}
  </>;

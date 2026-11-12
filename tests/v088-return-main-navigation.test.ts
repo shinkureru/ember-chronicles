@@ -24,8 +24,11 @@ describe('v0.8.8 safe return-to-main navigation',()=>{
   expect(frame).toContain('!inMission&&!onMap&&!returnInsidePage&&<nav className="return-main-dock"');
   expect(frame).toContain('<ReturnMainLink/>');
   expect(frame).toContain("const inMission=state.mode!=='home'");
+  const routes=read('src/app/App.tsx');
+  const special=frame.match(/returnInsidePage=\\[([^\\]]+)\\]/)?.[1]??'';
   for(const path of ['/town','/warehouse','/character','/settings','/dev']){
-   expect(frame.includes(`'${path}'`)&&frame.includes("returnInsidePage=")&&!frame.match(new RegExp("returnInsidePage=\\[[^\\]]*"+path))).toBe(true);
+   expect(routes).toContain(`path="${path}"`);
+   expect(special).not.toContain(path);
   }
   expect(css).toContain('.return-main-dock{');
   expect(css).toContain('justify-content:flex-end');

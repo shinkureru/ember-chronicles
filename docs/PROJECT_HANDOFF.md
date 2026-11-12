@@ -1,5 +1,18 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜最新｜第二批 v0.8.7 城鎮畫面結構（待 Merge）
+
+- 已確認最新 `main`：`6c3e207d10700c8aa0dedca3a25e2b3a71bb1a55`（v0.8.6，PR #32 已 Merge，使用者尚未對 v0.8.6 實機測試）。建置本分支時 open PR 數量 0。**不要因下方歷史紀錄誤以為前批尚未合併。**
+- 本批分支：`fix/v0.8.7-town-eight-facilities-only`，是使用者明確允許執行的**第二批 v0.8.7**；**只做城鎮頁面常駐內容移除與原本設施功能的彈窗遷移**，不處理第三批導覽按鈕或第四批 Navbar。
+- `TownPage.tsx` 主頁僅顯示舊街避難所介紹、生命/體力/飢餓/疲勞＋可展開的外傷等負面影響、八張設施卡。主頁下方 **不再渲染原本預設旅店的 `town-v15__detail` 與 `town-v15__footer`**；頁面最後停在第八張卡，不再有重複事件與存檔提示。
+- 既有的旅店／地下診所／修理工坊維持各自專屬彈窗。資訊酒館／訓練場所／公告欄／洗衣店／食堂的 UI 與真實操作改由新 `src/features/town/TownFacilityDialog.tsx` 承載，所有服務仍由原 `TOWN_SERVICE`、`TOWN_ACCEPT_QUEST`、`TOWN_COMPLETE_QUEST` reducer 結算。顯示原不可使用原因、時間、售價及訓練選項，彈窗 scroll 可拖曳，保留 Esc / 返回按鈕。
+- 新樣式：`src/styles/_v087-town-dialogs.scss`；測試：`tests/v087-town-eight-only.test.ts`；本批詳細驗收：`docs/V087_TOWN_EIGHT_FACILITIES.md`；版本號 `v0.8.7`（`package.json`、lock 同步）。**沒有修改存檔與經濟/任務/服務計算。**
+- 用戶規定協作流程：完成**唯一一個 PR**後即停止，使用者自行 Merge 與測試，再明確通知才開始第三批 v0.8.8（各頁返回主畫面按鈕）；第四批 v0.8.9 移除頂端 Navbar、將設定與版本融入既有頁面。不自行提前做新 PR。
+- 此條為最新開發交接，CI 與手動驗收狀態應以 GitHub 當下為準，勿直接宣稱新功能已部署。
+
+---
+
+
 ## 2026-11-13｜最新｜v0.8.6 第一批（診所 UI + 拖曳）
 
 - 最新已部署基準 `main`：`6c7cf70086bd15c170c7d0fd3bc760a9518c4328`（v0.8.5），**舊 PR #29、#30、#31 都已 Merge；open PR 0**。舊條目寫的「尚未部署」為歷史紀錄，勿當作最新狀態。

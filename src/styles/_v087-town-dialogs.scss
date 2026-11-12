@@ -1,0 +1,133 @@
+/* v0.8.7 — city hub ends with the eighth facility button.
+   Dedicated modal surfaces preserve all five former inline service screens. */
+.town-v15 > .town-v15__facilities{
+ flex:0 0 auto!important;
+ padding-bottom:12px;
+}
+/* The original detail/footer never render on the town overview any more. */
+.town-facility-overlay{
+ position:fixed;inset:0;z-index:580;
+ display:grid;place-items:center;
+ padding:10px;
+ background:#050507e0;
+ backdrop-filter:blur(5px);
+}
+.town-facility-dialog{
+ width:min(96vw,590px);
+ height:auto;
+ max-height:min(91dvh,790px);
+ min-height:0;
+ display:flex;flex-direction:column;
+ color:#ece6e3;
+ border:1px solid #76656d;
+ border-radius:14px;
+ background:linear-gradient(150deg,#1b1a20,#111217 70%);
+ box-shadow:0 16px 70px #000d;
+ overflow:hidden;
+}
+.town-facility-dialog__head{
+ flex:0 0 auto;
+ display:flex;align-items:flex-start;gap:12px;
+ padding:15px 15px 13px;
+ border-bottom:1px solid #4f4850;
+}
+.town-facility-dialog__head .town-v15__scene-icon{
+ width:46px;height:52px;flex:none;
+}
+.town-facility-dialog__heading{flex:1 1 auto;min-width:0}
+.town-facility-dialog__heading .eyebrow{
+ color:#c4aba7;font-size:10px;letter-spacing:.12em;
+ line-height:1.5;
+}
+.town-facility-dialog__heading h2{
+ margin:3px 0 4px;
+ font:750 clamp(20px,5vw,26px)/1.35 'Noto Serif TC',serif;
+ overflow-wrap:anywhere;
+}
+.town-facility-dialog__heading p{
+ font-size:11px;line-height:1.65;color:#bdb0b3;overflow-wrap:anywhere;
+}
+.town-facility-dialog__head>button{
+ display:grid;place-items:center;flex:none;
+ width:38px;height:38px;
+ color:#eee0de;background:#27252b;
+ border:1px solid #6e5a64;border-radius:8px;
+}
+.town-facility-dialog__meta{
+ flex:0 0 auto;display:flex;gap:7px 14px;
+ flex-wrap:wrap;justify-content:space-between;
+ padding:8px 15px;border-bottom:1px solid #403b42;
+ color:#cbbab4;font-size:11px;
+}
+.town-facility-dialog__meta>span{display:inline-flex;align-items:center;gap:5px}
+.town-facility-dialog__body{
+ flex:1 1 auto;min-height:0;
+ padding:13px 12px 20px;
+ overflow-x:hidden;overflow-y:auto;
+ overscroll-behavior-y:contain;
+ touch-action:pan-y;
+ scrollbar-width:none;-ms-overflow-style:none;
+ cursor:grab;
+}
+.town-facility-dialog__body::-webkit-scrollbar{display:none!important;width:0!important}
+.town-facility-dialog__body:active{cursor:grabbing}
+.town-facility-dialog__body:focus-visible{outline:2px solid #d7b0a6;outline-offset:-2px}
+.town-facility-dialog .town-v15__keeper{
+ margin:0 0 12px;
+ padding:12px;
+}
+.town-facility-dialog .town-v15__closed{margin:0 0 12px}
+.town-facility-dialog .town-v15__selector{margin:0 0 12px}
+.town-facility-dialog .town-v15__services,
+.town-facility-dialog .town-v15__quests{
+ padding:0;
+ gap:9px;
+}
+.town-facility-dialog .town-v15__service,
+.town-facility-dialog .town-v15__quest{
+ min-width:0;
+ overflow-wrap:anywhere;
+}
+.town-facility-dialog .town-v15__quest>div{align-items:flex-start}
+.town-facility-dialog .town-v15__quest>div strong{min-width:0}
+.town-facility-dialog .town-v15__reason{min-width:0}
+.town-facility-dialog__result{
+ margin:12px 0 0;
+ padding:10px 12px;
+ font-size:11px;line-height:1.7;
+ color:#ead1c1;
+ border:1px solid #675052;border-radius:8px;
+ background:#282026;
+ overflow-wrap:anywhere;
+}
+.town-facility-dialog>footer{
+ flex:0 0 auto;display:flex;justify-content:flex-end;
+ padding:10px 14px;
+ border-top:1px solid #4e454b;
+ background:#17151b;
+}
+.town-facility-dialog>footer button{
+ min-height:42px;
+ padding:8px 16px;
+ color:#f5e5df;
+ background:#393037;
+ border:1px solid #8b7577;
+ border-radius:7px;
+ font-size:12px;font-weight:750;
+}
+@media(max-width:400px){
+ .town-facility-overlay{padding:5px}
+ .town-facility-dialog{width:100%;height:auto;max-height:calc(100dvh - 10px);border-radius:9px}
+ .town-facility-dialog__head{gap:8px;padding:11px 10px}
+ .town-facility-dialog__head .town-v15__scene-icon{width:40px;height:44px}
+ .town-facility-dialog__head>button{width:35px;height:35px}
+ .town-facility-dialog__body{padding:10px 9px 18px}
+ .town-facility-dialog__meta{padding:7px 10px}
+ .town-facility-dialog>footer{padding:8px 10px}
+}
+@media(max-height:620px){
+ .town-facility-dialog__head{padding:8px 10px}
+ .town-facility-dialog__heading p{font-size:10px}
+ .town-facility-dialog__body{padding:8px 10px 14px}
+ .town-facility-dialog>footer{padding:6px 10px}
+}

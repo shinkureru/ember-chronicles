@@ -20,9 +20,10 @@ export const previewInnRest=(state:GameState,id:RestServiceId)=>{
  const predictedHealth=p.health+healthGain, predictedStamina=p.stamina+staminaGain;
  const threshold=Array.from({length:Math.floor(p.stamina)+1},(_,i)=>Math.floor(p.stamina)-i)
   .find(stamina=>p.health+recoveryAt(state,id,stamina)>=p.maxHealth);
- const recommendation=threshold!==undefined
-  ?`體力降到 ${threshold}/${p.maxStamina} 以下，再休息可讓生命恢復至滿值。`
-  :`就算體力降至 0，此床位也無法一次補滿生命；可考慮安靜單人房或診所。`;
+ const recommendation=predictedHealth>=p.maxHealth?
+  '目前這個休息方案已經能讓生命回到上限，無須刻意消耗體力。':
+  threshold!==undefined?`體力降到 ${threshold}/${p.maxStamina} 以下再休息，才有機會一次恢復滿血。`:
+  '即使體力降到 0，這個方案也無法一次恢復滿血；可考慮安靜單人房或地下診所。';
  return {predictedHealth,predictedStamina,healthGain,staminaGain,threshold,recommendation};
 };
 export const remainingDailyRest=(state:GameState)=>{

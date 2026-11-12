@@ -243,3 +243,45 @@ export const unlockAudio=()=>{
  }).catch(()=>{/* Browsers require a gesture */});
 };
 export const disposeAudio=()=>{stopScene();audioUnlocked=false;if(context)void context.close();context=null;musicGain=null;ambienceGain=null;effectsGain=null;};
+
+/** Original short lullaby composed from simple sine/triangle voices: no third-party
+ * recording, no loop, no licensing obligations. Plays only after a user gesture. */
+export type RestLullabyKind='rest_cot'|'rest_private'|'rest_short';
+export const playRestLullaby=(kind:RestLullabyKind):(()=>void)=>{
+ if(config.muted||config.master<=0||config.music<=0)return ()=>{};
+ const ctx=createContext();if(!ctx)return ()=>{};
+ if(ctx.state==='suspended')void ctx.resume().catch(()=>{});
+ const layer=ctx.createGain(),now=ctx.currentTime;
+ const volume=config.master*config.music*.14;
+ layer.gain.setValueAtTime(.0001,now);
+ layer.gain.linearRampToValueAtTime(Math.max(.0002,volume),now+.55);
+ layer.gain.setValueAtTime(Math.max(.0002,volume),now+3.8);
+ layer.gain.linearRampToValueAtTime(.0001,now+4.9);
+ layer.connect(musicGain??ctx.destination);
+ const patterns:Record<RestLullabyKind,number[]>={
+  rest_cot:[261.63,329.63,392.00,329.63,293.66,261.63],
+  rest_private:[261.63,392.00,523.25,493.88,392.00,329.63],
+  rest_short:[293.66,349.23,392.00,349.23,293.66,261.63],
+ };
+ const tones=patterns[kind];
+ const pace=kind==='rest_short'?.47:kind==='rest_private'?.64:.58;
+ for(let i=0;i<tones.length;i++){
+  const t=i*pace;
+  note(ctx,tones[i]!,Math.min(.93,pace*1.55),.28,{
+   type:kind==='rest_private'?'sine':'triangle',into:layer,delay:t,attack:.17
+  });
+  if(i%2===0)note(ctx,tones[i]!/2,Math.min(1.3,pace*2),.12,{type:'sine',into:layer,delay:t,attack:.27});
+ }
+ const previous=activeMusic,oldVolume=previous?.volume;
+ if(previous&&!previous.paused)previous.volume=targetMusicVolume()*.22;
+ let stopped=false;
+ const timer=window.setTimeout(()=>finish(),5100);
+ function finish(){
+  if(stopped)return;
+  stopped=true;window.clearTimeout(timer);
+  if(ctx&&ctx.state==='running')layer.gain.setTargetAtTime(.0001,ctx.currentTime,.04);
+  window.setTimeout(()=>{try{layer.disconnect();}catch{/* Node may already be closed. */}},220);
+  if(previous&&previous===activeMusic&&oldVolume!==undefined)previous.volume=targetMusicVolume();
+ }
+ return finish;
+};

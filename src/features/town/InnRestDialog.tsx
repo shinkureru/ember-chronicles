@@ -34,12 +34,18 @@ export default function InnRestDialog({serviceId,onClose,onConfirm}:{serviceId:R
     })}
    </div>
    <div className="inn-rest-values">
-    <div><strong><HeartPulse size={16}/>生命 HP</strong><span>{s.player.health}/{s.player.maxHealth} → <b>{preview.predictedHealth}/{s.player.maxHealth}</b></span>
-      <div className="inn-rest-meter"><i style={{width:`${percent(preview.predictedHealth,s.player.maxHealth)}%`}}/></div>
-      <small>本次恢復 +{preview.healthGain} HP</small></div>
-    <div><strong>體力 ST</strong><span>{s.player.stamina}/{s.player.maxStamina} → <b>{preview.predictedStamina}/{s.player.maxStamina}</b></span>
-      <div className="inn-rest-meter inn-rest-meter--stamina"><i style={{width:`${percent(preview.predictedStamina,s.player.maxStamina)}%`}}/></div>
-      <small>本次恢復 +{preview.staminaGain} 體力</small></div>
+    {([
+     {kind:'hp' as const,label:'生命 HP',now:s.player.health,max:s.player.maxHealth,after:preview.predictedHealth,gain:preview.healthGain},
+     {kind:'stamina' as const,label:'體力 ST',now:s.player.stamina,max:s.player.maxStamina,after:preview.predictedStamina,gain:preview.staminaGain}
+    ]).map(stat=><div className={`inn-rest-value inn-rest-value--${stat.kind}`} key={stat.kind}>
+      <strong>{stat.kind==='hp'?<HeartPulse size={16}/>:null}{stat.label}</strong>
+      <span className="inn-rest-value__numbers">{stat.now}/{stat.max}<b aria-hidden="true">→</b><em>{stat.after}/{stat.max}</em></span>
+      <div className="inn-rest-meter" role="progressbar" aria-label={`${stat.label}休息後預計`} aria-valuemin={0} aria-valuemax={stat.max} aria-valuenow={stat.after}>
+       <i className="inn-rest-meter__current" style={{width:`${percent(stat.now,stat.max)}%`}}/>
+       <i className="inn-rest-meter__gain" style={{left:`${percent(stat.now,stat.max)}%`,width:`${percent(stat.after-stat.now,stat.max)}%`}}/>
+      </div>
+      <small>本次恢復 +{stat.after-stat.now} {stat.kind==='hp'?'HP':'體力'}</small>
+    </div>)}
    </div>
    <div className="inn-rest-advice">{preview.recommendation}
     <small>請不要刻意用無效行動刷低體力；真正的冒險、工作或移動才值得消耗資源。</small>

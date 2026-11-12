@@ -49,11 +49,14 @@ describe('v0.8.8 safe return-to-main navigation',()=>{
   expect(css).toContain('.preparation-footer__actions .return-main-link');
   expect(css).toContain('grid-template-columns:minmax(0,.85fr) minmax(0,1.4fr)');
  });
- it('does not remove the header or settings/version display until the next reviewed batch',()=>{
-  expect(frame).toContain('<header className="app-header">');
-  expect(frame).toContain('app-header__version');
-  expect(frame).toContain('app-header__settings');
-  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
+ it('v0.8.9 keeps return actions while moving version and settings off the old top navbar',()=>{
+  expect(frame).not.toContain('<header className="app-header">');
+  expect(frame).toContain('<GameUtilities className="game-utilities--dock"/>');
+  expect(frame).toContain('<ReturnMainLink/>');
+  expect(read('src/features/world-map/ChapterMapPage.tsx')).toContain('game-utilities--map');
+  expect(read('src/components/GameUtilities.tsx')).toContain('__APP_VERSION__');
+  expect(read('src/components/GameUtilities.tsx')).toContain('__BUILD_REVISION__');
+  expect(JSON.parse(read('package.json')).version.startsWith('0.8.')).toBe(true);
   expect(css).toContain('@media(max-width:365px)');
   expect(css).toContain('@media(max-height:620px)');
  });

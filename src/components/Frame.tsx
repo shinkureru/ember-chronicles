@@ -1,13 +1,11 @@
 import { useEffect, type ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { ArrowLeft, Settings2, Skull } from 'lucide-react';
 import { playCue, setAudioScene, unlockAudio } from '../audio/sound';
 import { useGame } from '../app/GameContext';
 import GameFeedback from './GameFeedback';
 import ReturnMainLink from './ReturnMainLink';
+import GameUtilities from './GameUtilities';
 import type { SoundscapeId } from '../audio/soundscapes';
-declare const __APP_VERSION__:string;
-declare const __BUILD_REVISION__:string;
 export default function Frame({children}:{children:ReactNode}){
   const location=useLocation(),{state,pauseClock}=useGame();
   const inMission=state.mode!=='home';
@@ -41,14 +39,9 @@ export default function Frame({children}:{children:ReactNode}){
       event.preventDefault();
      }}><div className="desktop-world__accent desktop-world__accent--left"/><div className="desktop-world__accent desktop-world__accent--right"/>
     <div className={`game-frame ${inMission?'game-frame--mission':''} ${state.enemyCounter?.phase==='hit'&&state.enemyCounter.hit?'game-frame--damaged':''}`}>
-      {!inMission&&<header className="app-header">
-        <NavLink to="/" className="app-header__brand"><span className="brand-mark"><Skull size={17}/></span><span><strong>餘燼紀事</strong><small>EMBER CHRONICLES</small></span></NavLink>
-        {!onMap&&<NavLink to="/" className="app-header__back" aria-label="返回主地圖"><ArrowLeft size={16}/>地圖</NavLink>}
-        <span className="app-header__version" title={`已部署版本 v${__APP_VERSION__} · Git ${__BUILD_REVISION__}`} aria-label={`目前遊戲版本 v${__APP_VERSION__}，程式版本 ${__BUILD_REVISION__}`}>v{__APP_VERSION__} <small>· {__BUILD_REVISION__}</small></span>
-        <NavLink to="/settings" className="app-header__settings" aria-label="設定"><Settings2 size={19}/></NavLink>
-      </header>}
       <main key={location.pathname} className={`app-main ${inMission?'app-main--mission':''}`} id="main">{children}</main>
-      {!inMission&&!onMap&&!returnInsidePage&&<nav className="return-main-dock" aria-label="返回主畫面導覽">
+      {!inMission&&!onMap&&!returnInsidePage&&<nav className="return-main-dock" aria-label="主畫面及系統操作">
+       <GameUtilities className="game-utilities--dock"/>
        <ReturnMainLink/>
       </nav>}
       {!inMission&&import.meta.env.DEV&&<div className="dev-shortcut"><NavLink to="/dev">DEV · 測試工具</NavLink></div>}

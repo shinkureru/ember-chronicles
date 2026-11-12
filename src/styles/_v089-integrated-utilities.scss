@@ -1,0 +1,138 @@
+/* v0.8.9 — no page-wide navbar. Version and settings belong to local
+   content/return areas. All controls remain reachable on compact screens. */
+.app-main:not(.app-main--mission){
+ padding-top:max(10px,env(safe-area-inset-top));
+}
+/* One shared build + settings pair across map, prologue and secondary screens. */
+.game-utilities{
+ display:inline-flex;
+ flex:0 0 auto;
+ align-items:center;
+ justify-content:flex-end;
+ gap:5px;
+ min-width:0;
+}
+.game-build-version{
+ box-sizing:border-box;
+ display:inline-flex;align-items:center;justify-content:center;gap:4px;
+ padding:5px 7px;
+ min-height:30px;
+ border-radius:6px;
+ border:1px solid #54464f;
+ background:#1c1b21;
+ color:#e5bfb0!important;
+ font:650 10px/1.2 Inter,'Noto Sans TC',sans-serif!important;
+ letter-spacing:0!important;
+ white-space:nowrap;
+ font-variant-numeric:tabular-nums;
+}
+.game-build-version strong{font:inherit;color:inherit;white-space:nowrap}
+.game-build-version small{font:500 9px/1.2 Inter,sans-serif;color:#b9a8af;white-space:nowrap}
+.game-utilities__settings{
+ box-sizing:border-box;
+ display:inline-flex;align-items:center;justify-content:center;
+ gap:5px;
+ min-width:34px;min-height:32px;
+ padding:5px 8px;
+ border:1px solid #62545c;border-radius:6px;
+ background:#242228;
+ color:#e5d2ce!important;
+ font:650 11px/1.2 'Noto Sans TC',sans-serif;
+ white-space:nowrap;
+}
+.game-utilities__settings svg{flex:none}
+.game-utilities__settings span{display:none}
+.game-utilities__settings:hover,
+.game-utilities__settings:focus-visible{
+ background:#373038;border-color:#bda49d;color:#fff!important;
+}
+/* v0.8.8 provided a safe dock in the existing content flow. Use its free
+   left side for system status; keep return-to-map aligned to the right. */
+.return-main-dock{
+ justify-content:space-between;
+ gap:8px;
+}
+.return-main-dock>.game-utilities{margin-right:auto}
+.return-main-dock>.return-main-link{margin-left:auto}
+/* Map: replaces decorative chapter number on the existing title line.
+   The chapter number is still in the upper kicker and stage strip. */
+.city-overview__title{gap:8px;min-width:0}
+.city-overview__title>div:first-child{flex:1 1 auto;min-width:0}
+.city-overview__title>.game-utilities{flex:0 0 auto;align-self:center}
+.city-overview__title .game-build-version{letter-spacing:0!important;font-size:10px!important}
+.city-overview__title .game-utilities__settings{
+ color:#d6dce3!important;border-color:#485867;background:#17232e;
+}
+/* First launch / choose profession still has settings and its build in its
+   own existing prologue hero, without recreating a permanent header. */
+.home-hero__top{
+ display:flex;
+ flex-wrap:wrap;
+ align-items:center;
+ justify-content:space-between;
+ gap:7px 10px;
+ margin-bottom:8px;
+}
+.home-hero__top>.eyebrow{flex:1 1 130px;min-width:0}
+.game-utilities--prologue{margin-left:auto}
+/* On inline footer screens, don't force an extra global navigation row. */
+.market-v13 .market-v10__footer>.game-utilities{
+ flex:0 0 auto;
+ margin-left:4px;
+}
+.market-v13 .market-v10__footer>.game-utilities .game-build-version{
+ min-height:29px;padding:5px 6px;font-size:9px!important;
+}
+.market-v13 .market-v10__footer>.game-utilities .game-utilities__settings{
+ min-height:30px;min-width:30px;padding:5px 6px;
+}
+.market-v13 .market-v10__footer>.return-main-link{margin-left:3px}
+.cards-viewport .card-library-footer>.game-utilities{flex:0 0 auto}
+.cards-viewport .card-library-footer>.game-utilities .game-build-version{
+ min-height:30px;padding:5px 6px;font-size:9px!important;
+}
+.cards-viewport .card-library-footer>.game-utilities .game-utilities__settings{
+ min-height:30px;min-width:30px;padding:5px 6px;
+}
+.preparation-footer__utility-row{
+ display:flex;
+ align-items:center;
+ justify-content:flex-end;
+ padding:4px 0 3px;
+}
+.preparation-footer__utility-row>.game-utilities{margin-left:auto}
+/* Mission already has its own settings sheet. The build is read-only there;
+   it does not provide a shortcut that bypasses retreat/result handling. */
+.mission-settings__build{display:flex;justify-content:flex-end;margin:-3px 0 9px}
+.mission-settings__build .game-build-version{
+ border-color:#635256;
+ background:#231b21;
+}
+@media(max-width:480px){
+ .market-v13 .market-v10__footer>span{display:none!important}
+ .market-v13 .market-v10__footer{gap:5px;justify-content:space-between}
+ .market-v13 .market-v10__footer>.game-utilities{margin-left:auto}
+ .cards-viewport .card-library-footer__hint{display:none}
+ .cards-viewport .card-library-footer{justify-content:space-between}
+ .cards-viewport .card-library-footer>.game-utilities{margin-left:auto}
+}
+@media(max-width:370px){
+ .game-build-version{gap:3px;padding:5px;font-size:9px!important}
+ .game-build-version small{font-size:8px}
+ .game-utilities{gap:4px}
+ .game-utilities__settings{min-width:30px;min-height:31px;padding:5px 6px}
+ .return-main-dock{gap:5px;padding:4px 8px}
+ .return-main-dock .return-main-link{min-height:31px;padding:6px 7px;font-size:10px}
+ .city-overview{padding:9px 9px 8px}
+ .city-overview__title h1{font-size:20px}
+ .city-overview__title .game-build-version{padding:4px}
+ .city-overview__title .game-utilities__settings{padding:4px 6px;min-height:30px}
+}
+@media(max-height:620px){
+ .game-build-version{min-height:27px;padding-top:4px;padding-bottom:4px}
+ .game-utilities__settings{min-height:28px}
+ .preparation-footer__utility-row{padding:1px 0}
+}
+@media(prefers-reduced-motion:reduce){
+ .game-utilities__settings{transition:none}
+}

@@ -1,5 +1,19 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜最新｜第四批 v0.8.9 移除網頁式 Navbar，整合版本與設定（未 Merge）
+
+- 本批基準 `main` commit `f287e74ee13acc06f82812c9d498b05d0f1512ea`（前批 PR #34 已合併，v0.8.8）。新分支 `feat/v0.8.9-integrated-utilities-no-navbar`，**不提前做第五批**。
+- **整個 `Frame.tsx` 頂部 `app-header` 已從 JSX 移除**（包含遊戲名稱、回地圖、版本、設定），以節省畫面空間。沒有新增固定浮動工具列。
+- 建立 `src/components/GameUtilities.tsx` 共用 `BuildVersion`，仍顯示 `v__APP_VERSION__ · __BUILD_REVISION__`；`Link to="/settings"` 僅在 `state.mode==='home'` 且非設定頁存在。
+- 地圖的 `city-overview__title` 右側嵌入小型版本與設定（原裝飾性 01 移除，章節編號仍在 CHAPTER 01）；尚未選職業的 `HomePage` 序章資訊列也能使用設定。
+- v0.8.8 已有的 `return-main-dock` 左側嵌入版本/設定、右側維持返回主畫面；黑市、牌組、事前準備則直接融入各自原本的底部操作列，避免重複的 dock 或遮住清單。設定頁本身不出現重複的設定連結。
+- 冒險中 **完全不增加返回主畫面**：`ChapterPage` 原有設定照舊，`GameSettingsDialog` 新增版本文字；`GameRoutes` 路由安全鎖、撤退確認／戰敗結果／任務結算保持原有。沒有引擎／存檔資料變更。
+- 样式 `src/styles/_v089-integrated-utilities.scss`；全新檢查 `tests/v089-integrated-utilities.test.ts`，並更新前批 `tests/v088-return-main-navigation.test.ts` 的歷史 Navbar 假設；版本 package/lock = `v0.8.9`。詳細規格：`docs/V089_INTEGRATED_NAVIGATION.md`。
+- 交付條件：先 CI 全綠、PR 可 Clean Merge；使用者自行 Merge 及 GitHub Pages/手機實測後，**明確通知再做下一批**。已 Merge ≠ 已在設備完成驗收。
+
+---
+
+
 ## 2026-11-13｜最新｜第三批 v0.8.8 頁面「返回主畫面」導覽（尚待 Merge）
 
 **基準：**`main` `7f942108ed542c0a323ba70ec14046729cace01e` = v0.8.7，PR #33 已合併，當時沒有其它 open PR。上一批的城鎮八設施版型已存在於 main，不得重做。

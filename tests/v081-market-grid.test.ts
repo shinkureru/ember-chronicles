@@ -30,6 +30,6 @@ describe('v0.8.1 black-market product catalog',()=>{
   expect(ui).toContain("type:'MARKET_BUY_ITEM'");
   expect(ui).toContain("type:'MARKET_SELL_ITEM'");
   expect(ui).toContain('selected&&mode&&');
-  expect(JSON.parse(src('package.json')).version).toBe('0.8.1');
+  expect(JSON.parse(src('package.json')).version).toMatch(/^0\.8\.[12]$/);
  });
 });

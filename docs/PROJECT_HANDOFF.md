@@ -1,5 +1,33 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-12 晚間｜訊息逾時後復原、PR 重疊排除（優先閱讀）
+
+**本輪已先停止新增遊戲功能，只做 GitHub 驗證與 PR 依賴整理。** 之前長時間回覆被使用者端顯示「訊息傳送逾時」，該訊息與遊戲/GitHub Actions 失敗是兩回事。不能因聊天逾時推斷 GitHub 沒寫入。未來每次只改一個可驗收小功能，完成後就結束當輪，不要持續加寫多批讓對話逾時。
+
+**真實狀態（以本次 GitHub REST 查證）：**
+- `main`: `4ef2eccc77bec18d4ec2c0a476a798a9cb56716e`，v1.7.5，PR #25 已合併。
+- Batch A PR #26：`feature/v0.8.0-rest-and-town-status` → `main`；最新 CI run `43219571019` 成功，尚未合併。
+- Batch B PR #27：`feature/v0.8.1-market-grid` → **`feature/v0.8.0-rest-and-town-status`**；最新 CI run `43222382628` 成功，尚未合併。
+- Batch C PR #28：`feature/v0.8.2-card-archive-grid` → **`feature/v0.8.1-market-grid`**；最新 CI run `43222394975` 成功，尚未合併。
+- #27 與 #28 原先都以 `main` 為 base，導致 Files Changed 重複顯示 A、B 的檔案。已**只更新 PR base**（未重寫程式、未 merge）；現在 #26 14 個檔案、#27 9 個、#28 11 個，三個 PR 均顯示 clean。
+- **注意：** 這三個是 stacked PR。合併 #26 到 main 後，先將 #27 base 改回 `main`，確認 diff/CI，再合併 #27；之後將 #28 base 改回 `main`，確認 diff/CI，再合併 #28。不要在調整 base 以前刪除仍被當作 PR base 的分支，更不要倒序合併。合併前先重新讀 GitHub 狀態，防止另一處已更新。
+- 三批**程式與自動測試已完成但未在 Pages 部署且未做人工 QA**。所有手機/桌面互動、音樂、排版與存檔兼容性仍需遊戲瀏覽器驗收。
+- 新的微批次規則：每輪「一項功能、針對性修改、獨立測試、交接檔、PR/CI 結果」，先讀主分支 SHA／open PR／最新 run，確認沒有待合併重複內容。失敗修正也是獨立一輪；不要一次處理多個新子系統。使用者可在最後選擇按 PR 順序驗收。
+
+---
+
+
+## 2026-11-12｜第六輪 Batch C 卡牌圖鑑 v0.8.2（本分支最新資訊）
+
+已完成三個依賴批次的程式與對應文件，尚需核對所有 PR 最新 CI 及合併。基準 `main:4ef2ecc`，分支順序 **A `feature/v0.8.0-rest-and-town-status` PR #26 → B `feature/v0.8.1-market-grid` PR #27 → C `feature/v0.8.2-card-archive-grid`（本 PR）**。每個階段應先確認原 PR 已合併再合併下一個；最後 Pages 顯示 `v0.8.2` 與新短 SHA，等待使用者一次實際驗收。
+
+本批卡牌圖鑑 4 欄×5 列視區、垂直拖曳/滾輪/觸控、右側沒有 scrollbar、超過 20 張才會露出下一排。**複本資料沒有自造不存在的等級**：`ownedCards[id]` 的主要等級主卡×1、未使用的基礎 LV1 複本×N 分開顯示，沒有高等版本時不可顯示假卡牌。五級依**升級等級**採灰／綠／藍／紫／金，獨立保留稀有度文字 `normal/rare/chaos`；原有升級 reducer 不變、舊存檔可沿用。詳見 `docs/V082_BATCH_C_CARD_ARCHIVE.md`、`tests/v082-card-archive-grid.test.ts`。
+
+不要將「CI 通過」記為已完成人工遊戲 QA。休息動畫需要瀏覽器音量／自動播放與過場測試，黑市／圖鑑需要桌面滑鼠與手機觸控測試。
+
+---
+
+
 ## 2026-11-12｜第六輪 Batch B 黑市 v0.8.1（本分支最新資訊）
 
 依賴 Batch A PR #26，分支 `feature/v0.8.1-market-grid`、版本 `v0.8.1`。黑市商品改**整齊固定三欄／窄幅兩欄**，取消每張商品的隨機轉角/位移；限制區域高度露出下一列，可手機觸控/電腦滑鼠按住拖曳/滾輪/鍵盤瀏覽，隱藏 scrollbar。原有購買/出售、分類、交易引擎保持不變。測試 `tests/v081-market-grid.test.ts`，詳細 `docs/V081_BATCH_B_MARKET.md`。**尚未合併到 main，不代表 Pages 已部署。** 按順序合併 A→B→C 並一起做實際瀏覽器驗收。

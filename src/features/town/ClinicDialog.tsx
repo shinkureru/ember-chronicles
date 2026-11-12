@@ -5,10 +5,10 @@ import {useGame} from '../../app/GameContext';
 import {playCue} from '../../audio/sound';
 import {TOWN_SERVICES} from '../../game/data/town';
 import {ITEMS} from '../../game/data/items';
-import {CLINIC_SUPPLIES,CLINIC_TREATMENTS,clinicBuyBlock,clinicQuestBlock,clinicTreatmentPreview,clinicTreatmentOutcomes,clinicUnitPrice,getClinicProgress,getClinicQuest} from '../../game/engine/clinic';
+import {CLINIC_SUPPLIES,CLINIC_TREATMENTS,clinicBuyBlock,clinicQuestBlock,clinicTreatmentPreview,clinicTreatmentOutcomes,clinicUnitPrice,getClinicProgress,getClinicQuest,type ClinicTreatmentOutcome} from '../../game/engine/clinic';
 import {getTownServiceLock} from '../../game/engine/townActions';
 import ItemArt from '../../components/ItemArt';
-import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
+import {useClinicDragScroll} from './useClinicDragScroll';
 type ClinicTab='treatment'|'daily'|'shop';
 
 /** Original vector illustration: an underground triage room with two examination beds. */
@@ -35,10 +35,30 @@ function ClinicScene(){
   <text x="15" y="206" fill="#c5d3c9" opacity=".55" fontSize="11" letterSpacing="3">UNDERGROUND CLINIC / TRIAGE</text>
  </svg>;
 }
+/** Same current + pale expected-change visual language as InnRestDialog. */
+function ClinicTreatmentMeter({outcome}:{outcome:ClinicTreatmentOutcome}){
+ const healing=outcome.after>=outcome.before;
+ const maximum=Math.max(1,outcome.max??(outcome.key==='fatigue'?100:Math.max(10,outcome.before,outcome.after)));
+ const percent=(n:number)=>Math.max(0,Math.min(100,n/maximum*100));
+ const lesser=Math.min(outcome.before,outcome.after);
+ const greater=Math.max(outcome.before,outcome.after);
+ const display=(n:number)=>outcome.max!==undefined?`${n}/${outcome.max}`:String(n);
+ return <div className={`clinic-dialog__outcome clinic-dialog__outcome--${outcome.key}`}>
+  <div className="clinic-dialog__outcome-head"><strong>{outcome.label}</strong><small>{healing?'+':'−'}{greater-lesser}{outcome.key==='health'?' HP':outcome.key==='stamina'?' ST':outcome.key==='fatigue'?' 點':' 層'}</small></div>
+  <div className="clinic-dialog__outcome-numbers"><span>{display(outcome.before)}</span><ArrowRight size={15} aria-hidden="true"/><em>{display(outcome.after)}</em></div>
+  <div className="clinic-dialog__outcome-track" role="img" aria-label={`${outcome.label}：${display(outcome.before)} 到 ${display(outcome.after)}`}>
+   <i className="clinic-dialog__outcome-current" style={{width:`${percent(lesser)}%`}}/>
+   <i className="clinic-dialog__outcome-change" style={{left:`${percent(lesser)}%`,width:`${percent(greater)-percent(lesser)}%`}}/>
+  </div>
+ </div>;
+}
+
 export default function ClinicDialog({onClose}:{onClose:()=>void}){
  const {state:s,dispatch,pauseClock}=useGame();
  const [tab,setTab]=useState<ClinicTab>('treatment');
- const dragScroll=useVerticalDragScroll();
+ const [showNotice,setShowNotice]=useState(false);
+ const dragScroll=useClinicDragScroll();
+ const selectTab=(selected:ClinicTab)=>{setTab(selected);dragScroll.resetToTop();};
  const clinic=getClinicProgress(s),quest=getClinicQuest(s);
  useEffect(()=>{
   pauseClock('dialog',true);
@@ -46,7 +66,7 @@ export default function ClinicDialog({onClose}:{onClose:()=>void}){
   document.addEventListener('keydown',onEscape);
   return()=>{pauseClock('dialog',false);document.removeEventListener('keydown',onEscape)};
  },[pauseClock,onClose]);
- const click=(action:Parameters<typeof dispatch>[0])=>{dispatch(action);playCue('confirm')};
+ const click=(action:Parameters<typeof dispatch>[0])=>{dispatch(action);setShowNotice(true);playCue('confirm')};
  const stock=(id:string)=>(s.bag[id]??0)+(s.warehouse[id]??0);
  const treatmentList=CLINIC_TREATMENTS.map(id=>TOWN_SERVICES.find(x=>x.id===id)!);
  // Only actionable needs: no duplicate of the full four-gauge town dashboard.
@@ -65,25 +85,24 @@ export default function ClinicDialog({onClose}:{onClose:()=>void}){
     <button type="button" onClick={onClose} aria-label="離開地下診所"><X size={19}/></button>
    </header>
    <div className="clinic-dialog__scene"><ClinicScene/><span>「外面的世界很亂。進了這裡，先讓我看看你的傷。」</span></div>
-   <div className="clinic-dialog__meta"><strong><HeartPulse size={14}/>生命 {s.player.health}/{s.player.maxHealth}</strong><span>舊幣 {s.economy.coins}</span><span>診所好感 {clinic.favor}/30 · 藥品折扣 {Math.min(15,clinic.favor)}%</span></div>
+   <div className="clinic-dialog__meta"><strong><Coins size={14}/>舊幣 {s.economy.coins}</strong><span>診所好感 {clinic.favor}/30 · 藥品折扣 {Math.min(15,clinic.favor)}%</span></div>
    <nav className="clinic-dialog__tabs" aria-label="診所功能">
-    <button type="button" aria-pressed={tab==='treatment'} onClick={()=>setTab('treatment')}><Activity size={15}/>診療</button>
-    <button type="button" aria-pressed={tab==='daily'} onClick={()=>setTab('daily')}><ClipboardList size={15}/>每日委託</button>
-    <button type="button" aria-pressed={tab==='shop'} onClick={()=>setTab('shop')}><Package size={15}/>專屬藥房</button>
+    <button type="button" aria-pressed={tab==='treatment'} onClick={()=>selectTab('treatment')}><Activity size={15}/>診療</button>
+    <button type="button" aria-pressed={tab==='daily'} onClick={()=>selectTab('daily')}><ClipboardList size={15}/>每日委託</button>
+    <button type="button" aria-pressed={tab==='shop'} onClick={()=>selectTab('shop')}><Package size={15}/>專屬藥房</button>
    </nav>
    <div className="clinic-dialog__content" ref={dragScroll.scrollRef} tabIndex={0}
     role="region" aria-label="診所診療、委託和藥房內容，可上下拖曳"
     onPointerDown={dragScroll.onPointerDown} onPointerMove={dragScroll.onPointerMove}
     onPointerUp={dragScroll.onPointerUp} onPointerCancel={dragScroll.onPointerCancel}
-    onClickCapture={dragScroll.onClickCapture}>
+    onClickCapture={dragScroll.onClickCapture} onDragStart={event=>event.preventDefault()}>
     {tab==='treatment'&&<div className="clinic-dialog__treatment">
      <section className="clinic-dialog__triage" aria-label="目前就診重點">
-      <div className="clinic-dialog__triage-heading"><Activity size={17}/><strong>目前需要處理</strong><small>只列出有異常的項目</small></div>
+      <div className="clinic-dialog__triage-heading"><Activity size={15}/><strong>待處理</strong></div>
       <div className="clinic-dialog__triage-list">
        {triageNeeds.length?triageNeeds.map(text=><span key={text}>{text}</span>):
-        <span className="clinic-dialog__triage-clear">目前沒有明顯需要處理的傷勢</span>}
+        <span className="clinic-dialog__triage-clear">目前無明顯傷病</span>}
       </div>
-      <p>下方顯示療程直接改善的數值；治療所需時間可能另增加飢餓或疲勞。</p>
      </section>
      <div className="clinic-dialog__cards">
      {treatmentList.map(service=>{
@@ -98,12 +117,8 @@ export default function ClinicDialog({onClose}:{onClose:()=>void}){
        <div className="clinic-dialog__outcomes" aria-label={`${service.name}預計治療效果`}>
         <span className="clinic-dialog__outcomes-label">預計治療結果</span>
         {outcomes.length?<div className="clinic-dialog__outcome-grid">
-         {outcomes.map(outcome=><div className={`clinic-dialog__outcome clinic-dialog__outcome--${outcome.key}`} key={outcome.key}>
-          <span>{outcome.label}</span>
-          <strong>{outcome.before}{outcome.max?`/${outcome.max}`:''}<ArrowRight size={13} aria-hidden="true"/><em>{outcome.after}{outcome.max?`/${outcome.max}`:''}</em></strong>
-          <small>{outcome.after>outcome.before?`+${outcome.after-outcome.before}`:`−${outcome.before-outcome.after}`}</small>
-         </div>)}
-        </div>:<p className="clinic-dialog__outcome-empty">目前沒有可改善的項目</p>}
+         {outcomes.map(outcome=><ClinicTreatmentMeter outcome={outcome} key={outcome.key}/>)}
+        </div>:<p className="clinic-dialog__outcome-empty">目前沒有可恢復的項目</p>}
        </div>
        {blocked&&<small className="clinic-dialog__hint">{blocked}</small>}
       </article>;
@@ -135,7 +150,7 @@ export default function ClinicDialog({onClose}:{onClose:()=>void}){
      })}
     </div>}
    </div>
-   {s.lastEvent&&<p className="clinic-dialog__last" role="status">{s.lastEvent}</p>}
+   {showNotice&&s.lastEvent&&<p className="clinic-dialog__last" role="status">{s.lastEvent}</p>}
    <footer><button type="button" onClick={onClose}>離開診所</button></footer>
   </section>
  </div>,document.body);

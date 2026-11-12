@@ -48,6 +48,7 @@ export const loadGame=():GameState=>{
       },
       town:{visits:{},lastTrainingDay:0,lastRumorDay:0,lastCanteenTalkDay:0,socialPoiseUntil:0,upgrades:{},wear:{},quests:{},...old.town},
       conditions:{wounds:0,infection:0,poisoning:0,illness:0,...old.conditions},
+      insightByEnemy:old.insightByEnemy??(old.insightBonus>0?{[old.stageId===2?'alley_watchman':'warehouse_guard']:old.insightBonus}:{}),insightBonus:0,
       stageId:old.stageId??1,alleyNpc:old.alleyNpc??{hostility:18,trust:12,met:0,adaptations:{},remembers:[],stolenGear:[]},attackDeck,enemy:old.enemy??makeInitialEnemy(old.stageId??1),ownedCards,warehouse,lootSearches,
       chapterProgress: old.chapterProgress ?? { completed: old.npc?.remembers?.includes('player_victory')?[1]:[], unlocked:old.npc?.remembers?.includes('player_victory')?2:1 },
       economy: {...(old.economy??{coins:120,blackMarketFavor:0,marketPurchases:0}),marketStock:old.economy?.marketStock??{}},

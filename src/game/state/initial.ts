@@ -15,7 +15,7 @@ export const makeInitialState=(profession:ProfessionId|null=null):GameState=>{
     conditions:{wounds:0,infection:0,poisoning:0,illness:0},
     npc:{hostility:18,trust:15,met:0,adaptations:{},remembers:[],stolenGear:[]},
     stageId:1,alleyNpc:{hostility:18,trust:12,met:0,adaptations:{},remembers:[],stolenGear:[]},
-    attempt:0,sceneId:'gate',flags:[],searchedSources:[],lootSearches:{},clues:[],insightBonus:0,
+    attempt:0,sceneId:'gate',flags:[],searchedSources:[],lootSearches:{},clues:[],insightBonus:0,insightByEnemy:{},
     bag:{biscuit:2,water:1},warehouse:{pen:1,notebook:1,wrench:1,screwdriver:1,...(profession==='infiltrator'?{hook:1,folding_tool:1}:{})},warehouseCapacity:WAREHOUSE_CAPACITY_KG,
     protectedItems:[],
     ownedCards:Object.fromEntries([...deck,...(profession?STARTER_ATTACK_CARDS[profession]:[])].map(id=>[id,{copies:0,level:1}])),

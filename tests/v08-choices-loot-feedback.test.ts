@@ -23,7 +23,7 @@ describe('v0.8 encounter variation without dead ends',()=>{
    const s=makeInitialState('journalist');s.mode='adventure';s.attempt=attempt;
    s.sceneId='confrontation';
    expect(getVisibleActions(s).some(a=>a.id==='fight_talk')).toBe(true);
-   s.sceneId='loot';
+   s.sceneId='loot';s.flags.push('won_by_combat');s.enemy.health=0;
    expect(getVisibleActions(s).some(a=>a.id==='loot_exit')).toBe(true);
   }
  });
@@ -39,7 +39,7 @@ describe('v0.8 encounter variation without dead ends',()=>{
 });
 describe('v0.8 limited repeatable scavenging',()=>{
  it('lets the player search the same pockets three times, then removes the action',()=>{
-  let s=makeInitialState('journalist');s.mode='adventure';s.attempt=1;s.sceneId='loot';
+  let s=makeInitialState('journalist');s.mode='adventure';s.attempt=1;s.sceneId='loot';s.flags.push('won_by_combat');s.enemy.health=0;
   expect(remainingSearches(s,'pockets')).toBe(3);
   for(let i=0;i<3;i++){
    expect(getVisibleActions(s).some(a=>a.id==='loot_pockets')).toBe(true);
@@ -51,13 +51,16 @@ describe('v0.8 limited repeatable scavenging',()=>{
   expect(getVisibleActions(s).some(a=>a.id==='loot_exit')).toBe(true);
  });
  it('keeps persistent NPC gear distinct from each attempt’s search allowances',()=>{
-  let s=makeInitialState('journalist');s.mode='adventure';s.attempt=1;s.sceneId='loot';
+  let s=makeInitialState('journalist');s.mode='adventure';s.attempt=1;s.sceneId='loot';s.flags.push('won_by_combat');s.enemy.health=0;
   s=gameReducer(s,{type:'CHOOSE',choiceId:'loot_gear',skillId:null});
   expect(s.npc.stolenGear.length).toBe(1);
   expect(remainingSearches(s,'npcGear')).toBe(2);
   s.mode='result';s.outcome='victory';s=gameReducer(s,{type:'RETURN_HUB'});
   s=gameReducer(s,{type:'START_ATTEMPT'});
   expect(s.lootSearches).toEqual({});
+  // A fresh attempt requires defeating the same NPC again before looting them.
+  expect(remainingSearches(s,'npcGear')).toBe(0);
+  s.sceneId='loot';s.flags.push('won_by_combat');s.enemy.health=0;
   expect(remainingSearches(s,'npcGear')).toBe(2);
  });
  it('never consumes a scavenging attempt when inventory weight blocks pickup',()=>{

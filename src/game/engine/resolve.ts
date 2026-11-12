@@ -12,6 +12,7 @@ import { ITEMS, LOOT_POOLS, INITIAL_NPC_GEAR } from '../data/items';
 import { calculateActionPreview, bagWeight, getVisibleActions, isSkillCompatible, retreatPreview, clamp } from './rules';
 import { makeInitialState } from '../state/initial';
 import { remainingSearches } from './lootLimits';
+import {currentEnemyId,maySearchSource} from './encounterAccess';
 import { EQUIPMENT_SLOTS } from '../data/equipment';
 import { getEquippedDefense, mitigateCounterDamage } from '../data/equipmentEffects';
 import { getVendorStockKey, marketSellPrice, vendorById } from '../data/marketVendors';
@@ -75,7 +76,7 @@ const drawCards=(s:GameState,count:number)=>{
   }
 };
 const addLoot=(s:GameState,source:string):LootDrop|null=>{
-  if(remainingSearches(s,source)<=0){s.lastEvent='這裡已經沒有可搜查的東西了。';return null;}
+  if(!maySearchSource(s,source)||remainingSearches(s,source)<=0){s.lastEvent='這裡已經沒有可搜查的東西了。';return null;}
   if(source==='npcGear'){
     const available=INITIAL_NPC_GEAR.filter(id=>!s.npc.stolenGear.includes(id));
     if(available.length===0){s.searchedSources.push('npcGear');s.lastEvent='對方身上的可取裝備已經沒有剩下的了。';return null;}
@@ -90,6 +91,17 @@ const addLoot=(s:GameState,source:string):LootDrop|null=>{
   }
   const pool=LOOT_POOLS[source]??[];
   if(pool.length===0)return null;
+  // 18% of successful finite searches yield a small amount of old currency.
+  // Currency is not a backpack item and cannot be farmed after the source is exhausted.
+  if(nextRand(s)<.18){
+    const coins=2+Math.floor(nextRand(s)*4);
+    s.economy.coins+=coins;
+    s.lootSearches[source]=(s.lootSearches[source]??0)+1;
+    if(remainingSearches(s,source)===0&&!s.searchedSources.includes(source))s.searchedSources.push(source);
+    s.lastEvent=`我從現場找到 ${coins} 枚舊幣。這些零錢至少夠換一點補給。`;
+    s.log.push(`搜查 ${source}：獲得 ${coins} 舊幣`);
+    return null;
+  }
   const itemId=pool[Math.floor(nextRand(s)*pool.length)]!;
   const def=ITEMS[itemId]!;
   if(bagWeight(s.bag)+def.weight>15){s.lastEvent=`我看到「${def.name}」，但背包快裝不下了。得先整理物品。`;return null;}
@@ -116,7 +128,8 @@ const resolveOutcome=(s:GameState,outcome:Outcome)=>{
     advanceTime(s,120,true);
     npc.remembers=Array.from(new Set([...npc.remembers,isAlley?'alley_defeat':'defeated_player']));
     npc.adaptations.talk=Math.min(12,(npc.adaptations.talk??0)+3);
-    const clueNo=s.clues.length+1;
+    const clueNo=(npc.playerDefeats??0)+1;
+    npc.playerDefeats=clueNo;
     const fragments=[
       '我終於注意到，管理員每次接近對講機前都會先看向側門。',
       '管理員對「失蹤員工」的名字反應異常，他似乎知道更多內情。',
@@ -133,11 +146,13 @@ const resolveOutcome=(s:GameState,outcome:Outcome)=>{
     ];
     const clue=(isAlley?alleyFragments:fragments)[(clueNo-1)%(isAlley?alleyFragments:fragments).length]!+`（第 ${clueNo} 次失敗反思）`;
     s.clues.push(clue);
-    s.insightBonus=6; // 單次下一局的有效判定加成；不會因為重複失敗無限累加
+    s.insightByEnemy??={};
+    s.insightByEnemy[currentEnemyId(s)]=6; // Only the defeated opponent grants this one-time bonus
     s.lastEvent=`我失敗了，但想明白了一件事：${clue} 下一次首次關鍵判定額外 +6 個百分點。`;
   }else if(outcome==='retreat'){
     npc.remembers=Array.from(new Set([...npc.remembers,isAlley?'alley_retreat':'player_retreat']));
-    s.insightBonus=Math.max(s.insightBonus,2);
+    s.insightByEnemy??={};
+    s.insightByEnemy[currentEnemyId(s)]=Math.max(s.insightByEnemy[currentEnemyId(s)]??0,2);
     s.lastEvent='我先撤退了。雖然沒弄清全部情況，至少記住了一點動線。下次首次關鍵判定可獲得 +2 個百分點；多次撤退無法疊加這項加成。';
   }else{
     const mission=s.stageId===2?2:1;
@@ -280,7 +295,9 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       }
       const isSuccess=preview.chance===100 || nextRand(s)*100<preview.chance;
       awardExperience(s,`action:${s.stageId??1}:${choice.id}`,isSuccess?5:2);
-      if(preview.chance<100&&s.insightBonus>0)s.insightBonus=0;
+      if(preview.chance<100&&(s.insightByEnemy?.[currentEnemyId(s)]??0)>0){
+        s.insightByEnemy![currentEnemyId(s)]=0;
+      }
       const suffix=skill?`（附加「${skill.name}」）`:'';
       s.log.push(`${choice.title}${suffix}：${isSuccess?'成功':'失敗'}，判定成功率 ${preview.chance}%`);
       const hostility=isSuccess?(choice.npcHostilitySuccess??0):(choice.npcHostilityFailure??0);

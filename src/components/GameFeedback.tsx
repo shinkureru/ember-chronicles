@@ -77,6 +77,10 @@ export default function GameFeedback(){
   }
   const item=pickupItem?ITEMS[pickupItem]:undefined;
   if(item&&quantity>0)setPickups(q=>[...q,{id:++nextPickupId,itemId:item.id,name:item.name,quantity}].slice(0,8));
+  // Currency is awarded to the wallet, not invented as a backpack item.
+  const coinsFound=state.economy.coins-old.economy.coins;
+  if(state.mode==='adventure'&&coinsFound>0&&state.lastEvent?.startsWith('我從現場找到'))
+    setPickups(q=>[...q,{id:++nextPickupId,emoji:'🪙',name:'舊幣',quantity:coinsFound}].slice(0,8));
  },[state]);
  useEffect(()=>{
   if(!notice)return;

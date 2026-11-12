@@ -7,6 +7,18 @@ import { ITEMS } from '../game/data/items';
  * Remaining emoji are used only for objects whose native emoji is unambiguous.
  */
 const exactArt:Record<string,ReactNode>={
+ arm_guard:<>
+  <path d="M19 8L44 11L48 52L22 56L15 45Z" fill="#596368" stroke="#b9c4c5"/>
+  <path d="M20 17L43 20M21 46L46 42" stroke="#d7c8b8" strokeWidth="4"/>
+  <path d="M24 22L39 24L42 38L24 41Z" fill="#929da1" stroke="#cad1d0"/>
+  <path d="M15 29h8M43 30h8" stroke="#c2ad94" strokeWidth="3"/>
+ </>,
+ leg_guard:<>
+  <path d="M20 8C26 5 38 5 44 8L49 28L45 57L19 57L15 28Z" fill="#626568" stroke="#b5b9b9"/>
+  <path d="M19 18L45 18M19 46L45 46" stroke="#ded0b5" strokeWidth="5"/>
+  <path d="M21 23L43 23L41 41Q32 48 23 41Z" fill="#a9b2b4" stroke="#d7d9d6"/>
+  <path d="M24 29H40M24 36H40" stroke="#697274" strokeWidth="2"/>
+ </>,
  sterile_bandage:<>
   <ellipse cx="25" cy="39" rx="17" ry="18" fill="#d6d4cd" stroke="#8d9998"/><ellipse cx="25" cy="39" rx="7" ry="9" fill="#525960"/>
   <path d="M25 22h25v33H25" stroke="#e0ddd7" fill="#b7b9b4" strokeWidth="4"/><path d="M34 23v31M43 23v31" stroke="#7c8586"/>

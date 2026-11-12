@@ -4,7 +4,7 @@ import {AlertTriangle,Coins,Hammer,Shield,ShieldCheck,Sparkles,Wrench,X} from 'l
 import {useGame} from '../../app/GameContext';
 import {playCue} from '../../audio/sound';
 import {ITEMS} from '../../game/data/items';
-import {EQUIPMENT_EFFECTS,getEquippedDefense} from '../../game/data/equipmentEffects';
+import {getEquippedDefense} from '../../game/data/equipmentEffects';
 import {ARMOR_SLOTS,ARMOR_SLOT_NAMES,ARMOR_DAMAGE_STAGES,armorDurability,armorHits,armorRepairFee,
  armorStage,equippedArmorEntries,perfectRepairActive,PERFECT_REPAIR_CHANCE,type ArmorSlot} from '../../game/engine/armor';
 import {getTownServiceFee,getTownServiceLock} from '../../game/engine/townActions';

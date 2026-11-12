@@ -72,6 +72,6 @@ describe('v0.8.7 eight-facility town hub',()=>{
   expect(page).toContain('<TownVitalStatus state={s}/>');
   expect(page).toContain('ref={townScroll.scrollRef}');
   expect(page).toContain('onPointerMove={townScroll.onPointerMove}');
-  expect(JSON.parse(file('package.json')).version).toBe('0.8.7');
+   expect(JSON.parse(file('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });

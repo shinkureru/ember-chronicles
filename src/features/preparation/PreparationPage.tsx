@@ -7,6 +7,7 @@ import { ITEMS } from '../../game/data/items';
 import { playCue } from '../../audio/sound';
 import { bagWeight } from '../../game/engine/rules';
 import { CHAPTER_ONE } from '../../game/data/maps/ch01';
+import ReturnMainLink from '../../components/ReturnMainLink';
 
 export default function PreparationPage(){
  const {state:s,dispatch}=useGame(),navigate=useNavigate();
@@ -71,7 +72,7 @@ export default function PreparationPage(){
     {invalid.length>0?<p className="preparation-footer__warning"><CircleAlert size={13}/>「{invalid.map(id=>ATTACK_CARDS[id]?.name).join('、')}」缺少對應武器，進關卡時無法使用。</p>:
      !s.attackDeck.length?<p className="preparation-footer__warning"><CircleAlert size={13}/>尚未選擇攻擊牌。可以進關，但只能依賴非攻擊解法。</p>:
      <p className="preparation-footer__hint"><PackagePlus size={13}/>選牌時倉庫的對應武器已自動移入背包。</p>}
-    <div className="preparation-footer__actions"><Link className="secondary-button" to="/"><ArrowLeft size={15}/>地圖</Link><button type="button" className="primary-button" onClick={requestStart}><Swords size={16}/>帶著這些準備進關 <ArrowRight size={15}/></button></div>
+    <div className="preparation-footer__actions"><ReturnMainLink className="return-main-link--preparation"/><button type="button" className="primary-button" onClick={requestStart}><Swords size={16}/>帶著這些準備進關 <ArrowRight size={15}/></button></div>
   </footer>
   {confirm&&<div className="game-sheet-backdrop preparation-warning-overlay">
     <section role="alertdialog" aria-modal="true" aria-labelledby="prepare-warning-title" className="preparation-warning">

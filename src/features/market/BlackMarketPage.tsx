@@ -11,6 +11,7 @@ import { bagWeight, worldPhaseToken, worldPhase, worldClock } from '../../game/e
 import MarketPortrait from './MarketPortrait';
 import SurvivorFigure from '../../components/SurvivorFigure';
 import ItemArt from '../../components/ItemArt';
+import ReturnMainLink from '../../components/ReturnMainLink';
 
 type Mode='buy'|'sell';
 type Kind='all'|'item'|'card';
@@ -177,6 +178,7 @@ export default function BlackMarketPage(){
   </nav>
   <footer className="market-v10__footer"><Eye size={13}/> {vendor.name}只在{worldPhase(s.world.minute)}出現
    <span>每位商人都會記住交易，卡牌複本價格昂貴。</span>
+   <ReturnMainLink className="return-main-link--market"/>
   </footer>
   {selected&&mode&&<div className="market-v10__overlay" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)setSelectedId(null);}}>
    <section className="market-v10__detail" role="dialog" aria-modal="true" aria-label={selected.name+'交易資訊'}>

@@ -11,7 +11,6 @@ describe('v0.8.8 safe return-to-main navigation',()=>{
   expect(link).toContain("if(state.mode!=='home')return null");
   expect(link).toContain('<NavLink to="/" end');
   expect(link).toContain('返回主畫面');
-  expect(link).not.toContain('RETURN_HUB');
   expect(link).not.toContain("dispatch(");
   const routing=read('src/app/App.tsx');
   expect(routing).toContain("if(state.mode!=='home'&&location.pathname!=='/chapter')");

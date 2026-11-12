@@ -279,7 +279,7 @@ export const playRestLullaby=(kind:RestLullabyKind):(()=>void)=>{
  function finish(){
   if(stopped)return;
   stopped=true;window.clearTimeout(timer);
-  if(ctx.state==='running')layer.gain.setTargetAtTime(.0001,ctx.currentTime,.04);
+  if(ctx&&ctx.state==='running')layer.gain.setTargetAtTime(.0001,ctx.currentTime,.04);
   window.setTimeout(()=>{try{layer.disconnect();}catch{/* Node may already be closed. */}},220);
   if(previous&&previous===activeMusic&&oldVolume!==undefined)previous.volume=targetMusicVolume();
  }

@@ -14,6 +14,7 @@ import RestCinematic from './RestCinematic';
 import TownVitalStatus from './TownVitalStatus';
 import ClinicDialog from './ClinicDialog';
 import WorkshopDialog from './WorkshopDialog';
+import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
 import {isRestService,remainingDailyRest,type RestServiceId} from '../../game/engine/innRest';
 
 const facilityIcons:Record<TownFacilityId,typeof BedDouble>={
@@ -27,6 +28,7 @@ const skillGroups:{name:string;attributes:AttributeId[]}[]=[
 export default function TownPage(){
  const {state:s,dispatch}=useGame();
  const [facility,setFacility]=useState<TownFacilityId>('inn');
+ const townScroll=useVerticalDragScroll();
  const [restDialog,setRestDialog]=useState<RestServiceId|null>(null);
  const [restCinematic,setRestCinematic]=useState<RestServiceId|null>(null);
  const [clinicOpen,setClinicOpen]=useState(false);

@@ -10,6 +10,8 @@ import { getTownServiceLock,getTownServiceFee } from '../../game/engine/townActi
 import {armorSlotForItem,armorHits} from '../../game/engine/armor';
 import type { AttributeId,TownFacilityId } from '../../game/types';
 import InnRestDialog from './InnRestDialog';
+import RestCinematic from './RestCinematic';
+import TownVitalStatus from './TownVitalStatus';
 import ClinicDialog from './ClinicDialog';
 import WorkshopDialog from './WorkshopDialog';
 import {isRestService,remainingDailyRest,type RestServiceId} from '../../game/engine/innRest';
@@ -26,6 +28,7 @@ export default function TownPage(){
  const {state:s,dispatch}=useGame();
  const [facility,setFacility]=useState<TownFacilityId>('inn');
  const [restDialog,setRestDialog]=useState<RestServiceId|null>(null);
+ const [restCinematic,setRestCinematic]=useState<RestServiceId|null>(null);
  const [clinicOpen,setClinicOpen]=useState(false);
  const [workshopOpen,setWorkshopOpen]=useState(false);
  const [attribute,setAttribute]=useState<AttributeId>('observation');
@@ -36,7 +39,6 @@ export default function TownPage(){
  const equipped=[...new Set(Object.values(s.equipment).filter((id):id is string=>!!id))];
  const gear=equipped.includes(selectedGear)?selectedGear:(equipped.find(id=>!!armorSlotForItem(s,id))??equipped[0]??'');
  const town=s.town;
- const conditions=s.conditions??{wounds:0,infection:0,poisoning:0,illness:0};
  const phase=worldPhase(s.world.minute);
  const enact=(serviceId:string)=>{
   if(getTownServiceLock(s,serviceId,attribute,gear||undefined))return;
@@ -50,13 +52,7 @@ export default function TownPage(){
    <p>「城裡的人還在勉強生活。每扇門後面，都有另一種交易或代價。」</p>
    <div className="town-v15__status"><span><Clock3 size={13}/> 第 {s.world.day} 日 · {phase} {worldClock(s.world.minute)}</span><strong><Coins size={15}/> {s.economy.coins} 舊幣</strong></div>
   </header>
-  <section className="town-v15__stats" aria-label="角色即時狀態">
-   <span><HeartPulse size={14}/>生命 {s.player.health}/{s.player.maxHealth}</span>
-   <span>體力 {s.player.stamina}/{s.player.maxStamina}</span>
-   <span>飢餓 {s.player.hunger}</span>
-   <span>疲勞 {s.player.fatigue}</span>
-   {(conditions.wounds+conditions.infection+conditions.poisoning+conditions.illness)>0&&<small className="town-v15__ailments">外傷 {conditions.wounds} · 感染 {conditions.infection} · 中毒 {conditions.poisoning} · 疾病 {conditions.illness}</small>}
-  </section>
+  <TownVitalStatus state={s}/>
   <section className="town-v15__facilities" aria-label="選擇城鎮設施">
    {TOWN_FACILITIES.map(f=>{
     const TileIcon=facilityIcons[f.id],selected=facility===f.id,available=isTownOpen(f.id,s.world.minute);
@@ -124,6 +120,7 @@ export default function TownPage(){
   {clinicOpen&&<ClinicDialog onClose={()=>setClinicOpen(false)}/>}
   {workshopOpen&&<WorkshopDialog onClose={()=>setWorkshopOpen(false)}/>}
   {restDialog&&<InnRestDialog serviceId={restDialog} onClose={()=>setRestDialog(null)}
-   onConfirm={selectedBed=>{enact(selectedBed);setRestDialog(null)}}/>}
+   onConfirm={selectedBed=>{enact(selectedBed);setRestDialog(null);setRestCinematic(selectedBed)}}/>}
+  {restCinematic&&<RestCinematic kind={restCinematic} onFinish={()=>setRestCinematic(null)}/>}
  </div>;
 }

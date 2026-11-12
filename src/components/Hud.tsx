@@ -1,8 +1,9 @@
-import { Clock3, Heart, Footprints, Sparkles, Thermometer, Moon, Utensils } from 'lucide-react';
+import { Clock3, Heart, Footprints, Thermometer, Moon, Utensils } from 'lucide-react';
 import { useGame } from '../app/GameContext';
 import { worldClock,worldPhase,bagWeight } from '../game/engine/rules';
 import { PROFESSIONS } from '../game/data/professions';
 import StatBar from './StatBar';
+import ProfessionResourceIcon from './ProfessionResourceIcon';
 export default function Hud(){
   const {state:s}=useGame();const p=s.player;
   return <section className="hud" aria-label="玩家狀態">
@@ -14,7 +15,7 @@ export default function Hud(){
       <span><Moon size={13}/>疲勞 {p.fatigue}</span>
       <span><Thermometer size={13}/>{p.temperature.toFixed(1)}°</span>
       <span><Footprints size={13}/>{bagWeight(s.bag).toFixed(1)} kg</span>
-      {s.profession&&<span className="hud__resource"><Sparkles size={13}/>{PROFESSIONS[s.profession].resourceName} {p.resource}/{p.maxResource}</span>}
+      {s.profession&&<span className="hud__resource"><ProfessionResourceIcon profession={s.profession} size={13}/>{PROFESSIONS[s.profession].resourceName} {p.resource}/{p.maxResource}</span>}
     </div>
   </section>;
 }

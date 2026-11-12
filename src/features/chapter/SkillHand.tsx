@@ -1,4 +1,5 @@
-import { LockKeyhole, Layers3, Sparkles } from 'lucide-react';
+import { LockKeyhole, Layers3 } from 'lucide-react';
+import ProfessionResourceIcon from '../../components/ProfessionResourceIcon';
 import { useGame } from '../../app/GameContext';
 import { CARDS } from '../../game/data/cards';
 import { PROFESSIONS } from '../../game/data/professions';
@@ -20,23 +21,23 @@ export default function SkillHand({choice,skillId,onChange,layoutSeed=0}:{
 }){
  const {state}=useGame();
  const trackRef=useRef<HTMLDivElement>(null);
- const drag=useRef<{active:boolean;startX:number;scrollLeft:number;moved:boolean}>({active:false,startX:0,scrollLeft:0,moved:false});
+ const drag=useRef<{active:boolean;startY:number;scrollTop:number;moved:boolean}>({active:false,startY:0,scrollTop:0,moved:false});
  const suppressClick=useRef(false);
  const onPointerDown=(event:ReactPointerEvent<HTMLDivElement>)=>{
   if(event.pointerType!=='mouse'||event.button!==0)return;
   const track=trackRef.current;if(!track)return;
-  drag.current={active:true,startX:event.clientX,scrollLeft:track.scrollLeft,moved:false};
+  drag.current={active:true,startY:event.clientY,scrollTop:track.scrollTop,moved:false};
  };
  const onPointerMove=(event:ReactPointerEvent<HTMLDivElement>)=>{
   const d=drag.current,track=trackRef.current;
   if(!d.active||!track||event.pointerType!=='mouse')return;
-  const dx=event.clientX-d.startX;
-  if(!d.moved&&Math.abs(dx)>6){
+  const dy=event.clientY-d.startY;
+  if(!d.moved&&Math.abs(dy)>6){
    d.moved=true;suppressClick.current=true;
    track.setPointerCapture(event.pointerId);
    track.style.scrollBehavior='auto';
   }
-  if(d.moved){track.scrollLeft=d.scrollLeft-dx;event.preventDefault();}
+  if(d.moved){track.scrollTop=d.scrollTop-dy;event.preventDefault();}
  };
  const onPointerUp=(event:ReactPointerEvent<HTMLDivElement>)=>{
   drag.current.active=false;
@@ -51,14 +52,14 @@ export default function SkillHand({choice,skillId,onChange,layoutSeed=0}:{
  return <section className="hand-section hand-section--scatter">
   <div className="section-heading"><div><span className="eyebrow">DECK / SKILL</span><h3><Layers3 size={17}/> 附加技能卡</h3></div><span className="subtle-small">手牌 {state.hand.length} 張</span></div>
   <div className="skill-resource-status" role="status">
-    <span>{resourceName}</span><strong>{state.player.resource} / {state.player.maxResource}</strong>
+    <span><ProfessionResourceIcon profession={state.profession} size={15}/> {resourceName}</span><strong>{state.player.resource} / {state.player.maxResource}</strong>
     <span aria-hidden="true">→</span>
     <strong className={projected>state.player.resource?'change--better':projected<state.player.resource?'change--worse':'change--same'}>{projected} / {state.player.maxResource}</strong>
   </div>
   <div className="skill-scatter__wrap">
-    <div className="skill-scatter__track" ref={trackRef} role="group" aria-label="可拖曳查看的附加技能卡" onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
+    <div className="skill-scatter__track" ref={trackRef} tabIndex={0} role="group" aria-label="可上下拖曳與滑動的附加技能卡，每列三張" onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
       <button type="button" style={phase(layoutSeed,0)} className={`skill-tile skill-tile--scatter skill-tile--none ${!skillId?'is-selected':''}`} onClick={()=>selectSkill(null)}>
-        <div className="skill-tile__illustration"><span>∅</span></div><strong>不附加</strong><small>0 資源</small>
+        <div className="skill-tile__illustration"><span>∅</span></div><strong>不附加</strong><small className="skill-tile__resource">0 <ProfessionResourceIcon profession={state.profession} size={13}/></small>
       </button>
       {state.hand.map((id,i)=>{
         const card=CARDS[id];if(!card)return null;
@@ -68,13 +69,13 @@ export default function SkillHand({choice,skillId,onChange,layoutSeed=0}:{
           onClick={()=>selectSkill(id)} aria-pressed={skillId===id} title={card.description}>
           <div className="skill-tile__illustration"><span>{card.emoji}</span>{!allowed&&<LockKeyhole size={12} className="skill-tile__lock"/>}</div>
           <strong>{card.name} <span className="skill-level">{['','I','II','III','IV','V'][state.ownedCards[id]?.level??1]}</span></strong>
-          <small><Sparkles size={10}/>{card.resourceCost<0?`+${-card.resourceCost}`:card.resourceCost} 資源{card.resourceCost>=0?'消耗':'回復'}</small>
+          <small className="skill-tile__resource">{card.resourceCost>0?`−${card.resourceCost}`:card.resourceCost<0?`+${-card.resourceCost}`:'0'} <ProfessionResourceIcon profession={state.profession} size={13}/></small>
         </button>;
       })}
     </div>
 
   </div>
-  {skillId&&CARDS[skillId]&&<p className="skill-note"><Sparkles size={14}/>{CARDS[skillId].description}</p>}
+  {skillId&&CARDS[skillId]&&<p className="skill-note"><ProfessionResourceIcon profession={state.profession} size={14}/>{CARDS[skillId].description}</p>}
   {!choice&&<p className="skill-note">先選擇行動，才能看到哪些技能可用。</p>}
  </section>;
 }

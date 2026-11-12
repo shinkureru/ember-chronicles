@@ -81,7 +81,7 @@ export default function CardsPage(){
         <section><h3><BookOpenText size={16}/>這張卡的故事</h3><p>{attack?`我曾經只把「${item?.name??attack.name}」當成日常工具。現在這個地方，卻逼得我不得不考慮它另一種用途。`:(CARD_LORE[selected.id]?.story??'這張卡牌的經歷尚待整理。')}</p></section>
         <section><h3><MapPin size={16}/>取得方式</h3><p>{attack?`選擇對應職業時可取得部分初始攻擊牌，後續可從搜查、戰利品與特殊人物事件取得複本。要使用這張卡，還需在背包中持有「${item?.name??attack.requiredItemId}」。`:(CARD_LORE[selected.id]?.acquisition??'可從指定情境及 NPC 獎勵獲得。')}</p></section>
       </div>
-      <footer className="card-detail-dialog__upgrade"><div><strong>{!owned?'尚未取得':!isPrimary?'這是獨立的 LV.1 升級素材':requirement===null?'已達 V 階':`升級需要 ${requirement} 張複本`}</strong><small>{owned?`目前持有 ${owned.copies} 張複本`:'取得後才能升級'}</small></div><button type="button" className="primary-button" disabled={!owned||!isPrimary||requirement===null||owned.copies<requirement} onClick={()=>{dispatch({type:'UPGRADE_CARD',cardId:selected.id});playCue('reward')}}><ArrowUpCircle size={15}/>升級</button></footer>
+      <footer className="card-detail-dialog__upgrade"><div><strong>{!owned?'尚未取得':!isPrimary?'這是獨立的 LV.1 升級素材':requirement===null?'已達 V 階':`升級需要 ${requirement} 張複本`}</strong><small>{owned?`目前持有 ${owned.copies} 張複本`:'取得後才能升級'}</small></div><button type="button" className="primary-button" disabled={!owned||!isPrimary||requirement===null||owned.copies<requirement} onClick={()=>{dispatch({type:'UPGRADE_CARD',cardId:selected.id});setSelectedLevel(Math.min(5,(owned?.level??1)+1));playCue('reward')}}><ArrowUpCircle size={15}/>升級</button></footer>
     </section>
    </div>}
  </div>;

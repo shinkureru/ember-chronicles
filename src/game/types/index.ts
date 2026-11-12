@@ -51,6 +51,10 @@ export interface TownProgress {
  socialPoiseUntil:number;
  upgrades:Record<string,number>;
  wear:Record<string,number>;
+ /** Number of genuine enemy hits absorbed by each defensive item (capped at ten). */
+ armorHits?:Record<string,number>;
+ /** +1 defense applies to the next mission only. */
+ perfectRepairs?:Record<string,{bonus:number;expiresAfterAttempt:number}>;
  quests:Record<string,TownQuestStatus>;
  lastRestDay?:number;
  restsToday?:number;

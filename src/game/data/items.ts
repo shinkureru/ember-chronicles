@@ -14,6 +14,8 @@ export const ITEMS: Record<string, ItemDef> = {
   keyring:{id:'keyring',name:'倉庫鑰匙串',emoji:'🗝️',type:'tool',weight:0.2,description:'幾把編號不明的鑰匙。'},
   radio:{id:'radio',name:'短距離對講機',emoji:'📻',type:'tool',weight:0.35,description:'可以接收附近巡邏人員的通訊。'},
   vest:{id:'vest',name:'舊式防護背心',emoji:'🦺',type:'gear',weight:2.8,description:'有磨損痕跡，仍具有防護作用。'},
+  arm_guard:{id:'arm_guard',name:'護臂固定板',emoji:'🛡️',type:'gear',weight:0.75,description:'包覆前臂的輕型護板，能減少實際受擊造成的傷害。'},
+  leg_guard:{id:'leg_guard',name:'護膝防撞墊',emoji:'🦵',type:'gear',weight:0.85,description:'固定在膝腿的防撞護具，奔跑與近距離衝突時提供腿部保護。'},
   gloves:{id:'gloves',name:'工業工作手套',emoji:'🧤',type:'gear',weight:0.3,description:'搬運粗糙物品時很有幫助。'},
   cap:{id:'cap',name:'管理員工作帽',emoji:'🧢',type:'gear',weight:0.2,description:'印著倉儲公司的商標。'},
   notes:{id:'notes',name:'折疊值班紀錄',emoji:'📋',type:'misc',weight:0.1,description:'似乎有幾天的記錄被修改。'},
@@ -43,11 +45,11 @@ export const ITEMS: Record<string, ItemDef> = {
 };
 export const LOOT_POOLS: Record<string, string[]> = {
   desk:['notes','badge','receipt','batteries','card_question','memorychip','pen','notebook','metal_ruler','camera','card_pen'],
-  shelves:['biscuit','water','canned','tape','gloves','rope','firstaid','handwarm','wrench','screwdriver','card_wrench'],
+  shelves:['biscuit','water','canned','tape','gloves','arm_guard','rope','firstaid','handwarm','wrench','screwdriver','card_wrench'],
   pockets:['keyring','notes','receipt','bandage','card_route','radio','pen'],
   alley_bin:['torn_photo','biscuit','vehicle_note','wire_piece','card_route','bandage'],
   alley_wall:['torn_photo','vehicle_note','memorychip','card_question','wire_piece','badge'],
-  alley_bag:['water','canned','firstaid','torn_gloves','hook','folding_tool','card_pen','card_wrench'],
+  alley_bag:['water','canned','firstaid','torn_gloves','leg_guard','hook','folding_tool','card_pen','card_wrench'],
   alley_pockets:['vehicle_note','batteries','torn_photo','bandage','receipt','radio'],
 };
 export const INITIAL_NPC_GEAR=['flashlight','vest','radio'];

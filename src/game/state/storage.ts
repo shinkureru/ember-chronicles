@@ -42,7 +42,7 @@ export const loadGame=():GameState=>{
     const convertedAttributes=Object.fromEntries(Object.entries(old.player.attributes).map(([id,value])=>[id,Math.max(0,Math.min(20,Number(value)-10))])) as GameState['player']['attributes'];
     // Preserve every equipped item when upgrading from the former hands slot:
     // old gloves become arm protection and the new leg slot starts empty.
-    const equipment={head:null,body:null,arms:null,legs:null,mainHand:null,utility:null,accessory:null,
+    const equipment={head:null,body:null,mainHand:null,utility:null,accessory:null,
       ...old.equipment,
       arms:old.equipment?.arms??old.equipment?.hands??null,
       legs:old.equipment?.legs??null} as GameState['equipment'];

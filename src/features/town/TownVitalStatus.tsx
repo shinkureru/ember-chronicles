@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {Activity,AlertTriangle,Bandage,ChevronDown,ChevronUp,Droplets,HeartPulse,Moon,ShieldAlert,Skull,Thermometer,Utensils,Zap} from 'lucide-react';
+import {Activity,AlertTriangle,Bandage,ChevronDown,ChevronUp,HeartPulse,Moon,ShieldAlert,Skull,Thermometer,Utensils,Zap} from 'lucide-react';
 import type {GameState} from '../../game/types';
 
 const toPercent=(current:number,max:number)=>Math.max(0,Math.min(100,Math.round(current/Math.max(1,max)*100)));

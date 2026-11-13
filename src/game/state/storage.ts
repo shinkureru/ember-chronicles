@@ -5,6 +5,7 @@ import { makeInitialProgression } from '../engine/progression';
 import {armorHitsFromWear,ARMOR_ITEMS} from '../engine/armor';
 import type { GameState } from '../types';
 import {getTaipeiClock} from '../engine/taipeiClock';
+import {normalizeHunger} from '../engine/hungerCosts';
 const KEY='ember-chronicles-prototype-v1';
 export const loadGame=():GameState=>{
   try{
@@ -58,6 +59,7 @@ export const loadGame=():GameState=>{
       hpRulesVersion:2,growthRulesVersion:2,progression:old.progression??makeInitialProgression(),
       player:{
        ...old.player,
+       hunger:normalizeHunger(old.player.hunger),
        ...(legacyHealth?{maxHealth:newMax,health:newHealth}:{}),
        ...(legacyGrowth?{maxStamina:convertedStaminaMax,stamina:convertedStamina,attributes:convertedAttributes}:{}),
       },

@@ -1,0 +1,92 @@
+/* v0.8.35 — Final responsive convergence.
+ * Preserve the existing visual identity and anchored bottom action/checkout rails.
+ * Hunger is now a first-class cost; labels may contain 0→100 or capped amounts.
+ */
+:where(.game-frame) :is(
+ .action-object-panel__stats,
+ .choice-inspect__right,
+ .skill-comparison__numbers,
+ .skill-comparison__metrics,
+ .field-bag__gear,
+ .town-v15__service,
+ .inn-rest-cost,
+ .clinic-dialog__therapy-heading,
+ .clinic-dialog__card,
+ .workshop-dialog__inspection,
+ .workshop-dialog__actions,
+ .mission-exit-dialog__actions
+){min-width:0;max-width:100%}
+:where(.game-frame) :is(
+ .action-object-panel__stats>span,
+ .action-card__bottom>span,
+ .skill-comparison__numbers>span,
+ .inn-rest-cost>span,
+ .town-v15__service small,
+ .clinic-dialog__therapy-heading span,
+ .clinic-dialog__card span,
+ .workshop-dialog__actions small,
+ .field-bag__gear>p,
+ .modal-panel__line>strong
+){
+ min-width:0;
+ max-width:100%;
+ overflow-wrap:anywhere;
+ word-break:normal;
+ white-space:normal;
+}
+:where(.game-frame) .action-card__bottom{
+ min-width:0;
+ flex-wrap:wrap;
+ column-gap:7px;
+ row-gap:3px;
+}
+:where(.game-frame) .action-card__bottom>span{display:inline-flex;align-items:center;gap:2px}
+:where(.game-frame) .inn-rest-cost,
+:where(.game-frame) .town-v15__service>div>small{
+ flex-wrap:wrap;
+ gap:5px 10px;
+}
+:where(.game-frame) .v0834-hunger-risk{
+ position:static;
+ display:block;
+ max-width:100%;
+ overflow-wrap:anywhere;
+ white-space:normal;
+ flex-shrink:0;
+}
+:where(.game-frame) :is(.inn-rest-dialog,.clinic-dialog,.workshop-dialog,.town-facility-dialog,.field-bag-dialog){
+ max-width:calc(100vw - 12px);
+}
+@media(max-width:720px){
+ :where(.game-frame) .choice-inspect__right{min-width:0}
+ :where(.game-frame) .workshop-dialog__actions button>span{min-width:0}
+}
+@media(max-width:390px){
+ :where(.game-frame) .action-card__bottom{column-gap:6px;row-gap:2px}
+ :where(.game-frame) .inn-rest-cost{column-gap:6px}
+ :where(.game-frame) .clinic-dialog__therapy-heading span{line-height:1.5}
+}
+@media(max-width:360px){
+ :where(.game-frame) .workshop-dialog__actions button>span small{font-size:10px;line-height:1.45}
+ :where(.game-frame) .skill-comparison__numbers{gap:5px}
+}
+@media(max-width:320px){
+ :where(.game-frame) .action-object-panel__stats>span{font-size:10px}
+ :where(.game-frame) .v0834-hunger-risk{padding:4px 5px;font-size:10px}
+ :where(.game-frame) :is(.inn-rest-dialog,.clinic-dialog,.workshop-dialog,.town-facility-dialog,.field-bag-dialog){max-width:calc(100vw - 8px)}
+}
+@media(max-height:520px){
+ :where(.game-frame) :is(.inn-rest-dialog,.clinic-dialog,.workshop-dialog,.town-facility-dialog,.field-bag-dialog){
+  max-height:calc(100dvh - 8px);
+ }
+ :where(.game-frame) :is(.inn-rest-dialog__scroll,.clinic-dialog__content,.workshop-dialog__scroll,.town-facility-dialog__body,.field-bag__content){
+  min-height:0;
+  overscroll-behavior-y:contain;
+  touch-action:pan-y;
+ }
+ :where(.game-frame) .v0834-hunger-risk{margin:3px 0}
+}
+@media(prefers-reduced-motion:reduce){
+ :where(.game-frame) .v0834-hunger-risk{animation:none!important;transition:none!important}
+ :where(.game-frame) .market-v0831__wave-slot{animation:none!important}
+}

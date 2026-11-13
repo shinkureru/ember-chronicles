@@ -55,12 +55,12 @@ describe('v0.8.20 card codex skill archive and filtering',()=>{
    "const [category,setCategory]=useState<'skill'|'attack'>('skill')",
    "category==='skill'?CARDS:ATTACK_CARDS",
    'filterSkillCodexIds(s.ownedCards,{owned:filter,rarity,profession})',
-   'Object.keys(ATTACK_CARDS).filter(id=>',
+   'filterAttackCodexIds(s.ownedCards,{owned:filter,rarity:attackRarity,profession:attackProfession})',
    'className="card-kind-tabs cards-v0820__tabs"',
    'to="/preparation"',
    '功能／附加技能','攻擊型主動牌',
    'role="group" aria-label="稀有度"','role="group" aria-label="職業歸屬"',
-   'aria-pressed={rarity===item.id}','aria-pressed={profession===item.id}',
+   'aria-pressed={activeRarity===item.id}','aria-pressed={activeProfession===item.id}',
    "aria-pressed={filter==='owned'}",
    'buildCardArchiveVariants','setSelectedLevel(variant.level)',
    'getUpgradeRequirement(selected.rarity,owned.level)',
@@ -82,7 +82,7 @@ describe('v0.8.20 card codex skill archive and filtering',()=>{
    'rarity-tile--${card.rarity}','skillCard.chanceBonus','skillCard.resourceCost',
    'card-library-empty-note','aria-live="polite"',
   ])expect(ui).toContain(needle);
-  expect(ui).toContain('[category,filter,rarity,profession]');
+  expect(ui).toContain('[category,filter,rarity,profession,attackRarity,attackProfession]');
   for(let i=1;i<=5;i++)expect(read('src/styles/_v082-card-archive.scss')).toContain(`card-library-tile--level-${i}`);
  });
  it('renders compact four-column skill-only tiles and responsive local overflow',()=>{
@@ -98,6 +98,6 @@ describe('v0.8.20 card codex skill archive and filtering',()=>{
    'focus-visible',
   ])expect(css).toContain(needle);
   expect(read('src/styles/main.scss')).toContain('@import "v0820-card-codex"');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.20');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });

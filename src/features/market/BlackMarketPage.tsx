@@ -168,7 +168,8 @@ export default function BlackMarketPage(){
        return <button type="button" key={offer.type+offer.id}
         className={`market-v12__offer market-v0822__product market-v0822__product--${appearance.tier} ${offer.canTrade?'':'is-unavailable'}`}
         onClick={()=>{setSelectedId(offer.id);playCue('select')}}
-        aria-label={`${offer.name}，${appearance.name}階，${appearance.isDisplayOnly?'展示級別':'卡牌等級'} ${appearance.level}，${mode==='buy'?'庫存':'持有'} ${count}，${offer.price} 舊幣`}>
+        title={offer.canTrade?'點擊查看交易資訊':offer.reason}
+        aria-label={`${offer.name}，${appearance.name}階，${appearance.isDisplayOnly?'展示級別':'卡牌等級'} ${appearance.level}，${mode==='buy'?'庫存':'持有'} ${count}，${offer.price} 舊幣${offer.canTrade?'':`，無法交易：${offer.reason}`}`}>
         <span className="market-v0822__product-top">
          <span className="market-v0822__level" title={appearance.isDisplayOnly?'商品展示級別，不改變物品效果':'交易的是 Lv.1 升級複本'}>Lv.{appearance.level}</span>
          <span className="market-v12__offer-type">{appearance.name}</span>

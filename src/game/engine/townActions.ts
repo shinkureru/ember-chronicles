@@ -1,5 +1,6 @@
 import { TOWN_SERVICES,isTownOpen,townAbsoluteMinute } from '../data/town';
 import {taipeiDate} from './taipeiClock';
+import {applyHungerCost,townServiceHungerCost} from './hungerCosts';
 import type { AttributeId,GameState,TownProgress,SurvivorConditions } from '../types';
 import { ITEMS } from '../data/items';
 import { clamp } from './rules';
@@ -67,7 +68,7 @@ const consumeOneMaterial=(s:GameState,ids:string[]):string|null=>{
  return null;
 };
 /** Mutable on the reducer's structuredClone only, never on React's old state. */
-export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,itemId?:string):{message:string;minutes:number}|null=>{
+export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,itemId?:string):{message:string;minutes:number;hungerDelta:number}|null=>{
  if(getTownServiceLock(s,id,attribute,itemId))return null;
  const service=TOWN_SERVICES.find(x=>x.id===id)!;
  const town=ensureTownProgress(s),conds=ensureConditions(s),p=s.player;
@@ -75,8 +76,7 @@ export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,item
  s.economy.coins-=fee;
  town.visits[service.facility]=(town.visits[service.facility]??0)+1;
  let message='';
- // Record the day BEFORE the sleep time is advanced, so crossing midnight
- // still spends a rest opportunity on the day the player went to bed.
+ // Sleep does not advance the Taipei clock; daily use is counted on today's calendar date.
  if(isRestService(id)){
   if(town.lastRestDay!==s.world.day){town.lastRestDay=s.world.day;town.restsToday=0;}
   town.restsToday=(town.restsToday??0)+1;
@@ -145,7 +145,12 @@ export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,item
   }
   default:throw Error('unhandled town service '+id);
  }
+ // Apply the same projection shown in each service preview. A hot meal keeps its
+ // existing -38 hunger effect and is never billed a second hunger fee.
+ const hungerDelta=townServiceHungerCost(id);
+ if(hungerDelta>0)applyHungerCost(s,hungerDelta);
+ // The actual hunger state is authoritative, including the upper cap.
  s.lastEvent=message;
- s.log.push(`城鎮 · ${service.name}：花費 ${fee} 舊幣；現實時間照常流動。`);
- return {message,minutes:service.minutes};
+ s.log.push(`城鎮 · ${service.name}：花費 ${fee} 舊幣；飢餓 ${id==='hot_meal'?'-38':`+${hungerDelta}`}（上限 100，實際 ${s.player.hunger}）。`);
+ return {message,minutes:service.minutes,hungerDelta:id==='hot_meal'?-38:hungerDelta};
 };

@@ -37,7 +37,7 @@ export const TOWN_SERVICES:TownService[]=[
  {id:'workshop_repair',facility:'workshop',name:'修復目前裝備',summary:'將指定裝備耐久恢復至 100%',coins:22,minutes:50},
  {id:'workshop_upgrade',facility:'workshop',name:'精工改良',summary:'消耗修理材料，永久提高指定裝備防禦（最多 III 階）',coins:45,minutes:95},
  {id:'tavern_rumor',facility:'tavern',name:'購買本時段情報',summary:'每天一項確實可用的線索；黑市商人好感 +1',coins:10,minutes:35},
- {id:'train',facility:'training',name:'今日專項訓練',summary:'選定一項永久屬性 +1；每個遊戲日只能訓練一次',coins:42,minutes:90},
+ {id:'train',facility:'training',name:'今日專項訓練',summary:'選定一項永久屬性 +1；每個台北日只能訓練一次',coins:42,minutes:90},
  {id:'bath',facility:'laundry',name:'洗澡與整裝',summary:'膽量 +12、疲勞 −8；交涉短暫 +5%',coins:12,minutes:45},
  {id:'wash_clothes',facility:'laundry',name:'清洗外衣與裝備',summary:'膽量 +6；交涉短暫 +5%（效果較久）',coins:18,minutes:65},
  {id:'hot_meal',facility:'canteen',name:'熱食套餐',summary:'飢餓 −38、體力 +14',coins:14,minutes:30},

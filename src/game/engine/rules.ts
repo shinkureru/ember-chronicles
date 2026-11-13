@@ -1,4 +1,5 @@
 import { CARDS } from '../data/cards';
+import {actionHungerCost,hungerCostFromMinutes,hungerProjection,hungerRisk,hungerSuccessPenalty} from './hungerCosts';
 import { townAbsoluteMinute } from '../data/town';
 import { getPeacefulResolutionCap } from './encounterBalance';
 import { ITEMS } from '../data/items';
@@ -105,6 +106,7 @@ export const calculateActionPreview=(state:GameState,choice:ActionChoice,skillId
   const currentNpc=state.stageId===2?(state.alleyNpc??state.npc):state.npc;
   const npcPenalty=(currentNpc.adaptations[adaptationKey(choice.tags)]??0);
   const tiredPenalty=state.player.fatigue>=70?7:state.player.fatigue>=50?3:0;
+  const hungryPenalty=hungerSuccessPenalty(state.player.hunger);
   const lowStaminaPenalty=state.player.stamina<staminaCost?24:0;
   const fearPenalty=state.player.courage<40 && choice.tags.some(t=>t==='talk'||t==='fight')?7:0;
   // Failed-encounter reflections must not provide permanent cross-NPC chance boosts.
@@ -117,16 +119,20 @@ export const calculateActionPreview=(state:GameState,choice:ActionChoice,skillId
   const rawChance=!weaponAvailable?0:choice.baseChance===100?100:Math.round(clamp(
     choice.baseChance+specialtyBonus(state,choice.tags)+attributeBonus(state,choice.tags)+
     (validSkill?validSkill.chanceBonus+(skillLevel-1)*3:0)+clueBonus+activeEnemyInsight(state)+routeBonus+heardBonus-
-    npcPenalty-overweightPenalty-tiredPenalty-lowStaminaPenalty-hostilityPenalty-fearPenalty+groomedBonus,
+    npcPenalty-overweightPenalty-tiredPenalty-hungryPenalty-lowStaminaPenalty-hostilityPenalty-fearPenalty+groomedBonus,
     5,95));
   const crisisCap=getPeacefulResolutionCap(state,choice);
   const chance=crisisCap===null?rawChance:Math.min(rawChance,crisisCap);
   const warnings:ActionPreview['warnings']=[];
+  const hungerCost=actionHungerCost(choice);
+  const hungerForecast=hungerProjection(state.player.hunger,hungerCost);
+  const hungerWarning=hungerRisk(state.player.hunger,hungerForecast.projectedHunger);
+  if(hungerWarning)warnings.push(hungerWarning);
   if(!weaponAvailable)warnings.push({title:'缺少所需武器',detail:'對應物品尚未放進背包，無法使用這張攻擊牌。',remedy:'可在關卡內取得武器，或回據點從倉庫備妥。'});
   if(projectedCourage<40&&state.player.courage>=40)warnings.push({title:'膽量將跌破 40',detail:'可能進入「畏縮」狀態，面對威嚇類事件時較不利。',remedy:'可透過休息、情緒安撫或完成勇氣事件恢復。'});
   if(projectedStamina<=Math.ceil(state.player.maxStamina*.2)&&state.player.stamina>Math.ceil(state.player.maxStamina*.2))warnings.push({title:'體力即將見底',detail:'後續逃跑及衝刺會較不容易成功。',remedy:'可返回安全地點休息或使用補給。'});
   if(state.player.fatigue>=70)warnings.push({title:'疲勞偏高',detail:'部分需要集中注意力的行動成功率降低。',remedy:'可以在安全地點休息。'});
-  return {chance,staminaCost,courageDelta,minutes:choice.minutes,resourceCost:validSkill?.resourceCost??0,projectedStamina,projectedCourage,warnings,
+  return {chance,staminaCost,courageDelta,minutes:choice.minutes,hungerCost,projectedHunger:hungerForecast.projectedHunger,resourceCost:validSkill?.resourceCost??0,projectedStamina,projectedCourage,warnings,
     damage:choice.attackCardId&&weaponAvailable?getAttackDamage(state,choice.attackCardId):undefined,
     attackAvailable:weaponAvailable};
 };
@@ -138,6 +144,9 @@ export const retreatPreview=(state:GameState)=>{
   const lowStamina=state.player.stamina<Math.ceil(state.player.maxStamina*.3)?16:0;
   const speed=state.profession==='courier'?12:state.profession==='infiltrator'?8:0;
   const sceneRisk=state.sceneId==='confrontation'?18:state.sceneId==='loot'?5:0;
-  const chance=Math.round(clamp(64+speed+Math.round(state.player.attributes.mobility*0.8)-lowStamina-Math.ceil(excess*3)-sceneRisk+Math.min(8,state.clues.length*2),5,95));
-  return {chance,staminaCost:1,courageLoss:state.sceneId==='gate'?6:3,minutes:8};
+  const chance=Math.round(clamp(64+speed+Math.round(state.player.attributes.mobility*0.8)-lowStamina-Math.ceil(excess*3)-sceneRisk+Math.min(8,state.clues.length*2)-hungerSuccessPenalty(state.player.hunger),5,95));
+  const hungerCost=hungerCostFromMinutes(8);
+  const forecast=hungerProjection(state.player.hunger,hungerCost);
+  return {chance,staminaCost:1,courageLoss:state.sceneId==='gate'?6:3,minutes:8,hungerCost,
+   projectedHunger:forecast.projectedHunger,hungerWarning:hungerRisk(state.player.hunger,forecast.projectedHunger)};
 };

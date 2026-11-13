@@ -136,7 +136,7 @@ export default function ChapterPage(){
       onClickCapture={storyDrag.onClickCapture}>
      <p className="story-panel__thought">{scene.narration}</p>
      {scene.npcText&&<p className="story-panel__compact-npc"><strong>{s.stageId===2?'守望者':'阿忠'}：</strong>{scene.npcText}</p>}
-     {s.sceneId==='loot'&&<div className="story-panel__hint"><Search size={12}/>搜刮會推進世界時間</div>}
+     {s.sceneId==='loot'&&<div className="story-panel__hint"><Search size={12}/>搜刮會增加飢餓，台北時間照常流動</div>}
     </div>
    </section>
    <button type="button" className="chapter-bag-access" onClick={()=>{setShowBag(true);playCue('open')}}

@@ -39,7 +39,7 @@ export default function InnRestDialog({serviceId,onClose,onConfirm}:{serviceId:R
     {BED_OPTIONS.map(id=>{
      const bed=TOWN_SERVICES.find(item=>item.id===id)!;
      return <button key={id} type="button" aria-pressed={id===selected} onClick={()=>setSelected(id)}>
-      <strong>{bed.name}</strong><small>{bed.coins} 舊幣 · 飢餓 +{townHungerProjection(s,id).hungerDelta}</small>
+      <strong>{bed.name}</strong><small>{bed.coins} 舊幣 · 飢餓 +{townHungerProjection(s,id).appliedDelta}</small>
      </button>;
     })}
    </div>
@@ -62,7 +62,7 @@ export default function InnRestDialog({serviceId,onClose,onConfirm}:{serviceId:R
    </div>
    </div>
    <div className="inn-rest-dialog__checkout" role="status" aria-live="polite" aria-atomic="true">
-    <div className="inn-rest-cost"><span><Coins size={14}/>{service.coins} 舊幣</span><span><Utensils size={14}/>飢餓 +{hunger.hungerDelta}（{s.player.hunger}→{hunger.projectedHunger}）</span><span>今日剩餘 {remainingDailyRest(s)}/2 次</span></div>
+    <div className="inn-rest-cost"><span><Coins size={14}/>{service.coins} 舊幣</span><span><Utensils size={14}/>飢餓 +{hunger.appliedDelta}（原成本 +{hunger.hungerDelta}，{s.player.hunger}→{hunger.projectedHunger}）</span><span>今日剩餘 {remainingDailyRest(s)}/2 次</span></div>
     {hungerWarning&&<p className="v0834-hunger-risk" role="status">{hungerWarning.title} · {hungerWarning.detail}</p>}
      <p className={`inn-rest-blocked ${blocked?'is-blocked':'is-clear'}`}>{blocked??' '}</p>
    </div>

@@ -132,7 +132,7 @@ export const calculateActionPreview=(state:GameState,choice:ActionChoice,skillId
   if(projectedCourage<40&&state.player.courage>=40)warnings.push({title:'膽量將跌破 40',detail:'可能進入「畏縮」狀態，面對威嚇類事件時較不利。',remedy:'可透過休息、情緒安撫或完成勇氣事件恢復。'});
   if(projectedStamina<=Math.ceil(state.player.maxStamina*.2)&&state.player.stamina>Math.ceil(state.player.maxStamina*.2))warnings.push({title:'體力即將見底',detail:'後續逃跑及衝刺會較不容易成功。',remedy:'可返回安全地點休息或使用補給。'});
   if(state.player.fatigue>=70)warnings.push({title:'疲勞偏高',detail:'部分需要集中注意力的行動成功率降低。',remedy:'可以在安全地點休息。'});
-  return {chance,staminaCost,courageDelta,minutes:choice.minutes,hungerCost,projectedHunger:hungerForecast.projectedHunger,resourceCost:validSkill?.resourceCost??0,projectedStamina,projectedCourage,warnings,
+  return {chance,staminaCost,courageDelta,minutes:choice.minutes,hungerCost,appliedHungerCost:hungerForecast.appliedDelta,projectedHunger:hungerForecast.projectedHunger,resourceCost:validSkill?.resourceCost??0,projectedStamina,projectedCourage,warnings,
     damage:choice.attackCardId&&weaponAvailable?getAttackDamage(state,choice.attackCardId):undefined,
     attackAvailable:weaponAvailable};
 };

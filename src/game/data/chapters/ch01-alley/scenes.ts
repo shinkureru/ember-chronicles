@@ -8,14 +8,14 @@ export const ALLEY_SCENES:Record<SceneId,SceneDef>={
   {id:'alley_gate_scan',title:'沿牆尋找痕跡',thought:'「先沿牆慢慢看，至少得確定這裡真的有人走過。」',detail:'保持距離，辨識鞋印與被撕毀的告示。',tags:['observe'],baseChance:100,staminaCost:0,courageDelta:0,minutes:6,successScene:'survey',flagsOnSuccess:['alley_trace_found']},
   {id:'alley_gate_talk',title:'詢問暗處的人',thought:'「有人在看著我。或許先把話講清楚，才不會引來麻煩。」',detail:'成功進入證詞調查；失敗則遭到盤問。',tags:['talk'],baseChance:52,staminaCost:0,courageDelta:-2,minutes:5,successScene:'inside',failureScene:'confrontation',npcHostilityFailure:12},
   {id:'alley_gate_sneak',title:'藏進狹窄通道',thought:'「走到攝影機看不到的地方，應該還有另一條路。」',detail:'潛行可避開巷口守望者，失敗時進入衝突。',tags:['sneak'],baseChance:60,staminaCost:4,courageDelta:-3,minutes:6,successScene:'survey',failureScene:'confrontation',flagsOnSuccess:['alley_hidden'],flagsOnFailure:['alley_spotted'],npcHostilityFailure:11},
-  {id:'alley_gate_listen',title:'靜聽腳步節奏',thought:'「等一等，樓梯後面好像有人在說話。」',detail:'消耗時間，取得敵人的巡查節奏。',tags:['observe'],baseChance:100,staminaCost:0,courageDelta:0,minutes:9,successScene:'survey',flagsOnSuccess:['alley_patrol_timing']},
+  {id:'alley_gate_listen',title:'靜聽腳步節奏',thought:'「等一等，樓梯後面好像有人在說話。」',detail:'負擔少量飢餓，取得敵人的巡查節奏。',tags:['observe'],baseChance:100,staminaCost:0,courageDelta:0,minutes:9,successScene:'survey',flagsOnSuccess:['alley_patrol_timing']},
  ]},
  survey:{id:'survey',label:'目擊現場',location:'南區・排水溝與後巷',narration:'水溝旁有不連續的拖行痕跡，一只紙杯壓在灰黑的積水下。有人刻意清掃過地面，卻忘了牆上的細小刮痕。',
   actions:[
   {id:'alley_survey_marks',title:'拍下地上的拖痕',thought:'「這幾道痕跡太整齊了。我應該記下來。」',detail:'留下現場證據，提升之後的資訊判定。',tags:['observe','search'],baseChance:100,staminaCost:0,courageDelta:0,minutes:7,successScene:'inside',flagsOnSuccess:['alley_marks_recorded']},
-  {id:'alley_survey_container',title:'搜查倒下的垃圾桶',thought:'「垃圾桶像是被誰撞翻的。裡面會不會有東西？」',detail:'取得物資或紙面線索，須留意巡邏時間。',tags:['search'],baseChance:100,staminaCost:1,courageDelta:-1,minutes:8,successScene:'survey',lootSource:'alley_bin',requiresNotSearched:'alley_bin'},
+  {id:'alley_survey_container',title:'搜查倒下的垃圾桶',thought:'「垃圾桶像是被誰撞翻的。裡面會不會有東西？」',detail:'取得物資或紙面線索，須留意現場巡邏風險。',tags:['search'],baseChance:100,staminaCost:1,courageDelta:-1,minutes:8,successScene:'survey',lootSource:'alley_bin',requiresNotSearched:'alley_bin'},
   {id:'alley_survey_shadow',title:'從樓梯陰影穿過',thought:'「我應該能靠著牆繞開照明範圍。」',detail:'快速進入更深的巷子。',tags:['sneak'],baseChance:66,staminaCost:5,courageDelta:-3,minutes:5,successScene:'inside',failureScene:'confrontation',flagsOnFailure:['alley_spotted']},
-  {id:'alley_survey_wait',title:'等最後一班巡邏離開',thought:'「等他們走了再進去，雖然我得多耗一點時間。」',detail:'用時間換取安全，無需風險判定。',tags:['observe'],baseChance:100,staminaCost:0,courageDelta:0,minutes:17,successScene:'inside',flagsOnSuccess:['alley_patrol_timing']},
+  {id:'alley_survey_wait',title:'等最後一班巡邏離開',thought:'「等他們走了再進去，雖然要多消耗一些體力與補給。」',detail:'增加飢餓以等待巡邏離開，無需成功率判定。',tags:['observe'],baseChance:100,staminaCost:0,courageDelta:0,minutes:17,successScene:'inside',flagsOnSuccess:['alley_patrol_timing']},
  ]},
  inside:{id:'inside',label:'不可靠的證詞',location:'南區・鐵梯下方',narration:'我走進巷尾。幾張相片被塞在磚縫裡，旁邊的公共電話只剩斷掉的聽筒。一名穿灰色外套的人說他見過失蹤的倉庫員工，卻不肯承認那天有人帶走對方。',
   npcText:'「我只看見一台車。你要是再問，我就什麼都沒看見。」',actions:[

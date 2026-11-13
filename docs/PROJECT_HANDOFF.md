@@ -1,5 +1,19 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜第二輪第8批（最後批）v0.8.21：攻擊型主動牌＋事前準備版面（本 PR 待使用者 Merge）
+
+- **本批 GitHub 開工核對**：`main` `c3dba2f9a0ee8c098eec32cdbc11dd5f86da2167`；前批 PR #46／v0.8.20 已 Merge，最新 GitHub Pages 部署成功，開工時 open PR = 0。下面歷史「待 Merge」皆以當時資料紀錄，不代表現在真實狀態。下次開工仍須先讀此檔／查最新 main+PR+CI。
+- **唯一分支** `ui/v0.8.21-attack-codex-preparation`，package 與 lock = `0.8.21`；對應 `docs/UI_COMPACT_REDESIGN_ROADMAP.md` 的第8批（八批中的最後一批）。本批功能範圍只在 `CardsPage.tsx` 攻擊圖鑑視覺與 `PreparationPage.tsx` 戰前準備 UI，**無新卡／數值平衡／戰鬥判定／存檔／路由／音效引擎變更**。
+- **攻擊型主動牌圖鑑**：延用 v0.8.20 共同的三大頂部導航、持有狀態、稀有度/職業歸屬交集篩選，功能牌／攻擊牌**各自保留不同篩選狀態**。新增 `src/features/cards/attackCodexFilters.ts` 純函式，只過濾 `ATTACK_CARDS`，持有者排前；不改 `ownedCards`。每張攻擊卡維持原始 LV.I 複本和升級主卡分格、I-V 邊框色/稀有度、名稱/數量/emoji/未解鎖狀態，卡面另外顯示真實 `getAttackDamage`、基礎成功率、體力成本、必備武器名稱與背包/倉庫/缺少的存放狀態。倉庫持有**不保證已經符合負重**，詳情有提示須到準備頁檢查。仍沿用原 `UPGRADE_CARD`／詳情/故事/取得方式、拖曳與觸控/鍵盤網格捲動。
+- **事前準備**：`PreparationPage.tsx` 保留 `/preparation` 路由、固定5攻擊槽、`PREPARE_ATTACK_CARD` 加入/移除、原 `START_ATTEMPT` 和 `navigate('/chapter')`；增加返回圖鑑入口與四格摘要（已選/5、可用牌、實際背包重量、預估武器備妥後重量）。頂部選擇槽狀態不誤隱藏，原攻擊牌清單重排成深色銅金的高密度格子，顯示實際傷害/基礎成功率/體力消耗/武器名稱及背包/倉庫/不足警告；可選區獨立垂直捲動，底部返回、遊戲設定、進關及警告仍在。
+- **讀取型演算** `src/features/preparation/preparationReadiness.ts` 是從原 `PreparationPage.tsx` 的 **逐張依序、倉庫候補、15kg** 檢查原樣抽出，不執行任何取物、裝備、變更卡牌或開始任務；實際轉移與五張上限仍由原 `gameReducer` 判斷。若沒有攻擊牌或選了缺武器牌，原 `requestStart` 彈出二次警告，玩家依舊可以自行選「我知道了，仍要進關」而進關；沒有變成強制禁止。
+- **CSS** `src/styles/_v0821-attack-codex-preparation.scss` 最後匯入 `main.scss`。攻擊卡的四欄格、等級/武器訊息、細節視窗縮距；準備頁五欄攻擊槽+兩欄可選攻擊卡（<=380px 退為一欄，>=650px 三欄），正常直式手機主要標題、五槽、概要、操作固定，只有列表捲動；極矮<480px允許主準備面板垂直捲動避免裁切底部確認。支援短寬、長名字、focus-visible、觸控、reduced motion。
+- **自動測試** 新 `tests/v0821-attack-codex-preparation.test.ts` 覆蓋兩類獨立 filter、稀有度與職業交集、卡牌分級/數量/真實攻擊升級與傷害、倉庫轉移、15kg候補及缺武器、5張上限/移除、進關二次確認合約、原地捲動與RWD；前批 `tests/v0820-card-codex-skill-layout.test.ts` 對共用 filter 與新版號更新，保留原技能所有回歸。QA 詳細清單 `docs/V0821_FINAL_CARD_PREPARATION_QA.md`。CI 必須 `npm run build` + `npm test` 全綠；**不能把 CI 視為已在 Chrome/手機完成像素/觸控 QA**。
+- **八批結束狀態**：第1批 v0.8.14 至第7批 v0.8.20 均已由使用者先後 Merge；**第8批 v0.8.21 此 PR 在交付時仍待使用者 Merge／實機驗收**，不得自行 Merge。此輪改版完成後不自動開第9批。使用者如有驗收問題，先開新的修正討論並依最新 GitHub 與畫面核對。
+
+---
+
+
 ## 2026-11-13｜第二輪第7批 v0.8.20：牌組圖鑑主骨架與功能型技能卡（本 PR 待使用者 Merge）
 
 - **GitHub preflight**：`main` `d66e8af0366e6498f86eae4605526f7ff4fa1b0e`；前批 PR #45／v0.8.19 已合併、GitHub Pages 部署成功，開工時 open PR 0。下方先前「待 Merge」均為歷史文字；每次新批次仍要查最新 main、PR、相關程式、CI。

@@ -171,9 +171,9 @@ describe('v0.8.26 left-bottom scene UI and existing game safety',()=>{
   expect(nowInShift.economy.coins).toBe(shifted.economy.coins-90);
  });
  it('bumps package and lock to v0.8.26 but does not rewrite save data',()=>{
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.26');
-  expect(JSON.parse(read('package-lock.json')).version).toBe('0.8.26');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.26');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\\.8\\.\\d+$/);
+  expect(JSON.parse(read('package-lock.json')).version).toBe(JSON.parse(read('package.json')).version);
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe(JSON.parse(read('package.json')).version);
   expect(read('src/features/market/marketShiftCountdown.ts')).not.toContain('dispatch(');
   expect(read('src/features/market/MarketShiftCountdown.tsx')).not.toContain('dispatch(');
  });

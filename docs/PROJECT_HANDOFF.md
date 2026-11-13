@@ -1,5 +1,20 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜黑市第三輪第6批（最後一批）v0.8.27：最終視覺與六批整合驗收（本 PR 待使用者 Merge）
+
+- **GitHub 開工現況**：`main` `6f93b100a1ae3beeebb571b4100197328d26309b`，前批 PR #52 v0.8.26 已 Merge、Pages success，開工時 open PR=0。下方 v0826 及之前「待 Merge」是歷史時點，日後新請求仍須實際查最新 main/PR/交接。
+- **唯一分支** `ui/v0.8.27-market-final-visual-qa`，package/lock `0.8.27`。本批是 `docs/BLACK_MARKET_REDESIGN_ROADMAP.md` 六批的**最後一批**，並完整吸收使用者 2026-11-13 黑市驗收新圖片的四項補充；不自動增加第7批。
+- **中文字黑色線條修復**：上一批 `_v0825-market-dialogue-loading-polish.scss` 原有四方向 1px 深色影、`-webkit-text-stroke:.15px` 與文字 `filter:blur(1px)` 過渡，在小字上易形成黑色水平矩形/渲染殘影。本批最後覆寫 `-webkit-text-stroke:0!important`、`filter:none!important`，只用兩層柔和 `text-shadow` 提高可讀性；改成 opacity 淡入，**保留台詞直接疊在畫面，不恢復對話框**。原五商人各10句/10秒輪播規則不變。
+- **左切換縮小**：移除 JSX 的 `<span className="market-v0824__switch-foot">切換</span>`，保留全區可點 `button`、上下交換的購買/販賣、aria-label、原 `MarketTradeSwitchIcon` 與自心180°旋轉。箭頭一般35px、手機31px、矮高度27～31px，水平置中。
+- **逐商品波浪**：原 v0825 `market-v12__table` 整塊 0.4秒彈跳是不符需求的。新 `_v0827-market-final-polish.scss` **關掉整塊動畫**；`BlackMarketPage.tsx` `filteredOffers.map((offer,index)=>...)` 每張商品加 `market-v0827__wave-item`，`animationDelay: Math.min(index,28)×66ms`，依 DOM 網格從左上順序到右下各自約0.58秒微彈跳。買/賣兩種動畫名，保證來回重播；刻意用 CSS 獨立 `translate/scale` 避開舊商品 `transform:none!important`。只有切換過後的商品參與，不影響篩選列／整張表格或原點擊/drag/scroll。禁用動效完全停用。
+- **左日光燈柔和脈動**：`BlackMarketSceneArt.tsx` 在原 `960×536` viewBox 左白日光燈 x189/y88、旋轉13° 新增淡藍白 gradient + `market-v0827__fluorescent-bloom`，6.5秒緩慢亮度呼吸而非刺眼頻閃，原暖黃燈／冷光／紫眼效果與右側商人文字、好感保持。reduced-motion 時靜態。
+- 最終六批整合的響應式 QA 與交易安全文件 `docs/V0827_MARKET_FINAL_VISUAL_QA.md`；新 `tests/v0827-market-final-polish.test.ts` 覆蓋文字渲染策略、箭頭無字、卡片個別波浪/延遲、光暈/無動效、手機/矮視窗、原世界輪班計算與背包/倉庫禁售；v0825/26 固定斷言依實際改版修正，其餘回歸全保留。CSS `_v0827-market-final-polish.scss` 最後匯入 `main.scss`。
+- **重大保留規則**：真實交易價格/庫存、背包出售只扣 `s.bag`、商人不收購和受保護品禁售、裝備與卡複本、五位商人 world-time 輪班與10秒各10句台詞、黑市 WebP 預解碼/錯誤回復、左下世界時間輪班倒數、右下好感、存檔 schema、音效均不能改。現有世界時鐘仍每現實10秒推進5分鐘遊戲時間（可見/未暫停狀態），不是由 UI 倒數自行更新。
+- **驗收界線**：GitHub Actions `npm run build`+`npm test` 應全綠；**CI 不等於已在 Chrome/手機實際操作/像素檢驗**，待使用者 Merge 後按照 QA 完成人工實機驗收。絕不自行 Merge。六批到此停止；若使用者另提出新問題，先核對最新 GitHub，再依新需求另開修復工作，不擅自延伸第7批。
+
+---
+
+
 ## 2026-11-13｜黑市第三輪第5批 v0.8.26：下一任商人輪班倒數（本 PR 待使用者 Merge）
 
 - **開工現況**：GitHub `main` `e54b552a0017eee5e39ffa426ffe25afdd2ac369`，前批 PR #51 v0.8.25 **已合併**、Pages success，open PR 0。下方各批記錄的「待 Merge」是歷史敘述，下一批仍須重新核對 GitHub。

@@ -1,11 +1,11 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState, type Dispatch, type PropsWithChildren } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, type Dispatch, type PropsWithChildren } from 'react';
 import { gameReducer, type GameAction } from '../game/engine/resolve';
 import { loadGame, saveGame } from '../game/state/storage';
 import type { GameState } from '../game/types';
 import { DAMAGE_FEEDBACK_MS } from '../features/chapter/combatFeedbackTiming';
+import {REALTIME_CLOCK_REFRESH_MS} from '../game/engine/taipeiClock';
 
-export const WORLD_TICK_REAL_MS=10000;
-export const WORLD_TICK_GAME_MINUTES=5;
+// Real wall-clock refresh, without game-time acceleration.
 /** Central phase timing. The reducer is the single source of truth; timers never roll damage. */
 export const COUNTER_PHASE_MS={
  waiting:500, windup:650, throwing:480, hit:650
@@ -18,20 +18,30 @@ interface GameContextValue {
 }
 const GameContext=createContext<GameContextValue|null>(null);
 export const GameProvider=({children}:PropsWithChildren)=>{
- const [state,dispatch]=useReducer(gameReducer,undefined,loadGame);
- const [pauseReasons,setPauseReasons]=useState<Record<PauseReason,boolean>>({route:false,dialog:false});
- const pauseClock=useCallback((reason:PauseReason,paused:boolean)=>{
-  setPauseReasons(old=>old[reason]===paused?old:{...old,[reason]:paused});
+ const [state,rawDispatch]=useReducer(gameReducer,undefined,loadGame);
+ // Sync before user actions even if a click happens at the exact daily boundary.
+ const dispatch=useCallback<Dispatch<GameAction>>((action)=>{
+  if(action.type!=='WORLD_CLOCK_SYNC')rawDispatch({type:'WORLD_CLOCK_SYNC'});
+  rawDispatch(action);
  },[]);
+ // Dialogs cannot pause civil time. Keep the old API for unaffected components.
+ const pauseClock=useCallback((_reason:PauseReason,_paused:boolean)=>{},[]);
  useEffect(()=>{saveGame(state)},[state]);
  useEffect(()=>{
-  if(pauseReasons.route||pauseReasons.dialog||state.mode==='result')return;
-  // Background tabs do not accumulate an unexpected pile of catch-up time.
+  const refresh=()=>rawDispatch({type:'WORLD_CLOCK_SYNC'});
+  refresh();
   const timer=window.setInterval(()=>{
-   if(document.visibilityState==='visible')dispatch({type:'WORLD_CLOCK_TICK',minutes:WORLD_TICK_GAME_MINUTES});
-  },WORLD_TICK_REAL_MS);
-  return()=>window.clearInterval(timer);
- },[pauseReasons.route,pauseReasons.dialog,state.mode]);
+   if(document.visibilityState==='visible')refresh();
+  },REALTIME_CLOCK_REFRESH_MS);
+  const onVisibility=()=>{if(document.visibilityState==='visible')refresh()};
+  document.addEventListener('visibilitychange',onVisibility);
+  window.addEventListener('focus',refresh);
+  return()=>{
+   window.clearInterval(timer);
+   document.removeEventListener('visibilitychange',onVisibility);
+   window.removeEventListener('focus',refresh);
+  };
+ },[]);
  useEffect(()=>{
   if(state.mode!=='adventure'||!state.enemyCounter)return;
   const phase=state.enemyCounter.phase;

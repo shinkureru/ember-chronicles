@@ -1,0 +1,350 @@
+/* v0.8.15 — shared small-format recovery preview system.
+ * Only TWO-TONE before/after bars are included: inn rest and clinic outcomes.
+ * Ordinary one-color health/energy/armor gauges are intentionally excluded.
+ * Source values, color meaning, aria semantics and animation timing remain intact. */
+:root{
+ --recovery-meter-height:6px;
+ --recovery-readout-size:14px;
+ --recovery-card-radius:7px;
+ --recovery-card-gap:5px;
+ --recovery-panel-padding:7px 9px;
+ --recovery-track-background:#403940;
+}
+.recovery-preview-card{
+ --recovery-current:#e65f71;
+ --recovery-change:#f2a4af;
+ min-width:0;
+ box-sizing:border-box;
+ font-variant-numeric:tabular-nums;
+}
+.inn-rest-value--hp,
+.clinic-dialog__outcome--health{
+ --recovery-current:#ef5264;
+ --recovery-change:#ef9ca6;
+}
+.inn-rest-value--stamina,
+.clinic-dialog__outcome--stamina{
+ --recovery-current:#54b59f;
+ --recovery-change:#a9dbcf;
+}
+.clinic-dialog__outcome--fatigue{
+ --recovery-current:#a08cc5;
+ --recovery-change:#c4b4df;
+}
+.recovery-preview-meter{
+ box-sizing:border-box;
+ position:relative;
+ width:100%;
+ height:var(--recovery-meter-height)!important;
+ min-height:var(--recovery-meter-height);
+ border-radius:99px;
+ background:var(--recovery-track-background);
+ overflow:hidden;
+ isolation:isolate;
+}
+.recovery-preview-meter > i{
+ position:absolute;
+ display:block;
+ top:0;
+ bottom:0;
+ height:100%;
+}
+.recovery-preview-meter > i:first-child{
+ background:var(--recovery-current)!important;
+}
+.recovery-preview-meter > i:last-child{
+ background:var(--recovery-change)!important;
+}
+
+/* The inn dialog adapts to its content instead of reserving a huge, empty
+   92dvh panel. The bounded scroller shrinks only on genuinely short screens. */
+.inn-rest-backdrop .inn-rest-dialog{
+ box-sizing:border-box;
+ display:flex!important;
+ flex-direction:column!important;
+ width:min(95vw,530px);
+ height:auto!important;
+ max-height:min(calc(100dvh - 12px),690px)!important;
+ min-height:0!important;
+ padding:10px 12px!important;
+ overflow:hidden!important;
+}
+.inn-rest-dialog > header{
+ box-sizing:border-box;
+ flex:0 0 auto;
+ min-height:43px;
+ gap:8px;
+ padding-bottom:6px;
+}
+.inn-rest-dialog > header svg{flex:none}
+.inn-rest-dialog > header h3{font-size:18px;line-height:1.35}
+.inn-rest-dialog > header small{font-size:9px;letter-spacing:.11em}
+.inn-rest-dialog > header button{min-width:33px;width:33px;height:33px}
+.inn-rest-dialog > .inn-rest-dialog__scroll{
+ box-sizing:border-box;
+ flex:1 1 auto;
+ min-height:0!important;
+ padding:5px 2px 5px 0;
+ overflow-y:auto;
+ overflow-x:hidden;
+ overscroll-behavior-y:contain;
+ touch-action:pan-y;
+}
+.inn-rest-dialog__scroll > p:first-child{
+ margin:2px 0 7px;
+ font-size:10px;
+ line-height:1.5;
+ overflow-wrap:anywhere;
+}
+.inn-rest-dialog__scroll .inn-rest-options{
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:5px;
+ margin:5px 0 8px;
+}
+.inn-rest-dialog__scroll .inn-rest-options > button{
+ box-sizing:border-box;
+ min-width:0;
+ min-height:51px;
+ padding:5px 4px;
+ gap:3px;
+}
+.inn-rest-dialog__scroll .inn-rest-options strong{
+ display:-webkit-box;
+ min-height:2.4em;
+ max-height:2.4em;
+ -webkit-box-orient:vertical;
+ -webkit-line-clamp:2;
+ font-size:10px;
+ line-height:1.2;
+ overflow:hidden;
+ overflow-wrap:anywhere;
+}
+.inn-rest-dialog__scroll .inn-rest-options small{
+ min-height:1.3em;
+ font-size:9px;
+ line-height:1.3;
+ overflow-wrap:anywhere;
+}
+.inn-rest-dialog__scroll .inn-rest-values{
+ display:grid;
+ gap:6px;
+ margin:6px 0;
+}
+.inn-rest-dialog__scroll .inn-rest-values > .inn-rest-value.recovery-preview-card{
+ box-sizing:border-box;
+ display:grid;
+ grid-template-columns:minmax(0,1fr) max-content;
+ grid-template-rows:auto var(--recovery-meter-height) auto;
+ align-items:center;
+ column-gap:8px;
+ row-gap:5px;
+ min-width:0;
+ min-height:0;
+ padding:var(--recovery-panel-padding);
+ border-radius:var(--recovery-card-radius);
+}
+.inn-rest-dialog__scroll .inn-rest-value > strong{
+ grid-column:1;
+ grid-row:1;
+ display:inline-flex;
+ align-items:center;
+ gap:4px;
+ min-width:0;
+ font-size:11px;
+ line-height:1.3;
+}
+.inn-rest-dialog__scroll .inn-rest-value > strong svg{width:14px;height:14px}
+.inn-rest-dialog__scroll .inn-rest-value .inn-rest-value__numbers{
+ grid-column:2;
+ grid-row:1;
+ display:flex;
+ align-items:center;
+ justify-content:flex-end;
+ gap:5px;
+ min-width:0;
+ margin:0;
+ font-size:var(--recovery-readout-size)!important;
+ font-weight:750;
+ line-height:1.3;
+ font-variant-numeric:tabular-nums;
+ white-space:nowrap;
+}
+.inn-rest-dialog__scroll .inn-rest-value__numbers > b{font-size:12px}
+.inn-rest-dialog__scroll .inn-rest-value .inn-rest-meter.recovery-preview-meter{
+ grid-column:1/-1;
+ grid-row:2;
+ margin:0;
+ height:var(--recovery-meter-height)!important;
+}
+.inn-rest-dialog__scroll .inn-rest-value > small{
+ grid-column:1/-1;
+ grid-row:3;
+ margin:0;
+ font-size:9px;
+ line-height:1.4;
+ overflow-wrap:anywhere;
+}
+.inn-rest-dialog__scroll .inn-rest-advice{
+ display:block;
+ box-sizing:border-box;
+ min-height:0!important;
+ height:auto;
+ margin:6px 0 4px;
+ padding:7px 9px!important;
+ font-size:10px;
+ line-height:1.5;
+ overflow-wrap:anywhere;
+}
+.inn-rest-dialog__scroll .inn-rest-advice small{
+ display:block;
+ min-height:0!important;
+ margin-top:3px;
+ font-size:9px;
+ line-height:1.4;
+}
+.inn-rest-dialog > .inn-rest-dialog__checkout{
+ box-sizing:border-box;
+ flex:0 0 auto;
+ min-width:0;
+ padding:4px 0 3px;
+ border-top:1px solid #493f45;
+}
+.inn-rest-dialog__checkout .inn-rest-cost{
+ box-sizing:border-box;
+ display:flex;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:3px 10px;
+ min-height:0!important;
+ margin:0;
+ padding:1px 0 3px;
+ font-size:10px;
+ line-height:1.35;
+}
+.inn-rest-dialog__checkout .inn-rest-cost span{
+ display:inline-flex;
+ align-items:center;
+ gap:4px;
+ white-space:nowrap;
+}
+.inn-rest-dialog__checkout .inn-rest-cost svg{width:12px;height:12px}
+.inn-rest-dialog__checkout .inn-rest-blocked{
+ box-sizing:border-box;
+ min-height:15px;
+ margin:0;
+ padding:0;
+ font-size:10px;
+ line-height:1.45;
+ overflow-wrap:anywhere;
+ color:#efaaa5!important;
+}
+.inn-rest-dialog__checkout .inn-rest-blocked.is-clear{
+ visibility:hidden;
+}
+.inn-rest-dialog > footer{
+ box-sizing:border-box;
+ flex:0 0 auto;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:7px;
+ min-height:43px;
+ padding:6px 0 0;
+ margin:0;
+}
+.inn-rest-dialog > footer button{
+ width:100%;
+ min-width:0;
+ min-height:36px!important;
+ padding:6px;
+ font-size:11px;
+ line-height:1.35;
+}
+@media(max-width:365px){
+ .inn-rest-backdrop .inn-rest-dialog{width:calc(100vw - 10px);padding:8px 9px!important}
+ .inn-rest-dialog > header{min-height:39px;gap:5px}
+ .inn-rest-dialog > header h3{font-size:16px}
+ .inn-rest-dialog__scroll .inn-rest-options{gap:4px}
+ .inn-rest-dialog__scroll .inn-rest-options > button{min-height:49px;padding:4px 2px}
+ .inn-rest-dialog__scroll .inn-rest-options strong{font-size:9px}
+ .inn-rest-dialog__scroll .inn-rest-options small{font-size:8px}
+ .inn-rest-dialog__scroll .inn-rest-value .inn-rest-value__numbers{font-size:13px!important;gap:4px}
+ .inn-rest-dialog__scroll .inn-rest-values > .inn-rest-value.recovery-preview-card{padding:6px 7px}
+ .inn-rest-dialog__checkout .inn-rest-cost{gap:3px 7px}
+}
+@media(max-height:620px){
+ .inn-rest-backdrop .inn-rest-dialog{max-height:calc(100dvh - 10px)!important}
+ .inn-rest-dialog__scroll > p:first-child{margin:2px 0 5px}
+ .inn-rest-dialog__scroll .inn-rest-options{margin:4px 0 6px}
+ .inn-rest-dialog__scroll .inn-rest-values{gap:5px;margin:4px 0}
+ .inn-rest-dialog__scroll .inn-rest-advice{padding:6px 8px!important;margin:4px 0}
+ .inn-rest-dialog > footer{min-height:40px;padding-top:4px}
+}
+@media(max-height:460px){
+ /* Readability and pinned checkout win over any forced all-in-one clipping. */
+ .inn-rest-dialog > header{min-height:34px}
+ .inn-rest-dialog__scroll .inn-rest-options > button{min-height:45px}
+}
+
+/* Clinic: same 6px two-tone track and visual scale, preserving the full-width
+   single-column treatment results and each clinical condition's color. */
+.clinic-dialog .clinic-dialog__card--treatment{
+ gap:6px;
+ padding:8px 9px;
+}
+.clinic-dialog .clinic-dialog__card--treatment > .clinic-dialog__outcomes{
+ padding-top:5px;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcomes-label{
+ margin-bottom:4px;
+ font-size:9px!important;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-grid{
+ grid-template-columns:minmax(0,1fr)!important;
+ gap:5px;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome.recovery-preview-card{
+ grid-template-columns:minmax(0,1fr) max-content;
+ column-gap:7px;
+ row-gap:5px;
+ padding:6px 8px!important;
+ border-radius:var(--recovery-card-radius);
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-head{gap:2px 6px}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-head strong{
+ font-size:10px!important;
+ line-height:1.3;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-head small{
+ font-size:9px!important;
+ line-height:1.3;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-numbers{
+ gap:4px;
+ font-size:var(--recovery-readout-size);
+ line-height:1.3;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-numbers svg{
+ width:12px;
+ height:12px;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-track.recovery-preview-meter{
+ height:var(--recovery-meter-height)!important;
+ margin:0;
+}
+@media(max-width:360px){
+ .clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome.recovery-preview-card{
+  grid-template-columns:minmax(0,1fr);
+  grid-template-rows:auto auto auto;
+  gap:4px;
+  padding:6px 7px!important;
+ }
+ .clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-numbers{
+  font-size:13px;
+ }
+}
+@media(max-height:650px){
+ .clinic-dialog .clinic-dialog__card--treatment{padding:7px 8px}
+ .clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome.recovery-preview-card{padding:5px 7px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .recovery-preview-meter > i{transition:none!important}
+}

@@ -40,14 +40,14 @@ export default function InnRestDialog({serviceId,onClose,onConfirm}:{serviceId:R
      </button>;
     })}
    </div>
-   <div className="inn-rest-values">
+   <div className="inn-rest-values recovery-preview-values">
     {([
      {kind:'hp' as const,label:'生命 HP',now:s.player.health,max:s.player.maxHealth,after:preview.predictedHealth,gain:preview.healthGain},
      {kind:'stamina' as const,label:'體力 ST',now:s.player.stamina,max:s.player.maxStamina,after:preview.predictedStamina,gain:preview.staminaGain}
-    ]).map(stat=><div className={`inn-rest-value inn-rest-value--${stat.kind}`} key={stat.kind}>
+    ]).map(stat=><div className={`inn-rest-value inn-rest-value--${stat.kind} recovery-preview-card`} key={stat.kind}>
       <strong>{stat.kind==='hp'?<HeartPulse size={16}/>:null}{stat.label}</strong>
       <span className="inn-rest-value__numbers">{stat.now}/{stat.max}<b aria-hidden="true">→</b><em>{stat.after}/{stat.max}</em></span>
-      <div className="inn-rest-meter" role="progressbar" aria-label={`${stat.label}休息後預計`} aria-valuemin={0} aria-valuemax={stat.max} aria-valuenow={stat.after}>
+      <div className="inn-rest-meter recovery-preview-meter" role="progressbar" aria-label={`${stat.label}休息後預計`} aria-valuemin={0} aria-valuemax={stat.max} aria-valuenow={stat.after}>
        <i className="inn-rest-meter__current" style={{width:`${percent(stat.now,stat.max)}%`}}/>
        <i className="inn-rest-meter__gain" style={{left:`${percent(stat.now,stat.max)}%`,width:`${percent(stat.after-stat.now,stat.max)}%`}}/>
       </div>
@@ -57,8 +57,10 @@ export default function InnRestDialog({serviceId,onClose,onConfirm}:{serviceId:R
    <div className="inn-rest-advice">{preview.recommendation}
     <small>請不要刻意用無效行動刷低體力；真正的冒險、工作或移動才值得消耗資源。</small>
    </div>
-   <div className="inn-rest-cost"><span><Coins size={14}/>{service.coins} 舊幣</span><span><Clock3 size={14}/>{service.minutes} 分鐘</span><span>今日剩餘 {remainingDailyRest(s)}/2 次</span></div>
-   {blocked&&<p className="inn-rest-blocked">{blocked}</p>}
+   </div>
+   <div className="inn-rest-dialog__checkout" role="status" aria-live="polite" aria-atomic="true">
+    <div className="inn-rest-cost"><span><Coins size={14}/>{service.coins} 舊幣</span><span><Clock3 size={14}/>{service.minutes} 分鐘</span><span>今日剩餘 {remainingDailyRest(s)}/2 次</span></div>
+    <p className={`inn-rest-blocked ${blocked?'is-blocked':'is-clear'}`}>{blocked??' '}</p>
    </div>
    <footer><button type="button" onClick={onClose}>暫時不休息</button><button type="button" disabled={!!blocked} onClick={()=>onConfirm(selected)}>確認休息</button></footer>
   </section>

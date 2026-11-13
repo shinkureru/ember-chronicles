@@ -1,5 +1,18 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜第二輪 UI 八批中的第2批 v0.8.15（本分支待使用者 Merge）
+
+- **本次 GitHub preflight**：`main` `00b491ae096e46793c959da4a21448b4ec41f90b`，PR #40／v0.8.14 已 Merge，GitHub Pages 部署成功；開工前 open PR 0。先讀過本檔及 `docs/UI_COMPACT_REDESIGN_ROADMAP.md`，並核對旅店、診所、條色樣式、拖曳及舊回歸測試。上一段「v0.8.14 待 Merge」是歷史文字。
+- **本次唯一分支** `ui/v0.8.15-shared-recovery-preview`，版本 `0.8.15`。只修改雙色預覽 UI（旅店及地下診所），不動人物頁或牌組、任何療效/收費/時間/存檔/路由。
+- 新增 `src/styles/_v0815-shared-recovery-preview.scss`，`main.scss` 最後匯入，提供可共用的 `recovery-preview-card`、`recovery-preview-meter` 及 6px CSS 進度條高度/數字/內距/顏色 token；旅店原 13px、診所原 9px 雙色條統一 6px。紅＋淡粉的生命、綠＋淡綠的體力、紫色疲勞與其他負面值皆保留語意；一般單色即時條 **不納入**本批。
+- `InnRestDialog.tsx` HP/ST 預覽改為左標籤右前後數值、下方短條與恢復量；三床位選擇卡與建議卡更精簡，外框自然內容高度＋max-height。**關鍵修復**：把費用、剩餘次數及 `getTownServiceLock` 的不足舊幣訊息放到 `inn-rest-dialog__checkout`（**獨立於內部捲動**，固定在 footer 上方），無訊息也保留原高度，避免一出現「舊幣不足」就突然要拉動才能看到。確認按鈕禁用邏輯不變。
+- `ClinicDialog.tsx` 只加共用視覺 class，預計治療結果繼續用原 `clinicTreatmentOutcomes`／原本 before/after 百分比及 ARIA，診所舊 v0.8.12 縮卡再精簡。此批未修改治療計算、每日委託、藥房、拖曳 Hook。
+- 測試：`tests/v0815-shared-recovery-preview.test.ts`（共用條、顏色、預覽數值、checkout 固定及不足舊幣、舊機制），上一批 v0814 歷史定值斷言改 regex；QA 文件 `docs/V0815_SHARED_RECOVERY_QA.md`。
+- **合作協定**：同一批只有這一個 PR，GitHub CI（`npm run build`、`npm test`）全通才交付；瀏覽器目視仍需使用者 Merge 後驗收。收到明確「Merge 好了繼續第3批」才以最新 GitHub 重新核對 main/PR/交接/測試，開 v0.8.16 人物檔案資訊架構改版；**絕不代 Merge 或提前改下批**。
+
+---
+
+
 ## 2026-11-13｜新一輪8批 UI 重設計：v0.8.14 第1批（本分支尚待使用者 Merge）
 
 - **本次 GitHub preflight**：`main` commit `a8e6860f6ec1f4408f595815bacc7720325b2fd2`，前批 PR #39／v0.8.13 已 Merge，Pages 部署成功，開工前 open PR = 0。下方 v0.8.13「待 Merge」為歷史狀態；**永遠以新 GitHub preflight 與最新交接頁首為準**。

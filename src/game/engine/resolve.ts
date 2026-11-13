@@ -428,10 +428,10 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       // Keep selected weapon cards functional; never silently sell a prepared weapon.
       if(s.attackDeck.some(id=>ATTACK_CARDS[id]?.requiredItemId===item.id)&&
         (s.warehouse[item.id]??0)+(s.bag[item.id]??0)<=1)return state;
-      const source=(s.warehouse[item.id]??0)>0?'warehouse':'bag';
-      if((s[source][item.id]??0)<=0)return state;
-      s[source][item.id]=(s[source][item.id]??0)-1;
-      if(s[source][item.id]===0)delete s[source][item.id];
+      // The sell list is the backpack: a sale must never consume warehouse stock.
+      if((s.bag[item.id]??0)<=0)return state;
+      s.bag[item.id]=(s.bag[item.id]??0)-1;
+      if(s.bag[item.id]===0)delete s.bag[item.id];
       const gain=marketSellPrice(item.id);
       s.economy.coins+=gain;
       s.economy.blackMarketFavor=Math.min(100,s.economy.blackMarketFavor+1);

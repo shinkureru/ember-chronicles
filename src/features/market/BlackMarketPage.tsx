@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Coins, HeartHandshake, ShoppingBag, Tag, X, ArrowRight, Clock3, SlidersHorizontal, Handshake, Eye, LockKeyhole } from 'lucide-react';
+import { Coins, HeartHandshake, X, ArrowRight, Clock3, SlidersHorizontal, Handshake, Eye, LockKeyhole } from 'lucide-react';
 import { useGame } from '../../app/GameContext';
 import { CARDS } from '../../game/data/cards';
 import { ITEMS } from '../../game/data/items';
@@ -9,6 +9,8 @@ import { getScheduledVendor } from '../../game/data/marketSchedule';
 import { playCue } from '../../audio/sound';
 import { bagWeight, worldPhaseToken, worldPhase, worldClock } from '../../game/engine/rules';
 import BlackMarketSceneArt from './BlackMarketSceneArt';
+import MarketTradeSwitchIcon from './MarketTradeSwitchIcon';
+import {getBackpackMarketItemIds,doesVendorAcceptMarketItem} from './marketSellInventory';
 import ItemArt from '../../components/ItemArt';
 import {getMarketProductPresentation,formatMarketOfferQuantity} from './marketProductPresentation';
 import GameUtilities from '../../components/GameUtilities';
@@ -41,29 +43,33 @@ export default function BlackMarketPage(){
 
  const offers=useMemo<Offer[]>(()=>{
   if(mode===null)return [];
-  const cardOffers=vendor.cardIds.flatMap(id=>{
+  const cardIds=mode==='buy'?vendor.cardIds:Object.keys(s.ownedCards).filter(id=>(s.ownedCards[id]?.copies??0)>0);
+  const cardOffers=cardIds.flatMap(id=>{
    const card=CARDS[id];if(!card)return [];
    const data=s.ownedCards[id],price=CARD_PRICES[card.rarity][mode];
-   const canTrade=s.mode!=='adventure'&&!!data&&(mode==='sell'?data.copies>=1:s.economy.coins>=price);
-   const reason=!data?'須先取得原卡才能交易複本':
+   const accepted=vendor.cardIds.includes(id);
+   const canTrade=s.mode!=='adventure'&&!!data&&accepted&&(mode==='sell'?data.copies>=1:s.economy.coins>=price);
+   const reason=mode==='sell'&&!accepted?'這位商人不收購此卡牌':
+    !data?'須先取得原卡才能交易複本':
     mode==='sell'&&data.copies<1?'沒有可出售的複本':
     mode==='buy'&&s.economy.coins<price?'舊幣不足':'可交易';
    return [{id,name:card.name,emoji:card.emoji,description:card.description,type:'card' as const,category:'card',
     price,available:mode==='sell'?data?.copies??0:99,owned:data?.copies??0,canTrade,reason}];
   });
-  const list=mode==='buy'?vendor.sellItems:vendor.buyItems.map(id=>({id,price:marketSellPrice(id),stock:0}));
+  const list=mode==='buy'?vendor.sellItems:getBackpackMarketItemIds(s.bag).map(id=>({id,price:marketSellPrice(id),stock:0}));
   const itemOffers=list.flatMap(entry=>{
    const item=ITEMS[entry.id];if(!item)return [];
    const stockKey=getVendorStockKey(vendor.id,item.id);
-   const available=mode==='buy'?Math.max(0,entry.stock-(s.economy.marketStock[stockKey]??0)):totalOwned(item.id);
+   const available=mode==='buy'?Math.max(0,entry.stock-(s.economy.marketStock[stockKey]??0)):(s.bag[item.id]??0);
    const price=mode==='buy'?entry.price:marketSellPrice(item.id);
+   const accepted=doesVendorAcceptMarketItem(vendor,item.id);
    const protectedItem=s.protectedItems.includes(item.id)||equipped.includes(item.id)||protectedWeapon(item.id);
-   const canTrade=s.mode!=='adventure'&&(mode==='buy'?available>0&&s.economy.coins>=price&&bagWeight(s.bag)+item.weight<=15:available>0&&!protectedItem);
+   const canTrade=s.mode!=='adventure'&&(mode==='buy'?available>0&&s.economy.coins>=price&&bagWeight(s.bag)+item.weight<=15:available>0&&accepted&&!protectedItem);
    const reason=mode==='buy'?
     available<=0?'商品已售完':s.economy.coins<price?'舊幣不足':bagWeight(s.bag)+item.weight>15?'背包負重不足':'可購買':
-    available<=0?'沒有持有此物品':protectedItem?'裝備中或常用物品不得出售':'可出售';
+    available<=0?'背包沒有此物品':!accepted?'這位商人不收購此物品':protectedItem?'裝備中或常用物品不得出售':'可出售';
    return [{id:item.id,name:item.name,emoji:item.emoji,description:item.description,type:'item' as const,category:item.type,
-    price,available,owned:totalOwned(item.id),canTrade,reason}];
+    price,available,owned:mode==='sell'?available:totalOwned(item.id),canTrade,reason}];
   });
   return [...itemOffers,...cardOffers];
  },[mode,vendor.id,s]);
@@ -83,7 +89,7 @@ export default function BlackMarketPage(){
   window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close);
  },[selected]);
  const chooseMode=(value:Mode)=>{
-  if(mode!==value){setMode(value);setKind('all');setNarrow('any');setMore(false);setSelectedId(null);}
+  if(mode!==value){setMode(value);setKind('all');setNarrow('any');setMore(false);setSelectedId(null);offersScroll.scrollRef.current?.scrollTo({top:0});}
   playCue('open');
  };
  const trade=(offer:Offer)=>{
@@ -124,7 +130,18 @@ export default function BlackMarketPage(){
      </div>
     </div>
    </div>
-   <div className="market-v12__table">
+   <div className="market-v0824__exchange">
+    <nav className="market-v12__modes market-v0824__switch" aria-label="黑市購買與販賣模式">
+     <button type="button" className={`market-v0824__toggle ${mode==='sell'?'is-sell':'is-buy'}`}
+      aria-pressed={mode==='sell'} aria-label={mode==='sell'?'目前販賣模式，點擊切換購買':'目前購買模式，點擊切換販賣'}
+      onClick={()=>chooseMode(mode==='sell'?'buy':'sell')}>
+      <span className="market-v0824__switch-label market-v0824__switch-label--buy" aria-hidden="true">購買</span>
+      <span className="market-v0824__switch-arrow" aria-hidden="true"><MarketTradeSwitchIcon/></span>
+      <span className="market-v0824__switch-label market-v0824__switch-label--sell" aria-hidden="true">販賣</span>
+      <span className="market-v0824__switch-foot" aria-hidden="true">切換</span>
+     </button>
+    </nav>
+    <div className="market-v12__table">
     <div className="market-v12__table-heading"><span>EXCHANGE / {mode===null?'WAITING':mode.toUpperCase()}</span><span>{mode===null?'選擇交易方式':'點選卡片查看詳細內容'}</span></div>
     {mode!==null&&<div className="market-v13__filter-wrap">
      <div className="market-v13__filters" role="group" aria-label="商品篩選">
@@ -141,7 +158,7 @@ export default function BlackMarketPage(){
     {mode===null?
      <div className="market-v13__waiting"><Handshake size={31}/><strong>隔著牆，交易才有機會開始。</strong><p>「先聽聽他打算買什麼，或者賣些什麼。」</p></div>:
      <div className="market-v12__offers market-v081__catalog" role="group" tabIndex={0} ref={offersScroll.scrollRef}
-       aria-label={mode==='buy'?'可上下滾動或拖曳的販售商品':'可上下滾動或拖曳的商人收購商品'}
+       aria-label={mode==='buy'?'可上下滾動或拖曳的販售商品':'背包持有物品與卡牌複本，可上下滾動或拖曳'}
        onPointerDown={offersScroll.onPointerDown} onPointerMove={offersScroll.onPointerMove}
        onPointerUp={offersScroll.onPointerUp} onPointerCancel={offersScroll.onPointerCancel}
        onClickCapture={offersScroll.onClickCapture}>
@@ -164,15 +181,12 @@ export default function BlackMarketPage(){
         </span>
        </button>;
       })}
-      {!filteredOffers.length&&<p className="market-v12__empty">沒有符合條件的交易品，試試其他篩選。</p>}
+      {!filteredOffers.length&&<p className="market-v12__empty">{mode==='sell'?'背包目前沒有符合條件的物品或卡牌複本。':'沒有符合條件的交易品，試試其他篩選。'}</p>
      </div>}
      {mode!==null&&filteredOffers.length>6&&<div className="market-v081__scroll-hint" aria-hidden="true">向上拖曳或滾動，查看下方更多商品</div>}
    </div>
+   </div>
   </section>
-  <nav className="market-v12__modes" aria-label="先選擇購買或出售">
-   <button type="button" aria-pressed={mode==='buy'} className={mode==='buy'?'is-active':''} onClick={()=>chooseMode('buy')}><ShoppingBag size={16}/>購買</button>
-   <button type="button" aria-pressed={mode==='sell'} className={mode==='sell'?'is-active':''} onClick={()=>chooseMode('sell')}><Tag size={16}/>出售</button>
-  </nav>
   <footer className="market-v10__footer"><Eye size={13}/> {vendor.name}只在{worldPhase(s.world.minute)}出現
    <span>每位商人都會記住交易，卡牌複本價格昂貴。</span>
    <GameUtilities className="game-utilities--market"/>

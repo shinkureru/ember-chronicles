@@ -99,7 +99,7 @@ describe('v0.8.34 single-sourced hunger price and bounded state',()=>{
  });
  it('high hunger weakens subsequent chance while keeping guaranteed actions unchanged',()=>{
   const s=townState();s.mode='adventure';
-  const action=getVisibleActions(s).find(c=>c.id==='gate_observe')!;
+  const action={...getVisibleActions(s).find(c=>c.id==='gate_observe')!,baseChance:52}; // force a non-guaranteed chance away from 5/95 caps
   s.player.hunger=69;const before=calculateActionPreview(s,action,null).chance;
   s.player.hunger=70;const mild=calculateActionPreview(s,action,null).chance;
   s.player.hunger=90;const heavy=calculateActionPreview(s,action,null).chance;

@@ -1,10 +1,11 @@
-import {BedDouble,HeartPulse,Clock3,Coins,X} from 'lucide-react';
+import {BedDouble,HeartPulse,Utensils,Coins,X} from 'lucide-react';
 import {createPortal} from 'react-dom';
 import {useEffect,useState} from 'react';
 import { useGame } from '../../app/GameContext';
 import { TOWN_SERVICES } from '../../game/data/town';
 import { previewInnRest,remainingDailyRest,type RestServiceId } from '../../game/engine/innRest';
 import { getTownServiceLock } from '../../game/engine/townActions';
+import {townHungerProjection,hungerRisk} from '../../game/engine/hungerCosts';
 import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
 
 const BED_OPTIONS:RestServiceId[]=['rest_cot','rest_private','rest_short'];
@@ -13,6 +14,8 @@ export default function InnRestDialog({serviceId,onClose,onConfirm}:{serviceId:R
  const [selected,setSelected]=useState<RestServiceId>(serviceId);
  const innerScroll=useVerticalDragScroll();
  const preview=previewInnRest(s,selected);
+  const hunger=townHungerProjection(s,selected);
+  const hungerWarning=hungerRisk(s.player.hunger,hunger.projectedHunger);
  useEffect(()=>{
   pauseClock('dialog',true);
   const onEscape=(event:KeyboardEvent)=>{if(event.key==='Escape')onClose()};
@@ -36,7 +39,7 @@ export default function InnRestDialog({serviceId,onClose,onConfirm}:{serviceId:R
     {BED_OPTIONS.map(id=>{
      const bed=TOWN_SERVICES.find(item=>item.id===id)!;
      return <button key={id} type="button" aria-pressed={id===selected} onClick={()=>setSelected(id)}>
-      <strong>{bed.name}</strong><small>{bed.coins} 舊幣 · 不快轉時間</small>
+      <strong>{bed.name}</strong><small>{bed.coins} 舊幣 · 飢餓 +{townHungerProjection(s,id).hungerDelta}</small>
      </button>;
     })}
    </div>
@@ -59,8 +62,9 @@ export default function InnRestDialog({serviceId,onClose,onConfirm}:{serviceId:R
    </div>
    </div>
    <div className="inn-rest-dialog__checkout" role="status" aria-live="polite" aria-atomic="true">
-    <div className="inn-rest-cost"><span><Coins size={14}/>{service.coins} 舊幣</span><span><Clock3 size={14}/>不快轉時間</span><span>今日剩餘 {remainingDailyRest(s)}/2 次</span></div>
-    <p className={`inn-rest-blocked ${blocked?'is-blocked':'is-clear'}`}>{blocked??' '}</p>
+    <div className="inn-rest-cost"><span><Coins size={14}/>{service.coins} 舊幣</span><span><Utensils size={14}/>飢餓 +{hunger.hungerDelta}（{s.player.hunger}→{hunger.projectedHunger}）</span><span>今日剩餘 {remainingDailyRest(s)}/2 次</span></div>
+    {hungerWarning&&<p className="v0834-hunger-risk" role="status">{hungerWarning.title} · {hungerWarning.detail}</p>}
+     <p className={`inn-rest-blocked ${blocked?'is-blocked':'is-clear'}`}>{blocked??' '}</p>
    </div>
    <footer><button type="button" onClick={onClose}>暫時不休息</button><button type="button" disabled={!!blocked} onClick={()=>onConfirm(selected)}>確認休息</button></footer>
   </section>

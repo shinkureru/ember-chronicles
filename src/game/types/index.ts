@@ -37,6 +37,7 @@ export interface SceneDef { id: SceneId; label: string; location: string; narrat
 export interface LootDrop { itemId: string; quantity: number; source: string }
 export interface ActionPreview {
   chance: number; staminaCost: number; courageDelta: number; minutes: number;
+  hungerCost:number; projectedHunger:number;
   resourceCost: number; projectedStamina: number; projectedCourage: number;
   damage?:number; attackAvailable?:boolean;
   warnings: { title: string; detail: string; remedy: string }[];

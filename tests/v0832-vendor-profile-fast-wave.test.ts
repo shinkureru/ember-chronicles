@@ -118,11 +118,12 @@ describe('v0.8.32 twice-faster regional waves with half bounce',()=>{
   expect(ui).toContain('window.setTimeout(()=>setWaveActive(false),MARKET_WAVE_WINDOW_MS)');
   expect(ui).toContain('window.clearTimeout(timeout)');
   expect(ui).toContain('setWaveEpoch(n=>n+1);setWaveActive(true)');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0832-market-vendor-profile";$/);
+  expect(read('src/styles/main.scss')).toContain('@import "v0832-market-vendor-profile"');
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0834-hunger-costs";$/);
  });
  it('keeps clocks and hunger untouched, with only this minor version updated',()=>{
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.33');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.33');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.34');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.34');
   expect(read('src/app/GameContext.tsx')).toContain('REALTIME_CLOCK_REFRESH_MS');
   expect(read('src/game/engine/consumables.ts')).toContain('p.hunger-20');
  });

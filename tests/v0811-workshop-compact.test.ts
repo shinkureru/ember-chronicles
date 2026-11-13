@@ -63,7 +63,7 @@ describe('v0.8.11 compact and stable workshop dialog',()=>{
   expect(getEquippedDefense(s)).toBeGreaterThanOrEqual(0);
   for(const token of ['armorRepairFee','getTownServiceLock','getTownServiceFee','getEquippedDefense',
    'perfectRepairActive','PERFECT_REPAIR_CHANCE',"serviceId:'workshop_repair'|'workshop_upgrade'",
-   "type:'TOWN_SERVICE'",'50 分鐘','材料 1 份'])
+   "type:'TOWN_SERVICE'",'飢餓 +','材料 1 份'])
    expect(jsx).toContain(token);
   expect(file('src/styles/main.scss')).toContain('@import "v0811-workshop-compact"');
   expect(JSON.parse(file('package.json')).version).toMatch(/^0\.8\.\d+$/);

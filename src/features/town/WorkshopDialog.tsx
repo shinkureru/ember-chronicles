@@ -8,6 +8,7 @@ import {getEquippedDefense} from '../../game/data/equipmentEffects';
 import {ARMOR_SLOTS,ARMOR_SLOT_NAMES,ARMOR_DAMAGE_STAGES,armorDurability,armorHits,armorRepairFee,
  armorStage,equippedArmorEntries,perfectRepairActive,PERFECT_REPAIR_CHANCE,type ArmorSlot} from '../../game/engine/armor';
 import {getTownServiceFee,getTownServiceLock} from '../../game/engine/townActions';
+import {townHungerProjection,hungerRisk} from '../../game/engine/hungerCosts';
 import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
 import ItemArt from '../../components/ItemArt';
 
@@ -37,6 +38,10 @@ export default function WorkshopDialog({onClose}:{onClose:()=>void}){
  const repairLock=getTownServiceLock(s,'workshop_repair',undefined,itemId??undefined);
  const upgradeLock=getTownServiceLock(s,'workshop_upgrade',undefined,itemId??undefined);
  const upgradeFee=itemId?getTownServiceFee(s,'workshop_upgrade',undefined,itemId):0;
+  const repairHunger=townHungerProjection(s,'workshop_repair');
+  const upgradeHunger=townHungerProjection(s,'workshop_upgrade');
+  const repairRisk=hungerRisk(s.player.hunger,repairHunger.projectedHunger);
+  const upgradeRisk=hungerRisk(s.player.hunger,upgradeHunger.projectedHunger);
  const currentDefense=getEquippedDefense(s);
  const repaired=structuredClone(s);
  if(itemId&&repaired.town){
@@ -104,13 +109,14 @@ export default function WorkshopDialog({onClose}:{onClose:()=>void}){
      {perfectRepairActive(s,itemId!)&&<p className="workshop-dialog__perfect"><Sparkles size={15}/>完美修理待命：下次任務此部位防禦額外 +1</p>}
      <div className="workshop-dialog__actions">
       <button type="button" className="workshop-dialog__repair" disabled={!!repairLock} onClick={()=>useService('workshop_repair')}>
-       <Wrench size={18}/><span><strong>完全修復</strong><small><Coins size={13}/> {fee} 舊幣 · 50 分鐘</small></span>
+       <Wrench size={18}/><span><strong>完全修復</strong><small><Coins size={13}/> {fee} 舊幣 · 飢餓 +{repairHunger.hungerDelta}（{s.player.hunger}→{repairHunger.projectedHunger}）</small></span>
       </button>
       <button type="button" className="workshop-dialog__upgrade" disabled={!!upgradeLock} onClick={()=>useService('workshop_upgrade')}>
-       <ShieldCheck size={18}/><span><strong>精工改良 {s.town?.upgrades[itemId!]??0}/3</strong><small><Coins size={13}/> {upgradeFee} 舊幣 · 材料 1 份</small></span>
+       <ShieldCheck size={18}/><span><strong>精工改良 {s.town?.upgrades[itemId!]??0}/3</strong><small><Coins size={13}/> {upgradeFee} 舊幣 · 材料 1 份 · 飢餓 +{upgradeHunger.hungerDelta}（→{upgradeHunger.projectedHunger}）</small></span>
       </button>
      </div>
-     {(repairLock||upgradeLock)&&<p className="workshop-dialog__lock"><AlertTriangle size={13}/>{repairLock??upgradeLock}</p>}
+     {((repairRisk&&!repairLock)||(upgradeRisk&&!upgradeLock))&&<p className="v0834-hunger-risk" role="status">{repairRisk?.title??upgradeRisk?.title} · {repairRisk?.detail??upgradeRisk?.detail}</p>}
+      {(repairLock||upgradeLock)&&<p className="workshop-dialog__lock"><AlertTriangle size={13}/>{repairLock??upgradeLock}</p>}
      <p className="workshop-dialog__chance"><Sparkles size={14}/>完全修復有 {PERFECT_REPAIR_CHANCE*100}% 機會觸發完美修理：下次任務這個部位額外 +1 防禦。防禦只影響生命損失，不增加行動成功率。</p>
     </section>:<div className="workshop-dialog__empty"><Shield size={29}/>
      <strong>{ARMOR_SLOT_NAMES[selected]}目前沒有防具</strong>

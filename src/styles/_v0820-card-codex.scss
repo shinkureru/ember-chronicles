@@ -1,0 +1,448 @@
+/* v0.8.20 — reference-4 inspired card archive shell, filters and skill tiles.
+ * Scope all new card visuals beneath .cards-v0820. Attack cards and mission
+ * preparation retain their old tiles, content and operations until v0.8.21.
+ * Original art, rarity labels, level variants and existing drag are reused. */
+.cards-viewport.cards-v0820{
+ --codex-accent:#c3a582;
+ --codex-text:#ebe0d5;
+ --codex-muted:#a99e98;
+ display:flex;
+ flex-direction:column;
+ min-height:0;
+ min-width:0;
+ gap:5px!important;
+ box-sizing:border-box;
+ overflow:hidden;
+}
+.cards-v0820>.page-heading.cards-v0820__heading{
+ box-sizing:border-box;
+ display:flex;
+ flex-direction:row;
+ justify-content:space-between;
+ align-items:center;
+ gap:5px 10px;
+ flex:0 0 auto;
+ min-width:0;
+ margin:0;
+ padding:4px 5px 5px;
+ border-bottom:1px solid #514749;
+}
+.cards-v0820__heading > div{min-width:0}
+.cards-v0820__heading h1{
+ margin:1px 0 0;
+ font:750 18px/1.3 'Noto Serif TC',serif!important;
+ color:var(--codex-text)!important;
+}
+.cards-v0820__heading .eyebrow{
+ color:var(--codex-accent)!important;
+ font-size:8px!important;
+ line-height:1.25;
+ letter-spacing:.10em;
+}
+.cards-v0820__heading > p{
+ margin:0;
+ max-width:29ch;
+ color:var(--codex-muted);
+ font-size:9px!important;
+ line-height:1.35!important;
+ text-align:right;
+ overflow-wrap:anywhere;
+}
+.cards-v0820>.card-kind-tabs.cards-v0820__tabs{
+ box-sizing:border-box;
+ display:grid;
+ grid-template-columns:1.15fr 1.15fr .85fr;
+ gap:5px;
+ flex:0 0 auto;
+ min-width:0;
+ min-height:34px;
+ margin:0!important;
+}
+.cards-v0820__tabs button,.cards-v0820__tabs a{
+ box-sizing:border-box;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:3px;
+ min-width:0;
+ min-height:34px;
+ padding:5px 4px;
+ border:1px solid #62565a;
+ border-radius:6px;
+ background:linear-gradient(145deg,#26252b,#15161c);
+ color:#b7aaa2;
+ font-size:10px;
+ line-height:1.3;
+ font-weight:650;
+ white-space:normal;
+ overflow-wrap:anywhere;
+ text-align:center;
+}
+.cards-v0820__tabs button.is-active,
+.cards-v0820__tabs button[aria-current="page"]{
+ background:linear-gradient(145deg,#4b3c32,#2a2527);
+ color:#f4e2ce;
+ border-color:var(--codex-accent);
+ box-shadow:inset 0 0 0 1px #d7b98c30;
+}
+.cards-v0820__tabs a{
+ border-style:dashed;
+ color:#dfc9b1;
+ text-decoration:none;
+}
+.cards-v0820__tabs button:focus-visible,
+.cards-v0820__tabs a:focus-visible{
+ outline:2px solid #f2d09d;
+ outline-offset:-2px;
+}
+.cards-v0820>.card-library-toolbar.cards-v0820__toolbar{
+ box-sizing:border-box;
+ display:flex;
+ flex:0 0 auto;
+ min-width:0;
+ min-height:37px;
+ align-items:center;
+ justify-content:space-between;
+ gap:5px 8px;
+ padding:5px 8px;
+ border:1px solid #574950;
+ border-radius:6px;
+ background:linear-gradient(125deg,#292227,#18191f);
+}
+.cards-v0820__toolbar .card-library-toolbar__count{
+ display:flex;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:3px 5px;
+ min-width:0;
+ color:#c9b1a4;
+ font-size:9px;
+ line-height:1.35;
+}
+.cards-v0820__toolbar .card-library-toolbar__count strong{
+ color:#f2e1cf;
+ font:800 12px/1.2 Inter,sans-serif;
+ font-variant-numeric:tabular-nums;
+ white-space:nowrap;
+}
+.cards-v0820__toolbar .card-library-toolbar__count small{
+ font-size:9px;
+ color:#ab9995;
+ white-space:nowrap;
+}
+.cards-v0820__toolbar .card-library-toolbar__count > span{
+ font-size:9px;
+ color:#c6b2a5;
+ white-space:nowrap;
+}
+.cards-v0820__toolbar .card-library-toolbar__filter{
+ display:flex;
+ align-items:center;
+ gap:3px;
+ flex:0 0 auto;
+}
+.cards-v0820__toolbar .card-library-toolbar__filter button{
+ min-height:27px;
+ padding:4px 8px;
+ border:1px solid #70565c;
+ border-radius:5px;
+ background:#2a2329;
+ color:#c5ada7;
+ font-size:9px;
+ line-height:1.3;
+}
+.cards-v0820__toolbar .card-library-toolbar__filter button.is-active{
+ color:#f8e0ca;
+ background:#61423d;
+ border-color:#c69a83;
+}
+.cards-v0820__filters{
+ box-sizing:border-box;
+ display:flex;
+ flex:0 0 auto;
+ flex-direction:column;
+ gap:5px;
+ min-width:0;
+ margin:0;
+ padding:6px 7px 5px;
+ border:1px solid #60524b;
+ border-radius:7px;
+ background:linear-gradient(155deg,#242125,#16191d);
+}
+.cards-v0820__filter-line{
+ display:grid;
+ grid-template-columns:47px minmax(0,1fr);
+ align-items:center;
+ gap:6px;
+ min-width:0;
+}
+.cards-v0820__filter-line > span{
+ color:#bda99d;
+ font-size:9px;
+ font-weight:650;
+ line-height:1.3;
+ white-space:normal;
+ overflow-wrap:anywhere;
+}
+.cards-v0820__filter-line > div{
+ box-sizing:border-box;
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:4px;
+ min-width:0;
+}
+.cards-v0820__filter-line:nth-child(2) > div{
+ grid-template-columns:repeat(5,minmax(0,1fr));
+}
+.cards-v0820__filter-line button{
+ box-sizing:border-box;
+ min-width:0;
+ min-height:27px;
+ padding:3px 2px;
+ border:1px solid #63595a;
+ border-radius:4px;
+ background:#28262c;
+ color:#c1b5ad;
+ font-size:9px;
+ line-height:1.3;
+ font-weight:650;
+ white-space:normal;
+ overflow-wrap:anywhere;
+}
+.cards-v0820__filter-line button.is-active,
+.cards-v0820__filter-line button[aria-pressed="true"]{
+ background:#554133;
+ border-color:#c4a07c;
+ color:#ffecd1;
+}
+.cards-v0820__filter-line button:focus-visible{
+ outline:2px solid #e7c99d;
+ outline-offset:-2px;
+}
+.cards-v0820__results{
+ display:block;
+ min-width:0;
+ color:#aa9f94;
+ font-size:9px;
+ line-height:1.3;
+ text-align:right;
+}
+.cards-viewport.cards-v0820--skills .card-library-grid--scroll.cards-v0820__skill-grid{
+ box-sizing:border-box;
+ display:grid!important;
+ grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ grid-template-rows:none!important;
+ grid-auto-flow:row;
+ grid-auto-rows:clamp(96px,calc((100% - 36px) / 4),124px)!important;
+ align-content:start!important;
+ gap:6px!important;
+ flex:1 1 0;
+ min-width:0;
+ min-height:0;
+ max-height:none!important;
+ margin:0;
+ padding:3px 3px 9px!important;
+ overflow-x:hidden!important;
+ overflow-y:auto!important;
+ overscroll-behavior-y:contain;
+ touch-action:pan-y;
+ scrollbar-width:thin!important;
+ scrollbar-color:#775b53 transparent;
+ cursor:grab;
+}
+.cards-v0820__skill-grid:active{cursor:grabbing}
+.cards-v0820__skill-grid:focus-visible{
+ outline:2px solid #d2ae85;
+ outline-offset:-2px;
+}
+.cards-v0820--skills .cards-v0820__skill-grid > .card-library-tile.cards-v0820__skill-tile{
+ box-sizing:border-box;
+ display:flex;
+ flex-direction:column;
+ justify-content:flex-start;
+ align-items:stretch;
+ gap:3px;
+ min-width:0;
+ min-height:0;
+ width:100%;
+ height:100%;
+ padding:5px 4px!important;
+ overflow:hidden;
+ border:1px solid var(--level-color)!important;
+ border-radius:7px;
+ background:linear-gradient(160deg,var(--level-shade),#131419 70%)!important;
+ color:#f4e8de!important;
+}
+.cards-v0820__skill-tile .card-library-tile__rarity{
+ display:block;
+ align-self:flex-end;
+ flex:0 0 auto;
+ min-width:0;
+ margin:0;
+ font-size:8px!important;
+ line-height:1.15;
+ color:#c7b4a7!important;
+}
+.cards-v0820__skill-tile .card-library-tile__art{
+ display:grid;
+ place-items:center;
+ flex:1 1 auto;
+ min-height:18px;
+ padding:0;
+ line-height:1;
+ font-size:clamp(21px,3.4vw,31px);
+ filter:grayscale(.25) sepia(.17);
+}
+.cards-v0820__skill-tile.is-locked .card-library-tile__art{
+ filter:grayscale(1);
+}
+.cards-v0820__skill-effect{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:2px 5px;
+ flex:0 0 auto;
+ min-width:0;
+ padding:0 0 2px;
+ color:#cbbab0;
+ font-size:8px;
+ line-height:1.25;
+}
+.cards-v0820__skill-effect b{
+ color:#e7d2ba;
+ font:700 8px/1.25 'Noto Sans TC',sans-serif;
+ white-space:nowrap;
+}
+.cards-v0820__skill-effect small{
+ color:#acaba6;
+ font-size:8px;
+ line-height:1.25;
+ white-space:nowrap;
+}
+.cards-v0820__skill-tile .card-library-tile__footer{
+ display:flex;
+ align-items:flex-start;
+ justify-content:space-between;
+ gap:3px;
+ flex:0 0 auto;
+ width:100%;
+ min-height:22px;
+ margin:0;
+ padding-top:4px;
+ border-top:1px solid #87766a70;
+}
+.cards-v0820__skill-tile .card-library-tile__name{
+ display:-webkit-box;
+ -webkit-box-orient:vertical;
+ -webkit-line-clamp:2;
+ flex:1;
+ min-width:0;
+ max-height:2.6em;
+ overflow:hidden;
+ overflow-wrap:anywhere;
+ font-size:clamp(8px,1.65vw,10px)!important;
+ line-height:1.3;
+ color:#f2e9dc!important;
+ text-align:left;
+}
+.cards-v0820__skill-tile .card-library-tile__name b{
+ color:var(--level-color)!important;
+ font-weight:850;
+}
+.cards-v0820__skill-tile .card-library-tile__quantity{
+ flex:0 0 auto;
+ font:750 clamp(9px,1.85vw,11px)/1.25 Inter,sans-serif;
+ font-variant-numeric:tabular-nums;
+ color:var(--level-color);
+}
+.cards-v0820__skill-grid .card-library-tile:focus-visible{
+ outline:2px solid #e4c59c;
+ outline-offset:-2px;
+}
+.cards-v0820__skill-grid .card-library-empty-note{
+ grid-column:1/-1;
+ color:#cbb6a9;
+ font-size:11px;
+}
+.cards-v0820 .card-library-footer{
+ box-sizing:border-box;
+ display:flex;
+ align-items:center;
+ gap:5px;
+ flex:0 0 auto;
+ min-height:32px;
+ padding:4px 0 0;
+ color:#ad9c92;
+ font-size:9px;
+}
+.cards-v0820 .card-library-footer__hint{
+ flex:1 1 auto;
+ min-width:0;
+ overflow:hidden;
+ text-overflow:ellipsis;
+ white-space:nowrap;
+}
+.cards-v0820 .card-library-footer>.game-utilities,
+.cards-v0820 .card-library-footer>.return-main-link{
+ flex:0 0 auto;
+}
+.cards-v0820--skills .card-detail-dialog{
+ max-height:calc(100% - 4px);
+ padding:10px;
+}
+.cards-v0820--skills .card-detail-dialog__hero{gap:10px;padding-bottom:7px}
+.cards-v0820--skills .card-detail-dialog__icon{height:58px;width:60px;font-size:29px}
+.cards-v0820--skills .card-detail-dialog__hero h2{font-size:17px;line-height:1.35}
+.cards-v0820--skills .card-detail-dialog__stats{padding:6px 0}
+.cards-v0820--skills .card-detail-dialog__stats span{padding:6px 3px}
+.cards-v0820--skills .card-detail-dialog__content{gap:6px}
+.cards-v0820--skills .card-detail-dialog__content section{padding:8px}
+.cards-v0820--skills .card-detail-dialog__upgrade{padding-top:6px;margin-top:7px}
+
+@media(max-width:365px){
+ .cards-v0820>.page-heading.cards-v0820__heading{padding:3px 2px}
+ .cards-v0820__heading > p{font-size:8px!important;max-width:21ch}
+ .cards-v0820__heading h1{font-size:17px!important}
+ .cards-v0820__tabs button,.cards-v0820__tabs a{font-size:9px;padding:4px 2px}
+ .cards-v0820__toolbar .card-library-toolbar__count{gap:2px 4px}
+ .cards-v0820__toolbar .card-library-toolbar__count>span{display:none}
+ .cards-v0820__filters{padding:5px;gap:4px}
+ .cards-v0820__filter-line{grid-template-columns:41px minmax(0,1fr);gap:4px}
+ .cards-v0820__filter-line > div{gap:3px}
+ .cards-v0820__filter-line button{font-size:8px;min-height:26px;padding:3px 1px}
+ .cards-viewport.cards-v0820--skills .cards-v0820__skill-grid{gap:4px!important;padding:2px 1px 6px!important}
+ .cards-v0820__skill-effect{gap:2px;justify-content:center}
+ .cards-v0820__skill-effect b{font-size:7px}
+ .cards-v0820__skill-effect small{display:none}
+ .cards-v0820__skill-tile .card-library-tile__name{font-size:8px!important}
+ .cards-v0820__skill-tile .card-library-tile__quantity{font-size:9px}
+}
+@media(max-height:700px){
+ .cards-viewport.cards-v0820{gap:4px!important}
+ .cards-v0820>.page-heading.cards-v0820__heading{padding-bottom:3px}
+ .cards-v0820__heading > p{display:none}
+ .cards-v0820__tabs button,.cards-v0820__tabs a{min-height:29px;padding:3px}
+ .cards-v0820__filters{padding:4px 6px;gap:3px}
+ .cards-v0820__filter-line button{min-height:24px}
+ .cards-v0820__results{font-size:8px}
+ .cards-viewport.cards-v0820--skills .cards-v0820__skill-grid{
+  grid-auto-rows:clamp(78px,calc((100% - 26px) / 4),99px)!important;
+  gap:4px!important;
+ }
+ .cards-v0820__skill-tile .card-library-tile__art{font-size:21px}
+ .cards-v0820__skill-tile .card-library-tile__footer{padding-top:2px}
+ .cards-v0820__skill-effect{font-size:7px}
+ .cards-v0820__skill-effect b,.cards-v0820__skill-effect small{font-size:7px}
+}
+@media(max-height:490px){
+ .cards-v0820__filter-line > span{display:none}
+ .cards-v0820__filter-line{grid-template-columns:minmax(0,1fr)}
+ .cards-v0820__filters{gap:2px}
+ .cards-v0820__results{display:none}
+ .cards-viewport.cards-v0820--skills .cards-v0820__skill-grid{
+  grid-auto-rows:75px!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .cards-v0820__skill-grid .card-library-tile{transition:none!important}
+}

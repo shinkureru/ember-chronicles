@@ -1,0 +1,96 @@
+/* v0.8.30 — three correct scenes belong to scavenger (防毒面具).
+ * Each image plus its illumination is a single fading SVG <g>.
+ * Scene-specific effect is not a global light that leaks into the
+ * next scene while the image crossfades.
+ */
+.market-v0830__art .market-v0830__scene-layer{
+ opacity:0;
+ pointer-events:none;
+ transition:opacity 1.3s cubic-bezier(.45,0,.55,1);
+}
+.market-v0830__art .market-v0830__scene-layer.market-v0829__frame--active{
+ opacity:1;
+}
+/* Original warm pendant and cold fluorescent tube have slow asynchronous
+ * fluctuations. A low-contrast bloom avoids bleaching the illustration. */
+.market-v0830__pendant-glow{mix-blend-mode:screen}
+.market-v0830__tube-glow{mix-blend-mode:screen}
+.market-v0830__tube-bloom{mix-blend-mode:screen}
+.market-v0830__art .market-v0830__pendant-glow{
+ animation:market-v0830-pendant 6.6s ease-in-out infinite;
+}
+.market-v0830__art .market-v0830__tube-glow{
+ animation:market-v0830-tube 7.8s ease-in-out infinite;
+}
+.market-v0830__art .market-v0830__tube-bloom{
+ animation:market-v0830-tube-bloom 8.4s ease-in-out infinite;
+}
+@keyframes market-v0830-pendant{
+ 0%,100%{opacity:.28}
+ 27%{opacity:.51}
+ 63%{opacity:.36}
+ 82%{opacity:.48}
+}
+@keyframes market-v0830-tube{
+ 0%,100%{opacity:.24}
+ 38%{opacity:.45}
+ 68%{opacity:.31}
+ 84%{opacity:.4}
+}
+@keyframes market-v0830-tube-bloom{
+ 0%,100%{opacity:.17}
+ 41%{opacity:.47}
+ 69%{opacity:.25}
+ 86%{opacity:.37}
+}
+/* Irregular short welding bursts, only in the third ("weld") frame.
+ * The flare is centered on the actual workbench weld pool in 960x536.
+ * Hard sparks and the core flicker independently; halo is softened.
+ */
+.market-v0830__welding{mix-blend-mode:screen}
+.market-v0830__weld-flare{
+ opacity:.13;
+ animation:market-v0830-weld-halo 2.4s linear infinite;
+}
+.market-v0830__weld-center{
+ opacity:.3;
+ animation:market-v0830-weld-core 2.4s steps(1,end) infinite;
+}
+.market-v0830__weld-sparks{
+ opacity:0;
+ animation:market-v0830-weld-sparks 2.4s steps(1,end) infinite;
+}
+@keyframes market-v0830-weld-halo{
+ 0%,17%,26%,42%,66%,75%,100%{opacity:.1}
+ 20%,23%{opacity:.62}
+ 46%,48%{opacity:.44}
+ 70%,72%{opacity:.58}
+}
+@keyframes market-v0830-weld-core{
+ 0%,17%,25%,42%,50%,66%,75%,100%{opacity:.12}
+ 18%,21%,23%,44%,47%,69%,72%{opacity:.85}
+}
+@keyframes market-v0830-weld-sparks{
+ 0%,17%,22%,25%,43%,48%,66%,73%,100%{opacity:0}
+ 18%,20%,44%,46%,68%,70%{opacity:.76}
+}
+/* Safe for small/mobile canvases: all glows share the same image-space
+ * viewBox and follow the illustration's actual object-fit cropping.
+ * This affects scenery only, not vendor name, speech, favor, or trade UI. */
+@media(prefers-reduced-motion:reduce){
+ .market-v0830__art .market-v0830__scene-layer{transition:none!important}
+ .market-v0830__art .market-v0830__pendant-glow,
+ .market-v0830__art .market-v0830__tube-glow,
+ .market-v0830__art .market-v0830__tube-bloom,
+ .market-v0830__weld-flare,
+ .market-v0830__weld-center,
+ .market-v0830__weld-sparks{
+  animation:none!important;
+ }
+ .market-v0830__art .market-v0830__pendant-glow{opacity:.32}
+ .market-v0830__art .market-v0830__tube-glow{opacity:.28}
+ .market-v0830__art .market-v0830__tube-bloom{opacity:.25}
+ .market-v0830__weld-flare{opacity:.14}
+ .market-v0830__weld-center{opacity:.18}
+ .market-v0830__weld-sparks{opacity:0}
+}

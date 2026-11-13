@@ -80,44 +80,110 @@ export default function CharacterPage(){
     })}
    </div>
   </section>}
-  {tab==='town'&&<section id="character-panel-town" aria-label="城鎮成長" className="character-tab-content viewport-list">
-    <h2><Shield size={19}/>城鎮培養紀錄</h2>
-    <p>城鎮訓練與支線委託已直接作用於永久屬性。每日最多完成一次屬性專項訓練，每項最高 Lv.20。</p>
-    <div className="character-tab-content__stats">
-     <div className="character-tab-stat"><span>今日訓練</span><strong>{s.town?.lastTrainingDay===s.world.day?'已完成':'可訓練'}</strong><small>於城鎮訓練場所選擇 18 項之一</small></div>
-     <div className="character-tab-stat"><span>完成委託</span><strong>{Object.values(s.town?.quests??{}).filter(v=>v==='completed').length} 件</strong><small>不同委託獎勵不同的永久屬性</small></div>
-     <div className="character-tab-stat"><span>身體狀況</span><strong>外傷 {s.conditions?.wounds??0}</strong><small>感染 {s.conditions?.infection??0} · 中毒 {s.conditions?.poisoning??0} · 疾病 {s.conditions?.illness??0}</small></div>
-     <div className="character-tab-stat"><span>裝備改良</span><strong>{Object.values(s.town?.upgrades??{}).reduce((sum,x)=>sum+x,0)} 階</strong><small>回城鎮工坊可修復或改良已裝備的物品</small></div>
-    </div>
-    <p>所有永久屬性變動都會同步影響冒險判定。訓練時數、物資和貨幣是成長的實際成本。</p>
+  {tab==='town'&&<section id="character-panel-town" aria-label="城鎮成長"
+   className="character-tab-content character-v0819 character-v0819--town viewport-list">
+   <header className="character-v0819__heading">
+    <div><span className="character-v0819__eyebrow">TOWN / GROWTH</span>
+     <h2><Shield size={17}/>城鎮培養紀錄</h2></div>
+    <small>DAY {s.world.day}</small>
+   </header>
+   <p className="character-v0819__intro">城鎮訓練與支線委託已直接作用於永久屬性。每日最多完成一次屬性專項訓練，每項最高 Lv.20。</p>
+   <div className="character-tab-content__stats character-v0819__metric-grid">
+    <article className="character-tab-stat character-v0819__metric">
+     <span>今日訓練</span><strong>{s.town?.lastTrainingDay===s.world.day?'已完成':'可訓練'}</strong>
+     <small>於城鎮訓練場所選擇 18 項之一</small>
+    </article>
+    <article className="character-tab-stat character-v0819__metric">
+     <span>完成委託</span><strong>{Object.values(s.town?.quests??{}).filter(v=>v==='completed').length} 件</strong>
+     <small>不同委託獎勵不同的永久屬性</small>
+    </article>
+    <article className="character-tab-stat character-v0819__metric">
+     <span>身體狀況</span><strong>外傷 {s.conditions?.wounds??0}</strong>
+     <small>感染 {s.conditions?.infection??0} · 中毒 {s.conditions?.poisoning??0} · 疾病 {s.conditions?.illness??0}</small>
+    </article>
+    <article className="character-tab-stat character-v0819__metric">
+     <span>裝備改良</span><strong>{Object.values(s.town?.upgrades??{}).reduce((sum,x)=>sum+x,0)} 階</strong>
+     <small>回城鎮工坊可修復或改良已裝備的物品</small>
+    </article>
+   </div>
+   <aside className="character-v0819__note">
+    所有永久屬性變動都會同步影響冒險判定。訓練時數、物資和貨幣是成長的實際成本。
+   </aside>
   </section>}
-  {tab==='record'&&<section id="character-panel-record" aria-label="NPC 記憶" className="character-tab-content viewport-list">
-    <h2><BookOpenText size={19}/>NPC 記憶</h2>
-    <p>已嘗試 {s.attempt} 次；掌握情報 {s.clues.length} 條。以下 NPC 各自保留記憶，重新挑戰其他關卡也不會覆蓋。</p>
-    <div className="character-tab-content__stats">
-     <div className="character-tab-stat"><span>第一關 · 倉庫管理員阿忠</span><strong>來訪 {s.npc.met} 次</strong><small>敵意 {s.npc.hostility} · 交涉適應 {s.npc.adaptations.talk??0}</small></div>
-     <div className="character-tab-stat"><span>第二關 · 後巷灰衣守望者</span><strong>來訪 {s.alleyNpc?.met??0} 次</strong><small>敵意 {s.alleyNpc?.hostility??18} · 交涉適應 {s.alleyNpc?.adaptations.talk??0}</small></div>
-    </div>
-    <p>倉庫記憶：{s.npc.remembers.length?s.npc.remembers.length+' 項事件已記住':'尚未發生特殊事件'}；後巷記憶：{s.alleyNpc?.remembers.length??0} 項事件已記住。</p>
-    {([{label:'倉庫管理員阿忠',npc:s.npc,id:'warehouse_guard'},{label:'後巷灰衣守望者',npc:s.alleyNpc,id:'alley_watchman'}] as const).map(({label,npc,id})=>npc?<article key={label} className="npc-defeat-record">
-      <strong>{label} · 被我擊敗 {npc.combatDefeats??0} 次</strong>
-      <small>攻擊適應 {npc.adaptations.fight??0}/12 · 敵意 {npc.hostility}/100</small>
-      <small>我在此敵人手上失敗 {npc.playerDefeats??0} 次 · 下次關鍵判定 +{s.insightByEnemy?.[id]??0}%（僅限此敵人）</small>
-      {npc.defeatMemories?.length?<div className="npc-defeat-record__log">
-       {npc.defeatMemories.slice().reverse().map(memory=><p key={memory.count}>
-        <span>第 {memory.count} 次 · {memory.method}</span>
-        <em>「{memory.thought}」</em>
-        <small>{memory.effect}</small>
-       </p>)}
-      </div>:<p>尚未被我以戰鬥手段擊敗；和平迴避不會改寫這裡的心理紀錄。</p>}
+  {tab==='record'&&<section id="character-panel-record" aria-label="NPC 記憶"
+   className="character-tab-content character-v0819 character-v0819--record viewport-list">
+   <header className="character-v0819__heading">
+    <div><span className="character-v0819__eyebrow">MEMORY / RECORD</span>
+     <h2><BookOpenText size={17}/>NPC 記憶</h2></div>
+    <small>敵人會記住遭遇</small>
+   </header>
+   <div className="character-v0819__summary" aria-label="冒險與情報摘要">
+    <span>已嘗試 <strong>{s.attempt}</strong> 次</span>
+    <span>掌握情報 <strong>{s.clues.length}</strong> 條</span>
+    <span>倉庫記憶 <strong>{s.npc.remembers.length}</strong> 項</span>
+    <span>後巷記憶 <strong>{s.alleyNpc?.remembers.length??0}</strong> 項</span>
+   </div>
+   <p className="character-v0819__intro">以下 NPC 各自保留記憶，重新挑戰其他關卡也不會覆蓋。</p>
+   <div className="character-v0819__npc-grid">
+    {([{label:'倉庫管理員阿忠',npc:s.npc,id:'warehouse_guard',stage:'第一關'},
+       {label:'後巷灰衣守望者',npc:s.alleyNpc,id:'alley_watchman',stage:'第二關'}] as const)
+      .map(({label,npc,id,stage})=>npc?<article key={id} className="npc-defeat-record character-v0819__npc">
+      <header className="character-v0819__npc-heading">
+       <div><span>{stage}</span><h3>{label}</h3></div>
+       <small>敵意 <strong>{npc.hostility}/100</strong></small>
+      </header>
+      <dl className="character-v0819__npc-metrics">
+       <div><dt>來訪</dt><dd>{npc.met} 次</dd></div>
+       <div><dt>交涉適應</dt><dd>{npc.adaptations.talk??0}</dd></div>
+       <div><dt>攻擊適應</dt><dd>{npc.adaptations.fight??0}/12</dd></div>
+       <div><dt>我擊敗敵人</dt><dd>{npc.combatDefeats??0} 次</dd></div>
+       <div><dt>我被擊敗</dt><dd>{npc.playerDefeats??0} 次</dd></div>
+       <div><dt>下次關鍵判定</dt><dd>+{s.insightByEnemy?.[id]??0}%</dd></div>
+      </dl>
+      <small className="character-v0819__npc-foot">判定加成僅限此敵人；和平迴避不計入戰鬥記憶。</small>
+      {npc.defeatMemories?.length?<details className="character-v0819__disclosure">
+       <summary>戰鬥記憶 <strong>{npc.defeatMemories.length}</strong> 則 <span>展開／收起</span></summary>
+       <div className="npc-defeat-record__log character-v0819__memory-log">
+        {npc.defeatMemories.slice().reverse().map(memory=><p key={memory.count}>
+         <span>第 {memory.count} 次 · {memory.method}</span>
+         <em>「{memory.thought}」</em>
+         <small>{memory.effect}</small>
+        </p>)}
+       </div>
+      </details>:<p className="character-v0819__empty">
+       尚未被我以戰鬥手段擊敗；和平迴避不會改寫這裡的心理紀錄。
+      </p>}
      </article>:null)}
-    <div className="clue-list">{s.clues.slice().reverse().map((line,i)=><p key={i}>{line}</p>)}{s.clues.length===0&&<p>還沒有取得關鍵線索。</p>}</div>
+   </div>
+   <details className="character-v0819__disclosure character-v0819__clues">
+    <summary>已掌握的關鍵線索 <strong>{s.clues.length}</strong> 條 <span>展開／收起</span></summary>
+    <div className="clue-list character-v0819__clue-list">
+     {s.clues.slice().reverse().map((line,i)=><p key={i}>{line}</p>)}
+     {s.clues.length===0&&<p>還沒有取得關鍵線索。</p>}
+    </div>
+   </details>
   </section>}
-  {tab==='story'&&<section id="character-panel-story" aria-label="人物故事" className="character-tab-content viewport-list">
-    <h2><Shield size={19}/>{profession.name}</h2>
-    <p>「我還能走多遠，取決於我帶了什麼，也取決於我成了什麼樣的人。」</p>
-    <p>{profession.overview}</p><p>職業天賦：{profession.passive}</p>
-    <p>「這座被封鎖的城區，到底還藏了多少沒有說出口的事？」</p>
+  {tab==='story'&&<section id="character-panel-story" aria-label="人物故事"
+   className="character-tab-content character-v0819 character-v0819--story viewport-list">
+   <header className="character-v0819__heading">
+    <div><span className="character-v0819__eyebrow">PERSONAL / STORY</span>
+     <h2><UserRound size={17}/>{profession.name}</h2></div>
+    <small>{profession.en}</small>
+   </header>
+   <blockquote className="character-v0819__quote">
+    「我還能走多遠，取決於我帶了什麼，也取決於我成了什麼樣的人。」
+   </blockquote>
+   <article className="character-v0819__story-card">
+    <h3>角色經歷</h3>
+    <p>{profession.overview}</p>
+   </article>
+   <article className="character-v0819__story-card character-v0819__story-card--passive">
+    <h3>職業天賦</h3>
+    <p>職業天賦：{profession.passive}</p>
+   </article>
+   <blockquote className="character-v0819__quote character-v0819__quote--last">
+    「這座被封鎖的城區，到底還藏了多少沒有說出口的事？」
+   </blockquote>
   </section>}
  </div>;
 }

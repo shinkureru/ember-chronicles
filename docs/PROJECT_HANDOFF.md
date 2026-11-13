@@ -1,5 +1,19 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜第二輪第6批 v0.8.19：城鎮成長、NPC 記憶、人物故事精簡化（本 PR 待 Merge）
+
+- **GitHub preflight**：`main` `ccf31ee396058194c15d98697e0b6e29a9b4de33`；上一批 PR #44／v0.8.18 已 Merge，最新 Pages 部署成功，開工時 open PR = 0。下方各批「待 Merge」均是當時的歷史狀態，後續開工請再次查最新 GitHub。
+- **唯一分支** `ui/v0.8.19-compact-character-archives`、版本 package/lock `0.8.19`。遵守 `docs/UI_COMPACT_REDESIGN_ROADMAP.md` 第6批，只更動 `src/features/player/CharacterPage.tsx` 的 **town/record/story** 三頁 JSX 和最後載入的 `src/styles/_v0819-character-archive-compact.scss`。裝備 v0817、18屬性 v0818、game reducer、存檔、路由、人物其他頁完全不動。
+- **城鎮成長**改四張緊湊卡：今日訓練（每日一次狀態）、委託完成數、外傷/感染/中毒/疾病與裝備精工總階。保留全部原說明和原 state 取值，手機2×2、內容寬≥600改四欄，頁尾成本提示仍完整。
+- **NPC 記憶**：上方四格嘗試次數/線索/兩名NPC已記住事件數；下方各 NPC 的密集數據（來訪、敵意、交涉/攻擊適應、我擊敗/我被擊敗、對此敵人下次判定加成）。戰鬥記憶完整保留 `npc.defeatMemories.slice().reverse()` 的所有方法、NPC 心聲和效果，但改成原生 `<details><summary>` 預設收合；線索 `s.clues.slice().reverse()` 同樣提供可展開全文，長列表內部捲動，無紀錄仍顯示空狀態。
+- **人物故事**：三職業原 `profession.name`、`profession.overview`、`profession.passive` 與兩段第一人稱引言全數保留，以共用暗銅金的「引言/角色經歷/職業天賦/餘韻」敘事區塊呈現。
+- 三頁共用 `.character-v0819` 的 header、字級、資訊卡與RWD tokens，正常手機高度一頁式摘要，展開大量紀錄/極矮螢幕/200%放大時允許**僅內容面板和指定 log**捲動；不推走上方5頁導覽。
+- 新增 `tests/v0819-character-archives.test.ts` 對真實城鎮/兩NPC記憶/長線索/角色故事/安全版型作回歸，更新前批 `tests/v0818-compact-character-attributes.test.ts` 的版本斷言至0.8.x。詳細目視 QA `docs/V0819_CHARACTER_ARCHIVES_QA.md`，CI 須 `npm run build` + `npm test` 全綠。
+- **停點**：本批只交付一個 PR，使用者自行 Merge，沒有授權提前進第7批。待收到明確「Merge 好了，開始第七批 v0.8.20」後，**重新核對 GitHub main/PR/交接/相關卡牌程式與測試**，再進「牌組圖鑑主骨架／被動技能」。
+
+---
+
+
 ## 2026-11-13｜第二輪第5批 v0.8.18：身體／思維／社交一頁式緊湊屬性（PR 待使用者 Merge）
 
 - **GitHub 開工核對**：`main` `70be35a7f317ca59ab84fd614031faf6f0bbed8c`；上一 PR #43／v0.8.17 已 Merge、Pages 部署成功；開工前 open PR = 0。下方「v0.8.17 待 Merge」為歷史狀態，往後仍必須每次查 GitHub main／PR／交接／相關碼與 CI。

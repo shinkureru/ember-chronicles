@@ -92,6 +92,6 @@ describe('v0.8.18 compact one-screen permanent attributes',()=>{
   for(const s of ["tab==='equipment'","tab==='town'","tab==='record'","tab==='story'"])
    expect(page).toContain(s);
   expect(read('src/styles/main.scss')).toContain('@import "v0818-compact-character-attributes"');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.18');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });

@@ -1,4 +1,5 @@
 import { TOWN_SERVICES,isTownOpen,townAbsoluteMinute } from '../data/town';
+import {taipeiDate} from './taipeiClock';
 import type { AttributeId,GameState,TownProgress,SurvivorConditions } from '../types';
 import { ITEMS } from '../data/items';
 import { clamp } from './rules';
@@ -121,7 +122,7 @@ export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,item
   case 'tavern_rumor':{
    town.lastRumorDay=s.world.day;s.economy.blackMarketFavor+=1;
    const lines=['一台沒有登記的廂型車在深夜往北開。','封鎖區某個診所每週都會收到陌生藥箱。','倉庫的排班表在失蹤事件發生後被人改過。','有人深夜在公寓門口掛起沒有署名的信。','河堤附近的監視器總是在同個時間失效。'];
-   const clue=`第 ${s.world.day} 日酒館情報：${lines[(s.world.day+Math.floor(s.world.minute/240))%lines.length]}`;
+   const clue=`${taipeiDate(s.world.day)} 酒館情報：${lines[(s.world.day+Math.floor(s.world.minute/240))%lines.length]}`;
    if(!s.clues.includes(clue))s.clues.push(clue);
    message=`我拿到一項新情報：「${clue}」黑市人脈也更願意跟我說話。`;break;
   }
@@ -138,7 +139,7 @@ export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,item
   case 'canteen_talk':{
    town.lastCanteenTalkDay=s.world.day;
    const lines=['食堂裡的人說，巡邏車有時會繞過本來應該檢查的路口。','有人認得後巷的灰衣守望者，他不是一直都在那裡。','最近常有人買走所有乾糧，似乎在準備長途離城。'];
-   const clue=`第 ${s.world.day} 日居民閒談：${lines[s.world.day%lines.length]}`;
+   const clue=`${taipeiDate(s.world.day)} 居民閒談：${lines[s.world.day%lines.length]}`;
    if(!s.clues.includes(clue))s.clues.push(clue);
    message='我聽完隔桌的談話，記下了一條可以追查的城市線索。';break;
   }

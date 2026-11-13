@@ -1,5 +1,18 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜第四輪第2批 v0.8.29：黑市按當班商人切換圖片與柔和輪播（本 PR 待使用者 Merge）
+
+- **開工 GitHub 核對**：`main` `d8ba00d36dc1bb7ddfa3068aa797cab2c12e9668`，第1批 PR #54 v0.8.28 已 Merge，Pages success，開工 open PR 0。上一批手工 QA 未由 CI 代替；下一批仍重新核對。
+- 本批唯一分支 `ui/v0.8.29-vendor-scene-carousel`，package/lock `0.8.29`。修改 `marketVendors.ts` 灰手羅恩的 `visual.sceneAssets` 為 `black-market-mechanic-rummage.webp` + `black-market-mechanic-weld.webp`，他人 **scavenger 防毒面具**沿用 `black-market-merchant.webp`，broker/medic/runner 空陣列。圖片均為使用者原先提供、1376×768 JPG 壓縮後的同畫面 WebP，不推論/移植不同商人的人物。
+- `BlackMarketSceneArt.tsx` 接收 `vendor`，各幀用同一 `960×536` SVG viewBox 與 `import.meta.env.BASE_URL` 載入，真正有2+張才每現實12秒轉換，CSS 1.3秒 opacity crossfade，背景頁籤與 reduced-motion 停止，cleanup interval/listener；scavenger 的紫眼 SVG 僅它自己顯示，原暖黃/日光燈 overlay 與台詞/好感均保留；第三批 v0.8.30 才處理焊接圖的局部火花光。
+- `useMarketSceneLoad(sceneAssets)` 預載所有當班圖片並 `Image.decode` 成功才揭開黑市 UI，15秒任一圖片錯誤有重試/返主頁，嚴格按 `key=sceneAssets.join('|')` 避免換班時顯示上一商人圖片；空圖陣列直接 ready，在黑市場景以純 CSS 無人物暗色環境作背景，**不冒用別人肖像、不卡載入**。`BlackMarketPage` 場景 `key={vendor.id}` 切班重設輪播。
+- 新 `src/styles/_v0829-market-scene-carousel.scss` 最後 import，沒有改任何圖片座標以外的交易 UI。新 `tests/v0829-market-scene-carousel.test.ts` + 更新 v0823/v0825/v0828 舊字串斷言，保留世界時段/背包販售 reducer 回歸。QA `docs/V0829_MARKET_SCENE_CAROUSEL_QA.md`；同時永久更新 `docs/PROJECT_HANDOFF.md` 及 `docs/REALTIME_HUNGER_REDESIGN_ROADMAP.md`。
+- **本批絕不修改**：世界時間每現實10秒+5遊戲分鐘、商人時段/貨品、價格/庫存、卡牌複本、背包禁售、商人10句台詞、好感度、飢餓。v0.8.30 單獨做燈管/焊點特殊效果、v0.8.31 斜對角商品波浪、v0.8.33 台北時間、v0.8.34 飢餓成本；**每批必須由使用者 Merge 並通知才繼續，不自行合併**。
+- 自動驗收必須 `npm run build`+ `npm test` GitHub CI 全綠。尚未執行/不可聲稱真實 Chrome / 手機檢查；人工驗收包含手機窄/矮窗、12秒轉場、Tab背景停播、資產404重試、沒有圖的商人空場景、同一人 2 張圖的頭像/角色不誤串、減少動態效果停播。
+
+---
+
+
 ## 2026-11-13｜第四輪第1批 v0.8.28：全域正常字重＋黑市倒數移入買賣 rail＋商人圖資 schema（本 PR 待使用者 Merge）
 
 - **開工 GitHub 狀態**：`main` `7257cdbff0333d4b74176eb1bfcbdb0582f463c3`；PR #53 v0.8.27 已 Merge，Pages success，開工 open PR=0。這輪新規劃八批，`docs/REALTIME_HUNGER_REDESIGN_ROADMAP.md` 逐批列出 v0.8.28～v0.8.35；不能自動開下一批。

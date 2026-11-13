@@ -25,7 +25,7 @@ describe('v0.8.23 locally bundled cinematic black market scene',()=>{
   expect(scene).toContain('black-market-merchant.webp');
   expect(scene).toContain('viewBox="0 0 960 536"');
   expect(scene).toContain('preserveAspectRatio="xMidYMin slice"');
-  expect(scene).toContain('<image href={imageUrl}');
+  expect(scene).toContain('href={imageUrl}');
  });
  it('glows exactly over the original illustration eyes and its ambient lamps',()=>{
   expect(scene).toContain('cx="335" cy="121"');
@@ -44,7 +44,7 @@ describe('v0.8.23 locally bundled cinematic black market scene',()=>{
  });
  it('replaces two portrait layout with static scene while keeping actual vendor identity',()=>{
   expect(page).toContain('market-v12__meeting market-v0823__meeting');
-  expect(page).toContain('<BlackMarketSceneArt/>');
+  expect(page).toContain('<BlackMarketSceneArt key={vendor.id} vendor={vendor}/>');
   expect(page).toContain('market-v0823__vendor');
   expect(page).toContain('{vendor.name}');
   expect(page).toContain('{vendor.role}');

@@ -1,5 +1,18 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜黑市第三輪第5批 v0.8.26：下一任商人輪班倒數（本 PR 待使用者 Merge）
+
+- **開工現況**：GitHub `main` `e54b552a0017eee5e39ffa426ffe25afdd2ac369`，前批 PR #51 v0.8.25 **已合併**、Pages success，open PR 0。下方各批記錄的「待 Merge」是歷史敘述，下一批仍須重新核對 GitHub。
+- **本批唯一分支** `ui/v0.8.26-market-world-shift-countdown`，package/lock = `0.8.26`，範圍僅**黑市場景左下角到下任商人的世界時間倒數**。新 `src/features/market/marketShiftCountdown.ts` 純函式以一天1440分鐘與五個交班界線 `[300,660,840,1080,1380]` 計算；`MarketShiftCountdown.tsx` 只接受 `s.world.minute` 重新投影出目前/下一班商人、到班時刻、剩餘HH:MM與時段，**沒有建立獨立定時器**，不改任何遊戲狀態。
+- **時間規則實際核對後修正**：先前文件稱「世界時間只有行動推進」不完整；目前 `src/app/GameContext.tsx` 明確有 `WORLD_TICK_REAL_MS=10000`、`WORLD_TICK_GAME_MINUTES=5`，遊戲可見/非暫停/非結果時**每現實10秒前進5分鐘遊戲時間**，另外還可由行動推進。這批畫面倒數會跟 `WORLD_CLOCK_TICK` 的 `s.world.minute` 同步跳動，不按現實秒數推進別的商人或商品；`gameReducer` 的交易時段 guard 仍唯一負責允許交易。
+- `BlackMarketPage.tsx` 保留 `market-v12__time market-v0823__time` 舊 badge 和真實 `worldPhase/worldClock`，在同一左下角擴成 `market-v0826__shift` 含現在時間+下位商人剩餘HH:MM+下一到班時間/時段/姓名，數字 tabular-nums，明示世界時間。右下好感度不變。切換到新 `vendor.id` 時既有關閉交易詳情保留，並清理過期分類篩選／把商品列表捲回頂端，讓新輪班商品直接可見。原五商人、10秒自語、紫眼/燈光/背景、真實庫存/背包販賣規則都不修改。
+- 新 CSS `src/styles/_v0826-market-shift-countdown.scss` 最後匯入 `main.scss`，壓縮左側倒數面板、320px以下/矮視窗避免與右下好感或底部 footer 撞位，沒有新動畫；`prefers-reduced-motion` 安全。全樣式範圍限定黑市。
+- 專項 `tests/v0826-market-world-shift-countdown.test.ts` 驗 04:59/05:00/10:59/11:00/13:59/14:00/17:59/18:00/22:59/23:00/23:59/00:00/02:23、跨午夜/多天、所有1440個分鐘、世界時鐘原有5分鐘 tick、商人售價與交易 guard、無timer、好感與底部功能未動。前批 `tests/v0825-market-dialogue-loading-polish.test.ts` 固定版號斷言修成0.8.x。人工 QA `docs/V0826_MARKET_SHIFT_COUNTDOWN_QA.md`。
+- **此批提交一個 PR，CI `npm run build`+`npm test` 全綠後停點，絕對不自行 Merge**。使用者 Merge 並明確通知後，下一批 `v0.8.27` 是黑市最後第6批：全頁 RWD、長字/超長商品格、動畫、觸控、320/360/390/720/1280、横置短高及 200% 縮放等綜合美化與回歸。不能提前進入下一批。
+
+---
+
+
 ## 2026-11-13｜黑市第三輪第4批 v0.8.25：自言自語＋左 rail 置中＋輕彈跳＋全螢幕讀取（本 PR 待 Merge）
 
 - **GitHub 基準**：`main` `2563e63753cc3bdad90da5dc3a1a92d20978c38f`；PR #50 v0.8.24 已 Merge、最新 Pages 部署成功，開工前 open PR=0。下方 v0824「待 Merge」是歷史狀態，不能略過下一次 GitHub 核對。

@@ -31,12 +31,13 @@ describe('v0.8.16 character navigation and unified attribute entry',()=>{
   expect(page).toContain("tab==='attributes'&&");
   expect(page).toContain('ATTRIBUTE_GROUPS.map(group=>');
   expect(page).toContain('group.ids.map(id=>');
-  expect(page).toContain('character-attribute-index');
-  expect(page).toContain('scrollIntoView({block:');
+  expect(page).toContain('character-v0818__groups');
+  expect(page).toContain('character-v0818__stat-grid');
  });
  it('preserves original allocation actions and checks actual level-point mechanics',()=>{
   expect(page).toContain("type:'ALLOCATE_POINT',attribute:id");
-  expect(page).toContain("progression.points<=0||s.player.attributes[id]>=20||s.mode!=='home'");
+  expect(page).toContain("progression.points>0&&s.player.attributes[id]<20&&s.mode==='home'");
+  expect(page).toContain('disabled={!canUpgrade}');
   expect(page).toContain('xpNeededForLevel(progression.level)');
   let s=makeInitialState('journalist');
   s.mode='home';s.progression=makeInitialProgression();s.progression.points=2;

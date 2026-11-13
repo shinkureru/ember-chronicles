@@ -14,6 +14,7 @@ import MarketShiftCountdown from './MarketShiftCountdown';
 import MarketLoadingScreen from './MarketLoadingScreen';
 import {useMarketSceneLoad} from './useMarketSceneLoad';
 import {marketWaveDelay,MARKET_WAVE_WINDOW_MS} from './marketDiagonalWave';
+import {getMarketVendorProfile} from './marketVendorProfile';
 import MarketTradeSwitchIcon from './MarketTradeSwitchIcon';
 import {getBackpackMarketItemIds,doesVendorAcceptMarketItem} from './marketSellInventory';
 import ItemArt from '../../components/ItemArt';
@@ -43,6 +44,7 @@ export default function BlackMarketPage(){
  const [waveEpoch,setWaveEpoch]=useState(0);
  const [waveActive,setWaveActive]=useState(false);
  const vendor=getScheduledVendor(s.world.minute);
+ const vendorProfile=getMarketVendorProfile(vendor);
  const {status:sceneLoadStatus,retry:retrySceneLoad}=useMarketSceneLoad(vendor.visual.sceneAssets);
  const offersScroll=useVerticalDragScroll();
  const phase=worldPhaseToken(s.world.minute);
@@ -137,7 +139,11 @@ export default function BlackMarketPage(){
     <div className="market-v0823__shade" aria-hidden="true"/>
     <div className="market-v0823__vendor" aria-label="當班商人">
      <span>BLACK MARKET / CURRENT VENDOR</span>
-     <strong>{vendor.name}</strong><small>{vendor.role}</small>
+     <strong>{vendorProfile.name}</strong><small>{vendorProfile.role}</small>
+     <small className="market-v0832__vendor-meta"
+      title={`${vendorProfile.appearance}；輪班 ${vendorProfile.shiftLabel}；${vendorProfile.sceneStatusLabel}；收購${vendorProfile.acceptedItemCount}類、供應${vendorProfile.soldItemCount}類物品與${vendorProfile.cardCount}類卡牌`}>
+      {vendorProfile.shiftLabel} · {vendorProfile.sceneStatusLabel}
+     </small>
     </div>
     <p className="market-v12__dialogue market-v0823__dialogue market-v0825__speech" aria-label="商人自言自語">
      <MarketIdleSpeech key={vendor.id} vendor={vendor}/>

@@ -1,0 +1,27 @@
+/* v0.8.32: quiet vendor identity/scene availability line.
+ * No new portraits, scene panels or overlap with dialogue/favor/lighting.
+ * Accessible full appearance, exact shifts and stock categories in title.
+ */
+.market-v13 .market-v0823__vendor .market-v0832__vendor-meta{
+ display:block;
+ box-sizing:border-box;
+ min-width:0;
+ max-width:100%;
+ overflow:hidden;
+ white-space:nowrap;
+ text-overflow:ellipsis;
+ padding:0;
+ margin-top:1px;
+ color:#b5abb8;
+ font:400 8px/1.2 'Noto Sans TC',sans-serif;
+ font-variant-numeric:tabular-nums;
+ letter-spacing:0;
+ text-shadow:0 1px 4px #04030b9e;
+ pointer-events:none;
+}
+@media(max-width:375px){
+ .market-v13 .market-v0823__vendor .market-v0832__vendor-meta{font-size:7px}
+}
+@media(max-height:520px){
+ .market-v13 .market-v0823__vendor .market-v0832__vendor-meta{display:none}
+}

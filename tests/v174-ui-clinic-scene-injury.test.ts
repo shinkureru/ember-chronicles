@@ -8,7 +8,7 @@ describe('v1.7.4 UI first batch — clinic and scene reading',()=>{
  it('uses shared mouse-drag scroll without disabling native mobile and keyboard interaction',()=>{
   const hook=src('src/components/useVerticalDragScroll.ts');
   expect(hook).toContain("event.pointerType!=='mouse'");
-  expect(hook).toContain("el.scrollTop=d.scrollTop-offset");
+  expect(hook).toContain("el.scrollTop=mouseDragScrollTop(d.initialTop,offset)");
   expect(hook).toContain("event.preventDefault();");
   expect(hook).toContain("event.stopPropagation();");
   const clinic=src('src/features/town/ClinicDialog.tsx');

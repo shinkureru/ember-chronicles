@@ -44,9 +44,10 @@ describe('v1.7.3 portrait UI readability and interaction contract',()=>{
   const src=read('src/features/market/BlackMarketPage.tsx');
   const css=read('src/styles/_v174-interface.scss');
   expect(src).toContain("const [mode,setMode]=useState<Mode|null>('buy')");
-  expect(src).toContain('box.scrollTop=state.scrollTop-delta');
-  expect(src).toContain('if(suppressOfferClick.current)return;');
-  expect(src).toContain('onPointerDown={startDrag} onPointerMove={dragMove}');
+  expect(src).toContain('const offersScroll=useVerticalDragScroll()');
+  expect(src).toContain('ref={offersScroll.scrollRef}');
+  expect(src).toContain('onClickCapture={offersScroll.onClickCapture}');
+  expect(src).toContain('onPointerDown={offersScroll.onPointerDown} onPointerMove={offersScroll.onPointerMove}');
   expect(css).toContain('.market-v13 .market-v12__offers::-webkit-scrollbar{display:none}');
   expect(css).toContain('touch-action:pan-y');
  });

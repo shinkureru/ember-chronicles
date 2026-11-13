@@ -51,7 +51,7 @@ describe('v0.8.10 desktop mouse drag continuity',()=>{
   const workshop=read('src/features/town/WorkshopDialog.tsx');
   const market=read('src/features/market/BlackMarketPage.tsx');
   expect(workshop).toContain("serviceId:'workshop_repair'");
-  expect(workshop).toContain("serviceId:'workshop_upgrade'");
+  expect(workshop).toContain("'workshop_upgrade'");
   expect(market).toContain("type:'MARKET_BUY_ITEM'");
   expect(market).toContain("type:'MARKET_SELL_ITEM'");
   expect(JSON.parse(read('package.json')).version).toBe('0.8.10');

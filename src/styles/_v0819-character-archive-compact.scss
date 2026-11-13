@@ -1,0 +1,462 @@
+/* v0.8.19 — shared high-density language for Town Growth, NPC Memory and
+   Character Story. All content continues to be driven by live game state.
+   The five navigation tabs and other character panels are intentionally outside scope. */
+.character-viewport--v09 .character-tab-content.character-v0819{
+ --archive-accent:#c9a77e;
+ --archive-edge:#635455;
+ --archive-text:#e8ded2;
+ --archive-muted:#b8ada5;
+ box-sizing:border-box;
+ display:flex!important;
+ flex:1 1 0;
+ flex-direction:column;
+ min-height:0;
+ min-width:0;
+ gap:7px;
+ padding:9px!important;
+ overflow-y:auto!important;
+ overflow-x:hidden!important;
+ overscroll-behavior-y:contain;
+ touch-action:pan-y;
+ scrollbar-width:thin;
+ scrollbar-color:#695657 transparent;
+ border:1px solid #4a4044;
+ border-radius:8px;
+ background:linear-gradient(165deg,#151318,#0c0e13 82%);
+}
+.character-v0819 .character-v0819__heading{
+ display:flex;
+ flex:0 0 auto;
+ justify-content:space-between;
+ align-items:center;
+ gap:5px 10px;
+ min-width:0;
+ padding-bottom:7px;
+ border-bottom:1px solid var(--archive-edge);
+}
+.character-v0819 .character-v0819__heading > div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.character-v0819 .character-v0819__eyebrow{
+ color:var(--archive-accent);
+ font:650 8px/1.25 Inter,sans-serif;
+ letter-spacing:.12em;
+}
+.character-v0819 .character-v0819__heading h2{
+ display:flex;
+ align-items:center;
+ gap:6px;
+ min-width:0;
+ margin:0;
+ color:var(--archive-text);
+ font:750 15px/1.4 'Noto Serif TC',serif;
+ overflow-wrap:anywhere;
+}
+.character-v0819 .character-v0819__heading h2 svg{flex:none;color:var(--archive-accent)}
+.character-v0819 .character-v0819__heading > small{
+ flex:0 1 auto;
+ min-width:0;
+ color:var(--archive-muted);
+ font-size:9px;
+ line-height:1.4;
+ text-align:right;
+ overflow-wrap:anywhere;
+}
+.character-v0819 .character-v0819__intro{
+ flex:0 0 auto;
+ margin:0!important;
+ color:#bfb3ad!important;
+ font-size:10px!important;
+ line-height:1.5!important;
+ overflow-wrap:anywhere;
+}
+
+/* Town: a fixed-feeling compact two-by-two board. Every value and secondary
+   description is kept, and long localized status labels may wrap. */
+.character-v0819--town .character-tab-content__stats.character-v0819__metric-grid{
+ box-sizing:border-box;
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:6px;
+ flex:0 0 auto;
+ min-width:0;
+}
+.character-v0819 .character-tab-stat.character-v0819__metric{
+ box-sizing:border-box;
+ display:grid;
+ grid-template-columns:minmax(0,1fr) auto;
+ align-items:start;
+ gap:4px 7px;
+ min-width:0;
+ min-height:72px;
+ padding:8px;
+ border:1px solid #584a48;
+ border-radius:7px;
+ background:linear-gradient(150deg,#242124,#17191d);
+}
+.character-v0819 .character-v0819__metric > span{
+ grid-column:1;grid-row:1;
+ min-width:0;color:#bdafa4;
+ font-size:10px;line-height:1.3;overflow-wrap:anywhere;
+}
+.character-v0819 .character-v0819__metric > strong{
+ grid-column:2;grid-row:1;
+ min-width:0;
+ color:#f0d4b0;
+ font:750 13px/1.25 Inter,'Noto Sans TC',sans-serif;
+ white-space:nowrap;
+ font-variant-numeric:tabular-nums;
+}
+.character-v0819 .character-v0819__metric > small{
+ grid-column:1/-1;grid-row:2;
+ color:#a99e99;
+ font-size:9px;
+ line-height:1.35;
+ overflow-wrap:anywhere;
+}
+.character-v0819 .character-v0819__note{
+ flex:0 0 auto;
+ min-width:0;
+ padding:8px 10px;
+ border-left:2px solid #9a7966;
+ border-radius:3px 6px 6px 3px;
+ background:#251e22;
+ color:#c6b8ad;
+ font-size:10px;
+ line-height:1.5;
+ overflow-wrap:anywhere;
+}
+
+/* NPC: default summary fits one screen; long defeat memories and clues expand
+   only on request via native keyboard-accessible <details>/<summary>. */
+.character-v0819 .character-v0819__summary{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ flex:0 0 auto;
+ gap:4px;
+ min-width:0;
+}
+.character-v0819 .character-v0819__summary > span{
+ display:flex;
+ align-items:baseline;
+ flex-wrap:wrap;
+ justify-content:center;
+ gap:2px 4px;
+ min-width:0;
+ min-height:29px;
+ padding:5px 3px;
+ color:#aa9e9c;
+ background:#242128;
+ border:1px solid #55464d;
+ border-radius:5px;
+ font-size:9px;
+ line-height:1.3;
+ text-align:center;
+ overflow-wrap:anywhere;
+}
+.character-v0819 .character-v0819__summary strong{
+ color:#edd1aa;
+ font:750 12px/1.2 Inter,sans-serif;
+ font-variant-numeric:tabular-nums;
+}
+.character-v0819 .character-v0819__npc-grid{
+ display:grid;
+ grid-template-columns:minmax(0,1fr);
+ flex:0 0 auto;
+ align-content:start;
+ gap:6px;
+ min-width:0;
+}
+.character-v0819 .npc-defeat-record.character-v0819__npc{
+ box-sizing:border-box;
+ display:flex;
+ flex-direction:column;
+ gap:6px;
+ min-width:0;
+ min-height:0;
+ margin:0;
+ padding:8px;
+ border:1px solid #62535a;
+ border-radius:7px;
+ background:linear-gradient(155deg,#222025,#16171c);
+}
+.character-v0819 .character-v0819__npc-heading{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:5px 8px;
+ min-width:0;
+ padding-bottom:5px;
+ border-bottom:1px solid #544a4d;
+}
+.character-v0819 .character-v0819__npc-heading > div{
+ display:flex;
+ align-items:baseline;
+ gap:7px;
+ min-width:0;
+}
+.character-v0819 .character-v0819__npc-heading span{
+ flex:none;color:#a28e7b;font-size:9px;
+}
+.character-v0819 .character-v0819__npc-heading h3{
+ min-width:0;
+ margin:0;
+ color:#f2e3d7;
+ font-size:11px;
+ font-weight:750;
+ line-height:1.35;
+ overflow-wrap:anywhere;
+}
+.character-v0819 .character-v0819__npc-heading > small{
+ flex:none;color:#b9a7a0;font-size:9px;white-space:nowrap;
+}
+.character-v0819 .character-v0819__npc-heading > small strong{
+ color:#e2b2a7;font-variant-numeric:tabular-nums;
+}
+.character-v0819 .character-v0819__npc-metrics{
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:4px;
+ min-width:0;
+ margin:0;
+}
+.character-v0819 .character-v0819__npc-metrics > div{
+ display:flex;
+ justify-content:space-between;
+ align-items:baseline;
+ flex-wrap:wrap;
+ min-width:0;
+ gap:2px 4px;
+ padding:4px 5px;
+ border:1px solid #51484d;
+ border-radius:4px;
+ background:#1b1b21;
+}
+.character-v0819 .character-v0819__npc-metrics dt{
+ color:#aa9d9b;
+ font-size:9px;
+ line-height:1.3;
+ overflow-wrap:anywhere;
+}
+.character-v0819 .character-v0819__npc-metrics dd{
+ margin:0;
+ color:#ead4bd;
+ font:750 10px/1.3 Inter,'Noto Sans TC',sans-serif;
+ font-variant-numeric:tabular-nums;
+}
+.character-v0819 .character-v0819__npc-foot{
+ color:#a89b94;
+ font-size:9px;
+ line-height:1.35;
+ overflow-wrap:anywhere;
+}
+.character-v0819 .character-v0819__empty{
+ margin:0;
+ color:#b6aaa4;
+ font-size:9px;
+ line-height:1.5;
+ overflow-wrap:anywhere;
+}
+.character-v0819 .character-v0819__disclosure{
+ box-sizing:border-box;
+ flex:0 0 auto;
+ min-width:0;
+ border:1px solid #625056;
+ border-radius:6px;
+ background:#1e1a20;
+ overflow:hidden;
+}
+.character-v0819 .character-v0819__disclosure > summary{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:5px;
+ min-height:32px;
+ padding:6px 9px;
+ color:#dcc5b5;
+ font-size:10px;
+ font-weight:650;
+ line-height:1.35;
+ cursor:pointer;
+ list-style:none;
+}
+.character-v0819 .character-v0819__disclosure > summary::-webkit-details-marker{display:none}
+.character-v0819 .character-v0819__disclosure > summary strong{
+ color:#f1cfaa;
+ font-variant-numeric:tabular-nums;
+}
+.character-v0819 .character-v0819__disclosure > summary span{
+ margin-left:auto;
+ color:#a99b92;
+ font-size:9px;
+ white-space:nowrap;
+}
+.character-v0819 .character-v0819__disclosure > summary:focus-visible{
+ outline:2px solid #eacba4;
+ outline-offset:-2px;
+}
+.character-v0819 .character-v0819__disclosure[open] > summary{
+ border-bottom:1px solid #5b4c53;
+ background:#30252b;
+}
+.character-v0819 .npc-defeat-record__log.character-v0819__memory-log{
+ box-sizing:border-box;
+ display:grid;
+ grid-template-columns:minmax(0,1fr);
+ gap:5px;
+ max-height:min(29dvh,195px);
+ padding:6px;
+ overflow-y:auto;
+ overflow-x:hidden;
+ overscroll-behavior-y:contain;
+ touch-action:pan-y;
+ scrollbar-width:thin;
+}
+.character-v0819 .character-v0819__memory-log p{
+ box-sizing:border-box;
+ min-width:0;
+ margin:0!important;
+ padding:7px 8px;
+ border-left:2px solid #8d676a;
+ border-radius:3px;
+ background:#282027;
+ color:#e3d7d0;
+ font-size:10px;
+ line-height:1.45;
+ overflow-wrap:anywhere;
+}
+.character-v0819 .character-v0819__memory-log p span{
+ font-size:9px;
+ line-height:1.35;
+}
+.character-v0819 .character-v0819__memory-log p em{
+ padding:3px 0;
+ font-size:10px;
+ line-height:1.5;
+ white-space:normal;
+}
+.character-v0819 .character-v0819__memory-log p small{
+ font-size:9px;
+ line-height:1.4;
+}
+.character-v0819 .character-v0819__clues{
+ width:100%;
+ flex:0 0 auto;
+}
+.character-v0819 .clue-list.character-v0819__clue-list{
+ box-sizing:border-box;
+ display:grid;
+ grid-template-columns:minmax(0,1fr);
+ gap:4px;
+ max-height:min(32dvh,200px);
+ padding:6px;
+ overflow-y:auto;
+ overflow-x:hidden;
+ overscroll-behavior-y:contain;
+ touch-action:pan-y;
+}
+.character-v0819 .character-v0819__clue-list > p{
+ box-sizing:border-box;
+ min-width:0;
+ margin:0;
+ padding:6px 8px;
+ border:1px solid #544953;
+ border-radius:4px;
+ background:#262128;
+ color:#e4d8d1;
+ font-size:10px;
+ line-height:1.5;
+ overflow-wrap:anywhere;
+}
+
+/* Story: editorial hierarchy, full canonical text and passive in small cards. */
+.character-v0819 .character-v0819__quote{
+ box-sizing:border-box;
+ flex:0 0 auto;
+ min-width:0;
+ margin:0;
+ padding:10px 11px;
+ border-left:2px solid #c3a17c;
+ border-radius:2px 7px 7px 2px;
+ background:linear-gradient(135deg,#33282a,#1b1b20);
+ color:#e9d7c3;
+ font:500 12px/1.7 'Noto Serif TC',serif;
+ overflow-wrap:anywhere;
+}
+.character-v0819 .character-v0819__story-card{
+ box-sizing:border-box;
+ flex:0 0 auto;
+ display:flex;
+ flex-direction:column;
+ gap:5px;
+ min-width:0;
+ padding:10px 11px;
+ border:1px solid #564d4b;
+ border-radius:7px;
+ background:linear-gradient(145deg,#211e23,#16191d);
+}
+.character-v0819 .character-v0819__story-card h3{
+ margin:0;
+ color:#dcb891;
+ font-size:10px;
+ line-height:1.3;
+ letter-spacing:.05em;
+}
+.character-v0819 .character-v0819__story-card p{
+ margin:0;
+ color:#e1d5cb;
+ font-size:11px;
+ line-height:1.6;
+ overflow-wrap:anywhere;
+}
+.character-v0819 .character-v0819__story-card--passive{
+ border-color:#695750;
+ background:linear-gradient(150deg,#2d2626,#1b1a1e);
+}
+.character-v0819 .character-v0819__quote--last{
+ font-size:11px;
+ color:#c8bcb0;
+ background:#19191e;
+ border-left-color:#7e6c5e;
+}
+@media(min-width:600px){
+ .character-v0819--town .character-tab-content__stats.character-v0819__metric-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+ }
+ .character-v0819 .character-v0819__npc-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+ }
+ .character-v0819 .character-v0819__npc-metrics{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+ }
+}
+@media(max-width:360px){
+ .character-viewport--v09 .character-tab-content.character-v0819{
+  padding:6px!important;
+  gap:5px;
+ }
+ .character-v0819 .character-v0819__heading h2{font-size:14px}
+ .character-v0819 .character-v0819__heading > small{font-size:8px}
+ .character-v0819 .character-v0819__metric-grid{gap:4px}
+ .character-v0819 .character-tab-stat.character-v0819__metric{
+  padding:6px;
+  gap:3px;
+ }
+ .character-v0819 .character-v0819__summary{gap:3px}
+ .character-v0819 .character-v0819__summary > span{padding:4px 2px;font-size:8px}
+ .character-v0819 .npc-defeat-record.character-v0819__npc{padding:6px;gap:5px}
+ .character-v0819 .character-v0819__npc-metrics{gap:3px}
+ .character-v0819 .character-v0819__npc-metrics dt{font-size:8px}
+ .character-v0819 .character-v0819__npc-metrics dd{font-size:9px}
+ .character-v0819 .character-v0819__quote{padding:8px;font-size:11px}
+ .character-v0819 .character-v0819__story-card{padding:8px}
+}
+@media(max-height:650px){
+ .character-viewport--v09 .character-tab-content.character-v0819{gap:5px;padding:6px!important}
+ .character-v0819 .character-v0819__heading{padding-bottom:4px}
+ .character-v0819 .character-tab-stat.character-v0819__metric{min-height:62px;padding:6px}
+ .character-v0819 .character-v0819__npc-heading{padding-bottom:3px}
+ .character-v0819 .npc-defeat-record.character-v0819__npc{gap:4px}
+ .character-v0819 .character-v0819__quote{line-height:1.5}
+}
+@media(prefers-reduced-motion:reduce){
+ .character-v0819 summary{scroll-behavior:auto}
+}

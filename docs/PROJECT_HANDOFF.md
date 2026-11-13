@@ -1,5 +1,18 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜第二輪第7批 v0.8.20：牌組圖鑑主骨架與功能型技能卡（本 PR 待使用者 Merge）
+
+- **GitHub preflight**：`main` `d66e8af0366e6498f86eae4605526f7ff4fa1b0e`；前批 PR #45／v0.8.19 已合併、GitHub Pages 部署成功，開工時 open PR 0。下方先前「待 Merge」均為歷史文字；每次新批次仍要查最新 main、PR、相關程式、CI。
+- **唯一分支** `ui/v0.8.20-card-codex-skill-layout`，package/lock 版本 `0.8.20`。對應 `docs/UI_COMPACT_REDESIGN_ROADMAP.md` 第7批，參照使用者圖4，**只重設牌組圖鑑主骨架＋功能型附加技能卡面**。下一批 v0.8.21 的「攻擊型主動牌／事前準備」專有版型未動。
+- `CardsPage.tsx` 保留三主入口（功能／附加技能、攻擊型主動牌、事前準備）、原有解鎖比例和全部/已持有篩選。功能型再加「稀有度（全部/普通/稀有/混沌）」與「歸屬（全部/共通/記者/滲透者/騎士）」交集篩選、可見卡格數；切換條件自動捲回卡區最上方。新 `src/features/cards/cardCodexFilters.ts` 僅純計算 ID，不變更 `CARDS`、`ownedCards` 或任何存檔。
+- 功能型四欄 `cards-v0820__skill-grid` 保留原 `buildCardArchiveVariants`（LV.I 素材與已升級主卡分格）、5級顏色／稀有度標籤、emoji／尚未解鎖鎖、名稱/數量，增加原 `chanceBonus` 和 `resourceCost` 小字。卡格保留原 `useVerticalDragScroll` 滑鼠拖曳/手機觸控；只允許圖鑑格子獨立捲動，頂部篩選及底部 `GameUtilities` / `ReturnMainLink` 不走位。
+- `src/styles/_v0820-card-codex.scss` 在 `src/styles/main.scss` 最後匯入。以 `.cards-v0820` 定義全圖鑑一致的黑灰銅金導覽/篩選，**新的格子/詳情緊湊設計限定 `cards-v0820--skills`**；攻擊卡留第8批。細節窗仍用原 `CARD_LORE`、取得方式、LV/張數、升級成本與 `UPGRADE_CARD`；遊戲卡牌/職業/戰鬥/備戰/存檔/路由/音效資料沒有修改。
+- 專項 `tests/v0820-card-codex-skill-layout.test.ts` 覆蓋持有/稀有度/職業交集、卡牌階級和實際升級、導航/拖曳/RWD；前批 v0819 固定版號斷言改 0.8.x。人工 QA `docs/V0820_CARD_CODEX_QA.md`。**CI 必須 `npm run build`+ `npm test` 全綠才可交付；CI 不能視為瀏覽器目視驗收。**
+- **停點**：僅建立一個 PR、不可自動 Merge 或提前修改第8批。使用者自行 Merge 並明確通知後才重新核對 GitHub 最新 main/PR/交接與 `CardsPage`/`PreparationPage`，進入 **v0.8.21 攻擊型主動牌及事前準備版型**。
+
+---
+
+
 ## 2026-11-13｜第二輪第6批 v0.8.19：城鎮成長、NPC 記憶、人物故事精簡化（本 PR 待 Merge）
 
 - **GitHub preflight**：`main` `ccf31ee396058194c15d98697e0b6e29a9b4de33`；上一批 PR #44／v0.8.18 已 Merge，最新 Pages 部署成功，開工時 open PR = 0。下方各批「待 Merge」均是當時的歷史狀態，後續開工請再次查最新 GitHub。

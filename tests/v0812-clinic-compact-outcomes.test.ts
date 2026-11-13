@@ -64,6 +64,6 @@ describe('v0.8.12 compact clinic treatment outcomes',()=>{
    "type:'CLINIC_BUY_ITEM'","type:'CLINIC_ACCEPT_DAILY'","type:'CLINIC_COMPLETE_DAILY'",
    "useClinicDragScroll()",
   ])expect(jsx).toContain(term);
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.12');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });

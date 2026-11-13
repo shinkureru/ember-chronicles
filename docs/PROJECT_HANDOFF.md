@@ -1,5 +1,17 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜v0.8.13 第四批：黑市陳列面積與商品卡密度（PR 待 Merge）
+
+- **已核對最新 GitHub**：`main` `94e2c6f00ba7673a618c75c9f41adb03eddd52d7`；PR #38／v0.8.12 已合併、GitHub Pages 部署成功；本批開始時 open PR = 0。過去交接檔中所有「待 Merge」字樣屬歷史狀態，不得覆蓋 GitHub 最新狀態。
+- **本批唯一分支**：`ui/v0.8.13-market-expanded-catalog`，版本 `0.8.13`。使用者要求每批獨立 PR、自己 Merge 才能做下一批；這是第四批最後一個原定 UI 需求。
+- 原 `src/styles/_v12.scss` 人物/商品比例為 `53% / 47%`，此批新增 `src/styles/_v0813-market-expanded-catalog.scss` 於 `main.scss` 最後覆蓋：人物區 `clamp(162px,29%,295px)`、商品桌 `flex:1 1 0`，**人物/隔間/時間/對話/商人好感不刪**；對話移至好感晶片上方防止交疊，商品列表可佔大部分垂直區域。
+- 商品 Grid 桌面/一般手機三欄，每格 `clamp(88px,8.6dvh,100px)`；≤375px 改二欄，每格 `clamp(93px,10dvh,106px)`；短視窗更緊湊。商品圖示 max 35px、名稱至少兩行保留、高低間距與價格 baseline 一致，價格採表格式數字，保留長名稱全字於商品詳情／aria-label。捲動只作用商品列表，分類與底下購買、出售、版本、設定、返回主畫面不被遮住。
+- 完全不改 `BlackMarketPage.tsx`／黑市商品、卡牌、交易計算、進度、存檔、路由；沿用 v0.8.10 共用拖曳。新增 `tests/v0813-market-expanded-catalog.test.ts`；舊 v0812 的版本定值斷言調成 patch 規則；詳細手動 QA `docs/V0813_MARKET_CATALOG_QA.md`。任何「已視覺驗收」「已上線」陳述以實際結果為準。
+- **本批完成 PR 後停止**，須由使用者 Merge 與實際驗收，並明確提出下一輪需求才開始後續開發；絕不預先開下一批。
+
+---
+
+
 ## 2026-11-13｜v0.8.12 第三批：地下診所療程結果精簡（本分支待 Merge）
 
 - **已核對最新 GitHub**：`main` `42d7f059097fed3998bbb84550ee399a32a7e405`，上一批 PR #37／v0.8.11 已合併；其 CI、Pages 部署成功；新分支建立前 open PR 0。前一條標註「待 Merge」屬舊時間點，不可當成現況。

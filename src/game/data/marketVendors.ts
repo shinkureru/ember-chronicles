@@ -20,7 +20,7 @@ export const MARKET_VENDORS:MarketVendor[]=[
   visual:{appearance:'瘦高身形、深色鏡片遮住雙眼、俐落的舊外套；隨身藏著小冊與紙條。',sceneAssets:[],lighting:'ambient'},
   buyItems:['notes','receipt','memorychip','badge'],sellItems:[{id:'notebook',price:130,stock:2},{id:'pen',price:90,stock:3}],cardIds:['question','verify','record','pressure','bluff']},
  {id:'mechanic',name:'灰手羅恩',role:'廢鐵修理師',line:'「你手裡那把工具，還能再救你一次。只要付得起。」',face:1,
-  visual:{appearance:'灰色兜帽與磨損披風，厚工作手套與裝滿工具的腰帶；習慣背對來客修理機械與焊接零件。',sceneAssets:[],lighting:'workbench-weld'},
+  visual:{appearance:'灰色兜帽與磨損披風，厚工作手套與裝滿工具的腰帶；習慣背對來客修理機械與焊接零件。',sceneAssets:['black-market-mechanic-rummage.webp','black-market-mechanic-weld.webp'],lighting:'workbench-weld'},
   buyItems:['batteries','wrench','screwdriver','radio'],sellItems:[{id:'wrench',price:260,stock:2},{id:'screwdriver',price:150,stock:2},{id:'flashlight',price:240,stock:2},{id:'arm_guard',price:145,stock:2},{id:'leg_guard',price:175,stock:2}],cardIds:['cover','weave']},
  {id:'medic',name:'傷疤醫師',role:'地下醫療商',line:'「我只做買賣。想活下去，先確定你帶夠錢。」',face:2,
   visual:{appearance:'臉側帶舊傷的地下醫師，穿褪色醫袍與口罩，手提磨損的醫療箱。',sceneAssets:[],lighting:'ambient'},

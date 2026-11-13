@@ -1,51 +1,64 @@
 import {useEffect,useState} from 'react';
-import {BLACK_MARKET_SCENE_URL} from './BlackMarketSceneArt';
+import {getMarketSceneUrls} from './BlackMarketSceneArt';
 
 export type MarketSceneLoadState='loading'|'ready'|'error';
-/** Waits for the actual local WebP to load and decode. All vendor and
- * inventory data already exist synchronously in GameContext; no fake delay.
- * A missing file surfaces a retryable error rather than a perpetual overlay.
+type SceneLoadSnapshot={key:string;status:MarketSceneLoadState};
+
+/** Preload and decode EVERY frame for the current vendor before showing the
+ * market. Missing artwork is a valid empty scene. A broken referenced image
+ * is a recoverable error, not an infinite spinner or another vendor's face.
  */
-export function useMarketSceneLoad(){
- const [status,setStatus]=useState<MarketSceneLoadState>('loading');
+export function useMarketSceneLoad(sceneAssets:readonly string[]){
+ const key=sceneAssets.join('|');
  const [attempt,setAttempt]=useState(0);
+ const [snapshot,setSnapshot]=useState<SceneLoadSnapshot>(()=>({
+  key,status:sceneAssets.length===0?'ready':'loading',
+ }));
  useEffect(()=>{
-  let active=true;
-  const img=new Image();
-  const done=()=>{
-   if(!active)return;
-   window.clearTimeout(timeout);
-   setStatus('ready');
-  };
+  if(sceneAssets.length===0){setSnapshot({key,status:'ready'});return;}
+  let active=true,settled=false,remaining=sceneAssets.length;
+  setSnapshot({key,status:'loading'});
+  const images:HTMLImageElement[]=[];
   const fail=()=>{
-   if(!active)return;
+   if(!active||settled)return;
+   settled=true;
    window.clearTimeout(timeout);
-   setStatus('error');
+   setSnapshot({key,status:'error'});
+  };
+  const completeOne=()=>{
+   if(!active||settled)return;
+   remaining-=1;
+   if(remaining===0){
+    settled=true;
+    window.clearTimeout(timeout);
+    setSnapshot({key,status:'ready'});
+   }
   };
   const timeout=window.setTimeout(fail,15_000);
-  img.onerror=fail;
-  let handled=false;
-  const onLoaded=()=>{
-   if(handled)return;
-   handled=true;
-   if(typeof img.decode==='function'){
-    void img.decode().then(done).catch(()=>img.naturalWidth>0?done():fail());
-   }else done();
-  };
-  img.onload=onLoaded;
-  img.src=BLACK_MARKET_SCENE_URL;
-  // Modern browsers also return true for an image already cached by a
-  // previous market visit, including the immediate-complete path.
-  if(img.complete&&img.naturalWidth>0)onLoaded();
+  for(const url of getMarketSceneUrls(sceneAssets)){
+   const img=new Image();
+   images.push(img);
+   let handled=false;
+   const onLoaded=()=>{
+    if(handled)return;
+    handled=true;
+    if(typeof img.decode==='function'){
+     void img.decode().then(completeOne).catch(()=>img.naturalWidth>0?completeOne():fail());
+    }else completeOne();
+   };
+   img.onload=onLoaded;
+   img.onerror=fail;
+   img.src=url;
+   if(img.complete&&img.naturalWidth>0)onLoaded();
+  }
   return ()=>{
    active=false;
-   img.onload=null;
-   img.onerror=null;
+   for(const img of images){img.onload=null;img.onerror=null;}
    window.clearTimeout(timeout);
   };
- },[attempt]);
+ },[key,attempt]);
  return {
-  status,
-  retry:()=>{setStatus('loading');setAttempt(i=>i+1);},
+  status:sceneAssets.length===0?'ready':snapshot.key===key?snapshot.status:'loading',
+  retry:()=>{setSnapshot({key,status:'loading'});setAttempt(i=>i+1);},
  };
 }

@@ -39,9 +39,9 @@ export default function BlackMarketPage(){
  const [more,setMore]=useState(false);
  const [selectedId,setSelectedId]=useState<string|null>(null);
  const [switchCount,setSwitchCount]=useState(0);
- const {status:sceneLoadStatus,retry:retrySceneLoad}=useMarketSceneLoad();
- const offersScroll=useVerticalDragScroll();
  const vendor=getScheduledVendor(s.world.minute);
+ const {status:sceneLoadStatus,retry:retrySceneLoad}=useMarketSceneLoad(vendor.visual.sceneAssets);
+ const offersScroll=useVerticalDragScroll();
  const phase=worldPhaseToken(s.world.minute);
  const equipped=Object.values(s.equipment);
  const totalOwned=(id:string)=>(s.bag[id]??0)+(s.warehouse[id]??0);
@@ -123,7 +123,7 @@ export default function BlackMarketPage(){
   </header>
   <section className="market-v12__scene" aria-label={`${worldPhase(s.world.minute)}的秘密交易地點`}>
    <div className="market-v12__meeting market-v0823__meeting">
-    <BlackMarketSceneArt/>
+    <BlackMarketSceneArt key={vendor.id} vendor={vendor}/>
     <div className="market-v0823__shade" aria-hidden="true"/>
     <div className="market-v0823__vendor" aria-label="當班商人">
      <span>BLACK MARKET / CURRENT VENDOR</span>

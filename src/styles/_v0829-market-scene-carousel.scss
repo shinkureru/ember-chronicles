@@ -1,0 +1,39 @@
+/* v0.8.29: multiple predecoded artist scene images crossfade in-place.
+ * Black-market vendor identity comes exclusively from MARKET_VENDORS data.
+ * No caption, modal, product grid, stock, world-time or favor changes.
+ */
+.market-v0829__art{background:#090d14}
+.market-v0829__frame{
+ opacity:0;
+ transition:opacity 1.3s cubic-bezier(.45,0,.55,1);
+ pointer-events:none;
+}
+.market-v0829__frame--active{opacity:1}
+.market-v0829__empty-scene{
+ position:absolute;
+ inset:0;
+ z-index:0;
+ pointer-events:none;
+ overflow:hidden;
+ background:
+  radial-gradient(ellipse at 30% 30%,#30404a5c 0%,transparent 58%),
+  radial-gradient(ellipse at 74% 42%,#251a2b60 0%,transparent 60%),
+  linear-gradient(140deg,#11161d,#090a0f 78%);
+}
+.market-v0829__empty-scene::after{
+ content:"";
+ position:absolute;
+ inset:0;
+ background:repeating-linear-gradient(117deg,transparent 0 55px,#6b73860d 56px 57px,transparent 58px 112px);
+ opacity:.4;
+}
+.market-v0829__empty-glow{
+ position:absolute;
+ inset:0;
+ background:radial-gradient(ellipse at 47% 23%,#c8b6a015 0%,transparent 45%);
+}
+@media(prefers-reduced-motion:reduce){
+ .market-v0829__frame{
+  transition:none!important;
+ }
+}

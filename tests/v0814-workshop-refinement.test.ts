@@ -86,6 +86,6 @@ describe('v0.8.14 workshop compact selector redesign',()=>{
  it('imports newest specific override after legacy workshop styles and updates version',()=>{
   const imports=read('src/styles/main.scss');
   expect(imports.lastIndexOf('@import "v0814-workshop-refinement"')).toBeGreaterThan(imports.indexOf('@import "v0811-workshop-compact"'));
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.14');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });

@@ -43,10 +43,10 @@ function ClinicTreatmentMeter({outcome}:{outcome:ClinicTreatmentOutcome}){
  const lesser=Math.min(outcome.before,outcome.after);
  const greater=Math.max(outcome.before,outcome.after);
  const display=(n:number)=>outcome.max!==undefined?`${n}/${outcome.max}`:String(n);
- return <div className={`clinic-dialog__outcome clinic-dialog__outcome--${outcome.key}`}>
+ return <div className={`clinic-dialog__outcome clinic-dialog__outcome--${outcome.key} recovery-preview-card`}>
   <div className="clinic-dialog__outcome-head"><strong>{outcome.label}</strong><small>{healing?'+':'−'}{greater-lesser}{outcome.key==='health'?' HP':outcome.key==='stamina'?' ST':outcome.key==='fatigue'?' 點':' 層'}</small></div>
   <div className="clinic-dialog__outcome-numbers"><span>{display(outcome.before)}</span><ArrowRight size={15} aria-hidden="true"/><em>{display(outcome.after)}</em></div>
-  <div className="clinic-dialog__outcome-track" role="img" aria-label={`${outcome.label}：${display(outcome.before)} 到 ${display(outcome.after)}`}>
+  <div className="clinic-dialog__outcome-track recovery-preview-meter" role="img" aria-label={`${outcome.label}：${display(outcome.before)} 到 ${display(outcome.after)}`}>
    <i className="clinic-dialog__outcome-current" style={{width:`${percent(lesser)}%`}}/>
    <i className="clinic-dialog__outcome-change" style={{left:`${percent(lesser)}%`,width:`${percent(greater)-percent(lesser)}%`}}/>
   </div>

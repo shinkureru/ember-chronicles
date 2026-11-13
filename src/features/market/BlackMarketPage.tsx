@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Coins, HeartHandshake, ShoppingBag, Tag, X, ArrowRight, Clock3, SlidersHorizontal, Handshake, Eye, LockKeyhole } from 'lucide-react';
 import { useGame } from '../../app/GameContext';
 import { CARDS } from '../../game/data/cards';
@@ -13,6 +13,7 @@ import SurvivorFigure from '../../components/SurvivorFigure';
 import ItemArt from '../../components/ItemArt';
 import GameUtilities from '../../components/GameUtilities';
 import ReturnMainLink from '../../components/ReturnMainLink';
+import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
 
 type Mode='buy'|'sell';
 type Kind='all'|'item'|'card';
@@ -31,30 +32,7 @@ export default function BlackMarketPage(){
  const [narrow,setNarrow]=useState<Narrow>('any');
  const [more,setMore]=useState(false);
  const [selectedId,setSelectedId]=useState<string|null>(null);
- const offersRef=useRef<HTMLDivElement>(null);
- const pointer=useRef({active:false,startY:0,scrollTop:0,moved:false});
- const suppressOfferClick=useRef(false);
- const startDrag=(event:ReactPointerEvent<HTMLDivElement>)=>{
-  if(event.pointerType!=='mouse'||event.button!==0)return;
-  const box=offersRef.current;if(!box)return;
-  pointer.current={active:true,startY:event.clientY,scrollTop:box.scrollTop,moved:false};
- };
- const dragMove=(event:ReactPointerEvent<HTMLDivElement>)=>{
-  const state=pointer.current,box=offersRef.current;
-  if(!state.active||!box||event.pointerType!=='mouse')return;
-  const delta=event.clientY-state.startY;
-  if(!state.moved&&Math.abs(delta)>6){
-   state.moved=true;suppressOfferClick.current=true;
-   box.setPointerCapture(event.pointerId);
-  }
-  if(state.moved){box.scrollTop=state.scrollTop-delta;event.preventDefault();}
- };
- const stopDrag=(event:ReactPointerEvent<HTMLDivElement>)=>{
-  pointer.current.active=false;
-  const box=offersRef.current;
-  if(box?.hasPointerCapture(event.pointerId))box.releasePointerCapture(event.pointerId);
-  window.setTimeout(()=>{suppressOfferClick.current=false},0);
- };
+ const offersScroll=useVerticalDragScroll();
  const vendor=getScheduledVendor(s.world.minute);
  const phase=worldPhaseToken(s.world.minute);
  const equipped=Object.values(s.equipment);
@@ -156,12 +134,14 @@ export default function BlackMarketPage(){
     </div>}
     {mode===null?
      <div className="market-v13__waiting"><Handshake size={31}/><strong>隔著牆，交易才有機會開始。</strong><p>「先聽聽他打算買什麼，或者賣些什麼。」</p></div>:
-     <div className="market-v12__offers market-v081__catalog" role="group" tabIndex={0} ref={offersRef}
+     <div className="market-v12__offers market-v081__catalog" role="group" tabIndex={0} ref={offersScroll.scrollRef}
        aria-label={mode==='buy'?'可上下滾動或拖曳的販售商品':'可上下滾動或拖曳的商人收購商品'}
-       onPointerDown={startDrag} onPointerMove={dragMove} onPointerUp={stopDrag} onPointerCancel={stopDrag}>
+       onPointerDown={offersScroll.onPointerDown} onPointerMove={offersScroll.onPointerMove}
+       onPointerUp={offersScroll.onPointerUp} onPointerCancel={offersScroll.onPointerCancel}
+       onClickCapture={offersScroll.onClickCapture}>
       {filteredOffers.map(offer=><button type="button" key={offer.type+offer.id}
        className={`market-v12__offer ${offer.canTrade?'':'is-unavailable'}`}
-       onClick={()=>{if(suppressOfferClick.current)return;setSelectedId(offer.id);playCue('select')}}
+       onClick={()=>{setSelectedId(offer.id);playCue('select')}}
        aria-label={`${offer.name}，${offer.price} 舊幣`}>
        <span className="market-v12__offer-type">{offer.type==='card'?'CARD':'ITEM'}</span>
        <span className="market-v12__offer-icon" aria-hidden="true">{offer.type==='item'?<ItemArt id={offer.id}/>:offer.emoji}</span>

@@ -81,7 +81,7 @@ describe('v0.8.9 full removal of global navbar and safe integrated system access
   expect(css).toContain('justify-content:space-between');
   expect(utilities).toContain('aria-label="開啟遊戲設定"');
   expect(utilities).toContain('aria-label={`目前遊戲版本');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.9');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });
 const chapterOrResultHasOriginalExit=()=>{

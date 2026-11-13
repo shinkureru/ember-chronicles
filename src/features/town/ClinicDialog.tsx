@@ -115,7 +115,7 @@ export default function ClinicDialog({onClose}:{onClose:()=>void}){
        const risk=hungerRisk(s.player.hunger,hunger.projectedHunger);
       return <article className="clinic-dialog__card clinic-dialog__card--treatment" key={service.id}>
        <div className="clinic-dialog__therapy-heading"><strong>{service.name}</strong><small>{service.summary}</small>
-        <span><Coins size={13}/>{preview.fee} 舊幣 · 飢餓 +{hunger.hungerDelta}（{s.player.hunger}→{hunger.projectedHunger}）</span>
+        <span><Coins size={13}/>{preview.fee} 舊幣 · 飢餓 +{hunger.appliedDelta}（原成本 +{hunger.hungerDelta}，{s.player.hunger}→{hunger.projectedHunger}）</span>
        </div>
        <button type="button" disabled={!!blocked} onClick={()=>click({type:'TOWN_SERVICE',serviceId:service.id})}>接受治療 <ArrowRight size={14}/></button>
        <div className="clinic-dialog__outcomes" aria-label={`${service.name}預計治療效果`}>
@@ -135,7 +135,7 @@ export default function ClinicDialog({onClose}:{onClose:()=>void}){
      <h3>{quest.title}</h3><p>{quest.detail}</p>
      <p>目前擁有：{ITEMS[quest.id]?.name} {stock(quest.id)}/{quest.quantity}</p>
      <p className="clinic-dialog__reward"><Coins size={14}/> 報酬 {quest.coins} 舊幣 · <ShieldPlus size={14}/> 診所好感 +{quest.favor}</p>
-      <small>完成交付飢餓 +{HUNGER_QUEST_HANDIN_COST}（{s.player.hunger}→{projectedHunger(s.player.hunger,HUNGER_QUEST_HANDIN_COST)}）；承接不消耗。</small>
+      <small>完成交付飢餓 +{projectedHunger(s.player.hunger,HUNGER_QUEST_HANDIN_COST)-s.player.hunger}（原成本 +{HUNGER_QUEST_HANDIN_COST}，{s.player.hunger}→{projectedHunger(s.player.hunger,HUNGER_QUEST_HANDIN_COST)}）；承接不消耗。</small>
      {clinic.completedDay===s.world.day?<strong>今天的委託已完成，明天有新的任務。</strong>:
       clinic.acceptedDay===s.world.day?
        <><button type="button" disabled={!!clinicQuestBlock(s,true)} onClick={()=>click({type:'CLINIC_COMPLETE_DAILY'})}>交付物資並領取報酬</button>{clinicQuestBlock(s,true)&&<small>{clinicQuestBlock(s,true)}</small>}</>:
@@ -149,7 +149,7 @@ export default function ClinicDialog({onClose}:{onClose:()=>void}){
       return <article className="clinic-dialog__card clinic-dialog__card--supply" key={item.id}>
        <span className="clinic-dialog__item-art"><ItemArt id={item.id}/></span>
        <div><strong>{ITEMS[item.id]?.name}</strong><small>{item.summary}</small>
-        <span><Coins size={13}/>{clinicUnitPrice(s,item.id)} 舊幣 · 今日剩餘 {item.limit-count}/{item.limit} · 飢餓 +{HUNGER_CLINIC_PURCHASE_COST}（→{projectedHunger(s.player.hunger,HUNGER_CLINIC_PURCHASE_COST)}）</span></div>
+        <span><Coins size={13}/>{clinicUnitPrice(s,item.id)} 舊幣 · 今日剩餘 {item.limit-count}/{item.limit} · 飢餓 +{projectedHunger(s.player.hunger,HUNGER_CLINIC_PURCHASE_COST)-s.player.hunger}（原成本 +{HUNGER_CLINIC_PURCHASE_COST}，→{projectedHunger(s.player.hunger,HUNGER_CLINIC_PURCHASE_COST)}）</span></div>
        <button type="button" disabled={!!blocked} onClick={()=>click({type:'CLINIC_BUY_ITEM',itemId:item.id})}>購買</button>
        {blocked&&<small className="clinic-dialog__hint">{blocked}</small>}
       </article>;

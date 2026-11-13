@@ -109,10 +109,10 @@ export default function WorkshopDialog({onClose}:{onClose:()=>void}){
      {perfectRepairActive(s,itemId!)&&<p className="workshop-dialog__perfect"><Sparkles size={15}/>完美修理待命：下次任務此部位防禦額外 +1</p>}
      <div className="workshop-dialog__actions">
       <button type="button" className="workshop-dialog__repair" disabled={!!repairLock} onClick={()=>useService('workshop_repair')}>
-       <Wrench size={18}/><span><strong>完全修復</strong><small><Coins size={13}/> {fee} 舊幣 · 飢餓 +{repairHunger.hungerDelta}（{s.player.hunger}→{repairHunger.projectedHunger}）</small></span>
+       <Wrench size={18}/><span><strong>完全修復</strong><small><Coins size={13}/> {fee} 舊幣 · 飢餓 +{repairHunger.appliedDelta}（原成本 +{repairHunger.hungerDelta}，{s.player.hunger}→{repairHunger.projectedHunger}）</small></span>
       </button>
       <button type="button" className="workshop-dialog__upgrade" disabled={!!upgradeLock} onClick={()=>useService('workshop_upgrade')}>
-       <ShieldCheck size={18}/><span><strong>精工改良 {s.town?.upgrades[itemId!]??0}/3</strong><small><Coins size={13}/> {upgradeFee} 舊幣 · 材料 1 份 · 飢餓 +{upgradeHunger.hungerDelta}（→{upgradeHunger.projectedHunger}）</small></span>
+       <ShieldCheck size={18}/><span><strong>精工改良 {s.town?.upgrades[itemId!]??0}/3</strong><small><Coins size={13}/> {upgradeFee} 舊幣 · 材料 1 份 · 飢餓 +{upgradeHunger.appliedDelta}（原成本 +{upgradeHunger.hungerDelta}，→{upgradeHunger.projectedHunger}）</small></span>
       </button>
      </div>
      {((repairRisk&&!repairLock)||(upgradeRisk&&!upgradeLock))&&<p className="v0834-hunger-risk" role="status">{repairRisk?.title??upgradeRisk?.title} · {repairRisk?.detail??upgradeRisk?.detail}</p>}

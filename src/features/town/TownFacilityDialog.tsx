@@ -75,7 +75,7 @@ export default function TownFacilityDialog({facility,onClose}:{facility:Secondar
       return <article className={`town-v15__quest ${status==='completed'?'is-done':''}`} key={quest.id}>
        <div><strong>{quest.title}</strong><small>{status==='completed'?'已完成':status==='accepted'?'追蹤中':'可承接'}</small></div>
        <p>{quest.detail}</p>
-       <p className="town-v15__reward"><Coins size={13}/>舊幣 +{quest.rewardCoins} <Sparkles size={13}/>{ATTRIBUTE_LABELS[quest.rewardAttribute]} +1 · 交付飢餓 +{HUNGER_QUEST_HANDIN_COST}（{s.player.hunger}→{projectedHunger(s.player.hunger,HUNGER_QUEST_HANDIN_COST)}）</p>
+       <p className="town-v15__reward"><Coins size={13}/>舊幣 +{quest.rewardCoins} <Sparkles size={13}/>{ATTRIBUTE_LABELS[quest.rewardAttribute]} +1 · 交付飢餓 +{projectedHunger(s.player.hunger,HUNGER_QUEST_HANDIN_COST)-s.player.hunger}（原成本 +{HUNGER_QUEST_HANDIN_COST}，{s.player.hunger}→{projectedHunger(s.player.hunger,HUNGER_QUEST_HANDIN_COST)}）</p>
        <button type="button" disabled={s.mode!=='home'||status==='completed'||(status==='accepted'&&!ready)}
         onClick={()=>{dispatch(status==='accepted'?{type:'TOWN_COMPLETE_QUEST',questId:quest.id}:{type:'TOWN_ACCEPT_QUEST',questId:quest.id});setHasAction(true);playCue('confirm')}}>
         {status==='completed'?<><Check size={15}/>已結案</>:status==='accepted'?(ready?'交付委託並領取獎勵':'尚未達成條件'):'承接委託'}
@@ -90,7 +90,7 @@ export default function TownFacilityDialog({facility,onClose}:{facility:Secondar
       const risk=hungerRisk(s.player.hunger,hunger.projectedHunger);
       return <article className="town-v15__service" key={service.id}>
        <div><strong>{service.name}</strong><p>{service.summary}</p>
-        <small><Coins size={12}/>{fee} 舊幣 <Utensils size={12}/>飢餓 {signedHunger(hunger.hungerDelta)}（{s.player.hunger}→{hunger.projectedHunger}）</small>
+        <small><Coins size={12}/>{fee} 舊幣 <Utensils size={12}/>飢餓 {signedHunger(hunger.appliedDelta)}（原成本 {signedHunger(hunger.hungerDelta)}，{s.player.hunger}→{hunger.projectedHunger}）</small>
        </div>
        <button type="button" disabled={!!reason} onClick={()=>enact(service.id)}>
         {reason?<LockKeyhole size={15}/>:<ChevronRight size={17}/>}<span>{reason?'不可用':'執行'}</span>

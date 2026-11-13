@@ -1,5 +1,19 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-14｜第四輪第6批 v0.8.33：台北真實時間與舊存檔遷移（本 PR 待使用者 Merge）
+
+- **開工基準**：main `2e1897e7dfa57325696d106389cb1bc56cb3eb69`，第5批 PR #58 v0.8.32 已 Merge，開工 open PR 0。本批分支 `feat/v0.8.33-taipei-realtime-clock`，package/lock `0.8.33`，使用者合併後才開始 v0.8.34。
+- **唯一時鐘**：新 `src/game/engine/taipeiClock.ts` 使用 `Intl.DateTimeFormat({timeZone:'Asia/Taipei'})` 將系統 UTC timestamp 換算成台北年月日/時分；`world.day` 改用台北日期的連續整數 day ordinal，`world.minute` 保留當天 0..1439，`clockBasis:'taipei-realtime'` 作為存檔遷移標記。**不在遊戲行動中操縱時鐘**。
+- **同步/跨日**：`GameContext` 每現實 1 秒對齊裝置時間，背景分頁恢復/視窗 focus 立即同步；所有遊戲按鈕 dispatch 前先排入同步 action，交易可跨班次重新校驗；此時鐘不受場景、dialog 或結果畫面「暫停」影響。因為沒有網路後端，本批時間權威仍取自玩家裝置時鐘（以台北時區解讀），若玩家手動竄改裝置時間會跟著變動。
+- **移除快轉**：舊 `WORLD_CLOCK_TICK` 每10秒+5遊戲分鐘、`advanceTime`、選項/撤退/戰敗/醫療/訓練/休息/商城行動的自動跳時全部移除；不再因時間流逝增加 hunger/fatigue。休息只執行原有恢復，市場貨品/商人真實價格不受波及。服務中的 `minutes` 原始資料暫保留為下一批成本轉換資料，**不再結算為時間**，所有當前互動 UI 隱藏舊快轉費用提示。
+- **每日重置**：商人05/11/14/18/23在台北時段輪替，旅店每台北日2次、訓練/酒館/食堂/診所每日限制與 XP 重複行動限制沿用 `world.day`，現在自動在台北 00:00 換日。舊存檔的生命/金錢/卡牌/裝備/進度/好感與永久角色成長均保留，僅廢止舊合成日期的每日次數/診所當日任務。重開及離線恢復直接同步當日台北日期/時間，不回放數小時飢餓。
+- **顯示**：HUD/城鎮/診所改 `YYYY/MM/DD` 台北日期、黑市輪班倒數註明台北時間，服務/床位/行動不再聲稱會快轉 X 分鐘。時間成本轉飢餓的體驗與完整平衡保留給第7批 v0.8.34，最終過時文案清查於第8批 v0.8.35。
+- **驗證**：`tests/v0833-taipei-realtime-clock.test.ts` 含時區/午夜/跨班/離線/舊存檔/不跳時/每日限額/商人 guard；歷史快轉斷言必須更新，不得刪掉其他回歸。人工 QA `docs/V0833_TAIPEI_REALTIME_CLOCK_QA.md`。以 GitHub Actions `npm run build`+ `npm test` 全綠為自動驗證，不能聲稱已在實體手機上驗證。
+- **停點**：只有這一個 PR，不自行 Merge；第7批 v0.8.34 改飢餓代價、第8批 v0.8.35 整合回歸均不得在本批提前實作。
+
+---
+
+
 ## 2026-11-14｜第四輪第5批 v0.8.32：五商人正式資料整合與斜向波浪雙倍快、半幅（此 PR 待使用者 Merge）
 
 - **開工查 GitHub**：`main` `ab3b6b5a9ce384c66ae8deec66a3b9fcf7b08616`，上一批 PR #57 v0.8.31 **已 Merge**，Pages success，開工 open PR=0。唯一分支 `ui/v0.8.32-vendor-profile-fast-wave`，package/lock 0.8.32。使用者自行合併、通知才做下一批。

@@ -130,7 +130,7 @@ describe('v0.8.29 predecoded, visibility-aware crossfade',()=>{
  it('uses the new version but preserves old GameContext and hunger rules in this batch',()=>{
   expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
   expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe(JSON.parse(read('package.json')).version);
-  expect(read('src/app/GameContext.tsx')).toContain('WORLD_TICK_GAME_MINUTES=5');
+  expect(read('src/app/GameContext.tsx')).toContain('REALTIME_CLOCK_REFRESH_MS');
   expect(read('src/game/state/initial.ts')).toContain('hunger:20');
  });
 });

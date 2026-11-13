@@ -1,4 +1,5 @@
 import { TOWN_SERVICES,isTownOpen,townAbsoluteMinute } from '../data/town';
+import {taipeiDate} from './taipeiClock';
 import type { AttributeId,GameState,TownProgress,SurvivorConditions } from '../types';
 import { ITEMS } from '../data/items';
 import { clamp } from './rules';
@@ -26,7 +27,7 @@ export const getTownServiceLock=(s:GameState,id:string,attribute?:AttributeId,it
  if(!service)return '找不到這項服務';
  if(!isTownOpen(service.facility,s.world.minute))return '這間設施在目前時段沒有營業';
  const town=s.town;
- if(isRestService(id)&&remainingDailyRest(s)<=0)return '今日已休息兩次，請等到下一個遊戲日';
+ if(isRestService(id)&&remainingDailyRest(s)<=0)return '今日已休息兩次，請等到下一個台北日';
  if(id==='train'){
   if(!attribute||!(attribute in s.player.attributes))return '先選擇要提升的永久屬性';
   if(s.player.attributes[attribute]>=20)return '這項永久屬性已達訓練上限 20';
@@ -121,7 +122,7 @@ export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,item
   case 'tavern_rumor':{
    town.lastRumorDay=s.world.day;s.economy.blackMarketFavor+=1;
    const lines=['一台沒有登記的廂型車在深夜往北開。','封鎖區某個診所每週都會收到陌生藥箱。','倉庫的排班表在失蹤事件發生後被人改過。','有人深夜在公寓門口掛起沒有署名的信。','河堤附近的監視器總是在同個時間失效。'];
-   const clue=`第 ${s.world.day} 日酒館情報：${lines[(s.world.day+Math.floor(s.world.minute/240))%lines.length]}`;
+   const clue=`${taipeiDate(s.world.day)} 酒館情報：${lines[(s.world.day+Math.floor(s.world.minute/240))%lines.length]}`;
    if(!s.clues.includes(clue))s.clues.push(clue);
    message=`我拿到一項新情報：「${clue}」黑市人脈也更願意跟我說話。`;break;
   }
@@ -132,19 +133,19 @@ export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,item
    if(attribute==='maxStamina'){p.maxStamina+=1;p.stamina=restore(p.stamina,1,p.maxStamina);}
    message=`今天我專心練習了一項能力。「${attribute}」永久提升至 ${p.attributes[attribute!]}，明天才能再訓練。`;break;
   }
-  case 'bath':p.courage=restore(p.courage,12,100);p.fatigue=restore(p.fatigue,-8,100);town.socialPoiseUntil=townAbsoluteMinute(s)+service.minutes+180;message='洗去灰塵與疲倦。我看起來總算比較像個可以信任的人，短時間交涉更順利。';break;
-  case 'wash_clothes':p.courage=restore(p.courage,6,100);town.socialPoiseUntil=townAbsoluteMinute(s)+service.minutes+300;message='外衣乾淨了。至少短時間內，我不會因狼狽的外表先被人排斥。';break;
+  case 'bath':p.courage=restore(p.courage,12,100);p.fatigue=restore(p.fatigue,-8,100);town.socialPoiseUntil=townAbsoluteMinute(s)+180;message='洗去灰塵與疲倦。我看起來總算比較像個可以信任的人，短時間交涉更順利。';break;
+  case 'wash_clothes':p.courage=restore(p.courage,6,100);town.socialPoiseUntil=townAbsoluteMinute(s)+300;message='外衣乾淨了。至少短時間內，我不會因狼狽的外表先被人排斥。';break;
   case 'hot_meal':p.hunger=restore(p.hunger,-38,100);p.stamina=restore(p.stamina,14,p.maxStamina);message='熱飯和一碗湯讓我終於恢復些精神。';break;
   case 'canteen_talk':{
    town.lastCanteenTalkDay=s.world.day;
    const lines=['食堂裡的人說，巡邏車有時會繞過本來應該檢查的路口。','有人認得後巷的灰衣守望者，他不是一直都在那裡。','最近常有人買走所有乾糧，似乎在準備長途離城。'];
-   const clue=`第 ${s.world.day} 日居民閒談：${lines[s.world.day%lines.length]}`;
+   const clue=`${taipeiDate(s.world.day)} 居民閒談：${lines[s.world.day%lines.length]}`;
    if(!s.clues.includes(clue))s.clues.push(clue);
    message='我聽完隔桌的談話，記下了一條可以追查的城市線索。';break;
   }
   default:throw Error('unhandled town service '+id);
  }
  s.lastEvent=message;
- s.log.push(`城鎮 · ${service.name}：花費 ${fee} 舊幣、${service.minutes} 分鐘。`);
+ s.log.push(`城鎮 · ${service.name}：花費 ${fee} 舊幣；現實時間照常流動。`);
  return {message,minutes:service.minutes};
 };

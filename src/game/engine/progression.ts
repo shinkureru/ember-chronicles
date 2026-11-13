@@ -2,7 +2,7 @@ import type {AttributeId,GameState,LevelProgression} from '../types';
 
 /**
  * XP is earned for a committed gameplay event, not UI clicks or world-clock ticks.
- * A repeated action has no XP reward on the same in-game day. The daily 120 XP
+ * A repeated action has no XP reward on the same Taipei calendar day. The daily 120 XP
  * ceiling is an extra safeguard against clever mixtures of repeated services.
  */
 export const makeInitialProgression=():LevelProgression=>({level:1,xp:0,totalXp:0,points:0,dailyAwards:{}});

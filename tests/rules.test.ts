@@ -33,10 +33,10 @@ describe('劇情規則',()=>{
    expect(attached.chance).toBeGreaterThan(base.chance);
    expect(attached.staminaCost).toBeLessThan(base.staminaCost);
  });
- it('劇情行動更新世界時間與體力',()=>{
+ it('劇情行動不再快轉現實時間，仍結算原體力與場景',()=>{
    const s=gameReducer(makeInitialState('journalist'),{type:'START_ATTEMPT'});
    const out=gameReducer(s,{type:'CHOOSE',choiceId:'gate_observe',skillId:null});
-   expect(out.world.minute).toBe(s.world.minute+8);
+   expect(out.world).toEqual(s.world);
    expect(out.sceneId).toBe('survey');
    expect(out.flags).toContain('route_known');
  });

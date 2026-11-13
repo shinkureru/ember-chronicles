@@ -1,13 +1,13 @@
 import {worldClock,worldPhase,worldPhaseToken} from '../../game/engine/rules';
 import {getScheduledVendor} from '../../game/data/marketSchedule';
 
-/** Phase boundaries in world minutes after midnight, matching worldPhaseToken.
- * This module only reads the clock; the GameContext reducer advances it.
+/** Phase boundaries in Taipei local minutes after midnight, matching worldPhaseToken.
+ * This pure function projects the next handover; only the Taipei clock drives it.
  */
 export const MARKET_SHIFT_START_MINUTES=[5*60,11*60,14*60,18*60,23*60] as const;
 export const MINUTES_PER_GAME_DAY=24*60;
 
-/** Next trader update measured in GAME minutes, never real seconds. */
+/** Next trader update measured in real Taipei local minutes. */
 export function getMarketShiftCountdown(worldMinute:number){
  const minute=((Math.floor(worldMinute)%MINUTES_PER_GAME_DAY)+MINUTES_PER_GAME_DAY)%MINUTES_PER_GAME_DAY;
  const nextBoundary=MARKET_SHIFT_START_MINUTES.find(value=>value>minute)??MARKET_SHIFT_START_MINUTES[0]+MINUTES_PER_GAME_DAY;

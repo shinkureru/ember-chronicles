@@ -43,7 +43,7 @@ describe('v0.8.30 user correction: all three scenes belong to 防毒面具',()=>
   expect(after.bag.notes).toBeUndefined();
   expect(after.warehouse.notes).toBe(4);
   expect(s).toEqual(previous);
-  expect(read('src/app/GameContext.tsx')).toContain('WORLD_TICK_GAME_MINUTES=5');
+  expect(read('src/app/GameContext.tsx')).toContain('REALTIME_CLOCK_REFRESH_MS');
  });
 });
 describe('v0.8.30 frame-specific lighting / welding',()=>{

@@ -3,36 +3,35 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { gameReducer } from '../src/game/engine/resolve';
 import { makeInitialState } from '../src/game/state/initial';
-import { WORLD_TICK_GAME_MINUTES, WORLD_TICK_REAL_MS, COUNTER_PHASE_MS } from '../src/app/GameContext';
+import { COUNTER_PHASE_MS } from '../src/app/GameContext';
 import { getScheduledVendorId } from '../src/game/data/marketSchedule';
+import {getTaipeiClock} from '../src/game/engine/taipeiClock';
 import { ITEMS } from '../src/game/data/items';
 import PickupFly from '../src/components/PickupFly';
 
-describe('v1.3: continuous world clock',()=>{
- it('moves exactly five game minutes every ten seconds',()=>{
-  expect(WORLD_TICK_REAL_MS).toBe(10000);
-  expect(WORLD_TICK_GAME_MINUTES).toBe(5);
+describe('v0.8.33: live Taipei calendar replaces accelerated world time',()=>{
+ it('syncs to a supplied actual UTC timestamp without changing player resources',()=>{
   const before=makeInitialState('journalist');
-  const after=gameReducer(before,{type:'WORLD_CLOCK_TICK'});
-  expect(after.world.minute).toBe(before.world.minute+5);
-  expect(after.world.day).toBe(before.world.day);
-  expect(after.mode).toBe(before.mode);
+  const now=Date.parse('2026-11-14T02:59:00Z');
+  const after=gameReducer(before,{type:'WORLD_CLOCK_SYNC',nowMs:now});
+  expect(after.world).toMatchObject(getTaipeiClock(now));
+  expect(after.player).toEqual(before.player);
+  expect(after.economy).toEqual(before.economy);
  });
- it('advances the world date and rotates merchants at the proper phase boundary',()=>{
-  const before=makeInitialState('journalist');
-  before.world.minute=17*60+55;
-  const after=gameReducer(before,{type:'WORLD_CLOCK_TICK'});
+ it('rolls merchant shifts and Taipei midnight at their exact real-world boundaries',()=>{
+  const before=gameReducer(makeInitialState('journalist'),{type:'WORLD_CLOCK_SYNC',nowMs:Date.parse('2026-11-14T09:59:59Z')});
+  const after=gameReducer(before,{type:'WORLD_CLOCK_SYNC',nowMs:Date.parse('2026-11-14T10:00:00Z')});
   expect(getScheduledVendorId(before.world.minute)).toBe('broker');
   expect(getScheduledVendorId(after.world.minute)).toBe('runner');
-  const midnight=makeInitialState('journalist');midnight.world.minute=23*60+55;midnight.world.day=7;
-  const next=gameReducer(midnight,{type:'WORLD_CLOCK_TICK'});
-  expect(next.world.minute).toBe(0);
-  expect(next.world.day).toBe(8);
+  const midnight=gameReducer(before,{type:'WORLD_CLOCK_SYNC',nowMs:Date.parse('2026-11-13T16:00:00Z')});
+  expect(midnight.world.minute).toBe(0);
+  expect(midnight.world.day).toBe(getTaipeiClock(Date.parse('2026-11-13T16:00:00Z')).day);
  });
- it('does not run during a mission-result cinematic',()=>{
-  const s=makeInitialState('journalist');s.mode='result';
-  const after=gameReducer(s,{type:'WORLD_CLOCK_TICK'});
-  expect(after).toBe(s);
+ it('keeps result screens clock-aware while leaving their result unchanged',()=>{
+  const before=makeInitialState('journalist');before.mode='result';before.outcome='defeat';
+  const after=gameReducer(before,{type:'WORLD_CLOCK_SYNC',nowMs:Date.parse('2026-11-14T08:00:00Z')});
+  expect(after.mode).toBe('result');
+  expect(after.outcome).toBe('defeat');
  });
 });
 describe('v1.3: anti-spam enemy counter',()=>{

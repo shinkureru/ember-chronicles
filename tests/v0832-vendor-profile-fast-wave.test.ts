@@ -121,9 +121,9 @@ describe('v0.8.32 twice-faster regional waves with half bounce',()=>{
   expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0832-market-vendor-profile";$/);
  });
  it('keeps clocks and hunger untouched, with only this minor version updated',()=>{
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.32');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.32');
-  expect(read('src/app/GameContext.tsx')).toContain('WORLD_TICK_GAME_MINUTES=5');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.33');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.33');
+  expect(read('src/app/GameContext.tsx')).toContain('REALTIME_CLOCK_REFRESH_MS');
   expect(read('src/game/engine/consumables.ts')).toContain('p.hunger-20');
  });
 });

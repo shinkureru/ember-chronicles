@@ -1,3 +1,4 @@
+import {taipeiDate} from '../../game/engine/taipeiClock';
 import { useState } from 'react';
 import {BedDouble,ChevronRight,ClipboardList,Clock3,Coins,Droplets,HeartPulse,Target,UtensilsCrossed,Wine,Wrench} from 'lucide-react';
 import { useGame } from '../../app/GameContext';
@@ -42,7 +43,7 @@ export default function TownPage(){
    <span className="eyebrow">CITY SAFEHOUSE / EIGHT FACILITIES</span>
    <h1>舊街避難所</h1>
    <p>「城裡的人還在勉強生活。每扇門後面，都有另一種交易或代價。」</p>
-   <div className="town-v15__status"><span><Clock3 size={13}/> 第 {s.world.day} 日 · {phase} {worldClock(s.world.minute)}</span><strong><Coins size={15}/> {s.economy.coins} 舊幣</strong></div>
+   <div className="town-v15__status"><span><Clock3 size={13}/> 台北 {taipeiDate(s.world.day)} · {phase} {worldClock(s.world.minute)}</span><strong><Coins size={15}/> {s.economy.coins} 舊幣</strong></div>
   </header>
   <TownVitalStatus state={s}/>
   <section className="town-v15__facilities" aria-label="選擇城鎮設施">

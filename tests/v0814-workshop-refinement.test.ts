@@ -66,7 +66,7 @@ describe('v0.8.14 workshop compact selector redesign',()=>{
   expect(jsx).toContain('onClickCapture={list.onClickCapture}');
  });
  it('preserves repair, upgrade, durability, and current versus restored defense',()=>{
-  const s=makeInitialState('journalist');
+  const s=makeInitialState('journalist');s.world.minute=16*60;
   s.equipment.body='vest';
   s.town!.armorHits!.vest=5;
   s.town!.wear.vest=65;

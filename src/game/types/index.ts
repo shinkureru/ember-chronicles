@@ -74,7 +74,7 @@ export interface GameState {
   mode: Mode;
   profession: ProfessionId | null;
   player: { health: number; maxHealth: number; stamina: number; maxStamina: number; courage: number; hunger: number; fatigue: number; temperature: number; resource: number; maxResource: number; attributes: Attributes };
-  world: { minute: number; day: number; weather: 'clear' | 'rain' };
+  world: { minute: number; day: number; weather: 'clear' | 'rain'; clockBasis?:'taipei-realtime' };
   town?:TownProgress;
   conditions?:SurvivorConditions;
   npc: NpcState;

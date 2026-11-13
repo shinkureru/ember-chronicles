@@ -37,6 +37,7 @@ describe('v1.5: slow peaceful boss resolution',()=>{
  });
 });
 describe('v1.5: town facilities are actually functional',()=>{
+ const townState=()=>{const s=makeInitialState('journalist');s.world.minute=16*60;return s};
  it('provides eight unique venues and business hours including overnight tavern',()=>{
   expect(TOWN_FACILITIES).toHaveLength(8);
   expect(new Set(TOWN_FACILITIES.map(f=>f.id)).size).toBe(8);
@@ -45,18 +46,18 @@ describe('v1.5: town facilities are actually functional',()=>{
   expect(isTownOpen('tavern',1*60)).toBe(true);
   expect(isTownOpen('tavern',9*60)).toBe(false);
  });
- it('changes real player stats, currency and in-game time',()=>{
-  let s=makeInitialState('journalist');s.player.health=3;s.player.fatigue=45;s.player.stamina=8;
+ it('changes real player stats and currency without fast-forwarding the Taipei clock',()=>{
+  let s=townState();s.player.health=3;s.player.fatigue=45;s.player.stamina=8;
   const before=s.economy.coins;
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'rest_cot'});
   expect(s.player.health).toBe(5);expect(s.player.stamina).toBe(10);
   expect(s.player.fatigue).toBe(23);
   expect(s.economy.coins).toBe(before-15);
-  expect(s.world.minute).toBe(16*60+20+120);
+  expect(s.world.minute).toBe(16*60);
   expect(s.town?.visits.inn).toBe(1);
  });
  it('medical treatment actually resolves wounds and requires a condition to perform',()=>{
-  let s=makeInitialState('journalist');s.player.health=2;s.conditions!.wounds=3;
+  let s=townState();s.player.health=2;s.conditions!.wounds=3;
   expect(getTownServiceLock(s,'clinic_wounds')).toBeNull();
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'clinic_wounds'});
   expect(s.conditions?.wounds).toBe(1);expect(s.player.health).toBe(6);
@@ -65,21 +66,21 @@ describe('v1.5: town facilities are actually functional',()=>{
   expect(getTownServiceLock(s,'clinic_wounds')).not.toBeNull();
  });
  it('one permanent attribute gain per in-game day, no repeat spam, chosen attribute only',()=>{
-  let s=makeInitialState('journalist');
+  let s=townState();
   const before=s.player.attributes.observation;
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'train',attribute:'observation'});
   expect(s.player.attributes.observation).toBe(before+1);
   expect(s.player.attributes.persuasion).toBe(0);
-  expect(s.town?.lastTrainingDay).toBe(1);
+  expect(s.town?.lastTrainingDay).toBe(s.world.day);
   const same=s;
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'train',attribute:'persuasion'});
   expect(s).toBe(same);
-  s={...s,world:{...s.world,day:2,minute:16*60}};
+  s={...s,world:{...s.world,day:s.world.day+1,minute:16*60}};
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'train',attribute:'persuasion'});
   expect(s.player.attributes.persuasion).toBe(1);
  });
  it('workshop requires materials and applies measurable armor bonus',()=>{
-  let s=makeInitialState('journalist');s.bag.cap=1;s.bag.tape=1;
+  let s=townState();s.bag.cap=1;s.bag.tape=1;
   s=gameReducer(s,{type:'EQUIP_ITEM',slot:'head',itemId:'cap'});
   const defense=getEquippedDefense(s);expect(defense).toBe(2);
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'workshop_upgrade',itemId:'cap'});
@@ -92,7 +93,7 @@ describe('v1.5: town facilities are actually functional',()=>{
   expect(s.town?.wear.cap).toBe(100);
  });
  it('side quests have genuine conditions, one-time rewards, inventory transfer and permanence',()=>{
-  let s=makeInitialState('journalist');expect(TOWN_QUESTS).toHaveLength(5);
+  let s=townState();expect(TOWN_QUESTS).toHaveLength(5);
   s=gameReducer(s,{type:'TOWN_ACCEPT_QUEST',questId:'emergency_water'});
   expect(s.town?.quests.emergency_water).toBe('accepted');
   expect(townQuestReady(s,TOWN_QUESTS.find(q=>q.id==='emergency_water')!)).toBe(false);
@@ -108,7 +109,7 @@ describe('v1.5: town facilities are actually functional',()=>{
   expect(gameReducer(s,{type:'TOWN_COMPLETE_QUEST',questId:'emergency_water'})).toBe(s);
  });
  it('bath grants a time-limited persuasion buff; rumor collection has a daily cap',()=>{
-  let s=makeInitialState('journalist');s.mode='adventure';s.sceneId='gate';
+  let s=townState();s.mode='adventure';s.sceneId='gate';
   const choice=SCENES.gate.actions[0]!;
   const initial=calculateActionPreview(s,choice,null).chance;
   s.mode='home';s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'bath'});

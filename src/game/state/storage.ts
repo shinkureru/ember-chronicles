@@ -4,6 +4,7 @@ import { LOOT_LIMITS } from '../engine/lootLimits';
 import { makeInitialProgression } from '../engine/progression';
 import {armorHitsFromWear,ARMOR_ITEMS} from '../engine/armor';
 import type { GameState } from '../types';
+import {getTaipeiClock} from '../engine/taipeiClock';
 const KEY='ember-chronicles-prototype-v1';
 export const loadGame=():GameState=>{
   try{
@@ -14,6 +15,8 @@ export const loadGame=():GameState=>{
     const state=parsed as Partial<GameState>;
     if(state.version!==1||!state.player||!state.world||!state.npc||!state.bag||!state.warehouse||!state.ownedCards)return makeInitialState();
     const old=state as GameState;
+    const legacyClock=old.world.clockBasis!=='taipei-realtime';
+    const localClock=getTaipeiClock();
     const attackDeck=Array.isArray(old.attackDeck)?old.attackDeck:[];
     const ownedCards={...old.ownedCards};
     // One-time migration: existing v0.6 saves retain achievements, gain starter attack cards.
@@ -58,7 +61,12 @@ export const loadGame=():GameState=>{
        ...(legacyHealth?{maxHealth:newMax,health:newHealth}:{}),
        ...(legacyGrowth?{maxStamina:convertedStaminaMax,stamina:convertedStamina,attributes:convertedAttributes}:{}),
       },
-      town:{visits:{},lastTrainingDay:0,lastRumorDay:0,lastCanteenTalkDay:0,socialPoiseUntil:0,upgrades:{},wear:{},quests:{},...old.town,armorHits,perfectRepairs:old.town?.perfectRepairs??{}},
+      world:{...old.world,...localClock,clockBasis:'taipei-realtime'},
+      // Migrate synthetic-day quotas once, preserving permanent progress and currency.
+      town:{visits:{},lastTrainingDay:0,lastRumorDay:0,lastCanteenTalkDay:0,socialPoiseUntil:0,upgrades:{},wear:{},quests:{},...old.town,armorHits,perfectRepairs:old.town?.perfectRepairs??{},
+       ...(legacyClock?{lastRestDay:0,restsToday:0,lastTrainingDay:0,lastRumorDay:0,lastCanteenTalkDay:0,socialPoiseUntil:0,
+        ...(old.town?.clinic?{clinic:{...old.town.clinic,acceptedDay:0,completedDay:0,purchases:{}}}:{})}:{}),
+      },
       conditions:{wounds:0,infection:0,poisoning:0,illness:0,...old.conditions},
       insightByEnemy:old.insightByEnemy??(old.insightBonus>0?{[old.stageId===2?'alley_watchman':'warehouse_guard']:old.insightBonus}:{}),insightBonus:0,
       stageId:old.stageId??1,alleyNpc:old.alleyNpc??{hostility:18,trust:12,met:0,adaptations:{},remembers:[],stolenGear:[]},attackDeck,enemy:old.enemy??makeInitialEnemy(old.stageId??1),ownedCards,warehouse,lootSearches,

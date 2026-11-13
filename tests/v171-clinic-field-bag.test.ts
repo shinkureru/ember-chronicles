@@ -28,7 +28,7 @@ describe('v1.7.1 underground clinic and in-mission bag',()=>{
   expect(getTownServiceLock(s,'clinic_general')).toContain('已完全恢復');
  });
  it('accepts and finishes one real rotating daily quest with earned favor',()=>{
-  let s=makeInitialState('journalist');
+  let s=makeInitialState('journalist');s.world.day=1;
   expect(getClinicQuest(s).id).toBe('water');
   const initial=s.economy.coins;
   s=gameReducer(s,{type:'CLINIC_ACCEPT_DAILY'});
@@ -46,7 +46,7 @@ describe('v1.7.1 underground clinic and in-mission bag',()=>{
   expect(clinicQuestBlock(s,false)).toBeNull();
  });
  it('sells exclusive medical supplies, applies favor discounts and daily limits',()=>{
-  let s=makeInitialState('journalist');
+  let s=makeInitialState('journalist');s.world.day=1;
   expect(CLINIC_SUPPLIES).toHaveLength(4);
   expect(clinicBuyBlock(s,'antiseptic_kit')).toBeNull();
   const firstPrice=clinicUnitPrice(s,'sterile_bandage');
@@ -88,7 +88,7 @@ describe('v1.7.1 underground clinic and in-mission bag',()=>{
   let next=gameReducer(s,{type:'EQUIP_ITEM',slot:'body',itemId:'vest'});
   expect(next.equipment.body).toBe('vest');
   expect(getEquippedDefense(next)).toBeGreaterThan(before);
-  expect(next.world.minute).toBe(s.world.minute+2);
+  expect(next.world).toEqual(s.world);
   s.warehouse.cap=1;
   expect(gameReducer(s,{type:'EQUIP_ITEM',slot:'head',itemId:'cap'})).toBe(s);
   next.enemyCounter={id:1,itemId:'radio',damage:4,hit:true,phase:'waiting'};

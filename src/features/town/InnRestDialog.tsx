@@ -36,7 +36,7 @@ export default function InnRestDialog({serviceId,onClose,onConfirm}:{serviceId:R
     {BED_OPTIONS.map(id=>{
      const bed=TOWN_SERVICES.find(item=>item.id===id)!;
      return <button key={id} type="button" aria-pressed={id===selected} onClick={()=>setSelected(id)}>
-      <strong>{bed.name}</strong><small>{bed.coins} 舊幣 · {bed.minutes} 分鐘</small>
+      <strong>{bed.name}</strong><small>{bed.coins} 舊幣 · 不快轉時間</small>
      </button>;
     })}
    </div>
@@ -59,7 +59,7 @@ export default function InnRestDialog({serviceId,onClose,onConfirm}:{serviceId:R
    </div>
    </div>
    <div className="inn-rest-dialog__checkout" role="status" aria-live="polite" aria-atomic="true">
-    <div className="inn-rest-cost"><span><Coins size={14}/>{service.coins} 舊幣</span><span><Clock3 size={14}/>{service.minutes} 分鐘</span><span>今日剩餘 {remainingDailyRest(s)}/2 次</span></div>
+    <div className="inn-rest-cost"><span><Coins size={14}/>{service.coins} 舊幣</span><span><Clock3 size={14}/>不快轉時間</span><span>今日剩餘 {remainingDailyRest(s)}/2 次</span></div>
     <p className={`inn-rest-blocked ${blocked?'is-blocked':'is-clear'}`}>{blocked??' '}</p>
    </div>
    <footer><button type="button" onClick={onClose}>暫時不休息</button><button type="button" disabled={!!blocked} onClick={()=>onConfirm(selected)}>確認休息</button></footer>

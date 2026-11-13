@@ -1,0 +1,288 @@
+/* v0.8.14 — Workshop layout refinement (new redesign cycle, batch 1/8).
+ * The four compact selector tiles are a distinct fixed region.
+ * The inspection region owns the ONLY vertical overflow if truly necessary.
+ * This file is imported last, after legacy v0.8.4 and v0.8.11 rules.
+ */
+.workshop-overlay .workshop-dialog{
+ box-sizing:border-box;
+ width:min(96vw,620px)!important;
+ height:min(92dvh,670px)!important;
+ max-height:calc(100dvh - 12px)!important;
+ min-height:0!important;
+ display:flex!important;
+ flex-direction:column;
+ overflow:hidden!important;
+}
+.workshop-dialog > .workshop-dialog__header{
+ box-sizing:border-box;
+ flex:0 0 auto;
+ min-height:48px;
+ padding:7px 12px;
+ gap:9px;
+}
+.workshop-dialog__mark{width:33px;height:33px}
+.workshop-dialog__header h2{font-size:19px;line-height:1.25}
+.workshop-dialog__header > button{min-width:34px;min-height:34px}
+.workshop-dialog > .workshop-dialog__scene{
+ box-sizing:border-box;
+ flex:0 0 65px!important;
+ height:65px!important;
+ padding:6px 13px;
+}
+.workshop-dialog__scene .workshop-dialog__anvil svg{width:36px;height:36px}
+.workshop-dialog__scene strong{font-size:11px;line-height:1.35}
+.workshop-dialog__scene small{font-size:9px}
+.workshop-dialog__scene > div{max-width:79%}
+.workshop-dialog .workshop-dialog__selection{
+ box-sizing:border-box;
+ flex:0 0 auto;
+ width:100%;
+ min-width:0;
+ padding:7px 11px 8px;
+ border-bottom:1px solid #54484c;
+}
+.workshop-dialog .workshop-dialog__selection .workshop-dialog__intro{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:2px 9px;
+ margin-bottom:5px;
+ flex-wrap:wrap;
+ min-width:0;
+}
+.workshop-dialog .workshop-dialog__selection .workshop-dialog__intro span{
+ font-size:10px;
+ line-height:1.3;
+}
+.workshop-dialog .workshop-dialog__selection .workshop-dialog__intro small{
+ font-size:9px;
+ line-height:1.25;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog .workshop-dialog__selection .workshop-dialog__slots{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ grid-auto-rows:minmax(61px,auto);
+ gap:6px;
+ align-items:stretch;
+ margin:0;
+ min-width:0;
+}
+.workshop-dialog .workshop-dialog__selection .workshop-dialog__slots > .workshop-dialog__slot{
+ box-sizing:border-box;
+ display:flex;
+ flex-direction:column;
+ align-items:stretch;
+ justify-content:flex-start;
+ gap:2px;
+ min-width:0;
+ min-height:61px;
+ height:100%;
+ padding:5px 7px;
+ border-radius:7px;
+ overflow:hidden;
+ line-height:1.25;
+ text-align:left;
+}
+.workshop-dialog .workshop-dialog__selection .workshop-dialog__slot > span{
+ flex:none;
+ font-size:9px;
+ line-height:1.2;
+}
+.workshop-dialog .workshop-dialog__selection .workshop-dialog__slot > strong{
+ flex:none;
+ display:-webkit-box;
+ min-width:0;
+ min-height:1.3em;
+ max-height:2.6em;
+ -webkit-box-orient:vertical;
+ -webkit-line-clamp:2;
+ overflow:hidden;
+ font-size:11px;
+ font-weight:750;
+ line-height:1.3;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog .workshop-dialog__selection .workshop-dialog__slot > small{
+ flex:none;
+ display:block;
+ min-width:0;
+ min-height:1.2em;
+ max-height:2.4em;
+ overflow:hidden;
+ font-size:9px;
+ line-height:1.2;
+ overflow-wrap:anywhere;
+}
+/* The selection always has the same anchored position; reserve overflow for details. */
+.workshop-dialog .workshop-dialog__selection .workshop-dialog__slot:focus-visible{
+ outline:2px solid #e6c0b5;
+ outline-offset:-2px;
+}
+.workshop-dialog > .workshop-dialog__scroll{
+ box-sizing:border-box;
+ flex:1 1 0!important;
+ min-height:0!important;
+ height:auto!important;
+ padding:8px 11px 10px!important;
+ overflow-y:auto!important;
+ overflow-x:hidden!important;
+ overscroll-behavior-y:contain;
+ touch-action:pan-y;
+ scrollbar-width:none!important;
+}
+.workshop-dialog .workshop-dialog__inspection{
+ box-sizing:border-box;
+ display:flex;
+ flex-direction:column;
+ gap:7px;
+ padding:9px 10px;
+ min-width:0;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog .workshop-dialog__gear{
+ display:flex;
+ align-items:center;
+ gap:8px;
+ min-width:0;
+}
+.workshop-dialog .workshop-dialog__art{
+ width:41px;
+ height:41px;
+ border-radius:7px;
+}
+.workshop-dialog .workshop-dialog__art svg,
+.workshop-dialog .workshop-dialog__art > span{width:33px;height:33px;font-size:29px}
+.workshop-dialog .workshop-dialog__gear > div{min-width:0}
+.workshop-dialog .workshop-dialog__gear h3{
+ font-size:14px;
+ margin:1px 0;
+ line-height:1.35;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog .workshop-dialog__gear p{font-size:10px;line-height:1.4}
+.workshop-dialog .workshop-dialog__durability{gap:4px}
+.workshop-dialog .workshop-dialog__durability > div:first-child{font-size:10px}
+.workshop-dialog .workshop-dialog__track{height:7px}
+.workshop-dialog .workshop-dialog__durability > small{font-size:9px;line-height:1.35}
+.workshop-dialog .workshop-dialog__preview{
+ box-sizing:border-box;
+ gap:6px;
+ padding:6px 8px;
+ min-width:0;
+}
+.workshop-dialog .workshop-dialog__preview > div{min-width:0}
+.workshop-dialog .workshop-dialog__preview span{font-size:9px;line-height:1.3;overflow-wrap:anywhere}
+.workshop-dialog .workshop-dialog__preview strong{font-size:16px;line-height:1.2}
+.workshop-dialog .workshop-dialog__perfect{padding:5px 7px;font-size:10px;line-height:1.4}
+.workshop-dialog .workshop-dialog__actions{gap:7px}
+.workshop-dialog .workshop-dialog__actions button{
+ box-sizing:border-box;
+ min-width:0;
+ min-height:46px;
+ padding:6px 8px;
+ gap:6px;
+}
+.workshop-dialog .workshop-dialog__actions button > span{min-width:0;gap:2px}
+.workshop-dialog .workshop-dialog__actions button strong{font-size:11px;line-height:1.3;overflow-wrap:anywhere}
+.workshop-dialog .workshop-dialog__actions button small{
+ font-size:9px;
+ line-height:1.3;
+ flex-wrap:wrap;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog .workshop-dialog__lock{
+ font-size:10px;
+ line-height:1.35;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog .workshop-dialog__chance{
+ font-size:10px;
+ line-height:1.4!important;
+ padding:2px 0 0;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog .workshop-dialog__last{
+ margin-top:6px;
+ padding:6px 8px;
+ font-size:10px;
+ line-height:1.4;
+ overflow-wrap:anywhere;
+}
+/* Empty-state copy stays centered in the same detail viewport, not 340px
+ * of forced filler or an unrelated previous town event. */
+.workshop-dialog .workshop-dialog__empty{
+ box-sizing:border-box;
+ height:100%;
+ min-height:0;
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ align-items:center;
+ gap:6px;
+ padding:10px 12px;
+}
+.workshop-dialog .workshop-dialog__empty svg{width:24px;height:24px}
+.workshop-dialog .workshop-dialog__empty strong{font-size:12px;line-height:1.4}
+.workshop-dialog .workshop-dialog__empty p{
+ margin:0;
+ max-width:40ch;
+ font-size:10px;
+ line-height:1.5;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog > footer{
+ box-sizing:border-box;
+ flex:0 0 auto!important;
+ min-height:46px;
+ padding:6px 11px!important;
+}
+.workshop-dialog > footer button{
+ min-height:34px;
+ padding:6px 11px;
+ font-size:11px;
+}
+@media(max-width:639px){
+ .workshop-dialog .workshop-dialog__selection .workshop-dialog__slots{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-auto-rows:minmax(60px,auto);
+  gap:5px;
+ }
+ .workshop-dialog .workshop-dialog__selection .workshop-dialog__slots > .workshop-dialog__slot{
+  min-height:60px;
+  padding:5px 7px;
+ }
+}
+@media(max-width:380px){
+ .workshop-overlay .workshop-dialog{width:calc(100vw - 12px)!important}
+ .workshop-dialog .workshop-dialog__selection{padding:6px 8px 7px}
+ .workshop-dialog .workshop-dialog__selection .workshop-dialog__intro{gap:2px;margin-bottom:4px}
+ .workshop-dialog .workshop-dialog__selection .workshop-dialog__intro small{font-size:8px}
+ .workshop-dialog .workshop-dialog__selection .workshop-dialog__slots{gap:4px}
+ .workshop-dialog .workshop-dialog__selection .workshop-dialog__slots > .workshop-dialog__slot{
+  padding:4px 6px;
+ }
+ .workshop-dialog > .workshop-dialog__scroll{padding:6px 8px 8px!important}
+ .workshop-dialog .workshop-dialog__inspection{padding:7px;gap:6px}
+ .workshop-dialog .workshop-dialog__actions button{gap:4px;padding:6px 5px}
+}
+@media(max-height:700px){
+ .workshop-overlay .workshop-dialog{
+  height:calc(100dvh - 12px)!important;
+  max-height:calc(100dvh - 12px)!important;
+ }
+ .workshop-dialog > .workshop-dialog__header{min-height:43px;padding:5px 9px}
+ .workshop-dialog > .workshop-dialog__scene{flex-basis:48px!important;height:48px!important;padding:4px 9px}
+ .workshop-dialog .workshop-dialog__selection{padding-top:5px;padding-bottom:6px}
+ .workshop-dialog .workshop-dialog__selection .workshop-dialog__slots{grid-auto-rows:minmax(56px,auto)}
+ .workshop-dialog .workshop-dialog__selection .workshop-dialog__slots > .workshop-dialog__slot{min-height:56px;padding-top:4px;padding-bottom:4px}
+ .workshop-dialog > footer{min-height:42px;padding:4px 9px!important}
+}
+@media(max-height:520px){
+ .workshop-dialog > .workshop-dialog__scene{display:none!important}
+ .workshop-dialog .workshop-dialog__selection .workshop-dialog__intro small{display:none}
+ .workshop-dialog .workshop-dialog__selection{padding-top:4px;padding-bottom:4px}
+}
+@media(prefers-reduced-motion:reduce){
+ .workshop-dialog .workshop-dialog__slot{transition:none!important}
+}

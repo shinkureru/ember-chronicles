@@ -14,9 +14,11 @@ import ItemArt from '../../components/ItemArt';
 export default function WorkshopDialog({onClose}:{onClose:()=>void}){
  const {state:s,dispatch,pauseClock}=useGame();
  const [selected,setSelected]=useState<ArmorSlot>(()=>equippedArmorEntries(s)[0]?.slot??'body');
+ const [showNotice,setShowNotice]=useState(false);
  const list=useVerticalDragScroll();
  const selectSlot=(slot:ArmorSlot)=>{
   setSelected(slot);
+  setShowNotice(false);
   // Keep the current inspection in view rather than preserving an old part's scroll offset.
   if(list.scrollRef.current)list.scrollRef.current.scrollTop=0;
  };
@@ -45,6 +47,7 @@ export default function WorkshopDialog({onClose}:{onClose:()=>void}){
  const useService=(serviceId:'workshop_repair'|'workshop_upgrade')=>{
   if(!itemId||getTownServiceLock(s,serviceId,undefined,itemId))return;
   dispatch({type:'TOWN_SERVICE',serviceId,itemId});
+  setShowNotice(true);
   playCue(serviceId==='workshop_repair'?'searchCloth':'confirm');
  };
  return createPortal(<div className="workshop-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
@@ -70,7 +73,7 @@ export default function WorkshopDialog({onClose}:{onClose:()=>void}){
        className={`workshop-dialog__slot ${selected===slot?'is-selected':''} ${condition!=='intact'?'is-worn':''}`}>
        <span>{ARMOR_SLOT_NAMES[slot]}</span>
        <strong>{id?ITEMS[id]?.name??id:'未裝備'}</strong>
-       <small>{id?`${ARMOR_DAMAGE_STAGES[condition]} · ${count}/10 次`:'沒有可修理的防具'}</small>
+       <small>{id?`${ARMOR_DAMAGE_STAGES[condition]} · ${count}/10 次`:'空欄位'}</small>
       </button>;
      })}
     </div>
@@ -113,7 +116,7 @@ export default function WorkshopDialog({onClose}:{onClose:()=>void}){
      <strong>{ARMOR_SLOT_NAMES[selected]}目前沒有防具</strong>
      <p>先到人物檔案穿戴防具。護臂、護膝可從現場搜刮或黑市修理師取得。</p>
     </div>}
-    {s.lastEvent&&<p className="workshop-dialog__last" role="status">{s.lastEvent}</p>}
+    {showNotice&&s.lastEvent&&<p className="workshop-dialog__last" role="status">{s.lastEvent}</p>}
    </div>
    <footer><button type="button" onClick={onClose}>返回避難所</button></footer>
   </section>

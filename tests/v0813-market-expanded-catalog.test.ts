@@ -57,7 +57,7 @@ describe('v0.8.13 expanded black market catalog',()=>{
    'ReturnMainLink','GameUtilities',
   ])expect(market).toContain(token);
   expect(read('src/styles/main.scss')).toContain('@import "v0813-market-expanded-catalog"');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.13');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
  it('does not reintroduce random product card rotations or blocking scroll overlays',()=>{
   expect(market).not.toContain('--offer-y');

@@ -56,49 +56,37 @@ describe('v0.8.27 smaller centered switch without the visible word',()=>{
  });
 });
 
-describe('v0.8.27 staggered PER CARD wave instead of whole panel bounce',()=>{
- it('adds stable row-major index with a bounded CSS animation delay on each card',()=>{
+describe('v0.8.27 legacy wave safely superseded by v0.8.31',()=>{
+ it('keeps the earlier table animation disabled, while the actual UI uses the new outer card slots',()=>{
   expect(page).toContain('filteredOffers.map((offer,index)=>');
-  expect(page).toContain('market-v0827__wave-item');
-  expect(page).toContain('style={{animationDelay:`${Math.min(index,28)*66}ms`}}');
-  const delays=Array.from({length:12},(_,i)=>Math.min(i,28)*66);
-  expect(delays).toEqual([0,66,132,198,264,330,396,462,528,594,660,726]);
-  expect(Math.min(100,28)*66).toBe(1848);
+  expect(page).toContain('market-v0831__wave-slot');
+  expect(page).not.toContain('market-v0827__wave-item');
+  expect(page).not.toContain('Math.min(index,28)*66');
   expect(page).toContain('market-v0825__catalog--${mode}');
   expect(page).toContain('setSwitchCount(n=>n+1)');
   expect(page).toContain('onPointerDown={offersScroll.onPointerDown}');
   expect(page).toContain('onClickCapture={offersScroll.onClickCapture}');
+  expect(polish).toContain('animation:none!important');
+  expect(polish).toContain('@keyframes market-v0827-item-buy');
+  expect(oldMotion).toContain('@keyframes market-v0825-catalog-buy');
  });
- it('overrides whole panel animation and animates only item descendants',()=>{
-  for(const token of [
-   '.market-v12__table.market-v0825__catalog--buy,',
-   '.market-v12__table.market-v0825__catalog--sell{',
-   'animation:none!important','transform:none!important','opacity:1!important',
-   '.market-v12__offers .market-v0827__wave-item',
-   'animation-name:market-v0827-item-buy',
-   'animation-name:market-v0827-item-sell',
-   'animation-duration:.58s',
-   '@keyframes market-v0827-item-buy',
-   '@keyframes market-v0827-item-sell',
-   'translate:0 -9px','translate:0 2px',
-   'scroll-padding-top:12px',
-   ':focus-visible',
-  ])expect(polish).toContain(token);
-  expect(oldMotion).toContain('@keyframes market-v0825-catalog-buy'); // original overridden
-  expect(read('src/styles/_v0822-market-product-tiers.scss')).toContain('transform:none!important');
-  // Individual translate & scale are not the blocked transform property.
-  expect(polish).toContain('scale:1.016');
-  expect(polish).not.toContain('@keyframes market-v0827-item-buy{\n 0%{transform:');
+ it('avoids legacy button-level !important transform/translate/scale by animating the wrapper',()=>{
+  const grid=read('src/styles/_v081-market-grid.scss');
+  const diagonal=read('src/styles/_v0831-market-diagonal-wave.scss');
+  expect(grid).toContain('transform:none!important;rotate:0deg!important;translate:none!important');
+  expect(grid).toContain('scale:1!important');
+  expect(diagonal).toContain('> .market-v0831__wave-slot');
+  expect(diagonal).toContain('> .market-v0831__wave-slot > .market-v12__offer.market-v0822__product');
+  expect(diagonal).toContain('@keyframes market-v0831-diagonal-rise');
+  expect(diagonal).toContain('translate3d(0,-4px,0)');
  });
- it('honors reduced motion on the cards, speech and lamp, not the underlying trade UI',()=>{
+ it('retains reduced-motion support for the updated wave as well as prior speech and lighting',()=>{
   expect(polish).toContain('@media(prefers-reduced-motion:reduce)');
-  for(const token of [
-   'animation:none!important',
-   'translate:none!important',
-   'scale:1!important',
-   '.market-v0827__fluorescent-bloom',
-   '.market-v0825__speech-text',
-  ])expect(polish).toContain(token);
+  const diagonal=read('src/styles/_v0831-market-diagonal-wave.scss');
+  expect(diagonal).toContain('@media(prefers-reduced-motion:reduce)');
+  expect(diagonal).toContain('animation:none!important');
+  expect(polish).toContain('.market-v0827__fluorescent-bloom');
+  expect(polish).toContain('.market-v0825__speech-text');
  });
 });
 

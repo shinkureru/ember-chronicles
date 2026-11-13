@@ -1,5 +1,19 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-14｜第四輪第4批 v0.8.31：黑市商品卡真正斜向區域波浪（本 PR 待 Merge）
+
+- **GitHub 基準**：`main` `b6074719df78a3cf89f1051752709f89921d87a6`，PR #56 v0.8.30 已 Merge、Pages success、open PR 0。本批唯一分支 `ui/v0.8.31-market-diagonal-card-wave`，版本 package/lock `0.8.31`。上一批三張圖全屬防毒面具的正式勘誤照舊。
+- **找到真正根因**：`_v081-market-grid.scss` 對所有商品 button 強制 `transform:none!important;rotate:0deg!important;translate:none!important;scale:1!important`。v0827 直接在卡片上的 `translate/scale` 動畫會被覆蓋，因此使用者實際只看到部分商品發生動畫。不能再用 1D `index×66ms` 或只改動畫名稱解決。
+- **新實作**：`BlackMarketPage.tsx` 將每個原 button 裝進 `market-v0831__wave-slot` 視覺網格容器，商品 button 仍完整保留 2/3 欄、原高寬、四階底色/價格/持有與剩餘數量、滑鼠拖曳/觸控/鍵盤焦點/交易 modal。新外層獨立 transform，舊子按鈕 !important 再也無法阻擋波浪。每個 slot key 含 `waveEpoch`，快速連續模式切換仍會重新掛載重播；只是 UI 沒有 reducer 或存檔變更。
+- **斜對角波前**：`marketDiagonalWave.ts` 純函式以實際欄數計算 `phase=Math.floor(index/columns)+(index%columns)`，同一對角線的卡片**同時起伏**。一般3欄、寬<=375px為2欄，距離82ms，動作720ms，約上浮4px和微小縮放1.006，再緩緩落下；大量重疊時間窗形成由左上擴散到右下的**區域波浪**，不是逐一跳動。phase上限12避免超長卡片列表產生不可預期動畫延遲。外框/標題/篩選器和整張滾動表格不移動。
+- **觸發管控**：只有 `chooseMode` 真正買/賣變更才 `setWaveActive(true)` + epoch +1；切分類/更多篩選、輪班換商人、確認成交會清掉 waveActive；`MARKET_WAVE_WINDOW_MS` 一次性的 `setTimeout` 在所有斜向波前結束後清除，effect cleanup 防止快速來回或卸載後 timer 殘留。UI 首次掛載不播放、永遠不影響購買/販賣/物品/世界時間。減少動效完全停用。
+- **樣式**：`_v0831-market-diagonal-wave.scss` 最後 import，所有選擇器集中在 market-v13 卡片 wrapper；3欄取 CSS `--market-wave-delay-three`、<=375px 2欄取 `--market-wave-delay-two`；保留舊 v0827 歷史 CSS 但實際頁面已不使用 `market-v0827__wave-item`，不對舊歷史樣式做廣泛破壞。
+- **驗證**：新 `tests/v0831-market-diagonal-wave.test.ts` 檢驗 0/1/2/3/7/20 個卡片、3/2欄各同一斜線同波/相鄰重疊、phase/延遲上限、wrapper 避開 `!important`、重播與快速切換/停止/cleanup、原商品 4階/原交易 reducer/背包vs倉庫、reduced motion/窄高/滑鼠與觸控。修正 `tests/v0827-market-final-polish.test.ts` 之前已過時的 UI 舊動畫結構斷言，但保留其它功能驗證。QA `docs/V0831_MARKET_DIAGONAL_WAVE_QA.md`，路線圖 `docs/REALTIME_HUNGER_REDESIGN_ROADMAP.md` 追加第四批狀態。
+- **只做第四批**：此分支不調整 v0.8.30 三張場景和燈光、商人身分/庫存、世界每10秒+5分鐘、食物/飢餓。CI `npm run build`+`npm test` 全綠後提交一個 PR，**不自行 Merge**。使用者 Merge 並通知後才第五批 v0.8.32 商人 metadata 統整；v0.8.33 台灣台北真實時間、第七 v0.8.34 飢餓代價、第八 v0.8.35 完整回歸仍等待。
+
+---
+
+
 ## 2026-11-14｜第四輪第3批 v0.8.30：防毒面具三張場景、吊燈/日光燈及焊花（本 PR 待 Merge）
 
 - **開工狀態**：main `f2d62632b7461fe2cdc51b70156090ae16d5f6d0`、PR #55 v0.8.29 已 Merge、Pages success、open PR=0。唯一分支 `ui/v0.8.30-scavenger-three-scenes-lighting`。前批 handoff 對工作台圖屬「灰手羅恩」的說法已經使用者在2026-11-14明確更正，**當作歷史錯誤，不可恢復**。

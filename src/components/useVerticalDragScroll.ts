@@ -12,7 +12,7 @@ export const useVerticalDragScroll=()=>{
  const scrollRef=useRef<HTMLDivElement>(null);
  const drag=useRef({active:false,startY:0,initialTop:0,moved:false,pointerId:-1});
  const suppressClick=useRef(false);
- const resetTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
+ const resetTimer=useRef<number|null>(null);
  const previousUserSelect=useRef<string|null>(null);
 
  const restoreSelection=()=>{

@@ -42,3 +42,9 @@
 - **權威更正**：原肖像、翻找工作台、焊接工作台全部都是「防毒面具 scavenger」，先前 v0828/v0829 說圖2/3是灰手羅恩的判斷錯誤。正確三圖依序 `black-market-merchant.webp`、`black-market-scavenger-rummage.webp`、`black-market-scavenger-weld.webp`。灰手羅恩 mechanic 現在沒有圖片，其餘 broker/medic/runner 也沒有；未來每人都會有專屬三圖。
 - 本批依圖片本身決定紫眼/無紫眼/電焊特效，每張圖片與專屬吊燈、日光燈局部光暈為一組 SVG 同步轉場。只有第三張有非規律焊花，減少動效時禁止火花。詳見 `docs/V0830_SCAVENGER_LIGHTING_QA.md`。
 - 後續排程維持：v0.8.31 商品斜對角**區域波浪**；v0.8.32 商人資料；v0.8.33 Asia/Taipei 現實世界時間；v0.8.34 飢餓代價；v0.8.35 整合測試。所有批次需使用者自行 Merge，才可啟動下一批。
+
+## v0.8.31 第4批：黑市商品改真正斜向區域波浪（2026-11-14）
+- 已確認舊 `v0827` 商品卡直接使用 `translate/scale` 無法可靠播放，因 `_v081-market-grid.scss` 對 card button 施加了 `transform/translate/scale:none!important`。
+- 第四批改成**外層視覺 slot 動畫、內層原 button 保持不動與完整交易功能**。phase=row+col，3欄/320～375px的2欄各有對應預算；82ms斜向區域傳遞、720ms重疊起伏、4px最高上浮、低對比柔和緩入緩出，至多 phase12，不再是index每張逐一排隊跳。
+- 只有真正買賣模式變更時才播；篩選/成交/輪班取消動畫，快速模式來回透過 epoch 和 cleanup 重新觸發，手機正常手勢捲動和商品卡詳情維持。reduced-motion 立即停用所有波浪。
+- 新 `docs/V0831_MARKET_DIAGONAL_WAVE_QA.md`、新專測 `tests/v0831-market-diagonal-wave.test.ts`。後續批次不變：第5批 v0.8.32 五位商人 metadata、第6批 v0.8.33 `Asia/Taipei` 時鐘、第7批 v0.8.34 飢餓代價、第8批 v0.8.35 收尾。每批只一個 PR，使用者自行 Merge 並通知。

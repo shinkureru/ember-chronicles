@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Coins, HeartHandshake, X, ArrowRight, Clock3, SlidersHorizontal, Handshake, Eye, LockKeyhole } from 'lucide-react';
 import { useGame } from '../../app/GameContext';
 import { CARDS } from '../../game/data/cards';
@@ -13,6 +13,7 @@ import MarketIdleSpeech from './MarketIdleSpeech';
 import MarketShiftCountdown from './MarketShiftCountdown';
 import MarketLoadingScreen from './MarketLoadingScreen';
 import {useMarketSceneLoad} from './useMarketSceneLoad';
+import {marketWaveDelay,MARKET_WAVE_WINDOW_MS} from './marketDiagonalWave';
 import MarketTradeSwitchIcon from './MarketTradeSwitchIcon';
 import {getBackpackMarketItemIds,doesVendorAcceptMarketItem} from './marketSellInventory';
 import ItemArt from '../../components/ItemArt';
@@ -39,6 +40,8 @@ export default function BlackMarketPage(){
  const [more,setMore]=useState(false);
  const [selectedId,setSelectedId]=useState<string|null>(null);
  const [switchCount,setSwitchCount]=useState(0);
+ const [waveEpoch,setWaveEpoch]=useState(0);
+ const [waveActive,setWaveActive]=useState(false);
  const vendor=getScheduledVendor(s.world.minute);
  const {status:sceneLoadStatus,retry:retrySceneLoad}=useMarketSceneLoad(vendor.visual.sceneAssets);
  const offersScroll=useVerticalDragScroll();
@@ -92,16 +95,22 @@ export default function BlackMarketPage(){
  // A new shift means a different inventory and purchasing policy.
  // Clear stale filters so the incoming vendor's catalog is visible at once.
  useEffect(()=>{
-  setKind('all');setNarrow('any');setMore(false);
+  setKind('all');setNarrow('any');setMore(false);setWaveActive(false);
   offersScroll.scrollRef.current?.scrollTo({top:0});
  },[vendor.id]);
+ // Only real mode changes trigger a wave. Reset the timer on rapid toggles.
+ useEffect(()=>{
+  if(!waveActive)return;
+  const timeout=window.setTimeout(()=>setWaveActive(false),MARKET_WAVE_WINDOW_MS);
+  return ()=>window.clearTimeout(timeout);
+ },[waveActive,waveEpoch]);
  useEffect(()=>{
   if(!selected)return;
   const close=(event:KeyboardEvent)=>{if(event.key==='Escape')setSelectedId(null);};
   window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close);
  },[selected]);
  const chooseMode=(value:Mode)=>{
-  if(mode!==value){setMode(value);setSwitchCount(n=>n+1);setKind('all');setNarrow('any');setMore(false);setSelectedId(null);offersScroll.scrollRef.current?.scrollTo({top:0});}
+  if(mode!==value){setMode(value);setSwitchCount(n=>n+1);setWaveEpoch(n=>n+1);setWaveActive(true);setKind('all');setNarrow('any');setMore(false);setSelectedId(null);offersScroll.scrollRef.current?.scrollTo({top:0});}
   playCue('open');
  };
  const trade=(offer:Offer)=>{
@@ -113,6 +122,7 @@ export default function BlackMarketPage(){
    {type:'MARKET_BUY_ITEM',vendorId:vendor.id,itemId:offer.id}:
    {type:'MARKET_SELL_ITEM',vendorId:vendor.id,itemId:offer.id});
   playCue(mode==='buy'?'confirm':'loot');
+  setWaveActive(false);
   setSelectedId(null);
  };
  if(sceneLoadStatus!=='ready')return <MarketLoadingScreen status={sceneLoadStatus} onRetry={retrySceneLoad}/>;
@@ -160,18 +170,18 @@ export default function BlackMarketPage(){
       <MarketShiftCountdown minute={s.world.minute} compact/>
      </div>
     </nav>
-    <div className={`market-v12__table ${switchCount>0?`market-v0825__catalog market-v0825__catalog--${mode}`:''}`}>
+    <div className={`market-v12__table ${switchCount>0?`market-v0825__catalog market-v0825__catalog--${mode}`:''} ${waveActive?'market-v0831__wave-active':''}`}>
     <div className="market-v12__table-heading"><span>EXCHANGE / {mode===null?'WAITING':mode.toUpperCase()}</span><span>{mode===null?'選擇交易方式':'點選卡片查看詳細內容'}</span></div>
     {mode!==null&&<div className="market-v13__filter-wrap">
      <div className="market-v13__filters" role="group" aria-label="商品篩選">
       {(['all','item','card'] as Kind[]).map(value=><button type="button" key={value}
        aria-pressed={kind===value} className={kind===value?'is-active':''}
-       onClick={()=>{setKind(value);setNarrow('any');playCue('select')}}>{value==='all'?'所有':value==='item'?'物品':'卡牌'}</button>)}
-      <button type="button" className={more?'is-active':''} aria-expanded={more} onClick={()=>setMore(x=>!x)}><SlidersHorizontal size={13}/>更多…</button>
+       onClick={()=>{setWaveActive(false);setKind(value);setNarrow('any');playCue('select')}}>{value==='all'?'所有':value==='item'?'物品':'卡牌'}</button>)}
+      <button type="button" className={more?'is-active':''} aria-expanded={more} onClick={()=>{setWaveActive(false);setMore(x=>!x)}}><SlidersHorizontal size={13}/>更多…</button>
      </div>
      {more&&<div className="market-v13__extra-filters" role="group" aria-label="進階篩選">
       {([{id:'any',label:'不限'},{id:'owned',label:'已持有'},{id:'tradable',label:'可交易'},{id:'supply',label:'補給'},{id:'tools',label:'工具'}] as {id:Narrow;label:string}[]).map(f=><button type="button" key={f.id}
-       aria-pressed={narrow===f.id} className={narrow===f.id?'is-active':''} onClick={()=>setNarrow(f.id)}>{f.label}</button>)}
+       aria-pressed={narrow===f.id} className={narrow===f.id?'is-active':''} onClick={()=>{setWaveActive(false);setNarrow(f.id)}}>{f.label}</button>)}
      </div>}
     </div>}
     {mode===null?
@@ -184,9 +194,14 @@ export default function BlackMarketPage(){
       {filteredOffers.map((offer,index)=>{
        const appearance=getMarketProductPresentation(offer.type,offer.id);
        const count=formatMarketOfferQuantity(offer.type,mode,offer.available);
-       return <button type="button" key={offer.type+offer.id}
-        className={`market-v12__offer market-v0822__product market-v0827__wave-item market-v0822__product--${appearance.tier} ${offer.canTrade?'':'is-unavailable'}`}
-        style={{animationDelay:`${Math.min(index,28)*66}ms`}}
+       return <div key={`${waveEpoch}:${offer.type}:${offer.id}`}
+        className="market-v0831__wave-slot"
+        style={{
+         '--market-wave-delay-three':`${marketWaveDelay(index,3)}ms`,
+         '--market-wave-delay-two':`${marketWaveDelay(index,2)}ms`,
+        } as CSSProperties}>
+        <button type="button"
+        className={`market-v12__offer market-v0822__product market-v0822__product--${appearance.tier} ${offer.canTrade?'':'is-unavailable'}`}
         onClick={()=>{setSelectedId(offer.id);playCue('select')}}
         title={offer.canTrade?'點擊查看交易資訊':offer.reason}
         aria-label={`${offer.name}，${appearance.name}階，${appearance.isDisplayOnly?'展示級別':'卡牌等級'} ${appearance.level}，${mode==='buy'?'庫存':'持有'} ${count}，${offer.price} 舊幣${offer.canTrade?'':`，無法交易：${offer.reason}`}`}>
@@ -200,7 +215,8 @@ export default function BlackMarketPage(){
          <small><Coins size={11}/>{offer.price}</small>
          <span className="market-v0822__quantity">{mode==='buy'?'庫存':'持有'} {count}</span>
         </span>
-       </button>;
+       </button>
+       </div>;
       })}
       {!filteredOffers.length&&<p className="market-v12__empty">{mode==='sell'?'背包目前沒有符合條件的物品或卡牌複本。':'沒有符合條件的交易品，試試其他篩選。'}</p>}
      </div>}

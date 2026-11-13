@@ -1,3 +1,4 @@
+import {HUNGER_FIELD_GEAR_COST,hungerRisk,projectedHunger} from '../../game/engine/hungerCosts';
 import {useEffect,useState} from 'react';
 import {createPortal} from 'react-dom';
 import {Backpack,HeartPulse,Shield,Package,LockKeyhole,X} from 'lucide-react';
@@ -51,7 +52,7 @@ export default function FieldBagDialog({onClose}:{onClose:()=>void}){
      {tab==='gear'&&<div className="field-bag__gear">
       <div className="field-bag__slots">{EQUIPMENT_SLOTS.map(item=><button type="button" key={item.id}
        aria-pressed={slot===item.id} onClick={()=>setSlot(item.id)}><small>{item.name}</small><strong>{s.equipment[item.id]?ITEMS[s.equipment[item.id]!]!.name:'未裝備'}</strong>{s.equipment[item.id]&&armorSlotForItem(s,s.equipment[item.id]!)&&<em>{ARMOR_DAMAGE_STAGES[armorStage(armorHits(s,s.equipment[item.id]!))]} · {armorHits(s,s.equipment[item.id]!)} 次受擊</em>}</button>)}</div>
-      <p>目前部位：{selected.name}。只可裝備當前背包中持有的物品。更換裝備會消耗 2 分鐘遊戲時間。</p>
+      <p>目前部位：{selected.name}。只可裝備當前背包中持有的物品。任務中實際裝備或卸下將使飢餓 +{HUNGER_FIELD_GEAR_COST}（{s.player.hunger}→{projectedHunger(s.player.hunger,HUNGER_FIELD_GEAR_COST)}）；查看或切換背包分頁不會消耗。</p>
       {available.map(id=><article key={id} className="field-bag__item"><span className="field-bag__art"><ItemArt id={id}/></span>
        <div><strong>{ITEMS[id]?.name}</strong><p>{s.equipment[slot]===id?'目前已裝備':'可在任務中更換'}</p></div>
        <button type="button" disabled={locked||s.equipment[slot]===id} onClick={()=>doAction({type:'EQUIP_ITEM',slot,itemId:id})}>{s.equipment[slot]===id?'已裝備':'裝備'}</button>

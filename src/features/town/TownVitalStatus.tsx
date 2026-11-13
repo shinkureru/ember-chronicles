@@ -16,7 +16,7 @@ export default function TownVitalStatus({state:s}:{state:GameState}){
  const bars=[
   {name:'生命 HP',Icon:HeartPulse,now:s.player.health,max:s.player.maxHealth,type:'hp',detail:'當前生命；降到 0 會導致戰敗'},
   {name:'體力 ST',Icon:Zap,now:s.player.stamina,max:s.player.maxStamina,type:'st',detail:'執行行動的體力；不足時判定會受到懲罰'},
-  {name:'飢餓',Icon:Utensils,now:s.player.hunger,max:100,type:'hunger',detail:'越高代表越飢餓；時間推進會增加，可透過進食降低'},
+  {name:'飢餓',Icon:Utensils,now:s.player.hunger,max:100,type:'hunger',detail:'越高代表越飢餓；探索、撤退及服務會增加，70／90／100 為風險門檻；高飢餓會降低行動成功率，可透過進食降低'},
   {name:'疲勞',Icon:Moon,now:s.player.fatigue,max:100,type:'fatigue',detail:'越高代表越疲勞；50 點起有判定懲罰，70 點以上更嚴重'},
  ] as const;
  return <section className="town-vitals" aria-label="角色生命、體力、飢餓與疲勞狀態">

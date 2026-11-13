@@ -1,5 +1,17 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜v0.8.10 第一批：桌面 Web 拖曳穩定性（本分支待使用者 Merge）
+
+- **已核對的起點**：`main` commit `3431fbb95f20586cac6abc1673ae55d75afe55f5`，PR #35（v0.8.9）已 Merge；GitHub Actions Pages 部署成功；建立分支前 open PR = 0。舊的 v0.8.9 段落提到「未 Merge」是歷史紀錄，不可視為最新狀態。
+- **唯一分支**：`fix/v0.8.10-desktop-drag-scroll`；版本 `0.8.10`。本批只做桌面滑鼠垂直拖曳穩定性，**不提前修改尺寸／治療畫面／商品排版**。使用者要求每批自行 Merge 後再明確指示下一批。
+- 重構 `src/components/useVerticalDragScroll.ts`，用 document capture 持續接收滑鼠位移與放開，覆蓋快拖、拖過按鈕／超出捲動區；7px 門檻、放開後 click 抑制、文字選取與原生 dragstart 保護、完整事件 cleanup；非滑鼠觸控與滾輪及鍵盤保留原生。
+- `src/features/market/BlackMarketPage.tsx` 原本獨立的 pointer capture 拖曳改用相同 Hook；修理工坊、城鎮、旅店、卡片、其餘城鎮設施因既有 Hook 自動受益。診所維持之前的獨立 document drag Hook，避免 regression。沒有動商品交易與修理流程。
+- 測試新增 `tests/v0810-desktop-drag-scroll.test.ts`，調整舊的黑市拖曳契約與版本斷言；詳細 QA 清單見 `docs/V0810_DESKTOP_DRAG_SCROLL.md`。CI、瀏覽器/觸控手測狀態必須以 GitHub 與使用者實際結果為準；**勿將已提交 PR 當成已合併、已部署或已實機驗收。**
+- **後續待逐批進行**：v0.8.11 工坊四格與下方說明縮小且穩定不跑版；v0.8.12 診所雙色預覽卡縮小；v0.8.13 黑市陳列視區擴大＋商品與字距收斂。下一批須等使用者 Merge 本批並明確通知，且必須重核最新 main、PR、測試。
+
+---
+
+
 ## 2026-11-13｜最新｜第四批 v0.8.9 移除網頁式 Navbar，整合版本與設定（未 Merge）
 
 - 本批基準 `main` commit `f287e74ee13acc06f82812c9d498b05d0f1512ea`（前批 PR #34 已合併，v0.8.8）。新分支 `feat/v0.8.9-integrated-utilities-no-navbar`，**不提前做第五批**。

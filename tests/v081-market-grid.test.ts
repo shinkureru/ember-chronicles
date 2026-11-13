@@ -16,7 +16,7 @@ describe('v0.8.1 black-market product catalog',()=>{
  it('retains desktop drag, touch, keyboard and mouse wheel but hides the scrollbar',()=>{
   const ui=src('src/features/market/BlackMarketPage.tsx');
   const css=src('src/styles/_v081-market-grid.scss');
-  for(const token of ['onPointerDown={startDrag}','onPointerMove={dragMove}','onPointerUp={stopDrag}','box.scrollTop=state.scrollTop-delta','tabIndex={0}'])
+  for(const token of ['ref={offersScroll.scrollRef}','onPointerDown={offersScroll.onPointerDown}','onPointerMove={offersScroll.onPointerMove}','onPointerUp={offersScroll.onPointerUp}','onClickCapture={offersScroll.onClickCapture}','tabIndex={0}'])
    expect(ui).toContain(token);
   expect(css).toContain('scrollbar-width:none!important');
   expect(css).toContain('touch-action:pan-y');
@@ -26,7 +26,8 @@ describe('v0.8.1 black-market product catalog',()=>{
  it('retains selection modal, actual trade dispatch and purchase-first default',()=>{
   const ui=src('src/features/market/BlackMarketPage.tsx');
   expect(ui).toContain("useState<Mode|null>('buy')");
-  expect(ui).toContain('if(suppressOfferClick.current)return;');
+  expect(ui).toContain('onClickCapture={offersScroll.onClickCapture}');
+  expect(ui).not.toContain('suppressOfferClick.current');
   expect(ui).toContain("type:'MARKET_BUY_ITEM'");
   expect(ui).toContain("type:'MARKET_SELL_ITEM'");
   expect(ui).toContain('selected&&mode&&');

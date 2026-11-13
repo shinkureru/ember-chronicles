@@ -3,13 +3,14 @@ import { ArrowUpCircle, BookOpenText, LockKeyhole, MapPin, Package, Sparkles, Sw
 import { Link } from 'react-router-dom';
 import { useGame } from '../../app/GameContext';
 import { CARDS, getUpgradeRequirement } from '../../game/data/cards';
-import { ATTACK_CARDS, getAttackDamage } from '../../game/data/attacks';
+import { ATTACK_CARDS, attackStatus, getAttackDamage } from '../../game/data/attacks';
 import { CARD_LORE } from '../../game/data/cardLore';
 import { ITEMS } from '../../game/data/items';
 import { PROFESSIONS } from '../../game/data/professions';
 import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
 import {buildCardArchiveVariants} from '../../game/engine/cardArchiveVariants';
 import {CODEX_RARITIES,CODEX_PROFESSIONS,filterSkillCodexIds,type CodexRarity,type CodexProfession} from './cardCodexFilters';
+import {filterAttackCodexIds} from './attackCodexFilters';
 import { playCue } from '../../audio/sound';
 import ReturnMainLink from '../../components/ReturnMainLink';
 import GameUtilities from '../../components/GameUtilities';
@@ -23,14 +24,17 @@ export default function CardsPage(){
  const [category,setCategory]=useState<'skill'|'attack'>('skill');
  const [rarity,setRarity]=useState<CodexRarity>('all');
  const [profession,setProfession]=useState<CodexProfession>('all');
+ const [attackRarity,setAttackRarity]=useState<CodexRarity>('all');
+ const [attackProfession,setAttackProfession]=useState<CodexProfession>('all');
+ const activeRarity=category==='skill'?rarity:attackRarity;
+ const activeProfession=category==='skill'?profession:attackProfession;
  const registry=category==='skill'?CARDS:ATTACK_CARDS;
  const cardIds=useMemo(()=>category==='skill'
   ?filterSkillCodexIds(s.ownedCards,{owned:filter,rarity,profession})
-  :Object.keys(ATTACK_CARDS).filter(id=>filter==='all'||!!s.ownedCards[id])
-    .sort((a,b)=>Number(!!s.ownedCards[b])-Number(!!s.ownedCards[a])||a.localeCompare(b)),
-  [category,filter,s.ownedCards,rarity,profession]);
+  :filterAttackCodexIds(s.ownedCards,{owned:filter,rarity:attackRarity,profession:attackProfession}),
+  [category,filter,s.ownedCards,rarity,profession,attackRarity,attackProfession]);
  const variants=useMemo(()=>buildCardArchiveVariants(cardIds,s.ownedCards,filter),[cardIds,s.ownedCards,filter]);
- useEffect(()=>{if(dragScroll.scrollRef.current)dragScroll.scrollRef.current.scrollTop=0},[category,filter,rarity,profession]);
+ useEffect(()=>{if(dragScroll.scrollRef.current)dragScroll.scrollRef.current.scrollTop=0},[category,filter,rarity,profession,attackRarity,attackProfession]);
  const skill=selectedId?CARDS[selectedId]:undefined;
  const attack=selectedId?ATTACK_CARDS[selectedId]:undefined;
  const selected=skill??attack;
@@ -67,24 +71,24 @@ export default function CardsPage(){
      onClick={()=>setFilter('owned')}>已持有</button>
    </div>
   </section>
-  {category==='skill'&&<section className="cards-v0820__filters" aria-label="功能型技能篩選">
+  <section className="cards-v0820__filters cards-v0821__filters" aria-label={category==='skill'?'功能型技能篩選':'攻擊型主動牌篩選'}>
    <div className="cards-v0820__filter-line" role="group" aria-label="稀有度">
     <span>稀有度</span>
     <div>{CODEX_RARITIES.map(item=><button key={item.id} type="button"
-     aria-pressed={rarity===item.id} className={rarity===item.id?'is-active':''}
-     onClick={()=>setRarity(item.id)}>{item.label}</button>)}</div>
+     aria-pressed={activeRarity===item.id} className={activeRarity===item.id?'is-active':''}
+     onClick={()=>category==='skill'?setRarity(item.id):setAttackRarity(item.id)}>{item.label}</button>)}</div>
    </div>
    <div className="cards-v0820__filter-line" role="group" aria-label="職業歸屬">
     <span>卡牌歸屬</span>
     <div>{CODEX_PROFESSIONS.map(item=><button key={item.id} type="button"
-     aria-pressed={profession===item.id} className={profession===item.id?'is-active':''}
-     onClick={()=>setProfession(item.id)}>{item.label}</button>)}</div>
+     aria-pressed={activeProfession===item.id} className={activeProfession===item.id?'is-active':''}
+     onClick={()=>category==='skill'?setProfession(item.id):setAttackProfession(item.id)}>{item.label}</button>)}</div>
    </div>
    <small className="cards-v0820__results" role="status" aria-live="polite">
-    顯示 {variants.length} 格 · 點選卡牌可查看效果與升級
+    顯示 {variants.length} 格 · {category==='skill'?'點選卡牌可查看效果與升級':'點選攻擊牌查看傷害、必備武器與升級'}
    </small>
-  </section>}
-  <div className={`card-library-grid card-library-grid--scroll ${category==='skill'?'cards-v0820__skill-grid':''}`} role="region" tabIndex={0}
+  </section>
+  <div className={`card-library-grid card-library-grid--scroll ${category==='skill'?'cards-v0820__skill-grid':'cards-v0821__attack-grid'}`} role="region" tabIndex={0}
     aria-label={category==='skill'?'功能型技能圖鑑，每張依等級獨立顯示，格子可垂直捲動':'攻擊型主動牌圖鑑，每張依等級獨立顯示，格子可垂直捲動'}
     ref={dragScroll.scrollRef}
     onPointerDown={dragScroll.onPointerDown} onPointerMove={dragScroll.onPointerMove}
@@ -93,14 +97,25 @@ export default function CardsPage(){
    {variants.map(variant=>{
     const card=registry[variant.id]!;
     const skillCard=category==='skill'?CARDS[variant.id]:undefined;
+    const attackCard=category==='attack'?ATTACK_CARDS[variant.id]:undefined;
+    const weaponStatus=attackCard?attackStatus(s,attackCard.id):null;
+    const requiredWeapon=attackCard?ITEMS[attackCard.requiredItemId]:null;
     return <button type="button" key={`${variant.id}-lv${variant.level}`}
-      className={`card-library-tile card-library-tile--level-${variant.level} rarity-tile--${card.rarity} ${variant.locked?'is-locked':''} ${skillCard?'cards-v0820__skill-tile':''}`}
+      className={`card-library-tile card-library-tile--level-${variant.level} rarity-tile--${card.rarity} ${variant.locked?'is-locked':''} ${skillCard?'cards-v0820__skill-tile':'cards-v0821__attack-tile'}`}
       onClick={()=>{setSelectedId(variant.id);setSelectedLevel(variant.level);playCue('card')}}
       aria-label={`LV.${variant.level} ${card.name}，${variant.locked?'尚未取得':`已持有 ${variant.quantity} 張`}，開啟詳情`}>
      <span className="card-library-tile__rarity">{RARITY[card.rarity]}</span>
      <span className="card-library-tile__art" aria-hidden="true">{variant.locked?<LockKeyhole size={23}/>:card.emoji}</span>
      {skillCard&&<span className="cards-v0820__skill-effect">
       <b>成功率 +{skillCard.chanceBonus}%</b><small>資源 -{skillCard.resourceCost}</small>
+     </span>}
+     {attackCard&&<span className="cards-v0821__attack-effect">
+      <b>傷害 {getAttackDamage(s,attackCard.id)}</b><small>基礎 {attackCard.baseChance}% · 體力 -{attackCard.staminaCost}</small>
+     </span>}
+     {attackCard&&<span className={`cards-v0821__weapon ${weaponStatus?.inBag?'is-ready':weaponStatus?.inWarehouse?'is-stored':'is-missing'}`}
+      title={`必要武器：${requiredWeapon?.name??attackCard.requiredItemId}`}>
+      <span>{requiredWeapon?.name??attackCard.requiredItemId}</span>
+      <strong>{variant.locked?'未解鎖':weaponStatus?.inBag?'背包有':weaponStatus?.inWarehouse?'倉庫有':'缺武器'}</strong>
      </span>}
      <div className="card-library-tile__footer">
       <strong className="card-library-tile__name"><b>LV.{variant.level}</b> {card.name}</strong>
@@ -110,7 +125,7 @@ export default function CardsPage(){
    })}
    {!variants.length&&<div className="card-library-empty-note">目前沒有符合條件的卡牌。</div>}
   </div>
-  <div className="card-library-footer"><span className="card-library-footer__hint"><Sparkles size={13}/>同卡複本可升級至 V 階。攻擊卡需有對應武器，才能在關卡內使用。</span><GameUtilities className="game-utilities--cards"/><ReturnMainLink className="return-main-link--cards"/></div>
+  <div className="card-library-footer"><span className="card-library-footer__hint"><Sparkles size={13}/>{category==='attack'?'攻擊牌必須有對應武器才可在關卡使用，請先前往事前準備檢查。':'同卡複本可升級至 V 階；已升級主卡與 LV.I 素材分開顯示。'}</span><GameUtilities className="game-utilities--cards"/><ReturnMainLink className="return-main-link--cards"/></div>
   {selected&&<div className="card-detail-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setSelectedId(null)}}>
     <section className="card-detail-dialog" role="dialog" aria-modal="true" aria-label={`${selected.name}卡牌詳情`}>
       <header className="card-detail-dialog__head"><span className="eyebrow">CARD ARCHIVE / {selected.id.toUpperCase()}</span><button type="button" onClick={()=>setSelectedId(null)} aria-label="關閉卡牌詳情"><X size={20}/></button></header>
@@ -118,7 +133,8 @@ export default function CardsPage(){
       <div className="card-detail-dialog__stats"><span>等級 <strong>LV.{selectedLevel}</strong></span><span>這個等級持有 <strong>{variantQuantity} 張</strong></span><span>可消耗複本 <strong>{owned?.copies??0} 張</strong></span></div>
       <div className="card-detail-dialog__content">
         <section><h3>卡牌效果</h3><p>{selected.description}</p>
-          {attack?<p className="card-detail-dialog__numbers">傷害 {getAttackDamage(s,attack.id)} · 基礎成功率 {attack.baseChance}% · 體力 -{attack.staminaCost} · 必備物品：{item?.name??attack.requiredItemId}</p>:
+          {attack?<><p className="card-detail-dialog__numbers">傷害 {getAttackDamage(s,attack.id)} · 基礎成功率 {attack.baseChance}% · 體力 -{attack.staminaCost} · 必備物品：{item?.name??attack.requiredItemId}</p>
+           <p className="cards-v0821__detail-weapon">武器狀態：{!owned?'尚未解鎖攻擊牌':attackStatus(s,attack.id).inBag?'背包已持有，可在關卡使用':attackStatus(s,attack.id).inWarehouse?'倉庫有武器，請於事前準備確認負重':'目前缺少必要武器'}</p></>:
           skill?<p className="card-detail-dialog__numbers">成功率 +{skill.chanceBonus} 個百分點 · 資源 -{skill.resourceCost}{skill.staminaSaved?` · 省下體力 ${skill.staminaSaved}`:''}{skill.courageSaved?` · 減少膽量損失 ${skill.courageSaved}`:''}</p>:null}
         </section>
         <section><h3><BookOpenText size={16}/>這張卡的故事</h3><p>{attack?`我曾經只把「${item?.name??attack.name}」當成日常工具。現在這個地方，卻逼得我不得不考慮它另一種用途。`:(CARD_LORE[selected.id]?.story??'這張卡牌的經歷尚待整理。')}</p></section>

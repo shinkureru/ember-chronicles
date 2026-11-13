@@ -46,8 +46,8 @@ describe('v0.8.23 locally bundled cinematic black market scene',()=>{
   expect(page).toContain('market-v12__meeting market-v0823__meeting');
   expect(page).toContain('<BlackMarketSceneArt key={vendor.id} vendor={vendor}/>');
   expect(page).toContain('market-v0823__vendor');
-  expect(page).toContain('{vendor.name}');
-  expect(page).toContain('{vendor.role}');
+  expect(page).toContain('{vendorProfile.name}');
+  expect(page).toContain('{vendorProfile.role}');
   expect(page).toContain('<MarketIdleSpeech key={vendor.id} vendor={vendor}/>');
   expect(read('src/features/market/marketIdleLines.ts')).toContain('[vendor.line,...');
   expect(page).toContain('market-v12__dialogue market-v0823__dialogue');

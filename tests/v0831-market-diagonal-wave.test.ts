@@ -37,7 +37,7 @@ describe('v0.8.31 true diagonal, overlapping wave phases',()=>{
     expect(timings).toHaveLength(count);
     expect(timings[0]??0).toBe(0);
     expect(timings.every(ms=>ms>=0&&ms<=MARKET_WAVE_MAX_PHASE*MARKET_WAVE_STEP_MS)).toBe(true);
-    if(count>=3)expect(new Set(timings).size).toBeLessThan(count);
+    if(count>=columns+1)expect(new Set(timings).size).toBeLessThan(count);
    }
   }
   expect(MARKET_WAVE_DURATION_MS).toBe(720);

@@ -11,6 +11,7 @@ import { bagWeight, worldPhaseToken, worldPhase, worldClock } from '../../game/e
 import MarketPortrait from './MarketPortrait';
 import SurvivorFigure from '../../components/SurvivorFigure';
 import ItemArt from '../../components/ItemArt';
+import {getMarketProductPresentation,formatMarketOfferQuantity} from './marketProductPresentation';
 import GameUtilities from '../../components/GameUtilities';
 import ReturnMainLink from '../../components/ReturnMainLink';
 import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
@@ -139,15 +140,25 @@ export default function BlackMarketPage(){
        onPointerDown={offersScroll.onPointerDown} onPointerMove={offersScroll.onPointerMove}
        onPointerUp={offersScroll.onPointerUp} onPointerCancel={offersScroll.onPointerCancel}
        onClickCapture={offersScroll.onClickCapture}>
-      {filteredOffers.map(offer=><button type="button" key={offer.type+offer.id}
-       className={`market-v12__offer ${offer.canTrade?'':'is-unavailable'}`}
-       onClick={()=>{setSelectedId(offer.id);playCue('select')}}
-       aria-label={`${offer.name}，${offer.price} 舊幣`}>
-       <span className="market-v12__offer-type">{offer.type==='card'?'CARD':'ITEM'}</span>
-       <span className="market-v12__offer-icon" aria-hidden="true">{offer.type==='item'?<ItemArt id={offer.id}/>:offer.emoji}</span>
-       <strong>{offer.name}</strong>
-       <small>{offer.price} <Coins size={10}/></small>
-      </button>)}
+      {filteredOffers.map(offer=>{
+       const appearance=getMarketProductPresentation(offer.type,offer.id);
+       const count=formatMarketOfferQuantity(offer.type,mode,offer.available);
+       return <button type="button" key={offer.type+offer.id}
+        className={`market-v12__offer market-v0822__product market-v0822__product--${appearance.tier} ${offer.canTrade?'':'is-unavailable'}`}
+        onClick={()=>{setSelectedId(offer.id);playCue('select')}}
+        aria-label={`${offer.name}，${appearance.name}階，${appearance.isDisplayOnly?'展示級別':'卡牌等級'} ${appearance.level}，${mode==='buy'?'庫存':'持有'} ${count}，${offer.price} 舊幣`}>
+        <span className="market-v0822__product-top">
+         <span className="market-v0822__level" title={appearance.isDisplayOnly?'商品展示級別，不改變物品效果':'交易的是 Lv.1 升級複本'}>Lv.{appearance.level}</span>
+         <span className="market-v12__offer-type">{appearance.name}</span>
+        </span>
+        <span className="market-v12__offer-icon" aria-hidden="true">{offer.type==='item'?<ItemArt id={offer.id}/>:offer.emoji}</span>
+        <strong className="market-v0822__product-name" title={offer.name}>{offer.name}</strong>
+        <span className="market-v0822__product-footer">
+         <small><Coins size={11}/>{offer.price}</small>
+         <span className="market-v0822__quantity">{mode==='buy'?'庫存':'持有'} {count}</span>
+        </span>
+       </button>;
+      })}
       {!filteredOffers.length&&<p className="market-v12__empty">沒有符合條件的交易品，試試其他篩選。</p>}
      </div>}
      {mode!==null&&filteredOffers.length>6&&<div className="market-v081__scroll-hint" aria-hidden="true">向上拖曳或滾動，查看下方更多商品</div>}
@@ -167,10 +178,12 @@ export default function BlackMarketPage(){
     <button className="market-v10__close" type="button" aria-label="關閉商品資訊" onClick={()=>setSelectedId(null)}><X size={20}/></button>
     <span className="market-v10__detail-kicker">BLACK MARKET / {selected.type==='card'?'CARD':'SUPPLY'}</span>
     <span className="market-v10__detail-art" aria-hidden="true">{selected.type==='item'?<ItemArt id={selected.id}/>:selected.emoji}</span>
-    <h2>{selected.name}</h2><p>{selected.description}</p>
+    <h2>{selected.name}</h2>
+    <p className="market-v0822__detail-grade">{getMarketProductPresentation(selected.type,selected.id).name}階 · Lv.{getMarketProductPresentation(selected.type,selected.id).level}{selected.type==='item'?'（展示級別，不影響裝備能力）':'（交易 Lv.1 升級複本）'}</p>
+    <p>{selected.description}</p>
     <div className="market-v10__detail-facts">
      <span>交易價格 <strong>{selected.price} 舊幣</strong></span>
-     <span>{mode==='sell'?'可出售數量':'剩餘供貨'} <strong>{mode==='sell'?selected.available:selected.available===99?'可購買':selected.available}</strong></span>
+     <span>{mode==='sell'?'可出售數量':'剩餘供貨'} <strong>{formatMarketOfferQuantity(selected.type,mode,selected.available)}</strong></span>
      <span>商人 <strong>{vendor.name}</strong></span>
     </div>
     {selected.type==='card'&&<p className="market-v12__card-remark"><LockKeyhole size={13}/> 黑市卡牌以升級複本販售，原卡須先在任務中取得。</p>}

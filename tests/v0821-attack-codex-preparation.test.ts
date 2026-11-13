@@ -176,6 +176,6 @@ describe('v0.8.21 preparation visual redesign preserves loadout safety',()=>{
    '@media(prefers-reduced-motion:reduce)',
   ])expect(css).toContain(token);
   expect(read('src/styles/main.scss')).toContain('@import "v0821-attack-codex-preparation"');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.21');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });

@@ -20,7 +20,7 @@ describe('第一章地圖與關卡進度',()=>{
 });
 describe('黑市與裝備',()=>{
  it('出售重複卡增加金錢與商人好感',()=>{
-  const s=makeInitialState('journalist');s.ownedCards.question!.copies=2;
+  const s=makeInitialState('journalist');s.world.minute=16*60;s.ownedCards.question!.copies=2;
   const result=gameReducer(s,{type:'MARKET_SELL',vendorId:'broker',cardId:'question'});
   expect(result.ownedCards.question!.copies).toBe(1);
   expect(result.economy.coins).toBe(138);

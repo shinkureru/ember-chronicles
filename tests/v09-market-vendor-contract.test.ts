@@ -16,7 +16,7 @@ describe('v0.9 final audit: every black-market card exchange is vendor-specific'
    expect(s.ownedCards.question.copies).toBe(stock);
  });
  it('accepts a valid card transaction only with the correct vendor',()=>{
-   let s=makeInitialState('journalist');
+   let s=makeInitialState('journalist');s.world.minute=16*60;
    s.economy.coins=5000;
    s.ownedCards.question={copies:2,level:1};
    const before=s.economy.coins;

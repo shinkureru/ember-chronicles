@@ -27,7 +27,7 @@ describe('v0.9 distinct traders and inventory limits',()=>{
   expect(new Set(MARKET_VENDORS.map(v=>v.sellItems.map(i=>i.id).join(','))).size).toBe(MARKET_VENDORS.length);
  });
  it('charges coins, gives the real item and respects limited stock',()=>{
-  let s=makeInitialState('journalist');
+  let s=makeInitialState('journalist');s.world.minute=16*60;
   s.economy.coins=500;
   s=gameReducer(s,{type:'MARKET_BUY_ITEM',vendorId:'broker',itemId:'pen'});
   expect(s.economy.coins).toBe(410);
@@ -44,7 +44,7 @@ describe('v0.9 distinct traders and inventory limits',()=>{
   expect(gameReducer(s,{type:'MARKET_SELL_ITEM',vendorId:'broker',itemId:'wrench'})).toBe(s);
  });
  it('lets players sell a permitted item and prevents selling equipped or protected gear',()=>{
-  const s=makeInitialState('journalist');s.bag.notes=1;
+  const s=makeInitialState('journalist');s.world.minute=16*60;s.bag.notes=1;
   const after=gameReducer(s,{type:'MARKET_SELL_ITEM',vendorId:'broker',itemId:'notes'});
   expect(after.bag.notes).toBeUndefined();
   expect(after.economy.coins).toBeGreaterThan(s.economy.coins);

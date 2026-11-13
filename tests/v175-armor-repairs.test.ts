@@ -111,6 +111,7 @@ describe('v1.7.5: isolated impact selection and persistent damage stages',()=>{
  });
 });
 describe('v1.7.5: workshop quote, same-charge repair, perfect buff lifecycle',()=>{
+ const workshopState=()=>{const s=makeInitialState('journalist');s.world.minute=16*60;return s};
  const costs:{slot:'head'|'body'|'arms'|'legs';id:string;light:number;medium:number;severe:number}[]=[
   {slot:'head',id:'cap',light:8,medium:18,severe:34},
   {slot:'body',id:'vest',light:10,medium:22,severe:40},
@@ -119,7 +120,7 @@ describe('v1.7.5: workshop quote, same-charge repair, perfect buff lifecycle',()
  ];
  for(const c of costs){
   it(`quotes monotonic ${c.slot} repairs from matching damaged part`,()=>{
-   const s=makeInitialState('journalist');s.equipment[c.slot]=c.id;
+   const s=workshopState();s.equipment[c.slot]=c.id;
    expect(armorRepairFee(s,c.id)).toBe(0);
    s.town!.armorHits![c.id]=1;s.town!.wear[c.id]=93;expect(armorRepairFee(s,c.id)).toBeGreaterThan(0);
    s.town!.armorHits![c.id]=3;s.town!.wear[c.id]=79;expect(armorRepairFee(s,c.id)).toBe(c.light);
@@ -131,7 +132,7 @@ describe('v1.7.5: workshop quote, same-charge repair, perfect buff lifecycle',()
   });
  }
  it('charges the exact quoted dynamic cost and fully resets damage, not weapons',()=>{
-  const s=makeInitialState('journalist');
+  const s=workshopState();
   s.equipment.body='vest';s.equipment.mainHand='wrench';
   s.town!.armorHits!.vest=10;s.town!.wear.vest=30;
   s.rngSeed=0;
@@ -148,7 +149,7 @@ describe('v1.7.5: workshop quote, same-charge repair, perfect buff lifecycle',()
   expect(getTownServiceLock(s,'workshop_repair',undefined,'wrench')).toContain('只可修復');
  });
  it('perfect +1 defense applies to one mission only, not permanent stat or success rate',()=>{
-  let s=makeInitialState('journalist');
+  let s=workshopState();
   s.equipment.body='vest';s.town!.armorHits!.vest=3;s.town!.wear.vest=79;s.rngSeed=0;
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'workshop_repair',itemId:'vest'});
   expect(perfectRepairActive(s,'vest')).toBe(true);
@@ -163,7 +164,7 @@ describe('v1.7.5: workshop quote, same-charge repair, perfect buff lifecycle',()
   expect(getEquippedDefense(s)).toBe(10);
  });
  it('existing permanent upgrade still requires material and increases base defense',()=>{
-  let s=makeInitialState('journalist');s.bag.cap=1;s.bag.tape=1;
+  let s=workshopState();s.bag.cap=1;s.bag.tape=1;
   s=gameReducer(s,{type:'EQUIP_ITEM',slot:'head',itemId:'cap'});
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'workshop_upgrade',itemId:'cap'});
   expect(s.town?.upgrades.cap).toBe(1);

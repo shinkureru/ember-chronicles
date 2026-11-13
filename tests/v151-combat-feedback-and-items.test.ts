@@ -62,7 +62,7 @@ describe('v1.5.1 low-HP balance and saved progress',()=>{
   expect(restored.player.health).toBe(6);
  });
  it('makes permanent health training matter without granting five extra hit points at once',()=>{
-  let s=makeInitialState('journalist');
+  let s=makeInitialState('journalist');s.world.minute=16*60;
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'train',attribute:'maxHealth'});
   expect(s.player.maxHealth).toBe(11);
   expect(s.player.health).toBe(11);

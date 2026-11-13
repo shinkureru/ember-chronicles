@@ -1,0 +1,199 @@
+/* v0.8.27 — last black-market UI polish.
+ * Corrections based on user screenshots:
+ *  - prevent broken dark glyph bars: no text stroke or animated blur,
+ *  - smaller centered circular arrows without the "切換" text,
+ *  - wave on ITEMS only, not the table, top-left to lower-right,
+ *  - soft image-aligned fluorescent light bloom on the left.
+ * Existing trading, vendor scheduling and state/storage code untouched.
+ */
+
+/* Rendering several 1px dark outline shadows + -webkit-text-stroke on
+ * subpixel Chinese glyphs caused ragged dark horizontal artefacts on Chrome.
+ * Use a simple non-blurred text shape and two broad soft shadows instead.
+ * Retain transparency (no dialogue box or panel). */
+.market-v13 .market-v12__dialogue.market-v0823__dialogue.market-v0825__speech{
+ -webkit-text-stroke:0!important;
+ paint-order:normal;
+ color:#faf0f3;
+ text-shadow:0 1px 3px #03050bf0,0 2px 9px #03050ba8!important;
+ font-weight:650;
+ filter:none!important;
+ background:transparent!important;
+ border:0!important;
+ box-shadow:none!important;
+}
+.market-v13 .market-v0825__speech-text{
+ animation:market-v0827-speech-fade .25s ease-out both;
+ filter:none!important;
+ -webkit-text-stroke:0!important;
+ text-shadow:inherit;
+}
+@keyframes market-v0827-speech-fade{
+ from{opacity:.35}
+ to{opacity:1}
+}
+/* The arrow stays centered on the rail but occupies less space.
+ * Leave the whole rail button accessible and keep the 180-degree rotation. */
+.market-v13 .market-v0824__exchange .market-v0824__switch-arrow{
+ top:71px;
+ left:50%;
+ width:35px;
+ height:35px;
+ padding:0;
+ transform:translateX(-50%);
+}
+.market-v13 .market-v0824__exchange .market-v0824__switch-icon{
+ width:100%;
+ height:100%;
+ transform-origin:50% 50%;
+}
+.market-v13 .market-v0824__exchange .market-v0824__switch-foot{
+ display:none!important;
+}
+.market-v13 .market-v0824__exchange .market-v0824__switch-label--buy{
+ top:14px;
+}
+.market-v13 .market-v0824__exchange .market-v0824__switch-label--sell{
+ top:118px;
+}
+.market-v13 .market-v0824__exchange .market-v0824__toggle.is-sell .market-v0824__switch-label--buy{
+ transform:translateY(104px) scale(.81);
+}
+.market-v13 .market-v0824__exchange .market-v0824__toggle.is-sell .market-v0824__switch-label--sell{
+ transform:translateY(-104px) scale(1.08);
+}
+
+/* Do not transform the full table: the filters, header, frame and scrollbar
+ * should stay completely still when switching buy/sell. */
+.market-v13 .market-v0824__exchange>.market-v12__table.market-v0825__catalog--buy,
+.market-v13 .market-v0824__exchange>.market-v12__table.market-v0825__catalog--sell{
+ animation:none!important;
+ transform:none!important;
+ opacity:1!important;
+}
+
+/* Each card receives a 0/66/132/...ms delay in row-major array order.
+ * The visual movement travels upper-left -> right -> next row -> bottom-right.
+ * Individual CSS translate and scale avoid the v0.8.22 rule's
+ * transform:none!important on product buttons, so movement remains visible.
+ * Different animation names restart the wave on both toggle directions.
+ */
+.market-v13 .market-v0824__exchange>.market-v12__table.market-v0825__catalog--buy .market-v12__offers .market-v0827__wave-item{
+ animation-name:market-v0827-item-buy;
+ animation-duration:.58s;
+ animation-timing-function:cubic-bezier(.2,.7,.3,1);
+ animation-fill-mode:both;
+}
+.market-v13 .market-v0824__exchange>.market-v12__table.market-v0825__catalog--sell .market-v12__offers .market-v0827__wave-item{
+ animation-name:market-v0827-item-sell;
+ animation-duration:.58s;
+ animation-timing-function:cubic-bezier(.2,.7,.3,1);
+ animation-fill-mode:both;
+}
+@keyframes market-v0827-item-buy{
+ 0%{translate:0 0;scale:.975}
+ 38%{translate:0 -9px;scale:1.016}
+ 65%{translate:0 2px;scale:1}
+ 100%{translate:0 0;scale:1}
+}
+@keyframes market-v0827-item-sell{
+ 0%{translate:0 0;scale:.975}
+ 38%{translate:0 -9px;scale:1.016}
+ 65%{translate:0 2px;scale:1}
+ 100%{translate:0 0;scale:1}
+}
+.market-v13 .market-v0824__exchange .market-v12__offers.market-v081__catalog{
+ /* Motion never changes grid flow, heights or the scroll target. */
+ scroll-padding-top:12px;
+}
+/* Focus is still visible even while a card animation is in flight. */
+.market-v13 .market-v12__offers .market-v0827__wave-item:focus-visible{
+ outline:2px solid #edc79b;
+ outline-offset:-3px;
+}
+/* The real left fluorescent tube's bloom tracks the same 960x536 SVG image.
+ * Its quiet fade brightens the original white-blue lamp without a flashing
+ * stroke painted over the underlying artist's illustration. */
+.market-v0827__fluorescent-bloom{
+ opacity:.28;
+ pointer-events:none;
+ mix-blend-mode:screen;
+ animation:market-v0827-fluorescent-pulse 6.5s ease-in-out infinite;
+}
+@keyframes market-v0827-fluorescent-pulse{
+ 0%,100%{opacity:.18}
+ 36%{opacity:.68}
+ 62%{opacity:.36}
+ 81%{opacity:.52}
+}
+/* Keep the scene, three/two-column catalog and controls responsive. */
+.market-v13 .market-v0824__exchange{
+ min-width:0;
+ min-height:0;
+}
+.market-v13 .market-v0824__exchange>.market-v12__table{
+ min-width:0;
+ min-height:0;
+}
+.market-v13 .market-v12__offers.market-v081__catalog .market-v0827__wave-item{
+ min-width:0;
+ overflow-wrap:anywhere;
+}
+.market-v13 .market-v10__footer{
+ min-width:0;
+}
+@media(max-width:375px){
+ .market-v13 .market-v0824__exchange .market-v0824__switch-arrow{
+  width:31px;
+  height:31px;
+  top:73px;
+ }
+ .market-v13 .market-v0824__exchange .market-v0824__switch-label--buy{
+  font-size:14px;
+ }
+ .market-v13 .market-v0824__exchange .market-v0824__switch-label--sell{
+  font-size:14px;
+ }
+ .market-v13 .market-v12__offers.market-v081__catalog .market-v0827__wave-item{
+  min-width:0;
+ }
+}
+@media(max-height:700px){
+ .market-v13 .market-v0824__exchange .market-v0824__switch-arrow{
+  top:55px;
+  width:31px;
+  height:31px;
+ }
+ .market-v13 .market-v0824__exchange .market-v0824__switch-label--buy{top:7px}
+ .market-v13 .market-v0824__exchange .market-v0824__switch-label--sell{top:99px}
+ .market-v13 .market-v0824__exchange .market-v0824__toggle.is-sell .market-v0824__switch-label--buy{transform:translateY(92px) scale(.81)}
+ .market-v13 .market-v0824__exchange .market-v0824__toggle.is-sell .market-v0824__switch-label--sell{transform:translateY(-92px) scale(1.08)}
+}
+@media(max-height:520px){
+ .market-v13 .market-v0824__exchange .market-v0824__switch-arrow{
+  top:45px;
+  width:27px;
+  height:27px;
+ }
+ .market-v13 .market-v0824__exchange .market-v0824__switch-label--buy{top:4px}
+ .market-v13 .market-v0824__exchange .market-v0824__switch-label--sell{top:81px}
+ .market-v13 .market-v0824__exchange .market-v0824__toggle.is-sell .market-v0824__switch-label--buy{transform:translateY(77px) scale(.81)}
+ .market-v13 .market-v0824__exchange .market-v0824__toggle.is-sell .market-v0824__switch-label--sell{transform:translateY(-77px) scale(1.08)}
+}
+@media(prefers-reduced-motion:reduce){
+ .market-v13 .market-v0825__speech-text{
+  animation:none!important;
+  opacity:1!important;
+  filter:none!important;
+ }
+ .market-v0827__fluorescent-bloom{
+  animation:none!important;
+  opacity:.35;
+ }
+ .market-v13 .market-v0824__exchange>.market-v12__table.market-v0825__catalog--buy .market-v12__offers .market-v0827__wave-item,
+ .market-v13 .market-v0824__exchange>.market-v12__table.market-v0825__catalog--sell .market-v12__offers .market-v0827__wave-item{
+  animation:none!important;
+  translate:none!important;
+  scale:1!important;
+ }
+}

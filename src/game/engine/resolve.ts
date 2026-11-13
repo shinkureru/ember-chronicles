@@ -19,6 +19,7 @@ import { applyArmorImpact,ARMOR_DAMAGE_STAGES,ARMOR_SLOT_NAMES,expirePerfectRepa
 import { getVendorStockKey, marketSellPrice, vendorById } from '../data/marketVendors';
 import type { GameState, Outcome, ProfessionId, LootDrop } from '../types';
 import {getTaipeiClock} from './taipeiClock';
+import {applyHungerCost,HUNGER_CLINIC_PURCHASE_COST,HUNGER_DEFEAT_COST,HUNGER_FIELD_GEAR_COST,HUNGER_QUEST_HANDIN_COST} from './hungerCosts';
 
 export type GameAction =
   | {type:'SELECT_PROFESSION';profession:ProfessionId}
@@ -117,6 +118,7 @@ const resolveOutcome=(s:GameState,outcome:Outcome)=>{
   const npc=activeNpc(s),isAlley=s.stageId===2;
   if(outcome==='defeat'){
     s.player.health=1;
+    applyHungerCost(s,HUNGER_DEFEAT_COST);
     ensureConditions(s).wounds=Math.max(1,s.conditions?.wounds??0);
     npc.remembers=Array.from(new Set([...npc.remembers,isAlley?'alley_defeat':'defeated_player']));
     npc.adaptations.talk=Math.min(12,(npc.adaptations.talk??0)+3);
@@ -275,6 +277,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       const card=action.skillId?CARDS[action.skillId]:undefined;
       const skill=card&&isSkillCompatible(choice,card)&&s.hand.includes(card.id)&&s.player.resource>=card.resourceCost?card:undefined;
       const preview=calculateActionPreview(s,choice,skill?.id??null);
+      applyHungerCost(s,preview.hungerCost);
       s.player.stamina=preview.projectedStamina;
       s.player.courage=preview.projectedCourage;
       s.player.resource=clamp(s.player.resource-preview.resourceCost,0,s.player.maxResource);
@@ -359,6 +362,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
     case 'RETREAT':{
       if(s.mode!=='adventure'||s.enemyCounter)return state;
       const preview=retreatPreview(s);
+      applyHungerCost(s,preview.hungerCost);
       s.player.stamina=clamp(s.player.stamina-preview.staminaCost,0,s.player.maxStamina);
       s.player.courage=clamp(s.player.courage-preview.courageLoss,0,100);
       const passed=nextRand(s)*100<preview.chance;
@@ -469,6 +473,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.town!.visits.clinic=(s.town!.visits.clinic??0)+1;
       s.lastEvent=`我向診所購買了「${ITEMS[item.id]?.name}」，花費 ${price} 枚舊幣。`;
       awardExperience(s,`clinic:buy:${item.id}`,5);
+      applyHungerCost(s,HUNGER_CLINIC_PURCHASE_COST);
       return s;
     }
     case 'CLINIC_ACCEPT_DAILY':{
@@ -496,6 +501,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.town!.visits.clinic=(s.town!.visits.clinic??0)+1;
       s.lastEvent=`我完成「${q.title}」，取得 ${q.coins} 舊幣，診所好感 +${q.favor}；藥品折扣改善了。`;
       awardExperience(s,'clinic:complete-daily',14);
+      applyHungerCost(s,HUNGER_QUEST_HANDIN_COST);
       return s;
     }
     case 'TOWN_ACCEPT_QUEST':{
@@ -527,6 +533,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.lastEvent=quest.ending+` 得到 ${quest.rewardCoins} 舊幣及一項永久屬性成長。`;
       s.log.push(`委託完成：「${quest.title}」。`);
       awardExperience(s,`quest:complete:${quest.id}`,22);
+      applyHungerCost(s,HUNGER_QUEST_HANDIN_COST);
       return s;
     }
     case 'REST_TOWN':{
@@ -544,6 +551,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       const hasBag=(s.bag[action.itemId]??0)>0,hasStock=s.mode==='home'&&(s.warehouse[action.itemId]??0)>0;
       if(!ITEMS[action.itemId]||(!hasBag&&!hasStock)||!EQUIPMENT_SLOTS.some(slot=>slot.id===action.slot&&slot.allowed.includes(action.itemId)))return state;
       if(Object.entries(s.equipment).some(([slot,id])=>slot!==action.slot&&id===action.itemId))return state;
+      if(s.equipment[action.slot]===action.itemId)return state;
       if(!hasBag){
         if(bagWeight(s.bag)+ITEMS[action.itemId]!.weight>15){s.lastEvent='裝備後背包會超過負重上限，請先整理物品。';return s;}
         s.warehouse[action.itemId]=(s.warehouse[action.itemId]??0)-1;if(s.warehouse[action.itemId]===0)delete s.warehouse[action.itemId];
@@ -554,6 +562,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if(previous&&!Object.values(s.equipment).includes(previous))s.protectedItems=s.protectedItems.filter(id=>id!==previous);
       if(!s.protectedItems.includes(action.itemId))s.protectedItems.push(action.itemId);
       s.lastEvent=`我將「${ITEMS[action.itemId]!.name}」指定為常用裝備。`;
+      if(s.mode==='adventure')applyHungerCost(s,HUNGER_FIELD_GEAR_COST);
       return s;
     }
     case 'UNEQUIP_ITEM':{
@@ -562,6 +571,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.equipment[action.slot]=null;
       if(!Object.values(s.equipment).includes(id))s.protectedItems=s.protectedItems.filter(item=>item!==id);
       s.lastEvent='我卸下了常用裝備。';
+      if(s.mode==='adventure')applyHungerCost(s,HUNGER_FIELD_GEAR_COST);
       return s;
     }
     case 'UPGRADE_CARD':{

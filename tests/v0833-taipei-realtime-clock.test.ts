@@ -53,7 +53,7 @@ describe('v0.8.33 Asia/Taipei civil clock as the only source of time',()=>{
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'rest_cot'});
   expect(s.world).toEqual(initial);
   expect(s.player.health).toBeGreaterThan(3);
-  expect(s.player.hunger).toBe(hunger+6); // v0.8.34 charges the former rest duration as hunger
+  expect(s.player.hunger).toBe(hunger+3); // v0.8.35 reduces passive rest hunger
   s=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'rest_short'});
   expect(s.world).toEqual(initial);
   s=gameReducer(s,{type:'START_ATTEMPT'});
@@ -105,6 +105,6 @@ describe('v0.8.33 Asia/Taipei civil clock as the only source of time',()=>{
   expect(ctx).not.toContain('WORLD_CLOCK_TICK');
   expect(resolve).not.toContain('advanceTime(');
   expect(read('src/game/state/storage.ts')).toContain("clockBasis:'taipei-realtime'");
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.34');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.35');
  });
 });

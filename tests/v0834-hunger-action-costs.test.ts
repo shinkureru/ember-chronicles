@@ -39,7 +39,13 @@ describe('v0.8.34 single-sourced hunger price and bounded state',()=>{
  it('has one cost for every town service and exactly preserves hot meal healing',()=>{
   expect(TOWN_SERVICES).toHaveLength(16);
   for(const service of TOWN_SERVICES){
-   const expected=service.id==='hot_meal'?0:Math.ceil(service.minutes/20);
+   const costByService:Record<string,number>={
+    rest_cot:3,rest_private:5,rest_short:2,
+    clinic_general:2,clinic_wounds:2,clinic_infection:3,clinic_poison:3,clinic_illness:3,
+    workshop_repair:3,workshop_upgrade:5,tavern_rumor:2,train:5,bath:3,
+    wash_clothes:4,hot_meal:0,canteen_talk:2,
+   };
+   const expected=costByService[service.id];
    expect(townServiceHungerCost(service.id)).toBe(expected);
   }
   const state=townState();
@@ -168,7 +174,7 @@ describe('v0.8.34 single-sourced hunger price and bounded state',()=>{
   ] as const)for(const token of parts)expect(read(file),file).toContain(token);
   expect(read('src/game/engine/resolve.ts')).not.toContain('advanceTime(');
   expect(read('src/app/GameContext.tsx')).toContain("type:'WORLD_CLOCK_SYNC'");
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.34');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.34');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.35');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.35');
  });
 });

@@ -72,6 +72,7 @@ export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,item
  if(getTownServiceLock(s,id,attribute,itemId))return null;
  const service=TOWN_SERVICES.find(x=>x.id===id)!;
  const town=ensureTownProgress(s),conds=ensureConditions(s),p=s.player;
+ const hungerBefore=p.hunger;
  const fee=getTownServiceFee(s,id,attribute,itemId);
  s.economy.coins-=fee;
  town.visits[service.facility]=(town.visits[service.facility]??0)+1;
@@ -151,6 +152,6 @@ export const applyTownService=(s:GameState,id:string,attribute?:AttributeId,item
  if(hungerDelta>0)applyHungerCost(s,hungerDelta);
  // The actual hunger state is authoritative, including the upper cap.
  s.lastEvent=message;
- s.log.push(`城鎮 · ${service.name}：花費 ${fee} 舊幣；飢餓 ${id==='hot_meal'?'-38':`+${hungerDelta}`}（上限 100，實際 ${s.player.hunger}）。`);
+ s.log.push(`城鎮 · ${service.name}：花費 ${fee} 舊幣；飢餓 ${p.hunger-hungerBefore>0?'+':''}${p.hunger-hungerBefore}（${hungerBefore}→${p.hunger}，上限 100）。`);
  return {message,minutes:service.minutes,hungerDelta:id==='hot_meal'?-38:hungerDelta};
 };

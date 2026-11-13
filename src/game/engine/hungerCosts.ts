@@ -22,10 +22,21 @@ export function actionHungerCost(choice:Pick<ActionChoice,'id'|'minutes'>):numbe
  if(choice.id==='loot_exit'||choice.id==='alley_loot_exit')return 0;
  return hungerCostFromMinutes(choice.minutes);
 }
+/** Passive recovery costs less hunger than strenuous field work.
+ * The original minute values remain as migration/balancing input only.
+ * All projections and reducer writes call this single function.
+ */
+export const HUNGER_REST_RATE=0.5;
+export const HUNGER_MEDICAL_RATE=0.6;
 export function townServiceHungerCost(id:string):number{
- // Eating is already a recovery action: the existing meal always reduces hunger by 38.
  if(id==='hot_meal')return 0;
- return hungerCostFromMinutes(TOWN_SERVICES.find(service=>service.id===id)?.minutes??0);
+ const service=TOWN_SERVICES.find(item=>item.id===id);
+ if(!service)return 0;
+ const base=hungerCostFromMinutes(service.minutes);
+ if(base===0)return 0;
+ if(service.facility==='inn')return Math.max(1,Math.ceil(base*HUNGER_REST_RATE));
+ if(service.facility==='clinic')return Math.max(1,Math.ceil(base*HUNGER_MEDICAL_RATE));
+ return base;
 }
 export function projectedHunger(before:number,delta:number):number{
  return Math.max(0,Math.min(HUNGER_MAX,Math.round(before)+Math.round(delta)));

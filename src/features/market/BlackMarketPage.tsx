@@ -171,7 +171,7 @@ export default function BlackMarketPage(){
       </span>
       <span className="market-v0824__switch-label market-v0824__switch-label--sell" aria-hidden="true"><span>販</span><span>賣</span></span>
      </button>
-     <div className="market-v12__time market-v0823__time market-v0826__shift market-v0828__rail-shift" aria-label="世界時間與商人輪班">
+     <div className="market-v12__time market-v0823__time market-v0826__shift market-v0828__rail-shift" aria-label="台北真實時間與商人輪班">
       <div className="market-v0826__now"><Clock3 size={12}/><span>{worldPhase(s.world.minute)} {worldClock(s.world.minute)}</span></div>
       <MarketShiftCountdown minute={s.world.minute} compact/>
      </div>

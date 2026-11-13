@@ -14,7 +14,7 @@ export default function MarketShiftCountdown({minute,compact=false}:{minute:numb
   <small className="market-v0828__countdown-vendor" title={shift.nextVendorRole}>{shift.nextVendorName}</small>
  </div>;
  return <div className="market-v0826__countdown" role="status"
-  aria-label={`距離黑市下次輪班還有 ${shift.remainingMinutes} 分鐘遊戲時間。下一班 ${shift.nextPhaseName} ${shift.nextStartClock}，商人 ${shift.nextVendorName}`}>
+  aria-label={`距離黑市下次輪班還有 ${shift.remainingMinutes} 分鐘（台北時間）。下一班 ${shift.nextPhaseName} ${shift.nextStartClock}，商人 ${shift.nextVendorName}`}>
   <div className="market-v0826__countdown-main">
    <span>下一位商人</span>
    <strong title="依台北真實時間計算">{shift.remainingClock}</strong>

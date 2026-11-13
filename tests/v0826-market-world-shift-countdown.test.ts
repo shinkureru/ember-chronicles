@@ -114,7 +114,7 @@ describe('v0.8.26 left-bottom scene UI and existing game safety',()=>{
   for(const token of [
    'import MarketShiftCountdown from',
    'market-v12__time market-v0823__time market-v0826__shift',
-   '<MarketShiftCountdown minute={s.world.minute}/>',
+   '<MarketShiftCountdown minute={s.world.minute} compact/>',
    'worldPhase(s.world.minute)','worldClock(s.world.minute)',
    'getScheduledVendor(s.world.minute)',
    'useEffect(()=>setSelectedId(null),[mode,kind,narrow,vendor.id])',

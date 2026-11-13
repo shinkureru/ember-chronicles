@@ -131,7 +131,7 @@ describe('v0.8.27 fluorescent bar and final responsive behavior',()=>{
   expect(grid).toContain('grid-template-columns:repeat(2,minmax(0,1fr))!important');
   for(const token of [
    'market-v0824__exchange','market-v0823__meeting','market-v0823__favor',
-   'market-v0826__shift','<MarketShiftCountdown minute={s.world.minute}/>',
+   'market-v0826__shift','<MarketShiftCountdown minute={s.world.minute} compact/>',
    'market-v10__footer','GameUtilities','ReturnMainLink',
    "getBackpackMarketItemIds(s.bag).map(id=>",
    "mode==='buy'?vendor.sellItems",
@@ -139,8 +139,8 @@ describe('v0.8.27 fluorescent bar and final responsive behavior',()=>{
    "type:'MARKET_BUY'","type:'MARKET_SELL'",
   ])expect(page).toContain(token);
   expect(read('src/styles/main.scss').trimEnd().endsWith('@import "v0827-market-final-polish";')).toBe(true);
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.27');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.27');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe(JSON.parse(read('package.json')).version);
  });
  it('does not alter game state when querying shifts and still protects bag vs warehouse on sale',()=>{
   const state=makeInitialState('journalist');state.world.minute=16*60;

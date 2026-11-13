@@ -1,5 +1,17 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜v0.8.12 第三批：地下診所療程結果精簡（本分支待 Merge）
+
+- **已核對最新 GitHub**：`main` `42d7f059097fed3998bbb84550ee399a32a7e405`，上一批 PR #37／v0.8.11 已合併；其 CI、Pages 部署成功；新分支建立前 open PR 0。前一條標註「待 Merge」屬舊時間點，不可當成現況。
+- **本輪唯一分支**：`ui/v0.8.12-clinic-compact-outcomes`，版本 package 與 lock = `0.8.12`。只調「地下診所 → 診療 → 預計治療結果」的卡片密度，不動每日委託、專屬藥房、黑市或修理工坊。
+- 新增 `src/styles/_v0812-clinic-compact-outcomes.scss`（位於 `main.scss` 最後），仍保留 v0.8.6 一欄上下的完整雙色長條、生命與外傷原有顏色、前後數值與改善量，但將標籤＋變化與前後數字移至同一資訊行，下一行用 9px 高雙色條。收窄卡片、標籤和清單間距，避免大面積空白；手機 ≤360px 改三行安全布局，過長仍自然換行，無裁切。
+- 完全不修改 `ClinicDialog.tsx` JSX 或 `game/engine/clinic.ts`，沿用原本 `clinicTreatmentOutcomes`、`getTownServiceLock`、`useClinicDragScroll` 和減少動畫規則。治療/交易/世界時間/存檔均無變更。測試 `tests/v0812-clinic-compact-outcomes.test.ts` 新增既有色條、佈局斷點、直接療效 6/10→10/10 與外傷 6→4、舊操作保留檢查；舊 v0811 固定版本測試改 0.8.x 向後相容。
+- QA 文件：`docs/V0812_CLINIC_COMPACT_QA.md`。**CI、PR 狀態與手機/桌面人工 QA 以 GitHub 與使用者實際結果為準**，未合併前不得稱已部署或完成瀏覽器驗收。
+- 下一批 v0.8.13 黑市商品陳列擴大及卡片縮小，需要使用者自行 Merge v0.8.12 並明確通知後才開始，禁止同輪提前開第四批。
+
+---
+
+
 ## 2026-11-13｜v0.8.11 第二批：工坊緊湊四部位＋獨立詳情（本批待 Merge）
 
 - **本輪真實 GitHub 基準**：`main` `59a952d43e7ae49bfcf301cf7b8fb0945b5b3548`，上一批 **PR #36 已合併**、Pages 部署成功、開始時 open PR 0；`v0.8.10` 舊標題的「待 Merge」是歷史紀錄。使用者已明確通知繼續第二批。

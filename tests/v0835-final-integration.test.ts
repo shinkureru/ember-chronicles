@@ -133,6 +133,7 @@ describe('v0.8.35 final integration: real time, hunger, equipment, market and UI
  });
  it('resets daily rest at Taipei midnight without modifying hunger or rerolling stocks',()=>{
   const state=inTown();state.player.hunger=30;
+  state.world.day=getTaipeiClock(Date.parse('2026-11-12T16:00:00Z')).day;
   const used=gameReducer(state,{type:'TOWN_SERVICE',serviceId:'rest_cot'});
   expect(remainingDailyRest(used)).toBe(1);
   const usedAgain=gameReducer(used,{type:'TOWN_SERVICE',serviceId:'rest_short'});

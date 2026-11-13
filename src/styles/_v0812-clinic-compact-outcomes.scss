@@ -1,0 +1,147 @@
+/* v0.8.12 — Small treatment result cards only.
+   Retain the v0.8.6 single-column, full-width two-tone meter design;
+   shorten each result by placing values beside the title/delta.
+   Daily requests, pharmacy, scene, and all treatment calculations are untouched. */
+
+.clinic-dialog .clinic-dialog__treatment{
+ gap:7px;
+ min-width:0;
+}
+.clinic-dialog .clinic-dialog__treatment > .clinic-dialog__cards{
+ gap:7px;
+ min-width:0;
+}
+.clinic-dialog .clinic-dialog__card--treatment{
+ gap:7px;
+ padding:9px 10px;
+}
+.clinic-dialog .clinic-dialog__card--treatment > .clinic-dialog__therapy-heading{
+ gap:2px;
+ min-width:0!important;
+}
+.clinic-dialog .clinic-dialog__card--treatment > .clinic-dialog__therapy-heading > strong{
+ line-height:1.4;
+}
+.clinic-dialog .clinic-dialog__card--treatment > .clinic-dialog__therapy-heading > small{
+ line-height:1.45;
+}
+.clinic-dialog .clinic-dialog__card--treatment > button{
+ min-height:37px;
+ padding:7px 9px;
+}
+.clinic-dialog .clinic-dialog__card--treatment > .clinic-dialog__outcomes{
+ box-sizing:border-box;
+ grid-column:1/-1;
+ width:100%;
+ min-width:0!important;
+ padding-top:7px;
+ border-top:1px solid #43535a;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcomes-label{
+ display:block!important;
+ margin:0 0 5px;
+ font-size:10px!important;
+ line-height:1.4;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-grid{
+ /* Keep v0.8.6 stacked full-width bars. */
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ gap:6px;
+ min-width:0;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome{
+ /* A single compact readout row and a full-width change track below. */
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) max-content;
+ grid-template-rows:auto auto;
+ align-items:center;
+ column-gap:9px;
+ row-gap:7px;
+ min-width:0;
+ min-height:0!important;
+ padding:8px 10px!important;
+ border-radius:7px;
+ box-sizing:border-box;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-head{
+ grid-column:1;
+ grid-row:1;
+ display:flex;
+ align-items:center;
+ flex-wrap:wrap;
+ justify-content:flex-start;
+ gap:3px 8px;
+ min-width:0;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-head strong{
+ font-size:11px!important;
+ line-height:1.35;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-head small{
+ font-size:10px!important;
+ line-height:1.35;
+ white-space:nowrap;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-numbers{
+ grid-column:2;
+ grid-row:1;
+ display:flex;
+ flex-wrap:nowrap;
+ align-items:center;
+ justify-content:flex-end;
+ gap:5px;
+ min-width:0;
+ margin:0;
+ font:750 clamp(13px,2.7vw,16px)/1.3 Inter,'Noto Sans TC',sans-serif;
+ font-variant-numeric:tabular-nums;
+ white-space:nowrap;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-numbers svg{
+ width:13px;
+ height:13px;
+ flex:none;
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-track{
+ grid-column:1/-1;
+ grid-row:2;
+ width:100%;
+ min-width:0;
+ height:9px;
+ border-radius:12px;
+ /* The current and change segments keep their existing per-condition colors. */
+}
+.clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-empty{
+ padding:3px 0;
+ font-size:10px;
+ line-height:1.5;
+}
+/* Don't squeeze long medical labels or numeric values into each other.
+   Ultra-narrow screens may use a second text line; never clip either. */
+@media(max-width:360px){
+ .clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome{
+  grid-template-columns:minmax(0,1fr);
+  grid-template-rows:auto auto auto;
+  row-gap:4px;
+  padding:7px 8px!important;
+ }
+ .clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-head{
+  grid-column:1;
+  grid-row:1;
+ }
+ .clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-numbers{
+  grid-column:1;
+  grid-row:2;
+  justify-content:flex-start;
+  font-size:13px;
+ }
+ .clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-track{
+  grid-row:3;
+ }
+}
+@media(max-height:650px){
+ .clinic-dialog .clinic-dialog__card--treatment{gap:6px;padding:8px 9px}
+ .clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcomes-label{margin-bottom:4px}
+ .clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome-grid{gap:5px}
+ .clinic-dialog .clinic-dialog__card--treatment .clinic-dialog__outcome{padding:7px 9px!important;row-gap:6px}
+}

@@ -66,6 +66,6 @@ describe('v0.8.11 compact and stable workshop dialog',()=>{
    "type:'TOWN_SERVICE'",'50 分鐘','材料 1 份'])
    expect(jsx).toContain(token);
   expect(file('src/styles/main.scss')).toContain('@import "v0811-workshop-compact"');
-  expect(JSON.parse(file('package.json')).version).toBe('0.8.11');
+  expect(JSON.parse(file('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });

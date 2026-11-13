@@ -1,0 +1,247 @@
+/* v0.8.13 — Black market merchandise view fills the user's highlighted area.
+   The marketplace table grows from the old 47% to the space remaining after
+   a compact 29% character encounter. Leave trading and filter logic alone. */
+
+.market-v13 .market-v12__scene{
+ display:flex;
+ flex:1 1 0;
+ flex-direction:column;
+ min-height:0;
+ overflow:hidden;
+}
+/* Keep both speakers, their dialogue and the secret-exchange setting present.
+   On a small viewport never let the meeting collapse into an unreadable strip. */
+.market-v13 .market-v12__meeting{
+ box-sizing:border-box;
+ flex:0 0 clamp(162px,29%,295px);
+ min-height:0;
+ overflow:hidden;
+}
+.market-v13 .market-v12__dialogue{
+ box-sizing:border-box;
+ bottom:34px;
+ left:4%;
+ right:4%;
+ max-height:clamp(31px,7dvh,47px);
+ padding:4px 9px;
+ line-height:1.4;
+ overflow-y:auto;
+ overflow-x:hidden;
+ overflow-wrap:anywhere;
+}
+/* Favour badge uses the bottom edge; the dialogue ends above that badge. */
+.market-v13 .market-v13__favor{
+ bottom:4px;
+ right:6px;
+ max-width:calc(100% - 12px);
+ padding:4px 7px;
+}
+.market-v13 .market-v12__table{
+ box-sizing:border-box;
+ flex:1 1 0;
+ min-height:0;
+ display:flex;
+ flex-direction:column;
+ gap:5px;
+ padding:6px 7px 5px;
+ border-top-width:4px;
+ overflow:hidden;
+}
+.market-v13 .market-v12__table-heading{
+ flex:0 0 auto;
+ min-width:0;
+ gap:7px;
+ line-height:1.5;
+}
+.market-v13 .market-v13__filter-wrap{
+ flex:0 0 auto;
+ min-width:0;
+ gap:4px;
+}
+.market-v13 .market-v13__filters{
+ gap:5px;
+}
+.market-v13 .market-v13__filters button{
+ min-height:29px;
+ padding:4px 3px;
+ font-size:11px;
+ border-radius:4px;
+}
+/* Scroll *only* the merchandise: filters and two trading modes remain usable. */
+.market-v13 .market-v12__table .market-v081__catalog{
+ display:grid!important;
+ flex:1 1 0;
+ min-height:0;
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ grid-auto-flow:row;
+ grid-auto-rows:clamp(88px,8.6dvh,100px);
+ align-content:start!important;
+ align-items:stretch!important;
+ justify-content:stretch!important;
+ column-gap:7px!important;
+ row-gap:7px!important;
+ padding:4px 5px 22px!important;
+ overflow-y:auto!important;
+ overflow-x:hidden!important;
+ overscroll-behavior-y:contain;
+ touch-action:pan-y;
+ scrollbar-width:none!important;
+ scroll-padding-block:5px;
+}
+.market-v13 .market-v12__table .market-v081__catalog::-webkit-scrollbar{
+ display:none!important;
+ width:0!important;
+}
+.market-v13 .market-v081__catalog .market-v12__offer{
+ box-sizing:border-box;
+ min-width:0!important;
+ min-height:0!important;
+ height:100%!important;
+ max-width:none!important;
+ margin:0!important;
+ padding:6px 6px!important;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:space-between;
+ gap:2px!important;
+ border-radius:7px!important;
+ border:1px solid #655c60;
+ overflow:hidden;
+ text-align:center;
+}
+.market-v13 .market-v081__catalog .market-v12__offer-type{
+ flex:0 0 auto;
+ align-self:flex-start;
+ min-width:0;
+ min-height:10px;
+ line-height:1.25;
+ font-size:8px;
+ letter-spacing:.07em;
+}
+.market-v13 .market-v081__catalog .market-v12__offer-icon{
+ flex:1 1 auto;
+ display:grid;
+ place-items:center;
+ width:100%;
+ min-width:0;
+ min-height:17px;
+ max-height:37px;
+ line-height:1;
+ font-size:clamp(23px,4vw,31px);
+ filter:none;
+}
+.market-v13 .market-v081__catalog .market-v12__offer-icon svg{
+ width:auto;
+ height:auto;
+ max-width:35px;
+ max-height:35px;
+}
+/* Reserve two name lines so the price never changes vertical position. */
+.market-v13 .market-v081__catalog .market-v12__offer > strong{
+ box-sizing:border-box;
+ display:-webkit-box;
+ flex:0 0 auto;
+ -webkit-box-orient:vertical;
+ -webkit-line-clamp:2;
+ overflow:hidden;
+ min-width:0;
+ width:100%;
+ min-height:2.55em;
+ max-height:2.55em;
+ font-size:clamp(10px,2vw,11px);
+ font-weight:750;
+ line-height:1.275;
+ letter-spacing:0;
+ overflow-wrap:anywhere;
+ text-align:center;
+ color:#ede5e4;
+}
+.market-v13 .market-v081__catalog .market-v12__offer > small{
+ flex:0 0 auto;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:3px;
+ width:100%;
+ min-width:0;
+ min-height:13px;
+ font:750 10px/1.25 Inter,'Noto Sans TC',sans-serif;
+ color:#e7bd9c;
+ font-variant-numeric:tabular-nums;
+ white-space:nowrap;
+}
+.market-v13 .market-v081__catalog .market-v12__offer > small svg{
+ flex:none;
+ width:10px;
+ height:10px;
+}
+/* A quiet hint never blocks the last row or filters. */
+.market-v13 .market-v081__scroll-hint{
+ bottom:2px;
+ left:18%;
+ right:18%;
+ z-index:2;
+ padding:2px 6px;
+ font-size:9px;
+ line-height:1.35;
+ background:linear-gradient(90deg,transparent,#111115f2 13% 87%,transparent);
+ pointer-events:none;
+}
+@media(max-width:375px){
+ .market-v13 .market-v12__table .market-v081__catalog{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-auto-rows:clamp(93px,10dvh,106px);
+  gap:6px!important;
+  padding:4px 4px 22px!important;
+ }
+ .market-v13 .market-v081__catalog .market-v12__offer{
+  padding:6px 5px!important;
+ }
+ .market-v13 .market-v081__catalog .market-v12__offer > strong{
+  font-size:11px;
+ }
+ .market-v13 .market-v12__table{padding:5px 5px 4px}
+ .market-v13 .market-v13__filters{gap:3px}
+ .market-v13 .market-v13__filters button{min-height:27px;padding:3px 2px;font-size:10px}
+}
+@media(max-height:700px){
+ .market-v13 .market-v12__meeting{
+  flex-basis:clamp(145px,28%,200px);
+ }
+ .market-v13 .market-v12__dialogue{
+  bottom:30px;
+  max-height:34px;
+  font-size:10px;
+ }
+ .market-v13 .market-v12__table{
+  gap:4px;
+  padding-top:5px;
+ }
+ .market-v13 .market-v12__table .market-v081__catalog{
+  grid-auto-rows:88px;
+  row-gap:6px!important;
+  padding-bottom:18px!important;
+ }
+ .market-v13 .market-v13__filters button{min-height:26px}
+}
+@media(max-height:520px){
+ .market-v13 .market-v12__meeting{
+  flex-basis:135px;
+ }
+ .market-v13 .market-v12__dialogue{
+  bottom:27px;
+  max-height:30px;
+ }
+ .market-v13 .market-v12__table .market-v081__catalog{
+  grid-auto-rows:82px;
+ }
+ .market-v13 .market-v081__catalog .market-v12__offer{
+  padding:4px 5px!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .market-v13 .market-v081__catalog .market-v12__offer{
+  transition:none!important;
+ }
+}

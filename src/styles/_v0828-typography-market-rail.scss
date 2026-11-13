@@ -1,0 +1,201 @@
+/* v0.8.28 — all-game typography baseline:
+ * interactive/metadata UI: 400; labels, headings, stats: at most 500.
+ * Truly consequential story, danger and narrative headings remain emphatic.
+ * Keep weight adjustments separate from size, spacing, color, contrast and
+ * font-family so responsive layouts and component behavior are unaffected.
+ */
+.game-frame :is(button,a,input,textarea,select,option,label,small,[role="tab"],[role="button"]){
+ font-weight:400!important;
+}
+.game-frame :is(h1,h2,h3,h4,h5,h6,strong,b,output,summary,legend){
+ font-weight:500!important;
+}
+.game-frame :is(.eyebrow,.muted,.app-header__status,.market-v12__table-heading,.chapter-kicker){
+ font-weight:400!important;
+}
+/* Story emphasis is exceptional, explicit and local, not a blanket bold
+ * treatment applied to every card, level, item name, or numerical readout. */
+.game-frame :is(
+ .home-hero h1,
+ .chapter-hero h1,
+ .story-panel__scroll strong,
+ .game-story-modal blockquote strong,
+ .warning-panel strong,
+ .mission-exit-dialog h3,
+ .enemy-taunt-bubble span
+){
+ font-weight:700!important;
+}
+
+/* Leave every pixel of the merchant portrait available: move the existing
+ * world-clock/shift readout below buy/sell labels into unused left rail space.
+ * It shares the button's parent nav but is NOT a second interactive control.
+ * The full-height original button remains the only click target and the
+ * overlay is pointer-transparent, preserving click-anywhere mode switching. */
+.market-v13 .market-v12__modes.market-v0824__switch{
+ position:relative;
+ isolation:isolate;
+}
+.market-v13 .market-v0824__switch>.market-v12__time.market-v0823__time.market-v0826__shift.market-v0828__rail-shift{
+ position:absolute!important;
+ left:0!important;
+ right:0!important;
+ top:auto!important;
+ bottom:10px!important;
+ z-index:3;
+ width:100%!important;
+ max-width:100%!important;
+ height:auto;
+ min-width:0;
+ margin:0;
+ padding:0 3px;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ gap:3px;
+ border:0!important;
+ border-radius:0!important;
+ outline:0;
+ box-shadow:none!important;
+ background:none!important;
+ backdrop-filter:none!important;
+ color:#b8aaba;
+ pointer-events:none;
+ text-align:center;
+ white-space:normal;
+ transform:none;
+}
+.market-v13 .market-v0824__switch .market-v0826__now{
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ gap:2px;
+ width:100%;
+ max-width:100%;
+ font-size:8px;
+ font-weight:400!important;
+ white-space:nowrap;
+}
+.market-v13 .market-v0824__switch .market-v0826__now>svg{
+ width:9px;
+ height:9px;
+ flex:none;
+}
+.market-v13 .market-v0824__switch .market-v0826__now>span{
+ flex:1 1 auto;
+ min-width:0;
+ overflow:hidden;
+ text-overflow:clip;
+}
+.market-v13 .market-v0824__switch .market-v0826__countdown.market-v0828__countdown{
+ box-sizing:border-box;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:1px;
+ width:100%;
+ min-width:0;
+ margin:0;
+ padding:0;
+ border:0!important;
+ border-top:0!important;
+ border-radius:0;
+ box-shadow:none;
+ background:transparent;
+ color:#c7b5bd;
+ text-align:center;
+}
+.market-v0828__countdown-kicker{
+ font-size:8px;
+ line-height:1.2;
+ letter-spacing:.04em;
+ color:#bba1ad;
+}
+.market-v13 .market-v0828__countdown-value{
+ display:block;
+ color:#e9c79c;
+ font:500 clamp(12px,1.8vw,15px)/1.25 Inter,'Noto Sans TC',sans-serif;
+ font-variant-numeric:tabular-nums;
+ letter-spacing:0;
+ white-space:nowrap;
+}
+.market-v0828__countdown-time{
+ font:400 8px/1.3 Inter,sans-serif;
+ color:#b5a4b6;
+ font-variant-numeric:tabular-nums;
+ white-space:nowrap;
+}
+.market-v0828__countdown-vendor{
+ display:block;
+ width:100%;
+ min-width:0;
+ max-width:100%;
+ padding:0;
+ font:400 8px/1.3 'Noto Sans TC',sans-serif;
+ color:#d2bdc2;
+ text-align:center;
+ overflow:hidden;
+ text-overflow:ellipsis;
+ white-space:nowrap;
+}
+/* The arrow is about 60% of the v0.8.27 35px size.
+ * Mode labels and their travel/180deg SVG rotation are untouched. */
+.market-v13 .market-v0824__exchange .market-v0824__switch-arrow{
+ width:21px!important;
+ height:21px!important;
+ top:77px;
+}
+.market-v13 .market-v0824__exchange .market-v0824__switch-icon{
+ width:100%;
+ height:100%;
+ transform-origin:50% 50%;
+}
+@media(max-width:375px){
+ .market-v13 .market-v0824__exchange .market-v0824__switch-arrow{
+  width:19px!important;
+  height:19px!important;
+  top:79px;
+ }
+ .market-v13 .market-v0824__switch>.market-v0828__rail-shift{
+  bottom:6px!important;
+  padding:0 2px;
+ }
+ .market-v0828__countdown-value{font-size:12px}
+ .market-v0828__countdown-vendor{font-size:7px}
+}
+@media(max-height:700px){
+ .market-v13 .market-v0824__exchange .market-v0824__switch-arrow{
+  top:61px;
+  width:19px!important;
+  height:19px!important;
+ }
+ .market-v13 .market-v0824__switch>.market-v0828__rail-shift{
+  bottom:5px!important;
+  gap:1px;
+ }
+ .market-v13 .market-v0824__switch .market-v0826__countdown.market-v0828__countdown{
+  gap:0;
+ }
+}
+@media(max-height:520px){
+ .market-v13 .market-v0824__exchange .market-v0824__switch-arrow{
+  top:49px;
+  width:16px!important;
+  height:16px!important;
+ }
+ .market-v13 .market-v0824__switch>.market-v0828__rail-shift{
+  bottom:2px!important;
+ }
+ .market-v0828__countdown-kicker,
+ .market-v0828__countdown-time{display:none}
+ .market-v13 .market-v0828__countdown-value{font-size:11px}
+ .market-v0828__countdown-vendor{font-size:7px}
+}
+@media(prefers-reduced-motion:reduce){
+ .market-v13 .market-v0828__rail-shift,
+ .market-v13 .market-v0828__countdown{
+  transition:none!important;
+  animation:none!important;
+ }
+}

@@ -1,5 +1,18 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜第四輪第1批 v0.8.28：全域正常字重＋黑市倒數移入買賣 rail＋商人圖資 schema（本 PR 待使用者 Merge）
+
+- **開工 GitHub 狀態**：`main` `7257cdbff0333d4b74176eb1bfcbdb0582f463c3`；PR #53 v0.8.27 已 Merge，Pages success，開工 open PR=0。這輪新規劃八批，`docs/REALTIME_HUNGER_REDESIGN_ROADMAP.md` 逐批列出 v0.8.28～v0.8.35；不能自動開下一批。
+- **唯一分支** `ui/v0.8.28-typography-market-layout-vendor-schema`、package/lock `0.8.28`；本批只改 UI 基礎與展示資料，不涉及 `gameReducer`、`GameContext`、存檔、交易、飢餓或世界時間。用戶本輪提供兩張灰手羅恩工作台圖片，正式檔案尚未納入 repo（下一批 v0.8.29）；原黑市單圖 `black-market-merchant.webp` 是防毒面具商人的場景，目前舊 UI 仍使用全市場公用圖，等下一批才依 vendor 身分切換。
+- **字重全面控制**：新 `_v0828-typography-market-rail.scss` 最後 import，一般 buttons/links/labels/small = 400，UI headings / strong / b / outputs = 500，重要章節標題/故事內強調/警告/敵人敘事特例700，大小/字距/色彩均不動。不能簡單把所有敘事強制變普通，也不能只調整黑市字重。
+- **箭頭與倒數**：黑市 v0827 35px → 21px（小手機19px／矮16px），仍依原 180° SVG 自中心旋轉。原壓住商人主視覺的 `market-v0826__shift` 從 `market-v0823__meeting` 移到買賣 rail 底部空間，`MarketShiftCountdown` 支援 `compact`，只顯示當前世界時間、剩餘HH:MM、下一班時刻與真實姓名；透明無框、pointer-events:none，rail 整條 button 仍可點並支援鍵盤。**此時仍是舊遊戲世界時間，不是台北實時！** 新實時改制在第6批 v0.8.33。
+- **商人 schema**：既有 `MARKET_VENDORS` 五個正式名稱依次 `墨鏡阿黛 / 灰手羅恩 / 傷疤醫師 / 白髮信使 / 防毒面具`；新增 `visual:{appearance,sceneAssets,lighting}` 資料型別。只有 scavenger 現有 public WebP，其他 `sceneAssets:[]`，mechanic 標記 `workbench-weld`；不造假圖、不新增 NPC / 假商品。先前助手草案裡「墨鏡阿焦、縫骨瑪蕾、鉛鎖巴克、鴉羽寇比」並非 repo 正式角色，禁止擅自替換。
+- **將來飢餓規則核對**：現有 `player.hunger` 初始20，吃餅乾/罐頭 `hunger-20`、熱飯 `hunger-38`，`hunger>70` 當飢餓警告。新體力消耗應 `hunger +X`，而非先前規劃稿錯誤的減飢餓；本批不調代價。真實台北時鐘與一切時間加速移除放第6批，飢餓替代時間代價放第7批。
+- **驗證**：新 `tests/v0828-typography-market-rail-vendor-data.test.ts`；更新前批 v0826/27 版面與版本斷言但保留原世界時間/交易 reducer 測試。人工檢驗 `docs/V0828_TYPOGRAPHY_MARKET_RAIL_QA.md`。CI 必須完整 `npm run build`＋`npm test` 全綠；CI 不等於真實瀏覽器像素/觸控 QA。完成後只開一個 PR，使用者自行 Merge，**不得自行 Merge 或提前進第2批**。
+
+---
+
+
 ## 2026-11-13｜黑市第三輪第6批（最後一批）v0.8.27：最終視覺與六批整合驗收（本 PR 待使用者 Merge）
 
 - **GitHub 開工現況**：`main` `6f93b100a1ae3beeebb571b4100197328d26309b`，前批 PR #52 v0.8.26 已 Merge、Pages success，開工時 open PR=0。下方 v0826 及之前「待 Merge」是歷史時點，日後新請求仍須實際查最新 main/PR/交接。

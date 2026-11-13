@@ -132,10 +132,6 @@ export default function BlackMarketPage(){
     <p className="market-v12__dialogue market-v0823__dialogue market-v0825__speech" aria-label="商人自言自語">
      <MarketIdleSpeech key={vendor.id} vendor={vendor}/>
     </p>
-    <div className="market-v12__time market-v0823__time market-v0826__shift">
-     <div className="market-v0826__now"><Clock3 size={12}/><span>{worldPhase(s.world.minute)} {worldClock(s.world.minute)}</span></div>
-     <MarketShiftCountdown minute={s.world.minute}/>
-    </div>
     <div className="market-v13__favor market-v0823__favor">
      <div className="market-v0823__favor-line">
       <HeartHandshake size={15}/><span>商人好感度</span>
@@ -159,6 +155,10 @@ export default function BlackMarketPage(){
       </span>
       <span className="market-v0824__switch-label market-v0824__switch-label--sell" aria-hidden="true"><span>販</span><span>賣</span></span>
      </button>
+     <div className="market-v12__time market-v0823__time market-v0826__shift market-v0828__rail-shift" aria-label="世界時間與商人輪班">
+      <div className="market-v0826__now"><Clock3 size={12}/><span>{worldPhase(s.world.minute)} {worldClock(s.world.minute)}</span></div>
+      <MarketShiftCountdown minute={s.world.minute} compact/>
+     </div>
     </nav>
     <div className={`market-v12__table ${switchCount>0?`market-v0825__catalog market-v0825__catalog--${mode}`:''}`}>
     <div className="market-v12__table-heading"><span>EXCHANGE / {mode===null?'WAITING':mode.toUpperCase()}</span><span>{mode===null?'選擇交易方式':'點選卡片查看詳細內容'}</span></div>

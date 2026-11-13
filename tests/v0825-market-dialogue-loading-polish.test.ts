@@ -118,10 +118,11 @@ describe('v0.8.25 centered copper switch and gentle synchronized bounce',()=>{
    '<span>購</span><span>買</span>',
    '<span>販</span><span>賣</span>',
    '<MarketTradeSwitchIcon/>',
-   '<span className="market-v0824__switch-foot">切換</span>',
+   '<MarketTradeSwitchIcon/>',
    "onClick={()=>chooseMode(mode==='sell'?'buy':'sell')}",
    "aria-pressed={mode==='sell'}",
   ])expect(page).toContain(token);
+  expect(page).not.toContain('<span className="market-v0824__switch-foot">切換</span>');
   for(const token of [
    'left:0!important','right:0!important',
    'display:flex!important','flex-direction:column!important',

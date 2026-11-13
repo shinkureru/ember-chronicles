@@ -156,7 +156,6 @@ export default function BlackMarketPage(){
       <span className="market-v0824__switch-label market-v0824__switch-label--buy" aria-hidden="true"><span>購</span><span>買</span></span>
       <span className="market-v0824__switch-arrow" aria-hidden="true">
        <MarketTradeSwitchIcon/>
-       <span className="market-v0824__switch-foot">切換</span>
       </span>
       <span className="market-v0824__switch-label market-v0824__switch-label--sell" aria-hidden="true"><span>販</span><span>賣</span></span>
      </button>
@@ -182,11 +181,12 @@ export default function BlackMarketPage(){
        onPointerDown={offersScroll.onPointerDown} onPointerMove={offersScroll.onPointerMove}
        onPointerUp={offersScroll.onPointerUp} onPointerCancel={offersScroll.onPointerCancel}
        onClickCapture={offersScroll.onClickCapture}>
-      {filteredOffers.map(offer=>{
+      {filteredOffers.map((offer,index)=>{
        const appearance=getMarketProductPresentation(offer.type,offer.id);
        const count=formatMarketOfferQuantity(offer.type,mode,offer.available);
        return <button type="button" key={offer.type+offer.id}
-        className={`market-v12__offer market-v0822__product market-v0822__product--${appearance.tier} ${offer.canTrade?'':'is-unavailable'}`}
+        className={`market-v12__offer market-v0822__product market-v0827__wave-item market-v0822__product--${appearance.tier} ${offer.canTrade?'':'is-unavailable'}`}
+        style={{animationDelay:`${Math.min(index,28)*66}ms`}}
         onClick={()=>{setSelectedId(offer.id);playCue('select')}}
         title={offer.canTrade?'點擊查看交易資訊':offer.reason}
         aria-label={`${offer.name}，${appearance.name}階，${appearance.isDisplayOnly?'展示級別':'卡牌等級'} ${appearance.level}，${mode==='buy'?'庫存':'持有'} ${count}，${offer.price} 舊幣${offer.canTrade?'':`，無法交易：${offer.reason}`}`}>

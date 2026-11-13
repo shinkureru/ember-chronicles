@@ -10,11 +10,13 @@ export default function BlackMarketSceneArt(){
   <defs>
    <radialGradient id="market-v0823-warm"><stop offset="0" stopColor="#ffeab4" stopOpacity=".49"/><stop offset=".42" stopColor="#ffbe66" stopOpacity=".18"/><stop offset="1" stopColor="#ffbe66" stopOpacity="0"/></radialGradient>
    <radialGradient id="market-v0823-cold"><stop offset="0" stopColor="#b7eaf7" stopOpacity=".28"/><stop offset=".53" stopColor="#6bb5d5" stopOpacity=".12"/><stop offset="1" stopColor="#6bb5d5" stopOpacity="0"/></radialGradient>
+   <radialGradient id="market-v0827-fluorescent"><stop offset="0" stopColor="#efffff" stopOpacity=".48"/><stop offset=".27" stopColor="#bdeefa" stopOpacity=".29"/><stop offset=".68" stopColor="#91c9de" stopOpacity=".12"/><stop offset="1" stopColor="#84bcd6" stopOpacity="0"/></radialGradient>
    <radialGradient id="market-v0823-violet"><stop offset="0" stopColor="#eac6ff" stopOpacity=".91"/><stop offset=".32" stopColor="#b66df9" stopOpacity=".55"/><stop offset="1" stopColor="#7633c8" stopOpacity="0"/></radialGradient>
   </defs>
   <image href={imageUrl} width="960" height="536" x="0" y="0" preserveAspectRatio="none"/>
   <ellipse className="market-v0823__warm-light" cx="529" cy="51" rx="130" ry="97" fill="url(#market-v0823-warm)"/>
   <ellipse className="market-v0823__cold-light" cx="202" cy="67" rx="204" ry="99" fill="url(#market-v0823-cold)"/>
+  <ellipse className="market-v0827__fluorescent-bloom" cx="189" cy="88" rx="160" ry="50" transform="rotate(13 189 88)" fill="url(#market-v0827-fluorescent)"/>
   <g className="market-v0823__eyes">
    <ellipse cx="335" cy="121" rx="34" ry="26" fill="url(#market-v0823-violet)"/>
    <ellipse cx="384" cy="128" rx="25" ry="25" fill="url(#market-v0823-violet)"/>

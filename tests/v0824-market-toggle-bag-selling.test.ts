@@ -20,7 +20,7 @@ describe('v0.8.24 black market whole-rail switch',()=>{
    'market-v0824__toggle','aria-pressed={mode===\'sell\'}',
    'aria-label={mode===\'sell\'?','onClick={()=>chooseMode(mode===\'sell\'?\'buy\':\'sell\')}',
    'market-v0824__switch-label--buy','market-v0824__switch-label--sell',
-   '>購買</span>','>販賣</span>','<MarketTradeSwitchIcon/>',
+   '<span>購</span><span>買</span>','<span>販</span><span>賣</span>','<MarketTradeSwitchIcon/>',
    "setKind('all')","setNarrow('any')","setMore(false)","setSelectedId(null)",
    'offersScroll.scrollRef.current?.scrollTo({top:0})',
   ])expect(ui).toContain(s);
@@ -143,6 +143,6 @@ describe('v0.8.24 seller catalog equals the actual backpack, not vendor whitelis
   ])expect(ui).toContain(str);
   expect(MARKET_VENDORS).toHaveLength(5);
   expect(new Set(MARKET_VENDORS.map(v=>v.id)).size).toBe(5);
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.24');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });

@@ -1,5 +1,18 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜黑市第三輪第4批 v0.8.25：自言自語＋左 rail 置中＋輕彈跳＋全螢幕讀取（本 PR 待 Merge）
+
+- **GitHub 基準**：`main` `2563e63753cc3bdad90da5dc3a1a92d20978c38f`；PR #50 v0.8.24 已 Merge、最新 Pages 部署成功，開工前 open PR=0。下方 v0824「待 Merge」是歷史狀態，不能略過下一次 GitHub 核對。
+- 本輪黑市改版依 `docs/BLACK_MARKET_REDESIGN_ROADMAP.md` **六批**，本次唯一 `ui/v0.8.25-market-dialogue-loading-polish`（package+lock 版本 `0.8.25`），包含原排定第4批與使用者 2026-11-13 本回合新追加：左側購買/販賣文字**水平置中且靠近 icon**、圖3旋轉箭頭中心放入縮小的「切換」而不跟著旋轉、模式變更時右側商品表格微彈跳、黑市初次進入全螢幕 loading、商人自言自語**只留陰影/描邊文字，移除框/背景**。本批全部整合，不挪往下一批。
+- 新 `src/features/market/marketIdleLines.ts` 每位五商人保留原 `vendor.line` 作第1句+9句個別自語=各10句，`getMarketIdleLine` 可循環；`MarketIdleSpeech.tsx` 用 `MARKET_IDLE_INTERVAL_MS=10_000` 真實秒輪播、`visibilitychange` 後台停止/回前台恢復、effect 清理，掛載 `key={vendor.id}` 確保換商人重設；世界時間/輪班沒有被 timer 推進。CSS `.market-v0825__speech` 消除原場景舊對話框 border/background，強化文字影與微描邊。
+- 新 `useMarketSceneLoad.ts` 預載 `BLACK_MARKET_SCENE_URL` 之實際本地 WebP、等 `Image.onload` + `decode` 才顯示完整市場；資料全部來自同步已初始化 `useGame`（不新增假載入2秒）。15秒失敗、資產損壞或 timeout 改顯示有「重新載入／返回主畫面」的錯誤畫面；cleanup onload/onerror/timeout。新 `MarketLoadingScreen.tsx` 深色 `position:fixed` 全視窗、載入/錯誤有 aria，主市場不提前掛載。原場景使用原 BASE_URL 路徑，`BlackMarketSceneArt.tsx` 匯出統一 URL 常數。
+- `BlackMarketPage.tsx` 中 `market-v0824__switch-label--buy/sell` 各用兩個獨立中文字 span；新 CSS flex horizontal center 去掉舊 writing-mode 的偏位。icon 仍是用戶圖3向量輪廓 `MarketTradeSwitchIcon`，只讓 SVG 自心旋轉180°；「切換」作為置中的兄弟元素保持不旋轉；約 109px 上下交換、矮畫面微調。真正買賣切換時才 `setSwitchCount`，右側貨架 `market-v0825__catalog--buy/sell` 分別用不同名的 0.4s 微幅 bounce，減少動效停用，原 mode/分類/捲動/交易保護與背包販售都保留。
+- 新 `src/styles/_v0825-market-dialogue-loading-polish.scss` 最後載入；沒有重做 v0822 商品卡/四階級、v0823 場景燈眼/好感或 v0824 背包販售/reducer，也不改遊戲世界時間。新 `tests/v0825-market-dialogue-loading-polish.test.ts` 驗各商人10句、timer/清理、圖片載入/失敗/重試、布局、bounce及原交易；更新舊 v0823/v0824 靜態斷言以符合新 UI 但不刪其交易與場景回歸。QA `docs/V0825_MARKET_DIALOGUE_LOADING_QA.md`。
+- **剩下的批次排程不變**：第5批 `v0.8.26` 單獨實作下次商人到班的**遊戲世界時間**倒數（非每10秒台詞），第6批 `v0.8.27` 整頁 RWD、動畫/長字/操控驗收。不自動追加批次；第4批完成 CI (`npm run build`+`npm test`) 後只交一個 PR，**不自行 Merge**。待使用者明確 Merge 通知後才先重新核對 main/PR/交接/黑市程式並續做。
+
+---
+
+
 ## 2026-11-13｜黑市第三輪第3批 v0.8.24：左側買賣切換與背包販售（本 PR 待使用者 Merge）
 
 - **開工核對**：GitHub `main` `0d210bdd1edbee9cc00956c7c5c83f91ab5fba60`，PR #49 v0.8.23 已 Merge、Pages 成功，open PR 0。下方任何「待 Merge」是各歷史批次提交當時狀態；未來繼續仍必須先查實際 GitHub。

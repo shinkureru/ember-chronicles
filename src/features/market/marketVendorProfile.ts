@@ -15,8 +15,8 @@ export type MarketVendorSceneFallback='neutral-environment'|'none';
 export function getMarketVendorProfile(vendor:MarketVendor){
  const index=MARKET_SHIFT_START_MINUTES.findIndex(minute=>getScheduledVendor(minute).id===vendor.id);
  if(index<0)throw Error(`Unknown black-market schedule: ${vendor.id}`);
- const start=MARKET_SHIFT_START_MINUTES[index];
- const end=MARKET_SHIFT_START_MINUTES[(index+1)%MARKET_SHIFT_START_MINUTES.length];
+ const start=MARKET_SHIFT_START_MINUTES[index]!;
+ const end=MARKET_SHIFT_START_MINUTES[(index+1)%MARKET_SHIFT_START_MINUTES.length]!;
  const count=vendor.visual.sceneAssets.length;
  const status:MarketVendorSceneStatus=count===0?'missing':count<MARKET_VENDOR_SCENE_TARGET?'partial':'complete';
  const fallback:MarketVendorSceneFallback=count===0?'neutral-environment':'none';

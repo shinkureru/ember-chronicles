@@ -90,7 +90,7 @@ export default function ActionDecision({actions,state,selected,skillId,skillCoun
       <div className="action-object-panel__stats">
        <strong>{preview?.chance}% <small>成功率</small></strong>
        <span>體力 -{preview?.staminaCost} · 膽量 {preview&&preview.courageDelta>0?'+':''}{preview?.courageDelta}</span>
-       <span>飢餓 {preview?signedHunger(preview.hungerCost):'+0'}（{state.player.hunger}→{preview?.projectedHunger??state.player.hunger}） · 資源 {preview&&preview.resourceCost<=0?'+':''}{preview&&-preview.resourceCost}</span>
+       <span>飢餓 {preview?signedHunger(preview.appliedHungerCost):'+0'}（{state.player.hunger}→{preview?.projectedHunger??state.player.hunger}，原成本 +{preview?.hungerCost??0}） · 資源 {preview&&preview.resourceCost<=0?'+':''}{preview&&-preview.resourceCost}</span>
        {preview&&hungerRisk(state.player.hunger,preview.projectedHunger)&&<span className="v0834-hunger-risk" role="status">{hungerRisk(state.player.hunger,preview.projectedHunger)?.title} · {hungerRisk(state.player.hunger,preview.projectedHunger)?.detail}</span>}
         {selected.attackCardId&&<span>攻擊傷害 {preview?.damage??0} · 對方生命 {state.enemy.health}/{state.enemy.maxHealth}</span>}
        {selected.lootSource&&hasSearchedBefore(state,selected.lootSource)&&<span>剩餘搜刮次數：{remainingSearches(state,selected.lootSource)}</span>}

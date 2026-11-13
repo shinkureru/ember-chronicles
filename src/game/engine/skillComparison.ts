@@ -29,7 +29,7 @@ export const getSkillComparison = (state:GameState, action:ActionChoice, skillId
       item('chance','成功率',original.chance,enhanced.chance,'%',true),
       item('stamina','體力消耗',original.staminaCost,enhanced.staminaCost,'',false),
       item('courage','膽量變化',original.courageDelta,enhanced.courageDelta,'',true),
-      item('hunger','飢餓代價',original.hungerCost,enhanced.hungerCost,'',false),
+      item('hunger','實際飢餓變化',original.appliedHungerCost,enhanced.appliedHungerCost,'',false),
       item('resource','剩餘資源',resource(original.resourceCost),resource(enhanced.resourceCost),'',true),
     ],
   };

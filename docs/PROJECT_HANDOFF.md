@@ -1,5 +1,17 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜黑市第三輪第3批 v0.8.24：左側買賣切換與背包販售（本 PR 待使用者 Merge）
+
+- **開工核對**：GitHub `main` `0d210bdd1edbee9cc00956c7c5c83f91ab5fba60`，PR #49 v0.8.23 已 Merge、Pages 成功，open PR 0。下方任何「待 Merge」是各歷史批次提交當時狀態；未來繼續仍必須先查實際 GitHub。
+- **唯一分支** `ui/v0.8.24-market-toggle-and-bag-selling`，package/lock `0.8.24`，黑市六批第3批。新 `MarketTradeSwitchIcon.tsx` 使用用戶圖3 `circle.png` 512×512透明 icon **向量描邊後保持原兩個循環箭頭輪廓**，用 `currentColor` 染銅金；新 `_v0824-market-toggle.scss` 最後匯入。商品貨架左邊新增一條整區可點的 `market-v0824__switch`：買/賣文字互換上下位置、啟用放大與亮色、停用縮小/灰淡，SVG 以自身中心旋轉180°。保留 `prefers-reduced-motion`、鍵盤焦點、觸控。原底部兩個買/賣鈕移除，統一使用 `chooseMode` 重置篩選/詳情/商品捲動。
+- **使用者強制要求**：販賣模式右側改為**玩家背包 `s.bag` 所有數量 >0 的實體物品**，不再由商人 `vendor.buyItems` 決定是否「顯示」，不混入只有 `s.warehouse` 的物品。新 `marketSellInventory.ts` 純函式區分背包物品陳列與商人的收購政策。受保護/已裝備/備戰唯一必要武器、不被當班商人收購的背包物品**仍可見**，但 `canTrade=false`，開詳細窗顯示真實禁售原因並 disabled 確認。購買頁照舊使用商人的 `sellItems` 和真實庫存/舊幣。
+- **必要 reducer 同步修正**：`src/game/engine/resolve.ts` 的 `MARKET_SELL_ITEM` 過去優先扣倉庫造成列表與交易來源錯位，現在**僅扣 `s.bag`**，無背包存量則拒絕出售。仍保留當班驗證/商人 whitelist/保護裝備/備戰唯一武器、真實價格、好感、經驗與存檔 schema。卡牌複本使用獨立 `ownedCards`：只顯示複本 >0，商人不收購時仍可見但禁賣，`MARKET_SELL` guard 不改。
+- 專項 `tests/v0824-market-toggle-bag-selling.test.ts` 驗證模式切換/PNG輪廓/180度/RWD減少動畫、背包與倉庫差異（bag1/warehouse4 只扣 bag，warehouse only 拒絕）、商人不收購/受保護拒絕、真實卡複本流程。更新前批 `tests/v0823-market-cinematic-scene.test.ts` 固定版本斷言改 `0.8.x`。QA `docs/V0824_MARKET_SWITCH_BAG_SELL_QA.md`，完整六批規劃仍在 `docs/BLACK_MARKET_REDESIGN_ROADMAP.md`。
+- **停點**：本批單一 PR、CI npm run build/test 全綠後停，不自動合併。使用者合併並通知後，下一批 **v0.8.25 商人十句自言自語，每10秒切換並循環**；切換商人應清理計時器。接續前要讀最新 main、PR、交接檔/相關 TSX/CSS/測試，不提前做第5批輪班倒數。
+
+---
+
+
 ## 2026-11-13｜黑市第三輪第2批 v0.8.23：用戶場景圖片、紫色眼光與動態燈光（本 PR 待 Merge）
 
 - **GitHub 最新開工核對**：`main` `f540c94df0d28ca9e0b374457724cd378de001d9`；前批 PR #48／v0.8.22 已 Merge，Pages 部署成功，開工前 open PR 0。下方舊條目的「待 Merge」是歷史時點資訊；每批必須重新查最新 main/PR/交接、程式和測試。

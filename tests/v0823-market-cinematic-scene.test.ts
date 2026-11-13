@@ -96,6 +96,6 @@ describe('v0.8.23 locally bundled cinematic black market scene',()=>{
    "type:'MARKET_BUY'","type:'MARKET_SELL'",
    'ReturnMainLink','GameUtilities','selected&&mode&&',
   ])expect(page).toContain(t);
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.23');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });

@@ -40,13 +40,13 @@ describe('v0.8.31 true diagonal, overlapping wave phases',()=>{
     if(count>=columns+1)expect(new Set(timings).size).toBeLessThan(count);
    }
   }
-  expect(MARKET_WAVE_DURATION_MS).toBe(720);
-  expect(MARKET_WAVE_STEP_MS).toBe(82);
+  expect(MARKET_WAVE_DURATION_MS).toBe(360);
+  expect(MARKET_WAVE_STEP_MS).toBe(41);
   expect(MARKET_WAVE_DURATION_MS).toBeGreaterThan(MARKET_WAVE_STEP_MS*5);
   expect(MARKET_WAVE_WINDOW_MS).toBeGreaterThan(
    MARKET_WAVE_MAX_PHASE*MARKET_WAVE_STEP_MS+MARKET_WAVE_DURATION_MS,
   );
-  expect(marketWaveDelay(999,2)).toBe(984);
+  expect(marketWaveDelay(999,2)).toBe(492);
   expect(marketWaveDelay(-10,3)).toBe(0);
   expect(marketWaveDelay(1.4,3)).toBe(0);
  });
@@ -110,12 +110,12 @@ describe('v0.8.31 React markup, trigger lifecycle and visual isolation',()=>{
   expect(oldGrid).toContain('transform:none!important');
   expect(css).toContain('.market-v081__catalog > .market-v0831__wave-slot{');
   expect(css).toContain('animation-name:market-v0831-diagonal-rise');
-  expect(css).toContain('animation-duration:720ms');
+  expect(css).toContain('animation-duration:360ms');
   expect(css).toContain('animation-delay:var(--market-wave-delay-three,0ms)');
   expect(css).toContain('@keyframes market-v0831-diagonal-rise');
-  expect(css).toContain('translate3d(0,-4px,0)');
-  expect(css).toContain('scale(1.006)');
-  expect(css).toContain('translate3d(0,.8px,0)');
+  expect(css).toContain('translate3d(0,-2px,0)');
+  expect(css).toContain('scale(1.003)');
+  expect(css).toContain('translate3d(0,.4px,0)');
   expect(css).not.toContain('animation-name:market-v0831-diagonal-rise;\n animation-duration:720ms;\n animation-delay:var(--market-wave-delay-two,0ms)');
   expect(read('src/styles/_v0827-market-final-polish.scss')).toContain('animation:none!important');
  });
@@ -129,7 +129,7 @@ describe('v0.8.31 React markup, trigger lifecycle and visual isolation',()=>{
   expect(css).toContain('animation:none!important');
   expect(css).toContain('transform:none!important');
   expect(css).not.toContain('overflow:hidden');
-  expect(read('src/styles/main.scss').trimEnd().endsWith('@import "v0831-market-diagonal-wave";')).toBe(true);
+  expect(read('src/styles/main.scss')).toContain('@import "v0831-market-diagonal-wave";');
  });
  it('preserves mouse drag, touch scrolling, dialog, original buy/sell dispatch and clock',()=>{
   for(const token of [
@@ -159,8 +159,8 @@ describe('v0.8.31 React markup, trigger lifecycle and visual isolation',()=>{
   expect(state).toEqual(previous);
  });
  it('does not migrate data, change real-time clock or add hunger costs in this batch',()=>{
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.31');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.31');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe(JSON.parse(read('package.json')).version);
   expect(read('src/app/GameContext.tsx')).toContain('WORLD_TICK_REAL_MS=10000');
   expect(read('src/app/GameContext.tsx')).toContain('WORLD_TICK_GAME_MINUTES=5');
   expect(read('src/game/engine/consumables.ts')).toContain('p.hunger-20');

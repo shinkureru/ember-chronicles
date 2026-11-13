@@ -78,7 +78,7 @@ describe('v0.8.27 legacy wave safely superseded by v0.8.31',()=>{
   expect(diagonal).toContain('> .market-v0831__wave-slot');
   expect(diagonal).toContain('> .market-v0831__wave-slot > .market-v12__offer.market-v0822__product');
   expect(diagonal).toContain('@keyframes market-v0831-diagonal-rise');
-  expect(diagonal).toContain('translate3d(0,-4px,0)');
+  expect(diagonal).toContain('translate3d(0,-2px,0)');
  });
  it('retains reduced-motion support for the updated wave as well as prior speech and lighting',()=>{
   expect(polish).toContain('@media(prefers-reduced-motion:reduce)');

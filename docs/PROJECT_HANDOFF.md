@@ -1,5 +1,18 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-14｜第四輪第5批 v0.8.32：五商人正式資料整合與斜向波浪雙倍快、半幅（此 PR 待使用者 Merge）
+
+- **開工查 GitHub**：`main` `ab3b6b5a9ce384c66ae8deec66a3b9fcf7b08616`，上一批 PR #57 v0.8.31 **已 Merge**，Pages success，開工 open PR=0。唯一分支 `ui/v0.8.32-vendor-profile-fast-wave`，package/lock 0.8.32。使用者自行合併、通知才做下一批。
+- **五位真實 NPC 唯一資料來源**：`MARKET_VENDORS`、`getScheduledVendor`、`MARKET_SHIFT_START_MINUTES` 和場景照明、10句台詞原始檔。新 `src/features/market/marketVendorProfile.ts` *派生* 五人姓名/職能/外觀與班次起迄（含午夜）、三張場景目標/已上傳數目/neutral scene fallback、各幀照明、供應/收購/卡牌清單筆數與每人10句；**不另建會漂移的角色或商店表**。正式班次（仍舊遊戲世界時間）：灰手羅恩05–11、傷疤醫師11–14、墨鏡阿黛14–18、白髮信使18–23、防毒面具23–05。
+- **三張圖片所有權維持**：防毒面具 scavenger 有 `black-market-merchant.webp`／`black-market-scavenger-rummage.webp`／`black-market-scavenger-weld.webp` 3/3，第一張紫眼、第三張焊花；其餘四名商人 0/3，維持 `market-v0829__empty-scene` 暗色無人物底，不能借用防毒面具的工作台圖。每位未來預留3張圖片，但尚未提供的不可造假。
+- **畫面極輕量整合**：`BlackMarketPage.tsx` 目前當班商人姓名/角色來自 `getMarketVendorProfile(vendor)`，新增 `market-v0832__vendor-meta` 的單行 `HH:MM–HH:MM · 圖像 3/3` 或 `場景待補`；title 包含人物外觀文字、現有供貨/收購與卡牌類型筆數。SCSS 小字正常字重400，320/360窄屏縮字、<=520高隱藏次要文字，不壓蓋商人圖/自言自語/好感度。既有交易`vendor.sellItems`、`vendor.buyItems`、`vendor.cardIds` / price/stock/好感 `s.economy.blackMarketFavor` 與背包販售 reducer 都**原樣**。
+- **使用者加註波浪「兩種速度各加快一倍，幅度減半」**：v0831 `MARKET_WAVE_STEP_MS 82→41`、`MARKET_WAVE_DURATION_MS 720→360`、最高上浮 `4px→2px`、其他 keyframe 位移與縮放強度依比例減半（-2.5→-1.25、+0.8→+0.4，1.006→1.003）。`MARKET_WAVE_WINDOW_MS` `1784→892ms`，確保最後 phase 完成後才 cleanup；保留 2/3 欄 row+col 斜向同一區域同步／前後區域重疊、切買賣才啟動、reduced motion 停播，卡片仍獨立 slot 不受舊 CSS `!important`。
+- **回歸及交接**：新 `tests/v0832-vendor-profile-fast-wave.test.ts`，前批 v0823/27/31 僅修正角色姓名綁定、舊速度與固定版本的過時斷言，所有既有引擎測試保留。更新 `docs/PROJECT_HANDOFF.md`、`docs/REALTIME_HUNGER_REDESIGN_ROADMAP.md`，新增 `docs/V0832_VENDOR_PROFILE_FAST_WAVE_QA.md`。須 GitHub Actions npm run build + npm test 全綠；CI 不等於已在 Chrome/手機目視確認動畫。
+- **停點**：完成後只開單一 PR，不自行 Merge；等使用者明確合併通知，才第6批 **v0.8.33 台北真實時間 Asia/Taipei**。第7批 v0.8.34 飢餓代價、第8批 v0.8.35 最終收尾未實作，絕不可在這批提前修改遊戲時間/飢餓。
+
+---
+
+
 ## 2026-11-14｜第四輪第4批 v0.8.31：黑市商品卡真正斜向區域波浪（本 PR 待 Merge）
 
 - **GitHub 基準**：`main` `b6074719df78a3cf89f1051752709f89921d87a6`，PR #56 v0.8.30 已 Merge、Pages success、open PR 0。本批唯一分支 `ui/v0.8.31-market-diagonal-card-wave`，版本 package/lock `0.8.31`。上一批三張圖全屬防毒面具的正式勘誤照舊。

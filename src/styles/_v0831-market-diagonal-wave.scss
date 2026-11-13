@@ -30,18 +30,18 @@
  * frame and the scrollable grid are never animated. */
 .market-v13 .market-v12__table.market-v0831__wave-active .market-v081__catalog > .market-v0831__wave-slot{
  animation-name:market-v0831-diagonal-rise;
- animation-duration:720ms;
+ animation-duration:360ms;
  animation-delay:var(--market-wave-delay-three,0ms);
  animation-timing-function:cubic-bezier(.36,.62,.38,1);
  animation-fill-mode:both;
 }
-/* 4px maximum rise, 0.8px settling, no opacity flicker. */
+/* 2px maximum rise, 0.4px settling, no opacity flicker. */
 @keyframes market-v0831-diagonal-rise{
  0%{transform:translate3d(0,0,0) scale(1)}
- 27%{transform:translate3d(0,-2.5px,0) scale(1.004)}
- 48%{transform:translate3d(0,-4px,0) scale(1.006)}
- 70%{transform:translate3d(0,-2px,0) scale(1.003)}
- 88%{transform:translate3d(0,.8px,0) scale(1)}
+ 27%{transform:translate3d(0,-1.25px,0) scale(1.002)}
+ 48%{transform:translate3d(0,-2px,0) scale(1.003)}
+ 70%{transform:translate3d(0,-1px,0) scale(1.0015)}
+ 88%{transform:translate3d(0,.4px,0) scale(1)}
  100%{transform:translate3d(0,0,0) scale(1)}
 }
 @media(max-width:375px){

@@ -163,7 +163,7 @@ describe('v0.8.34 single-sourced hunger price and bounded state',()=>{
  });
  it('shows exact costs and warnings in all active interfaces without old time labels',()=>{
   for(const [file,parts] of [
-   ['src/features/chapter/ActionDecision.tsx',['preview.hungerCost','preview.projectedHunger','v0834-hunger-risk']],
+   ['src/features/chapter/ActionDecision.tsx',['preview.appliedHungerCost','preview.projectedHunger','v0834-hunger-risk']],
    ['src/features/chapter/SkillComparison.tsx',['data.original.hungerCost']],
    ['src/features/chapter/RetreatDialog.tsx',['r.hungerCost','HUNGER_DEFEAT_COST']],
    ['src/features/town/InnRestDialog.tsx',['townHungerProjection','hungerWarning']],

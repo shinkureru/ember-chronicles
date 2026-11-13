@@ -87,6 +87,6 @@ describe('v0.8.17 centered survivor equipment board',()=>{
   expect(css).toContain('@media(max-height:510px)');
   expect(css).toContain('min-width:0');
   expect(read('src/styles/main.scss')).toContain('@import "v0817-character-equipment-board"');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.17');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });

@@ -8,8 +8,7 @@ import { getVendorStockKey, marketSellPrice } from '../../game/data/marketVendor
 import { getScheduledVendor } from '../../game/data/marketSchedule';
 import { playCue } from '../../audio/sound';
 import { bagWeight, worldPhaseToken, worldPhase, worldClock } from '../../game/engine/rules';
-import MarketPortrait from './MarketPortrait';
-import SurvivorFigure from '../../components/SurvivorFigure';
+import BlackMarketSceneArt from './BlackMarketSceneArt';
 import ItemArt from '../../components/ItemArt';
 import {getMarketProductPresentation,formatMarketOfferQuantity} from './marketProductPresentation';
 import GameUtilities from '../../components/GameUtilities';
@@ -104,20 +103,26 @@ export default function BlackMarketPage(){
    <div className="market-v10__wallet"><Coins size={17}/><strong>{s.economy.coins}</strong><small>舊幣</small></div>
   </header>
   <section className="market-v12__scene" aria-label={`${worldPhase(s.world.minute)}的秘密交易地點`}>
-   <div className="market-v12__meeting">
-    <div className="market-v12__lantern" aria-hidden="true"/>
-    <div className="market-v12__person market-v12__person--merchant">
-     <MarketPortrait profile face={vendor.face} name={vendor.name}/>
-     <div className="market-v12__person-name"><strong>{vendor.name}</strong><small>{vendor.role}</small></div>
+   <div className="market-v12__meeting market-v0823__meeting">
+    <BlackMarketSceneArt/>
+    <div className="market-v0823__shade" aria-hidden="true"/>
+    <div className="market-v0823__vendor" aria-label="當班商人">
+     <span>BLACK MARKET / CURRENT VENDOR</span>
+     <strong>{vendor.name}</strong><small>{vendor.role}</small>
     </div>
-    <div className="market-v12__wall" aria-hidden="true"><span className="market-v12__slot"/><i/><i/><i/></div>
-    <div className="market-v12__person market-v12__person--player">
-     <SurvivorFigure view="profile" equipment={s.equipment}/>
-     <div className="market-v12__person-name"><strong>我</strong></div>
+    <p className="market-v12__dialogue market-v0823__dialogue">{vendor.line}</p>
+    <div className="market-v12__time market-v0823__time"><Clock3 size={12}/>{worldPhase(s.world.minute)} {worldClock(s.world.minute)}</div>
+    <div className="market-v13__favor market-v0823__favor">
+     <div className="market-v0823__favor-line">
+      <HeartHandshake size={15}/><span>商人好感度</span>
+      <strong>{s.economy.blackMarketFavor}/100</strong>
+     </div>
+     <div className="market-v0823__favor-meter" role="progressbar"
+      aria-label="商人好感度" aria-valuemin={0} aria-valuemax={100}
+      aria-valuenow={Math.max(0,Math.min(100,s.economy.blackMarketFavor))}>
+      <i style={{width:`${Math.max(0,Math.min(100,s.economy.blackMarketFavor))}%`}}/>
+     </div>
     </div>
-    <p className="market-v12__dialogue">{vendor.line}</p>
-    <div className="market-v12__time"><Clock3 size={11}/>{worldPhase(s.world.minute)} {worldClock(s.world.minute)}</div>
-    <div className="market-v13__favor"><HeartHandshake size={13}/><span>商人好感</span><strong>{s.economy.blackMarketFavor}/100</strong></div>
    </div>
    <div className="market-v12__table">
     <div className="market-v12__table-heading"><span>EXCHANGE / {mode===null?'WAITING':mode.toUpperCase()}</span><span>{mode===null?'選擇交易方式':'點選卡片查看詳細內容'}</span></div>

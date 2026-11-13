@@ -1,11 +1,12 @@
 import {useEffect,useState} from 'react';
 import {createPortal} from 'react-dom';
-import {Check,ChevronRight,Clock3,Coins,Info,LockKeyhole,MessageCircle,Sparkles,Target,ClipboardList,Droplets,UtensilsCrossed,Wine,X} from 'lucide-react';
+import {Check,ChevronRight,Utensils,Coins,Info,LockKeyhole,MessageCircle,Sparkles,Target,ClipboardList,Droplets,UtensilsCrossed,Wine,X} from 'lucide-react';
 import {useGame} from '../../app/GameContext';
 import {playCue} from '../../audio/sound';
 import {ATTRIBUTE_LABELS} from '../../game/data/attributes';
 import {TOWN_FACILITIES,TOWN_SERVICES,TOWN_QUESTS,isTownOpen,townKeeper,townQuestReady} from '../../game/data/town';
 import {getTownServiceLock,getTownServiceFee} from '../../game/engine/townActions';
+import {townHungerProjection,hungerRisk,signedHunger,HUNGER_QUEST_HANDIN_COST,projectedHunger} from '../../game/engine/hungerCosts';
 import type {AttributeId,TownFacilityId} from '../../game/types';
 import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
 
@@ -74,7 +75,7 @@ export default function TownFacilityDialog({facility,onClose}:{facility:Secondar
       return <article className={`town-v15__quest ${status==='completed'?'is-done':''}`} key={quest.id}>
        <div><strong>{quest.title}</strong><small>{status==='completed'?'已完成':status==='accepted'?'追蹤中':'可承接'}</small></div>
        <p>{quest.detail}</p>
-       <p className="town-v15__reward"><Coins size={13}/>舊幣 +{quest.rewardCoins} <Sparkles size={13}/>{ATTRIBUTE_LABELS[quest.rewardAttribute]} +1</p>
+       <p className="town-v15__reward"><Coins size={13}/>舊幣 +{quest.rewardCoins} <Sparkles size={13}/>{ATTRIBUTE_LABELS[quest.rewardAttribute]} +1 · 交付飢餓 +{HUNGER_QUEST_HANDIN_COST}（{s.player.hunger}→{projectedHunger(s.player.hunger,HUNGER_QUEST_HANDIN_COST)}）</p>
        <button type="button" disabled={s.mode!=='home'||status==='completed'||(status==='accepted'&&!ready)}
         onClick={()=>{dispatch(status==='accepted'?{type:'TOWN_COMPLETE_QUEST',questId:quest.id}:{type:'TOWN_ACCEPT_QUEST',questId:quest.id});setHasAction(true);playCue('confirm')}}>
         {status==='completed'?<><Check size={15}/>已結案</>:status==='accepted'?(ready?'交付委託並領取獎勵':'尚未達成條件'):'承接委託'}
@@ -85,13 +86,16 @@ export default function TownFacilityDialog({facility,onClose}:{facility:Secondar
      {services.map(service=>{
       const reason=getTownServiceLock(s,service.id,attribute);
       const fee=getTownServiceFee(s,service.id,attribute);
+      const hunger=townHungerProjection(s,service.id);
+      const risk=hungerRisk(s.player.hunger,hunger.projectedHunger);
       return <article className="town-v15__service" key={service.id}>
        <div><strong>{service.name}</strong><p>{service.summary}</p>
-        <small><Coins size={12}/>{fee} 舊幣 <Clock3 size={12}/>時間不快轉</small>
+        <small><Coins size={12}/>{fee} 舊幣 <Utensils size={12}/>飢餓 {signedHunger(hunger.hungerDelta)}（{s.player.hunger}→{hunger.projectedHunger}）</small>
        </div>
        <button type="button" disabled={!!reason} onClick={()=>enact(service.id)}>
         {reason?<LockKeyhole size={15}/>:<ChevronRight size={17}/>}<span>{reason?'不可用':'執行'}</span>
        </button>
+       {risk&&!reason&&<p className="v0834-hunger-risk" role="status">{risk.title} · {risk.detail}</p>}
        {reason&&<p className="town-v15__reason"><Info size={12}/>{reason}</p>}
       </article>;
      })}

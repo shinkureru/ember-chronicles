@@ -67,5 +67,5 @@ export function getMarketIdleLines(vendor:MarketVendor):readonly string[]{
 }
 export function getMarketIdleLine(vendor:MarketVendor,index:number):string{
  const lines=getMarketIdleLines(vendor);
- return lines[((Math.floor(index)%lines.length)+lines.length)%lines.length];
+ return lines[((Math.floor(index)%lines.length)+lines.length)%lines.length]??vendor.line;
 }

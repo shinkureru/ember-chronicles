@@ -24,15 +24,19 @@ export function useMarketSceneLoad(){
   };
   const timeout=window.setTimeout(fail,15_000);
   img.onerror=fail;
-  img.onload=()=>{
+  let handled=false;
+  const onLoaded=()=>{
+   if(handled)return;
+   handled=true;
    if(typeof img.decode==='function'){
     void img.decode().then(done).catch(()=>img.naturalWidth>0?done():fail());
    }else done();
   };
+  img.onload=onLoaded;
   img.src=BLACK_MARKET_SCENE_URL;
   // Modern browsers also return true for an image already cached by a
   // previous market visit, including the immediate-complete path.
-  if(img.complete&&img.naturalWidth>0)img.onload();
+  if(img.complete&&img.naturalWidth>0)onLoaded();
   return ()=>{
    active=false;
    img.onload=null;

@@ -81,7 +81,7 @@ describe('v0.8.25 full-screen loading and recovery',()=>{
    "const img=new Image()",
    "img.src=BLACK_MARKET_SCENE_URL",
    "img.decode().then(done)",
-   "if(img.complete&&img.naturalWidth>0)img.onload()",
+   "if(img.complete&&img.naturalWidth>0)onLoaded()",
    "img.onerror=fail",
    "setStatus('ready')",
    "setStatus('error')",

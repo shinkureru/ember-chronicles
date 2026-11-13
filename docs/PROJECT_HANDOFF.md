@@ -1,5 +1,17 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜第二輪第3批 v0.8.16：人物檔案導航/屬性整合（PR 待 Merge）
+
+- **開工 GitHub preflight**：`main` `2fcbba8ac9b8afe232980542a2577d59c058507a`，PR #41（v0.8.15）已合併、Pages 部署成功，open PR = 0。較舊 v0.8.15「待 Merge」等為歷史內容。
+- 唯一分支 `feat/v0.8.16-character-navigation`，版本 package/lock = 0.8.16。只實作 `docs/UI_COMPACT_REDESIGN_ROADMAP.md` 第3批，沒有提前動第4/5批。
+- `src/features/player/characterSections.ts` 統一五個頂部導覽（全身裝備／屬性／城鎮成長／NPC 記憶／人物故事）與18個原永久屬性ID（身體／思維／社交各6）；`CharacterPage.tsx` 三類併入同一「屬性」頁，可透過分類快速定位，XP／Lv／可用點數一次顯示，原 `ALLOCATE_POINT`、點數不足、20級上限和非home禁用不變。
+- `src/styles/_v0816-character-navigation.scss` 最後匯入 main.scss，五入口等寬避免頂部水平捲動；屬性內部內容可縱捲保證18項皆可達。下一批 v0.8.17 專注參考圖3重排裝備人物圖，v0.8.18 再做三組18屬性**一頁式**高密度排版，v0.8.19 再處理 NPC 記憶/城鎮/故事。
+- 城鎮成長、NPC記憶、職業故事、裝備 CRUD、角色狀態及 `GameRoutes` 存檔/路由鎖均未改動。新增 `tests/v0816-character-navigation.test.ts`（5頁／18項唯一/實際加點與安全門檻），更新前批版本測試。QA 文件 `docs/V0816_CHARACTER_NAVIGATION_QA.md`；自動 CI 與人工驗收狀態需分開敘述。
+- 每批只有一個 PR。**此批提交通過 CI 就停止，不代 Merge；須等使用者自行合併、明確通知後，重新核對 GitHub 最新 main／PR／交接，才做 v0.8.17**。
+
+---
+
+
 ## 2026-11-13｜第二輪 UI 八批中的第2批 v0.8.15（本分支待使用者 Merge）
 
 - **本次 GitHub preflight**：`main` `00b491ae096e46793c959da4a21448b4ec41f90b`，PR #40／v0.8.14 已 Merge，GitHub Pages 部署成功；開工前 open PR 0。先讀過本檔及 `docs/UI_COMPACT_REDESIGN_ROADMAP.md`，並核對旅店、診所、條色樣式、拖曳及舊回歸測試。上一段「v0.8.14 待 Merge」是歷史文字。

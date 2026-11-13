@@ -7,35 +7,31 @@ import { EQUIPMENT_SLOTS, type EquipmentSlot } from '../../game/data/equipment';
 import { EQUIPMENT_EFFECTS, getEquippedDefense } from '../../game/data/equipmentEffects';
 import {armorSlotForItem,armorHits,armorStage,ARMOR_DAMAGE_STAGES} from '../../game/engine/armor';
 import { ITEMS } from '../../game/data/items';
-import type { AttributeId } from '../../game/types';
 import { playCue } from '../../audio/sound';
 import SurvivorFigure from '../../components/SurvivorFigure';
 import { getProgression,xpNeededForLevel } from '../../game/engine/progression';
-const categories:Record<string,{title:string;ids:AttributeId[];Icon:typeof HeartPulse}>={
- physical:{title:'身體與生存',['ids']:['maxHealth','maxStamina','mobility','melee','endurance','climate'],Icon:HeartPulse},
- mental:{title:'觀察與思維',ids:['observation','reasoning','memory','focus','adaptability','planning'],Icon:Brain},
- social:{title:'社交與心理',ids:['persuasion','deception','negotiation','empathy','intimidation','resilience'],Icon:UserRound},
-};
+import {CHARACTER_TABS,ATTRIBUTE_GROUPS,type CharacterTab,type AttributeGroupId} from './characterSections';
+const groupIcons:Record<AttributeGroupId,typeof HeartPulse>={physical:HeartPulse,mental:Brain,social:UserRound};
 
 export default function CharacterPage(){
  const {state:s,dispatch}=useGame();
  const [slot,setSlot]=useState<EquipmentSlot>('body');
- const [tab,setTab]=useState('equipment');
+ const [tab,setTab]=useState<CharacterTab>('equipment');
  if(!s.profession)return <section className="page-heading"><h1>人物檔案</h1><p>建立角色後即可檢視裝備與永久成長屬性。</p></section>;
  const profession=PROFESSIONS[s.profession],selected=EQUIPMENT_SLOTS.find(e=>e.id===slot)!;
  const ownedItems=[...new Set([...Object.keys(s.bag),...Object.keys(s.warehouse)])];
  const available=ownedItems.filter(id=>selected.allowed.includes(id));
- const category=categories[tab];
  const progression=getProgression(s);
  return <div className="page-stack character-page viewport-page character-viewport character-viewport--v09">
   <header className="character-page__header"><div><span className="eyebrow">CHARACTER / SURVIVOR</span><h1>人物檔案</h1></div><span>{profession.name} · 防禦 {getEquippedDefense(s)}</span></header>
   <nav className="character-page__tabs" aria-label="人物資料分頁">
-   {[
-    {id:'equipment',label:'全身裝備'},{id:'physical',label:'身體'},{id:'mental',label:'思維'},
-    {id:'social',label:'社交'},{id:'town',label:'城鎮成長'},{id:'record',label:'NPC 記憶'},{id:'story',label:'人物故事'},
-   ].map(item=><button key={item.id} type="button" aria-current={tab===item.id?'page':undefined} className={tab===item.id?'is-active':''} onClick={()=>{setTab(item.id);playCue('select')}}>{item.label}</button>)}
+   {CHARACTER_TABS.map(item=><button key={item.id} type="button"
+    aria-current={tab===item.id?'page':undefined}
+    aria-controls={tab===item.id?`character-panel-${item.id}`:undefined}
+    className={tab===item.id?'is-active':''}
+    onClick={()=>{setTab(item.id);playCue('select')}}>{item.label}</button>)}
   </nav>
-  {tab==='equipment'&&<section className="equipment-panel viewport-list character-equipment--v09">
+  {tab==='equipment'&&<section id="character-panel-equipment" aria-label="全身裝備" className="equipment-panel viewport-list character-equipment--v09">
    <div className="equipment-stage"><div className="equipment-stage__fog"/><SurvivorFigure equipment={s.equipment}/>
     {EQUIPMENT_SLOTS.map(e=>{
       const id=s.equipment[e.id],item=id?ITEMS[id]:null;
@@ -59,16 +55,37 @@ export default function CharacterPage(){
       onClick={()=>{dispatch({type:'UNEQUIP_ITEM',slot});playCue('select')}}>{s.equipment[slot]?'卸下此部位裝備':'此部位尚未裝備'}</button>
    </div>
   </section>}
-  {category&&<section className="character-tab-content viewport-list"><h2><category.Icon size={19}/>{category.title}</h2>
-    <div className="character-progression">
-     <strong>角色 Lv.{progression.level} · XP {progression.xp}/{xpNeededForLevel(progression.level)} · 可分配點數 {progression.points}</strong>
-     <div className="character-progression__meter"><i style={{width:`${Math.min(100,100*progression.xp/xpNeededForLevel(progression.level))}%`}}/></div>
-     <small>首次完成各種行動可獲得 XP；同一天重複相同行動不會再獲得經驗。</small>
-    </div>
-    <div className="character-tab-content__stats">{category.ids.map(id=><div className="character-tab-stat" key={id}><span>{ATTRIBUTE_LABELS[id]}</span><strong>{s.player.attributes[id]}</strong><small>永久成長屬性</small><button type="button" disabled={progression.points<=0||s.player.attributes[id]>=20||s.mode!=='home'} onClick={()=>dispatch({type:'ALLOCATE_POINT',attribute:id})}>使用 1 點升級</button></div>)}</div>
-    <p>每種屬性都有獨立成長方向。進行不同關卡或劇情選擇時，會逐步累積擅長領域。</p>
+  {tab==='attributes'&&<section id="character-panel-attributes" aria-label="身體、思維與社交永久屬性" className="character-tab-content character-attributes-panel viewport-list">
+   <h2><HeartPulse size={19}/>永久屬性總覽</h2>
+   <div className="character-progression">
+    <strong>角色 Lv.{progression.level} · XP {progression.xp}/{xpNeededForLevel(progression.level)} · 可分配點數 {progression.points}</strong>
+    <div className="character-progression__meter"><i style={{width:`${Math.min(100,100*progression.xp/xpNeededForLevel(progression.level))}%`}}/></div>
+    <small>首次完成各種行動可獲得 XP；同一天重複相同行動不會再獲得經驗。</small>
+   </div>
+   <nav className="character-attribute-index" aria-label="快速定位屬性分類">
+    {ATTRIBUTE_GROUPS.map(group=><button type="button" key={group.id} aria-controls={`character-attribute-${group.id}`}
+     onClick={()=>document.getElementById(`character-attribute-${group.id}`)?.scrollIntoView({block:'nearest'})}>{group.title}</button>)}
+   </nav>
+   <div className="character-attribute-sections">
+    {ATTRIBUTE_GROUPS.map(group=>{
+     const Icon=groupIcons[group.id];
+     return <section className="character-attribute-group" key={group.id} id={`character-attribute-${group.id}`}
+      aria-labelledby={`character-attribute-heading-${group.id}`}>
+      <h3 id={`character-attribute-heading-${group.id}`}><Icon size={16}/>{group.title}</h3>
+      <div className="character-tab-content__stats">
+       {group.ids.map(id=><div className="character-tab-stat" key={id}>
+        <span>{ATTRIBUTE_LABELS[id]}</span><strong>{s.player.attributes[id]}</strong>
+        <small>永久成長屬性</small>
+        <button type="button" disabled={progression.points<=0||s.player.attributes[id]>=20||s.mode!=='home'}
+         onClick={()=>dispatch({type:'ALLOCATE_POINT',attribute:id})}>使用 1 點升級</button>
+       </div>)}
+      </div>
+     </section>;
+    })}
+   </div>
+   <p>每種屬性都有獨立成長方向。進行不同關卡或劇情選擇時，會逐步累積擅長領域。</p>
   </section>}
-  {tab==='town'&&<section className="character-tab-content viewport-list">
+  {tab==='town'&&<section id="character-panel-town" aria-label="城鎮成長" className="character-tab-content viewport-list">
     <h2><Shield size={19}/>城鎮培養紀錄</h2>
     <p>城鎮訓練與支線委託已直接作用於永久屬性。每日最多完成一次屬性專項訓練，每項最高 Lv.20。</p>
     <div className="character-tab-content__stats">
@@ -79,7 +96,7 @@ export default function CharacterPage(){
     </div>
     <p>所有永久屬性變動都會同步影響冒險判定。訓練時數、物資和貨幣是成長的實際成本。</p>
   </section>}
-  {tab==='record'&&<section className="character-tab-content viewport-list">
+  {tab==='record'&&<section id="character-panel-record" aria-label="NPC 記憶" className="character-tab-content viewport-list">
     <h2><BookOpenText size={19}/>NPC 記憶</h2>
     <p>已嘗試 {s.attempt} 次；掌握情報 {s.clues.length} 條。以下 NPC 各自保留記憶，重新挑戰其他關卡也不會覆蓋。</p>
     <div className="character-tab-content__stats">
@@ -101,7 +118,7 @@ export default function CharacterPage(){
      </article>:null)}
     <div className="clue-list">{s.clues.slice().reverse().map((line,i)=><p key={i}>{line}</p>)}{s.clues.length===0&&<p>還沒有取得關鍵線索。</p>}</div>
   </section>}
-  {tab==='story'&&<section className="character-tab-content viewport-list">
+  {tab==='story'&&<section id="character-panel-story" aria-label="人物故事" className="character-tab-content viewport-list">
     <h2><Shield size={19}/>{profession.name}</h2>
     <p>「我還能走多遠，取決於我帶了什麼，也取決於我成了什麼樣的人。」</p>
     <p>{profession.overview}</p><p>職業天賦：{profession.passive}</p>

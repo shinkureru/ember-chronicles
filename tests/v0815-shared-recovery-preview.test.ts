@@ -96,7 +96,7 @@ describe('v0.8.15 shared recovery preview and stable inn checkout',()=>{
   injured.conditions={wounds:6,infection:0,poisoning:0,illness:0};
   expect(clinicTreatmentOutcomes(injured,'clinic_wounds').find(x=>x.key==='health')).toMatchObject({before:6,after:10});
   expect(clinicTreatmentOutcomes(injured,'clinic_wounds').find(x=>x.key==='wounds')).toMatchObject({before:6,after:4});
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.15');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
  it('does not force single-color HUD/town/armor bars into two-tone previews',()=>{
   for(const path of ['src/features/town/TownVitalStatus.tsx','src/features/town/WorkshopDialog.tsx','src/components/StatBar.tsx']){

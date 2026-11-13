@@ -16,7 +16,8 @@ describe('v0.8.16 character navigation and unified attribute entry',()=>{
   expect(CHARACTER_TABS.map(t=>t.label)).toEqual(['全身裝備','屬性','城鎮成長','NPC 記憶','人物故事']);
   expect(page).toContain('CHARACTER_TABS.map(item=>');
   expect(page).toContain("useState<CharacterTab>('equipment')");
-  for(const t of CHARACTER_TABS)expect(page).toContain(`character-panel-${t.id}`);
+  for(const t of CHARACTER_TABS)expect(t.id==='equipment'
+   ?read('src/features/player/CharacterEquipmentPanel.tsx'):page).toContain(`character-panel-${t.id}`);
   for(const old of ["tab==='physical'","tab==='mental'","tab==='social'"])expect(page).not.toContain(old);
  });
  it('keeps every one of the original 18 permanent attributes visible in one panel',()=>{

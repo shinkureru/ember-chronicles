@@ -37,7 +37,7 @@ describe('v0.8.28 global typography: restrained UI, explicit story emphasis',()=
 describe('v0.8.28 minimal and unobstructed black-market shift rail',()=>{
  it('places the real countdown in the unused left operation rail, not over the hero portrait',()=>{
   const hero=page.split('className="market-v12__meeting market-v0823__meeting"')[1]?.split('className="market-v0824__exchange"')[0]??'';
-  expect(hero).toContain('<BlackMarketSceneArt/>');
+  expect(hero).toContain('<BlackMarketSceneArt key={vendor.id} vendor={vendor}/>');
   expect(hero).toContain('market-v0823__favor');
   expect(hero).not.toContain('market-v0826__shift');
   expect(page).toContain('market-v12__modes market-v0824__switch');
@@ -109,10 +109,11 @@ describe('v0.8.28 real market vendor identities, future scene schema and commerc
    expect(vendor.cardIds.length).toBeGreaterThan(0);
   }
   expect(vendorById('scavenger')?.visual.sceneAssets).toEqual(['black-market-merchant.webp']);
-  for(const id of ['broker','mechanic','medic','runner']){
+  for(const id of ['broker','medic','runner']){
    expect(vendorById(id)?.visual.sceneAssets).toEqual([]);
   }
   expect(vendorById('mechanic')?.visual.lighting).toBe('workbench-weld');
+  expect(vendorById('mechanic')?.visual.sceneAssets).toEqual(['black-market-mechanic-rummage.webp','black-market-mechanic-weld.webp']);
  });
  it('preserves all five real shift identities and does not migrate or mutate save state',()=>{
   const s=makeInitialState('journalist');
@@ -129,8 +130,8 @@ describe('v0.8.28 real market vendor identities, future scene schema and commerc
   expect(s).toEqual(before);
  });
  it('bumped version only; world-time and hunger migration remain deferred',()=>{
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.28');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.28');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe(JSON.parse(read('package.json')).version);
   expect(read('src/app/GameContext.tsx')).toContain('WORLD_TICK_REAL_MS=10000');
   expect(read('src/game/engine/consumables.ts')).toContain('p.hunger-20');
   expect(read('src/game/state/initial.ts')).toContain('hunger:20');

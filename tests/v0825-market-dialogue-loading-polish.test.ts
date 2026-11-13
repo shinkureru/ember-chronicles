@@ -68,7 +68,7 @@ describe('v0.8.25 vendor-specific ambient speech',()=>{
 describe('v0.8.25 full-screen loading and recovery',()=>{
  it('waits for the real compressed scene image, not an arbitrary timeout to reveal the page',()=>{
   for(const token of [
-   "const {status:sceneLoadStatus,retry:retrySceneLoad}=useMarketSceneLoad()",
+   "const {status:sceneLoadStatus,retry:retrySceneLoad}=useMarketSceneLoad(vendor.visual.sceneAssets)",
    "if(sceneLoadStatus!=='ready')return <MarketLoadingScreen status={sceneLoadStatus} onRetry={retrySceneLoad}/>",
    "const vendor=getScheduledVendor(s.world.minute)",
    "const offers=useMemo<Offer[]>",
@@ -77,14 +77,14 @@ describe('v0.8.25 full-screen loading and recovery',()=>{
   expect(scene).toContain('export const BLACK_MARKET_SCENE_URL=');
   expect(scene).toContain('black-market-merchant.webp');
   for(const token of [
-   "import {BLACK_MARKET_SCENE_URL} from './BlackMarketSceneArt'",
+   "import {getMarketSceneUrls} from './BlackMarketSceneArt'",
    "const img=new Image()",
-   "img.src=BLACK_MARKET_SCENE_URL",
-   "img.decode().then(done)",
+   "img.src=url",
+   "img.decode().then(completeOne)",
    "if(img.complete&&img.naturalWidth>0)onLoaded()",
    "img.onerror=fail",
-   "setStatus('ready')",
-   "setStatus('error')",
+   "setSnapshot({key,status:'ready'})",
+   "setSnapshot({key,status:'error'})",
    "window.setTimeout(fail,15_000)",
    "img.onload=null","img.onerror=null",
    "active=false","window.clearTimeout(timeout)",

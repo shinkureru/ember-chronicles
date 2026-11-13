@@ -1,26 +1,20 @@
 import { useState } from 'react';
-import { Brain, HeartPulse, Shield, UserRound, LockKeyhole, BookOpenText } from 'lucide-react';
+import { Brain, HeartPulse, Shield, UserRound, BookOpenText } from 'lucide-react';
 import { useGame } from '../../app/GameContext';
 import { ATTRIBUTE_LABELS } from '../../game/data/attributes';
 import { PROFESSIONS } from '../../game/data/professions';
-import { EQUIPMENT_SLOTS, type EquipmentSlot } from '../../game/data/equipment';
-import { EQUIPMENT_EFFECTS, getEquippedDefense } from '../../game/data/equipmentEffects';
-import {armorSlotForItem,armorHits,armorStage,ARMOR_DAMAGE_STAGES} from '../../game/engine/armor';
-import { ITEMS } from '../../game/data/items';
+import { getEquippedDefense } from '../../game/data/equipmentEffects';
 import { playCue } from '../../audio/sound';
-import SurvivorFigure from '../../components/SurvivorFigure';
 import { getProgression,xpNeededForLevel } from '../../game/engine/progression';
 import {CHARACTER_TABS,ATTRIBUTE_GROUPS,type CharacterTab,type AttributeGroupId} from './characterSections';
+import CharacterEquipmentPanel from './CharacterEquipmentPanel';
 const groupIcons:Record<AttributeGroupId,typeof HeartPulse>={physical:HeartPulse,mental:Brain,social:UserRound};
 
 export default function CharacterPage(){
  const {state:s,dispatch}=useGame();
- const [slot,setSlot]=useState<EquipmentSlot>('body');
  const [tab,setTab]=useState<CharacterTab>('equipment');
  if(!s.profession)return <section className="page-heading"><h1>人物檔案</h1><p>建立角色後即可檢視裝備與永久成長屬性。</p></section>;
- const profession=PROFESSIONS[s.profession],selected=EQUIPMENT_SLOTS.find(e=>e.id===slot)!;
- const ownedItems=[...new Set([...Object.keys(s.bag),...Object.keys(s.warehouse)])];
- const available=ownedItems.filter(id=>selected.allowed.includes(id));
+ const profession=PROFESSIONS[s.profession];
  const progression=getProgression(s);
  return <div className="page-stack character-page viewport-page character-viewport character-viewport--v09">
   <header className="character-page__header"><div><span className="eyebrow">CHARACTER / SURVIVOR</span><h1>人物檔案</h1></div><span>{profession.name} · 防禦 {getEquippedDefense(s)}</span></header>
@@ -31,30 +25,7 @@ export default function CharacterPage(){
     className={tab===item.id?'is-active':''}
     onClick={()=>{setTab(item.id);playCue('select')}}>{item.label}</button>)}
   </nav>
-  {tab==='equipment'&&<section id="character-panel-equipment" aria-label="全身裝備" className="equipment-panel viewport-list character-equipment--v09">
-   <div className="equipment-stage"><div className="equipment-stage__fog"/><SurvivorFigure equipment={s.equipment}/>
-    {EQUIPMENT_SLOTS.map(e=>{
-      const id=s.equipment[e.id],item=id?ITEMS[id]:null;
-      return <button key={e.id} type="button" className={`equipment-slot equipment-slot--${e.id} ${slot===e.id?'is-selected':''}`}
-        onClick={()=>{setSlot(e.id);playCue('select')}} aria-pressed={slot===e.id} aria-label={`${e.name}：${item?.name??'未裝備'}`}>
-        <span className="equipment-slot__symbol">{e.icon}</span>
-        <span className="equipment-slot__copy"><small>{e.name}</small><strong>{item?.name??'未裝備'}</strong><em>{item?(armorSlotForItem(s,item.id)?`${ARMOR_DAMAGE_STAGES[armorStage(armorHits(s,item.id))]} · ${armorHits(s,item.id)}/10 次`:EQUIPMENT_EFFECTS[item.id]?.description??'裝備功能待設定'):'點選裝備'}</em></span>
-      </button>;
-    })}
-   </div>
-   <div className="equipment-picker">
-    <div className="equipment-picker__title"><strong>{selected.name}</strong><span>{s.equipment[slot]?ITEMS[s.equipment[slot]!]!.name:'未裝備'}</span></div>
-    <div className="equipment-picker__choices">
-     {available.length?available.map(id=><button type="button" key={id} className="equipment-picker__item"
-       disabled={s.equipment[slot]===id||s.mode==='adventure'} onClick={()=>{dispatch({type:'EQUIP_ITEM',slot,itemId:id});playCue('confirm')}}>
-       <span>{ITEMS[id]!.name}<small>{EQUIPMENT_EFFECTS[id]?.description??'裝備功能待設定'}</small></span>
-       <small>{s.equipment[slot]===id?'使用中':'裝備'} →</small>
-     </button>):<div className="equipment-picker__empty"><LockKeyhole size={15}/>背包與倉庫暫無此部位裝備。</div>}
-    </div>
-    <button type="button" className="secondary-button equipment-picker__unequip" disabled={!s.equipment[slot]||s.mode==='adventure'}
-      onClick={()=>{dispatch({type:'UNEQUIP_ITEM',slot});playCue('select')}}>{s.equipment[slot]?'卸下此部位裝備':'此部位尚未裝備'}</button>
-   </div>
-  </section>}
+  {tab==='equipment'&&<CharacterEquipmentPanel/>}
   {tab==='attributes'&&<section id="character-panel-attributes" aria-label="身體、思維與社交永久屬性" className="character-tab-content character-attributes-panel viewport-list">
    <h2><HeartPulse size={19}/>永久屬性總覽</h2>
    <div className="character-progression">

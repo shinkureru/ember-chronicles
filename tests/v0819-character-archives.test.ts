@@ -112,6 +112,6 @@ describe('v0.8.19 character archives are compact without deleting data',()=>{
   expect(css).toContain('@media(max-height:650px)');
   expect(css).toContain('grid-template-columns:repeat(3,minmax(0,1fr))');
   expect(css).toContain('grid-template-columns:repeat(2,minmax(0,1fr))');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.19');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });

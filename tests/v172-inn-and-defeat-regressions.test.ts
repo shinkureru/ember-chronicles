@@ -69,7 +69,7 @@ describe('v1.7.2 defeat screen is player-dismissed only',()=>{
   s=gameReducer(s,{type:'ENEMY_COUNTER_FINISH'});
   expect(s.mode).toBe('result');
   expect(s.outcome).toBe('defeat');
-  const time=gameReducer(s,{type:'WORLD_CLOCK_TICK',minutes:5});
+  const time=gameReducer(s,{type:'WORLD_CLOCK_SYNC',nowMs:Date.parse('2026-11-14T08:00:00Z')});
   expect(time.mode).toBe('result');
   expect(time.outcome).toBe('defeat');
   const exit=gameReducer(time,{type:'RETURN_HUB'});

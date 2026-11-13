@@ -23,7 +23,7 @@ describe('v1.6b zero-base stats and experience',()=>{
   expect(awardExperience(s,'talk:newer-npc',15)).toBe(0);
   expect(s.progression!.totalXp).toBe(DAILY_XP_CAP);
   expect(s.progression!.level).toBeGreaterThan(1);
-  s.world.day=2;
+  s.world.day+=1;
   expect(awardExperience(s,'talk:npc',12)).toBe(12);
  });
  it('gains points from leveling and allocates a permanent HP upgrade',()=>{
@@ -90,7 +90,7 @@ describe('v1.6b inn recovery and light defeat penalty',()=>{
   s={...s,world:{...s.world,day:s.world.day+1}};
   expect(remainingDailyRest(s)).toBe(2);
  });
- it('does not secretly heal after a failed mission; loss costs time and leaves useful info',()=>{
+ it('does not heal after defeat; loss keeps clues but never skips wall time',()=>{
   let s=makeInitialState('journalist');
   s.mode='adventure';s.attempt=1;s.player.health=1;s.sceneId='confrontation';
   s.enemyCounter={id:1,itemId:'radio',damage:6,hit:true,phase:'throwing'};
@@ -100,7 +100,7 @@ describe('v1.6b inn recovery and light defeat penalty',()=>{
   expect(s.mode).toBe('result');expect(s.player.health).toBe(1);
   expect(s.conditions!.wounds).toBeGreaterThanOrEqual(1);
   expect(s.clues.length).toBeGreaterThan(0);
-  expect(s.world.day*1440+s.world.minute-before).toBe(120);
+  expect(s.world.day*1440+s.world.minute-before).toBe(0);
   s=gameReducer(s,{type:'RETURN_HUB'});
   expect(s.mode).toBe('home');
   expect(s.player.health).toBe(1);

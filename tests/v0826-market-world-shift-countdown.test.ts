@@ -72,28 +72,26 @@ describe('v0.8.26 world clock shift boundary calculations',()=>{
    expect(result.currentVendorId).not.toBe(result.nextVendorId);
   }
  });
- it('uses existing world time tick to update both the merchant and the countdown with no extra timer',()=>{
-  const s=makeInitialState('journalist');
-  s.world.minute=10*60+59;s.mode='home';
+ it('uses real Taipei wall-clock sync to update the merchant, without an independent market timer',()=>{
+  let s=makeInitialState('journalist');
+  const near=Date.parse('2026-11-14T02:59:00Z');
+  s=gameReducer(s,{type:'WORLD_CLOCK_SYNC',nowMs:near});
+  expect(s.world.minute).toBe(10*60+59);
   const previous=getMarketShiftCountdown(s.world.minute);
   expect(previous.currentVendorId).toBe('mechanic');
   expect(previous.remainingMinutes).toBe(1);
-  const next=gameReducer(s,{type:'WORLD_CLOCK_TICK',minutes:5});
-  expect(next).not.toBe(s);
-  expect(next.world.minute).toBe(s.world.minute+5);
+  const next=gameReducer(s,{type:'WORLD_CLOCK_SYNC',nowMs:near+60000});
+  expect(next.world.minute).toBe(11*60);
   const upcoming=getMarketShiftCountdown(next.world.minute);
   expect(upcoming.currentVendorId).toBe('medic');
   expect(upcoming.nextVendorId).toBe('broker');
-  expect(upcoming.nextStartClock).toBe('14:00');
-  expect(upcoming.remainingMinutes).toBe(176);
+  expect(upcoming.remainingMinutes).toBe(180);
   expect(getScheduledVendor(s.world.minute).sellItems).not.toEqual(getScheduledVendor(next.world.minute).sellItems);
-  expect(read('src/app/GameContext.tsx')).toContain('WORLD_TICK_REAL_MS=10000');
-  expect(read('src/app/GameContext.tsx')).toContain('WORLD_TICK_GAME_MINUTES=5');
-  expect(read('src/app/GameContext.tsx')).toContain("if(document.visibilityState==='visible')dispatch({type:'WORLD_CLOCK_TICK',minutes:WORLD_TICK_GAME_MINUTES})");
-  expect(read('src/game/engine/resolve.ts')).toContain("case 'WORLD_CLOCK_TICK':");
-  expect(read('src/game/engine/resolve.ts')).toContain('advanceTime(s,minutes)');
-  expect(read('src/app/GameContext.tsx')).toContain('if(pauseReasons.route||pauseReasons.dialog||state.mode===\'result\')return');
+  expect(read('src/app/GameContext.tsx')).toContain('REALTIME_CLOCK_REFRESH_MS');
+  expect(read('src/app/GameContext.tsx')).toContain("type:'WORLD_CLOCK_SYNC'");
   expect(read('src/app/GameContext.tsx')).toContain("document.visibilityState==='visible'");
+  expect(read('src/game/engine/resolve.ts')).toContain("action.type==='WORLD_CLOCK_SYNC'");
+  expect(read('src/game/engine/resolve.ts')).not.toContain('advanceTime(');
   expect(read('src/features/market/marketShiftCountdown.ts')).not.toContain('setInterval(');
   expect(component).not.toContain('setInterval(');
   expect(component).not.toContain('setTimeout(');
@@ -127,7 +125,7 @@ describe('v0.8.26 left-bottom scene UI and existing game safety',()=>{
    'shift.nextPhaseName','shift.nextStartClock',
    'shift.nextVendorName','shift.nextVendorRole',
    'role="status"',
-   '世界時間 · 換班時商品同步更新',
+   '台北時間 · 換班時商品同步更新',
   ])expect(component).toContain(token);
   expect(ui).not.toContain('setInterval(');
  });
@@ -165,7 +163,7 @@ describe('v0.8.26 left-bottom scene UI and existing game safety',()=>{
   s.world.minute=10*60+59;s.economy.coins=5000;
   const offShift=gameReducer(s,{type:'MARKET_BUY_ITEM',vendorId:'medic',itemId:'bandage'});
   expect(offShift).toBe(s);
-  const shifted=gameReducer(s,{type:'WORLD_CLOCK_TICK',minutes:5});
+  const shifted=gameReducer(s,{type:'WORLD_CLOCK_SYNC',nowMs:Date.parse('2026-11-14T03:00:00Z')});
   const nowInShift=gameReducer(shifted,{type:'MARKET_BUY_ITEM',vendorId:'medic',itemId:'bandage'});
   expect(nowInShift).not.toBe(shifted);
   expect(nowInShift.economy.coins).toBe(shifted.economy.coins-90);

@@ -161,8 +161,8 @@ describe('v0.8.31 React markup, trigger lifecycle and visual isolation',()=>{
  it('does not migrate data, change real-time clock or add hunger costs in this batch',()=>{
   expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
   expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe(JSON.parse(read('package.json')).version);
-  expect(read('src/app/GameContext.tsx')).toContain('WORLD_TICK_REAL_MS=10000');
-  expect(read('src/app/GameContext.tsx')).toContain('WORLD_TICK_GAME_MINUTES=5');
+  expect(read('src/app/GameContext.tsx')).toContain('REALTIME_CLOCK_REFRESH_MS');
+  expect(read('src/app/GameContext.tsx')).not.toContain('WORLD_TICK_GAME_MINUTES');
   expect(read('src/game/engine/consumables.ts')).toContain('p.hunger-20');
  });
 });

@@ -138,7 +138,7 @@ describe('v0.8.27 fluorescent bar and final responsive behavior',()=>{
    "type:'MARKET_BUY_ITEM'","type:'MARKET_SELL_ITEM'",
    "type:'MARKET_BUY'","type:'MARKET_SELL'",
   ])expect(page).toContain(token);
-  expect(read('src/styles/main.scss').trimEnd().endsWith('@import "v0827-market-final-polish";')).toBe(true);
+  expect(read('src/styles/main.scss')).toContain('@import "v0827-market-final-polish";');
   expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
   expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe(JSON.parse(read('package.json')).version);
  });

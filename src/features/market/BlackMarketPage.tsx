@@ -182,7 +182,7 @@ export default function BlackMarketPage(){
         </span>
        </button>;
       })}
-      {!filteredOffers.length&&<p className="market-v12__empty">{mode==='sell'?'背包目前沒有符合條件的物品或卡牌複本。':'沒有符合條件的交易品，試試其他篩選。'}</p>
+      {!filteredOffers.length&&<p className="market-v12__empty">{mode==='sell'?'背包目前沒有符合條件的物品或卡牌複本。':'沒有符合條件的交易品，試試其他篩選。'}</p>}
      </div>}
      {mode!==null&&filteredOffers.length>6&&<div className="market-v081__scroll-hint" aria-hidden="true">向上拖曳或滾動，查看下方更多商品</div>}
    </div>

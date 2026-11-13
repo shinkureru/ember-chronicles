@@ -55,13 +55,12 @@ export default function BlackMarketSceneArt({vendor}:{vendor:MarketVendor}){
   </defs>
   {imageUrls.map((imageUrl,index)=>{
    const lighting=getMarketSceneLighting(sceneAssets[index]??'');
-   const isWorkplace=lighting==='workbench'||lighting==='welding';
    return <g key={imageUrl}
     className={`market-v0829__frame market-v0830__scene-layer ${index===active?'market-v0829__frame--active':''}`}>
     <image href={imageUrl} width="960" height="536" x="0" y="0" preserveAspectRatio="none"/>
     {lighting!=='ambient'&&<>
      <ellipse className="market-v0823__warm-light market-v0830__pendant-glow"
-      cx={isWorkplace?529:529} cy="51" rx="130" ry="97" fill="url(#market-v0823-warm)"/>
+      cx="529" cy="51" rx="130" ry="97" fill="url(#market-v0823-warm)"/>
      <ellipse className="market-v0823__cold-light market-v0830__tube-glow"
       cx="202" cy="67" rx="204" ry="99" fill="url(#market-v0823-cold)"/>
      <ellipse className="market-v0827__fluorescent-bloom market-v0830__tube-bloom"

@@ -1,5 +1,18 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-14｜第四輪第3批 v0.8.30：防毒面具三張場景、吊燈/日光燈及焊花（本 PR 待 Merge）
+
+- **開工狀態**：main `f2d62632b7461fe2cdc51b70156090ae16d5f6d0`、PR #55 v0.8.29 已 Merge、Pages success、open PR=0。唯一分支 `ui/v0.8.30-scavenger-three-scenes-lighting`。前批 handoff 對工作台圖屬「灰手羅恩」的說法已經使用者在2026-11-14明確更正，**當作歷史錯誤，不可恢復**。
+- **三張圖全部屬防毒面具 scavenger**：原 `black-market-merchant.webp`（紫眼人物）、`black-market-scavenger-rummage.webp`（翻找工作台）、`black-market-scavenger-weld.webp`（工作台焊接）。舊 `black-market-mechanic-rummage.webp`、`black-market-mechanic-weld.webp` 以相同 Git blob SHA 改名，二張原畫品質/壓縮大小不變；`marketVendors.ts` scavenger.sceneAssets 三張與 lighting=workbench-weld，mechanic 灰手羅恩 sceneAssets=[]、lighting=ambient。broker/medic/runner 仍 []。未來五位商人各三張，但未獲圖不能虛構人物。
+- **場景整組交叉淡入**：`BlackMarketSceneArt.tsx` 仍用原 v0829 的12秒輪播、1.3秒 opacity 淡入；每個 SVG `<g className="market-v0830__scene-layer">` 把對應 `<image>`/燈源/肖像紫眼/焊點特效放一起交叉淡化，絕不把前張的紫眼或焊花照在新張。新 `marketSceneLighting.ts` 純函式由圖檔名判 portrait/workbench/welding/ambient，並且有 scavenger id 雙重保護。背景分頁/減少動效停止 interval 與動畫，空圖保留無人物背景。
+- **光源**：原960×536座標暖色吊燈 x529/y51、冷色左日光燈 x202/y67及延伸光暈 x189/y88，6.6/7.8/8.4秒非同步柔和亮度波動；焊接圖第三張約在原1376×768 (426,400)，新 SVG 光源 x297/y279，2.4秒非規律短促青白焊花。只有 welding 圖渲染焊花；reduce-motion 靜態微光、不畫閃爍火花。新的 `_v0830-market-scene-lights.scss` 在 `main.scss` 最後 import。
+- **原功能完全保留**：v0829 三張 predecode+圖片失敗可重試/背景暫停，10句商人台詞、好感、當班輪替、真實價格庫存、bag-only販賣、四級商品卡、動畫/世界時鐘每10秒+5遊戲分鐘、飢餓規則皆不更動。package/lock =0.8.30。
+- **測試文件**：新增 `tests/v0830-scavenger-lighting.test.ts`，更新 v0828/29 舊測試錯誤資產身分與固定版號；驗三張實際RIFF/WEBP、無舊 mechanic 檔、場景特效只屬對應圖、12秒輪播、reduced-motion 及 bag vs warehouse reducer。更新 `docs/REALTIME_HUNGER_REDESIGN_ROADMAP.md`、新增 `docs/V0830_SCAVENGER_LIGHTING_QA.md`。CI必須 `npm run build`+`npm test` 全綠，**CI不等於已在真實手機量測光源位置/頻率**。
+- **停點**：本批一個 PR，不自行 Merge。使用者合併並通知後才開始第四批 v0.8.31（商品卡斜對角區域波浪）；第五批 v0.8.32 商人資料整合、第六批 v0.8.33 台北真實時間、第七批 v0.8.34 飢餓代價、第八批 v0.8.35 最終 QA 不提前修改。
+
+---
+
+
 ## 2026-11-13｜第四輪第2批 v0.8.29：黑市按當班商人切換圖片與柔和輪播（本 PR 待使用者 Merge）
 
 - **開工 GitHub 核對**：`main` `d8ba00d36dc1bb7ddfa3068aa797cab2c12e9668`，第1批 PR #54 v0.8.28 已 Merge，Pages success，開工 open PR 0。上一批手工 QA 未由 CI 代替；下一批仍重新核對。

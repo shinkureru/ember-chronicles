@@ -15,11 +15,9 @@ const style=read('src/styles/_v0829-market-scene-carousel.scss');
 describe('v0.8.29 correct vendor-specific scene inventory',()=>{
  it('maps source illustrations to the right people, never crossing vendors',()=>{
   expect(MARKET_VENDORS.map(v=>v.id)).toEqual(['broker','mechanic','medic','runner','scavenger']);
-  expect(vendorById('mechanic')?.visual.sceneAssets).toEqual([
-   'black-market-mechanic-rummage.webp','black-market-mechanic-weld.webp'
-  ]);
-  expect(vendorById('scavenger')?.visual.sceneAssets).toEqual(['black-market-merchant.webp']);
-  for(const id of ['broker','medic','runner'])expect(vendorById(id)?.visual.sceneAssets).toEqual([]);
+  expect(vendorById('mechanic')?.visual.sceneAssets).toEqual([]);
+  expect(vendorById('scavenger')?.visual.sceneAssets).toEqual(['black-market-merchant.webp','black-market-scavenger-rummage.webp','black-market-scavenger-weld.webp']);
+  for(const id of ['broker','mechanic','medic','runner'])expect(vendorById(id)?.visual.sceneAssets).toEqual([]);
   for(const v of MARKET_VENDORS){
    expect(new Set(v.visual.sceneAssets).size).toBe(v.visual.sceneAssets.length);
    expect(v.visual.sceneAssets.every(x=>x.endsWith('.webp'))).toBe(true);
@@ -130,8 +128,8 @@ describe('v0.8.29 predecoded, visibility-aware crossfade',()=>{
   expect(page).toContain('<MarketShiftCountdown minute={s.world.minute} compact/>');
  });
  it('uses the new version but preserves old GameContext and hunger rules in this batch',()=>{
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.29');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.29');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe(JSON.parse(read('package.json')).version);
   expect(read('src/app/GameContext.tsx')).toContain('WORLD_TICK_GAME_MINUTES=5');
   expect(read('src/game/state/initial.ts')).toContain('hunger:20');
  });

@@ -108,12 +108,12 @@ describe('v0.8.28 real market vendor identities, future scene schema and commerc
    expect(vendor.sellItems.length).toBeGreaterThan(0);
    expect(vendor.cardIds.length).toBeGreaterThan(0);
   }
-  expect(vendorById('scavenger')?.visual.sceneAssets).toEqual(['black-market-merchant.webp']);
-  for(const id of ['broker','medic','runner']){
+  expect(vendorById('scavenger')?.visual.sceneAssets).toEqual(['black-market-merchant.webp','black-market-scavenger-rummage.webp','black-market-scavenger-weld.webp']);
+  for(const id of ['broker','mechanic','medic','runner']){
    expect(vendorById(id)?.visual.sceneAssets).toEqual([]);
   }
-  expect(vendorById('mechanic')?.visual.lighting).toBe('workbench-weld');
-  expect(vendorById('mechanic')?.visual.sceneAssets).toEqual(['black-market-mechanic-rummage.webp','black-market-mechanic-weld.webp']);
+  expect(vendorById('mechanic')?.visual.lighting).toBe('ambient');
+  expect(vendorById('scavenger')?.visual.lighting).toBe('workbench-weld');
  });
  it('preserves all five real shift identities and does not migrate or mutate save state',()=>{
   const s=makeInitialState('journalist');

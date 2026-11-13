@@ -37,3 +37,8 @@
 - 純 UI 的 `BlackMarketSceneArt` 每12秒 opacity 淡入淡出，1.3秒交叉轉場；只播放已成功預載、decode 的圖片；背景頁籤與減少動畫都暫停，切新 vendor ID 重置 index。改用 `useMarketSceneLoad(sceneAssets)` 預載**全部**商人的本輪幀（不是只預載原防毒面具那一張）、資產404/超時可重試；沒有圖片直接 ready。
 - 保留原 960×536 的 SVG 場景座標，既有橘燈/白燈/紫眼不錯置；新增焊接專屬火花的亮光留第3批 v0.8.30。商品卡的斜向波浪留第4批 v0.8.31。時鐘與飢餓保留原樣，分別留第6/7批。
 - 本批專項測試 `tests/v0829-market-scene-carousel.test.ts`，手動 QA `docs/V0829_MARKET_SCENE_CAROUSEL_QA.md`。單PR、CI全綠，不自行 Merge。
+
+## v0.8.30 第3批更正：使用者明確確認三張圖片的真正擁有者（2026-11-14）
+- **權威更正**：原肖像、翻找工作台、焊接工作台全部都是「防毒面具 scavenger」，先前 v0828/v0829 說圖2/3是灰手羅恩的判斷錯誤。正確三圖依序 `black-market-merchant.webp`、`black-market-scavenger-rummage.webp`、`black-market-scavenger-weld.webp`。灰手羅恩 mechanic 現在沒有圖片，其餘 broker/medic/runner 也沒有；未來每人都會有專屬三圖。
+- 本批依圖片本身決定紫眼/無紫眼/電焊特效，每張圖片與專屬吊燈、日光燈局部光暈為一組 SVG 同步轉場。只有第三張有非規律焊花，減少動效時禁止火花。詳見 `docs/V0830_SCAVENGER_LIGHTING_QA.md`。
+- 後續排程維持：v0.8.31 商品斜對角**區域波浪**；v0.8.32 商人資料；v0.8.33 Asia/Taipei 現實世界時間；v0.8.34 飢餓代價；v0.8.35 整合測試。所有批次需使用者自行 Merge，才可啟動下一批。

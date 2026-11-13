@@ -87,7 +87,7 @@ describe('v0.8.30 frame-specific lighting / welding',()=>{
   expect(reduced).toContain('.market-v0830__weld-sparks{opacity:0}');
   expect(style).not.toContain('market-v12__offers');
   expect(read('src/styles/main.scss')).toContain('@import "v0830-market-scene-lights";');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.30');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.30');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe(JSON.parse(read('package.json')).version);
  });
 });

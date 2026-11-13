@@ -9,6 +9,9 @@ import { getScheduledVendor } from '../../game/data/marketSchedule';
 import { playCue } from '../../audio/sound';
 import { bagWeight, worldPhaseToken, worldPhase, worldClock } from '../../game/engine/rules';
 import BlackMarketSceneArt from './BlackMarketSceneArt';
+import MarketIdleSpeech from './MarketIdleSpeech';
+import MarketLoadingScreen from './MarketLoadingScreen';
+import {useMarketSceneLoad} from './useMarketSceneLoad';
 import MarketTradeSwitchIcon from './MarketTradeSwitchIcon';
 import {getBackpackMarketItemIds,doesVendorAcceptMarketItem} from './marketSellInventory';
 import ItemArt from '../../components/ItemArt';
@@ -34,6 +37,8 @@ export default function BlackMarketPage(){
  const [narrow,setNarrow]=useState<Narrow>('any');
  const [more,setMore]=useState(false);
  const [selectedId,setSelectedId]=useState<string|null>(null);
+ const [switchCount,setSwitchCount]=useState(0);
+ const {status:sceneLoadStatus,retry:retrySceneLoad}=useMarketSceneLoad();
  const offersScroll=useVerticalDragScroll();
  const vendor=getScheduledVendor(s.world.minute);
  const phase=worldPhaseToken(s.world.minute);
@@ -89,7 +94,7 @@ export default function BlackMarketPage(){
   window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close);
  },[selected]);
  const chooseMode=(value:Mode)=>{
-  if(mode!==value){setMode(value);setKind('all');setNarrow('any');setMore(false);setSelectedId(null);offersScroll.scrollRef.current?.scrollTo({top:0});}
+  if(mode!==value){setMode(value);setSwitchCount(n=>n+1);setKind('all');setNarrow('any');setMore(false);setSelectedId(null);offersScroll.scrollRef.current?.scrollTo({top:0});}
   playCue('open');
  };
  const trade=(offer:Offer)=>{
@@ -103,6 +108,7 @@ export default function BlackMarketPage(){
   playCue(mode==='buy'?'confirm':'loot');
   setSelectedId(null);
  };
+ if(sceneLoadStatus!=='ready')return <MarketLoadingScreen status={sceneLoadStatus} onRetry={retrySceneLoad}/>;
  return <div className={`page-stack viewport-page market-viewport market-viewport--v10 market-v12 market-v13 phase--${phase}`}>
   <header className="market-v10__heading">
    <div><span className="eyebrow">UNDERGROUND / SECRET EXCHANGE</span><h1>黑市</h1></div>
@@ -116,7 +122,9 @@ export default function BlackMarketPage(){
      <span>BLACK MARKET / CURRENT VENDOR</span>
      <strong>{vendor.name}</strong><small>{vendor.role}</small>
     </div>
-    <p className="market-v12__dialogue market-v0823__dialogue">{vendor.line}</p>
+    <p className="market-v12__dialogue market-v0823__dialogue market-v0825__speech" aria-label="商人自言自語">
+     <MarketIdleSpeech key={vendor.id} vendor={vendor}/>
+    </p>
     <div className="market-v12__time market-v0823__time"><Clock3 size={12}/>{worldPhase(s.world.minute)} {worldClock(s.world.minute)}</div>
     <div className="market-v13__favor market-v0823__favor">
      <div className="market-v0823__favor-line">
@@ -135,13 +143,15 @@ export default function BlackMarketPage(){
      <button type="button" className={`market-v0824__toggle ${mode==='sell'?'is-sell':'is-buy'}`}
       aria-pressed={mode==='sell'} aria-label={mode==='sell'?'目前販賣模式，點擊切換購買':'目前購買模式，點擊切換販賣'}
       onClick={()=>chooseMode(mode==='sell'?'buy':'sell')}>
-      <span className="market-v0824__switch-label market-v0824__switch-label--buy" aria-hidden="true">購買</span>
-      <span className="market-v0824__switch-arrow" aria-hidden="true"><MarketTradeSwitchIcon/></span>
-      <span className="market-v0824__switch-label market-v0824__switch-label--sell" aria-hidden="true">販賣</span>
-      <span className="market-v0824__switch-foot" aria-hidden="true">切換</span>
+      <span className="market-v0824__switch-label market-v0824__switch-label--buy" aria-hidden="true"><span>購</span><span>買</span></span>
+      <span className="market-v0824__switch-arrow" aria-hidden="true">
+       <MarketTradeSwitchIcon/>
+       <span className="market-v0824__switch-foot">切換</span>
+      </span>
+      <span className="market-v0824__switch-label market-v0824__switch-label--sell" aria-hidden="true"><span>販</span><span>賣</span></span>
      </button>
     </nav>
-    <div className="market-v12__table">
+    <div className={`market-v12__table ${switchCount>0?`market-v0825__catalog market-v0825__catalog--${mode}`:''}`}>
     <div className="market-v12__table-heading"><span>EXCHANGE / {mode===null?'WAITING':mode.toUpperCase()}</span><span>{mode===null?'選擇交易方式':'點選卡片查看詳細內容'}</span></div>
     {mode!==null&&<div className="market-v13__filter-wrap">
      <div className="market-v13__filters" role="group" aria-label="商品篩選">

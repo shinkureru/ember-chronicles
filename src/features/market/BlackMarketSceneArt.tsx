@@ -2,8 +2,9 @@
  * All effects share image coordinates, so hero cropping keeps them aligned.
  * The illustration is atmospheric: vendor identity remains live game data.
  */
+export const BLACK_MARKET_SCENE_URL=`${import.meta.env.BASE_URL}black-market-merchant.webp`;
 export default function BlackMarketSceneArt(){
- const imageUrl=`${import.meta.env.BASE_URL}black-market-merchant.webp`;
+ const imageUrl=BLACK_MARKET_SCENE_URL;
  return <svg className="market-v0823__art" viewBox="0 0 960 536"
   preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
   <defs>

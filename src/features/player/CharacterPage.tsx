@@ -16,6 +16,7 @@ export default function CharacterPage(){
  if(!s.profession)return <section className="page-heading"><h1>人物檔案</h1><p>建立角色後即可檢視裝備與永久成長屬性。</p></section>;
  const profession=PROFESSIONS[s.profession];
  const progression=getProgression(s);
+ const xpGoal=xpNeededForLevel(progression.level);
  return <div className="page-stack character-page viewport-page character-viewport character-viewport--v09">
   <header className="character-page__header"><div><span className="eyebrow">CHARACTER / SURVIVOR</span><h1>人物檔案</h1></div><span>{profession.name} · 防禦 {getEquippedDefense(s)}</span></header>
   <nav className="character-page__tabs" aria-label="人物資料分頁">
@@ -26,35 +27,58 @@ export default function CharacterPage(){
     onClick={()=>{setTab(item.id);playCue('select')}}>{item.label}</button>)}
   </nav>
   {tab==='equipment'&&<CharacterEquipmentPanel/>}
-  {tab==='attributes'&&<section id="character-panel-attributes" aria-label="身體、思維與社交永久屬性" className="character-tab-content character-attributes-panel viewport-list">
-   <h2><HeartPulse size={19}/>永久屬性總覽</h2>
-   <div className="character-progression">
-    <strong>角色 Lv.{progression.level} · XP {progression.xp}/{xpNeededForLevel(progression.level)} · 可分配點數 {progression.points}</strong>
-    <div className="character-progression__meter"><i style={{width:`${Math.min(100,100*progression.xp/xpNeededForLevel(progression.level))}%`}}/></div>
-    <small>首次完成各種行動可獲得 XP；同一天重複相同行動不會再獲得經驗。</small>
+  {tab==='attributes'&&<section id="character-panel-attributes" aria-label="身體、思維與社交永久屬性"
+   className="character-tab-content character-attributes-panel character-v0818 viewport-list">
+   <header className="character-v0818__heading">
+    <h2><HeartPulse size={17}/>永久屬性</h2>
+    <small>18 項成長能力 · 每項最高 Lv.20</small>
+   </header>
+   <div className="character-progression character-v0818__overview" aria-label="角色等級、經驗與可用點數">
+    <div className="character-v0818__summary">
+     <span>等級 <strong>Lv.{progression.level}</strong></span>
+     <span>經驗 <strong>{progression.xp}/{xpGoal}</strong></span>
+     <span className="character-v0818__points">可分配 <output aria-live="polite">{progression.points}</output> 點</span>
+    </div>
+    <div className="character-progression__meter" role="progressbar" aria-label="本級經驗進度"
+     aria-valuemin={0} aria-valuemax={xpGoal} aria-valuenow={progression.xp}>
+     <i style={{width:`${Math.min(100,100*progression.xp/xpNeededForLevel(progression.level))}%`}}/>
+    </div>
    </div>
-   <nav className="character-attribute-index" aria-label="快速定位屬性分類">
-    {ATTRIBUTE_GROUPS.map(group=><button type="button" key={group.id} aria-controls={`character-attribute-${group.id}`}
-     onClick={()=>document.getElementById(`character-attribute-${group.id}`)?.scrollIntoView({block:'nearest'})}>{group.title}</button>)}
-   </nav>
-   <div className="character-attribute-sections">
+   <p className="character-v0818__hint" id="character-v0818-upgrade-hint">
+    {progression.points>0?'點選 ＋ 消耗 1 點升級屬性；點數可跨類別分配。':'目前沒有可分配點數；完成行動取得 XP 後可再升級。'}
+   </p>
+   <div className="character-attribute-sections character-v0818__groups">
     {ATTRIBUTE_GROUPS.map(group=>{
      const Icon=groupIcons[group.id];
-     return <section className="character-attribute-group" key={group.id} id={`character-attribute-${group.id}`}
+     const total=group.ids.reduce((sum,id)=>sum+s.player.attributes[id],0);
+     return <section className={`character-attribute-group character-v0818__group character-v0818__group--${group.id}`}
+      key={group.id} id={`character-attribute-${group.id}`}
       aria-labelledby={`character-attribute-heading-${group.id}`}>
-      <h3 id={`character-attribute-heading-${group.id}`}><Icon size={16}/>{group.title}</h3>
-      <div className="character-tab-content__stats">
-       {group.ids.map(id=><div className="character-tab-stat" key={id}>
-        <span>{ATTRIBUTE_LABELS[id]}</span><strong>{s.player.attributes[id]}</strong>
-        <small>永久成長屬性</small>
-        <button type="button" disabled={progression.points<=0||s.player.attributes[id]>=20||s.mode!=='home'}
-         onClick={()=>dispatch({type:'ALLOCATE_POINT',attribute:id})}>使用 1 點升級</button>
-       </div>)}
+      <header className="character-v0818__group-header">
+       <h3 id={`character-attribute-heading-${group.id}`}><Icon size={15}/>{group.title}</h3>
+       <small aria-label={`分類累計 ${total}，最高 120`}>{total}/120</small>
+      </header>
+      <div className="character-tab-content__stats character-v0818__stat-grid">
+       {group.ids.map(id=>{
+        const level=s.player.attributes[id];
+        const canUpgrade=progression.points>0&&s.player.attributes[id]<20&&s.mode==='home';
+        const reason=s.mode!=='home'?'回到避難所才能加點'
+         :level>=20?'已達 Lv.20 上限'
+         :progression.points<=0?'沒有可分配點數':'消耗 1 點升級';
+        return <div className={`character-tab-stat character-v0818__stat ${level>=20?'is-maxed':''}`} key={id}>
+         <span className="character-v0818__stat-name" title={ATTRIBUTE_LABELS[id]}>{ATTRIBUTE_LABELS[id]}</span>
+         <strong className="character-v0818__stat-level" aria-label={`等級 ${level}，上限 20`}>{level}<small>/20</small></strong>
+         <button type="button" className="character-v0818__upgrade"
+          disabled={!canUpgrade} title={reason}
+          aria-label={`升級${ATTRIBUTE_LABELS[id]}，目前 ${level}/20；${reason}`}
+          aria-describedby="character-v0818-upgrade-hint"
+          onClick={()=>dispatch({type:'ALLOCATE_POINT',attribute:id})}><span aria-hidden="true">{level>=20?'✓':'＋'}</span></button>
+        </div>;
+       })}
       </div>
      </section>;
     })}
    </div>
-   <p>每種屬性都有獨立成長方向。進行不同關卡或劇情選擇時，會逐步累積擅長領域。</p>
   </section>}
   {tab==='town'&&<section id="character-panel-town" aria-label="城鎮成長" className="character-tab-content viewport-list">
     <h2><Shield size={19}/>城鎮培養紀錄</h2>

@@ -1,5 +1,17 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜第二輪第5批 v0.8.18：身體／思維／社交一頁式緊湊屬性（PR 待使用者 Merge）
+
+- **GitHub 開工核對**：`main` `70be35a7f317ca59ab84fd614031faf6f0bbed8c`；上一 PR #43／v0.8.17 已 Merge、Pages 部署成功；開工前 open PR = 0。下方「v0.8.17 待 Merge」為歷史狀態，往後仍必須每次查 GitHub main／PR／交接／相關碼與 CI。
+- **本次唯一分支** `ui/v0.8.18-compact-character-attributes`，package/lock 版本 `0.8.18`。本批只改 `CharacterPage.tsx` 的「屬性」區與新 `src/styles/_v0818-compact-character-attributes.scss`（最後載入 main.scss），其餘四人物頁以及第4批裝備、城鎮、NPC、故事、卡牌/存檔引擎全不動。
+- 手機**三組上下排列，每組兩欄三列**的18項緊湊「屬性名稱／目前等級/20／＋加點」小卡；大於等於540px 採三組並排、每組單欄六列。首頁上方精簡 Lv、XP/需求、剩餘點數及5px進度條；三分組各列目前總等級／120；移除佔位的分類捷徑與各卡重複「永久成長屬性」副標籤。保留全屬性 `ATTRIBUTE_GROUPS` 的原始18 IDs／中文名稱，單鍵加點清楚可達。
+- 按鈕只在 `progression.points>0 && s.player.attributes[id]<20 && s.mode==='home'` 可用；0點/已達Lv20/非home可見禁用並附完整說明與 aria-label。唯一加點仍是 `dispatch({type:'ALLOCATE_POINT',attribute:id})`；角色資料/XP/HP/ST/存檔/轉職限制不變。小高度320×568/600×360或200%縮放，只允許屬性內容區內部捲動；不能為一頁式隱藏加點或長字。
+- 新 `tests/v0818-compact-character-attributes.test.ts` 對18項唯一/真實18次跨群組加點/點數0/等級20/非home/HP ST副作用與CSS／可用性做檢查；更新前版 `tests/v0816-character-navigation.test.ts` 對本批已移除的分類捷徑，以及新的等價加點限制檢查。人工 QA 交接 `docs/V0818_CHARACTER_ATTRIBUTES_QA.md`。
+- **每批止步約定**：本批一個 PR；需 GitHub CI `npm run build`＋`npm test` 全綠；使用者自己 Merge 並手動目視驗收；明確通知「Merge 好了，繼續第六批」後才重新查 GitHub 最新 main，開始 **v0.8.19 城鎮成長/NPC記憶/人物故事緊湊化**。禁止自己合併或提前做下批。
+
+---
+
+
 ## 2026-11-13｜第二輪第4批 v0.8.17 人物裝備高密度頁（待 Merge）
 
 - **最新 GitHub 基準**：`main` `64f9a01046dd0611d181cd327b158fc9dc8ddf2c`，前一 PR #42 已 Merge、Pages 成功、開工時 open PR 0。舊 v0.8.16「待 Merge」為歷史文字。

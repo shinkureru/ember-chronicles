@@ -1,0 +1,321 @@
+/* v0.8.18 | The 18 permanent attributes are a one-screen, high-density matrix.
+ * Existing game state, point allocation, and all four other pages are untouched.
+ * Small/zoomed screens scroll this panel only; no text or action is clipped.
+ */
+.character-viewport--v09 .character-tab-content.character-attributes-panel.character-v0818{
+ --attr-border:rgba(179,153,133,.35);
+ --attr-ink:#e8ded3;
+ --attr-muted:#b6aca5;
+ --attr-accent:#d9b68f;
+ display:flex!important;
+ flex:1 1 0;
+ flex-direction:column;
+ box-sizing:border-box;
+ min-height:0;
+ min-width:0;
+ gap:6px;
+ padding:8px!important;
+ overflow-y:auto!important;
+ overflow-x:hidden!important;
+ scrollbar-width:thin;
+ scrollbar-color:#775e51 transparent;
+ overscroll-behavior-y:contain;
+ touch-action:pan-y;
+ scroll-padding-top:8px;
+ background:linear-gradient(165deg,#141217,#0c0d12 72%);
+ border:1px solid #4d4344;
+ border-radius:8px;
+}
+.character-v0818 .character-v0818__heading{
+ display:flex;
+ flex:0 0 auto;
+ justify-content:space-between;
+ align-items:baseline;
+ gap:5px 9px;
+ min-width:0;
+}
+.character-v0818 .character-v0818__heading h2{
+ display:inline-flex;
+ align-items:center;
+ gap:5px;
+ flex:0 0 auto;
+ margin:0;
+ color:var(--attr-ink);
+ font:750 14px/1.35 'Noto Serif TC',serif;
+}
+.character-v0818 .character-v0818__heading h2 svg{
+ flex:none;
+ color:var(--attr-accent);
+}
+.character-v0818 .character-v0818__heading small{
+ color:var(--attr-muted);
+ font-size:9px;
+ line-height:1.4;
+ text-align:right;
+ overflow-wrap:anywhere;
+}
+.character-v0818 > .character-progression.character-v0818__overview{
+ box-sizing:border-box;
+ display:flex;
+ flex-direction:column;
+ flex:0 0 auto;
+ gap:4px;
+ min-width:0;
+ margin:0;
+ padding:7px 9px;
+ border:1px solid #755f5e;
+ border-radius:7px;
+ background:linear-gradient(115deg,#292228,#1a1b22);
+}
+.character-v0818 .character-v0818__summary{
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ align-items:center;
+ gap:5px;
+ min-width:0;
+ color:var(--attr-muted);
+ font-size:10px;
+ line-height:1.35;
+}
+.character-v0818 .character-v0818__summary > span{
+ display:flex;
+ align-items:center;
+ gap:4px;
+ min-width:0;
+ white-space:nowrap;
+}
+.character-v0818 .character-v0818__summary > span:nth-child(2){justify-content:center}
+.character-v0818 .character-v0818__summary > span:last-child{justify-content:flex-end}
+.character-v0818 .character-v0818__summary strong,
+.character-v0818 .character-v0818__summary output{
+ color:var(--attr-ink);
+ font:750 12px/1.2 Inter,sans-serif;
+ font-variant-numeric:tabular-nums;
+}
+.character-v0818 .character-v0818__points output{
+ color:#f6c991;
+ font-size:15px;
+}
+.character-v0818 .character-progression__meter{
+ box-sizing:border-box;
+ width:100%;
+ height:5px;
+ min-height:5px;
+ background:#443d43;
+ border-radius:100px;
+ overflow:hidden;
+}
+.character-v0818 .character-progression__meter i{
+ display:block;
+ height:100%;
+ background:linear-gradient(90deg,#8d705f,#e3b69d);
+}
+.character-v0818 > .character-v0818__hint{
+ flex:0 0 auto;
+ min-width:0;
+ margin:0!important;
+ color:#bdb3a9;
+ font-size:9px!important;
+ line-height:1.35!important;
+ overflow-wrap:anywhere;
+}
+.character-v0818 .character-attribute-sections.character-v0818__groups{
+ display:grid;
+ grid-template-columns:minmax(0,1fr);
+ grid-auto-rows:max-content;
+ align-content:start;
+ gap:6px;
+ flex:0 0 auto;
+ min-width:0;
+}
+.character-v0818 .character-attribute-group.character-v0818__group{
+ box-sizing:border-box;
+ display:flex;
+ flex-direction:column;
+ gap:5px;
+ min-width:0;
+ padding:6px 7px;
+ border:1px solid var(--attr-border);
+ border-radius:7px;
+ background:linear-gradient(145deg,#1d1b20,#14161b);
+ scroll-margin-top:8px;
+}
+.character-v0818 .character-v0818__group--physical{border-color:#846b68}
+.character-v0818 .character-v0818__group--mental{border-color:#646c83}
+.character-v0818 .character-v0818__group--social{border-color:#777063}
+.character-v0818 .character-v0818__group-header{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:5px;
+ min-width:0;
+ padding-bottom:4px;
+ border-bottom:1px solid #514b4d;
+}
+.character-v0818 .character-v0818__group-header h3{
+ display:inline-flex;
+ align-items:center;
+ gap:5px;
+ min-width:0;
+ margin:0;
+ color:#e2d5c7;
+ font-size:11px;
+ font-weight:750;
+ line-height:1.35;
+ white-space:nowrap;
+}
+.character-v0818 .character-v0818__group-header h3 svg{
+ flex:none;
+ color:var(--attr-accent);
+}
+.character-v0818 .character-v0818__group-header > small{
+ flex:none;
+ color:#b9a79a;
+ font:650 9px/1.3 Inter,sans-serif;
+ font-variant-numeric:tabular-nums;
+}
+.character-v0818 .character-attribute-group .character-tab-content__stats.character-v0818__stat-grid{
+ box-sizing:border-box;
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:4px;
+ min-width:0;
+}
+.character-v0818 .character-v0818__stat-grid > .character-tab-stat.character-v0818__stat{
+ box-sizing:border-box;
+ display:grid;
+ grid-template-columns:minmax(0,1fr) auto 27px;
+ grid-template-rows:minmax(0,1fr);
+ align-items:center;
+ column-gap:4px;
+ min-width:0;
+ min-height:32px;
+ margin:0;
+ padding:3px 5px;
+ border:1px solid #4c4549;
+ border-radius:5px;
+ background:linear-gradient(120deg,#29252a,#1d1f23);
+}
+.character-v0818 .character-v0818__stat-name{
+ min-width:0;
+ color:#ddd1c4;
+ font-size:10px;
+ font-weight:650;
+ line-height:1.25;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis;
+}
+.character-v0818 .character-v0818__stat-level{
+ min-width:0;
+ color:#f3dfc8;
+ font:800 12px/1.2 Inter,sans-serif;
+ font-variant-numeric:tabular-nums;
+ white-space:nowrap;
+}
+.character-v0818 .character-v0818__stat-level small{
+ color:#928b87;
+ font:500 8px/1.2 Inter,sans-serif;
+}
+.character-v0818 .character-v0818__stat-grid .character-v0818__upgrade{
+ box-sizing:border-box;
+ display:grid;
+ grid-column:3;
+ grid-row:1;
+ place-items:center;
+ width:27px;
+ height:26px;
+ min-width:27px;
+ min-height:26px;
+ margin:0;
+ padding:0;
+ border:1px solid #947a63;
+ border-radius:5px;
+ background:#504033;
+ color:#f4ddc0;
+ font:800 16px/1 'Noto Sans TC',sans-serif;
+ cursor:pointer;
+ transition:background-color .13s ease,border-color .13s ease;
+}
+.character-v0818 .character-v0818__upgrade:hover:not(:disabled){
+ background:#70533d;
+ border-color:#ebc79d;
+}
+.character-v0818 .character-v0818__upgrade:focus-visible{
+ outline:2px solid #f1d7ac;
+ outline-offset:1px;
+}
+.character-v0818 .character-v0818__upgrade:disabled{
+ cursor:not-allowed;
+ opacity:.38;
+}
+.character-v0818 .character-v0818__stat.is-maxed{
+ border-color:#576354;
+ background:#242922;
+}
+.character-v0818 .character-v0818__stat.is-maxed .character-v0818__upgrade{
+ color:#9ec4a2;
+ border-color:#66806b;
+ opacity:.68;
+}
+/* 540px+ character viewport supports three group columns with six one-line
+ * rows each. On portrait phones, groups stack, each with two columns × 3 rows.
+ */
+@media(min-width:540px){
+ .character-v0818 .character-attribute-sections.character-v0818__groups{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+ }
+ .character-v0818 .character-attribute-group .character-tab-content__stats.character-v0818__stat-grid{
+  grid-template-columns:minmax(0,1fr);
+ }
+ .character-v0818 .character-v0818__stat-grid > .character-tab-stat.character-v0818__stat{
+  min-height:36px;
+ }
+}
+/* 320px phones: maintain independent buttons and readable 18 items; only the
+ * panel scrolls if its real content exceeds viewport or text is zoomed. */
+@media(max-width:360px){
+ .character-viewport--v09 .character-tab-content.character-attributes-panel.character-v0818{
+  gap:5px;
+  padding:6px!important;
+ }
+ .character-v0818 .character-v0818__heading h2{font-size:13px}
+ .character-v0818 .character-v0818__heading small{font-size:8px}
+ .character-v0818 > .character-progression.character-v0818__overview{padding:5px 7px}
+ .character-v0818 .character-v0818__summary{font-size:9px;gap:3px}
+ .character-v0818 .character-v0818__summary strong{font-size:10px}
+ .character-v0818 .character-v0818__points output{font-size:13px}
+ .character-v0818 .character-attribute-group.character-v0818__group{padding:5px;gap:4px}
+ .character-v0818 .character-attribute-group .character-tab-content__stats.character-v0818__stat-grid{gap:3px}
+ .character-v0818 .character-v0818__stat-grid > .character-tab-stat.character-v0818__stat{
+  grid-template-columns:minmax(0,1fr) auto 25px;
+  column-gap:3px;
+  min-height:30px;
+  padding:2px 4px;
+ }
+ .character-v0818 .character-v0818__stat-name{font-size:9px}
+ .character-v0818 .character-v0818__stat-level{font-size:11px}
+ .character-v0818 .character-v0818__stat-grid .character-v0818__upgrade{
+  width:25px;min-width:25px;height:26px;min-height:26px;
+ }
+}
+@media(max-height:650px){
+ .character-viewport--v09 .character-tab-content.character-attributes-panel.character-v0818{gap:4px}
+ .character-v0818 > .character-progression.character-v0818__overview{padding:5px 7px;gap:3px}
+ .character-v0818 .character-attribute-sections.character-v0818__groups{gap:4px}
+ .character-v0818 .character-attribute-group.character-v0818__group{gap:3px;padding:5px}
+ .character-v0818 .character-v0818__group-header{padding-bottom:2px}
+ .character-v0818 .character-v0818__stat-grid > .character-tab-stat.character-v0818__stat{min-height:29px}
+}
+/* At 200% zoom or short landscape height keep all buttons reachable rather
+ * than hiding content or forcing a document-level scrollbar. */
+@media(max-height:420px){
+ .character-viewport--v09 .character-tab-content.character-attributes-panel.character-v0818{
+  overflow-y:auto!important;
+  overscroll-behavior-y:contain;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .character-v0818 .character-v0818__upgrade{transition:none}
+}

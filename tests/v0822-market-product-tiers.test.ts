@@ -118,6 +118,6 @@ describe('v0.8.22 black-market four-tier presentation only',()=>{
    '@media(prefers-reduced-motion:reduce)',
   ])expect(css).toContain(token);
   expect(read('src/styles/main.scss')).toContain('@import "v0822-market-product-tiers"');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.22');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });

@@ -1,5 +1,18 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜黑市第三輪第2批 v0.8.23：用戶場景圖片、紫色眼光與動態燈光（本 PR 待 Merge）
+
+- **GitHub 最新開工核對**：`main` `f540c94df0d28ca9e0b374457724cd378de001d9`；前批 PR #48／v0.8.22 已 Merge，Pages 部署成功，開工前 open PR 0。下方舊條目的「待 Merge」是歷史時點資訊；每批必須重新查最新 main/PR/交接、程式和測試。
+- **唯一分支** `ui/v0.8.23-market-cinematic-scene`、package/lock `0.8.23`；本批**只修改黑市上方場景**。上傳圖2原 JPEG 1376×768／695,892B，採用之前已預壓的 **960×536 WebP／32,380B**（約減少95.35%），已真正以 Git 二進位 blob 納入 `public/black-market-merchant.webp`。新 `BlackMarketSceneArt.tsx` 透過 `import.meta.env.BASE_URL` 引用同源資產，SVG `viewBox 0 0 960 536` 防止寬窄裁切時眼部/燈光錯位。
+- SVG 眼光使用同色系紫色/粉紫、固定 x335/y121 和 x384/y128；屋頂暖燈 x529/y51、左側冷燈 x202/y67，三種 CSS opacity 循環閃爍。以 `prefers-reduced-motion` 關閉動畫保留靜態低光。光暈/遮罩 pointer-events none；未使用 timer 或 React 額外刷新。
+- `BlackMarketPage.tsx` 移除舊兩側人物/隔牆並改為全畫面商人場景，仍動態顯示 **`vendor.name`／`vendor.role`／`vendor.line`**、世界時段與時鐘。新 `.market-v0823__favor` 放右下，使用真實 `blackMarketFavor/100` 以及有 aria-now/min/max 的細雙色進度條。圖片中斗篷人物是共同場景美術，原五名不同時段商人與真正的交易/價格/好感/庫存資料完全保留。
+- 新 CSS `src/styles/_v0823-market-cinematic-scene.scss` 最後匯入，只作用於此 hero；商品四階卡及底部買賣選單、篩選、交易 modal、`MARKET_BUY/SELL(_ITEM)`、world.time、資料結構及存檔沒有修改。桌面/320/360/390px、短高 RWD，右台詞可局部閱讀。詳細 `docs/V0823_MARKET_CINEMATIC_SCENE_QA.md`；專項 `tests/v0823-market-cinematic-scene.test.ts` 測資產 RIFF/大小、圖片 URL/效果座標、動態商人、好感更新、媒體查詢與原交易保留。舊 `tests/v0822-market-product-tiers.test.ts` 固定版本改0.8.x，保留全部回歸。CI npm run build/test 必須全綠；不能取代使用者實際瀏覽器畫面檢查。
+- **本回合使用者新增強制規格**：**切換販賣時右側陳列必須來自玩家的「背包」現有物品，不能用商人 buyItems 白名單做陳列來源，也不能用背包+倉庫加總。** 不被當班商人收購/受保護/裝備中的物品可見但必須禁售顯示原因，卡牌複本資料應獨立處理。現有舊版賣出清單 `vendor.buyItems.map` + `totalOwned` 與需求不符；**已記錄於路線圖與QA、指定下批 v0.8.24 買賣切換時必須修正**。本批不提前改動販賣來源/交易引擎。
+- **停止點**：本批一個 PR，不自行 Merge；使用者合併通知才開始 v0.8.24（左側買賣整區 toggle／圖3箭頭調色＋上述背包販賣清單修正）。下批同樣重新查 GitHub state。
+
+---
+
+
 ## 2026-11-13｜黑市第三輪第1批 v0.8.22：四階級商品卡片（本 PR 待使用者 Merge）
 
 - **GitHub 最新開工基準**：`main` `b959b5df1a81b2290f9f6c1d77490f554be951c2`，上一輪 PR #47 v0.8.21 **已 Merge**，Pages 成功、開工時 open PR 0。下方上一輪 v0.8.21「待 Merge」是歷史記錄；不得當成當下狀態。

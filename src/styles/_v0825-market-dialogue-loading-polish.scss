@@ -1,0 +1,308 @@
+/* v0.8.25 | Cinematic merchant idles, centered mode-toggle, item bounce,
+ * and true image/data-ready fullscreen loading. Scoped to the black market.
+ */
+.market-v13 .market-v12__dialogue.market-v0823__dialogue.market-v0825__speech{
+ box-sizing:border-box;
+ position:absolute;
+ left:44%;
+ right:11px;
+ top:clamp(52px,24%,73px);
+ width:auto;
+ height:auto;
+ min-height:48px;
+ max-height:clamp(57px,30%,89px);
+ margin:0;
+ padding:0 1px;
+ border:0!important;
+ border-radius:0!important;
+ background:transparent!important;
+ box-shadow:none!important;
+ color:#f7edf4;
+ font:650 clamp(11px,2.2vw,14px)/1.48 'Noto Sans TC',sans-serif;
+ overflow-x:hidden;
+ overflow-y:auto;
+ overflow-wrap:anywhere;
+ scrollbar-width:thin;
+ scrollbar-color:#685879 transparent;
+ text-shadow:
+  -1px -1px 1px #02040a,1px -1px 1px #02040a,
+  -1px 1px 1px #02040a,1px 1px 1px #02040a,
+  0 2px 6px #000,0 0 14px #000c;
+ -webkit-text-stroke:.15px #0b0b15;
+}
+.market-v0825__speech-text{
+ display:block;
+ width:100%;
+ animation:market-v0825-speech-in .32s ease-out both;
+}
+@keyframes market-v0825-speech-in{
+ from{opacity:.18;filter:blur(1px)}
+ to{opacity:1;filter:blur(0)}
+}
+/* Switch text uses two real glyph spans, not writing-mode metrics.
+ * All three elements share a 50% horizontal center line on every rail width.
+ * Separate center text stays upright while the arrow itself rotates. */
+.market-v13 .market-v0824__exchange .market-v0824__switch-label{
+ position:absolute;
+ left:0!important;
+ right:0!important;
+ box-sizing:border-box;
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:1px;
+ width:100%!important;
+ height:43px!important;
+ margin:0;
+ padding:0;
+ writing-mode:horizontal-tb!important;
+ text-orientation:mixed;
+ text-align:center;
+ letter-spacing:0;
+ transform-origin:50% 50%;
+ transition:transform .38s cubic-bezier(.22,.72,.25,1),color .32s ease,opacity .32s ease;
+ pointer-events:none;
+}
+.market-v0824__switch-label>span{
+ display:block;
+ width:100%;
+ min-width:0;
+ font:inherit;
+ line-height:1.15;
+ text-align:center;
+}
+.market-v13 .market-v0824__exchange .market-v0824__switch-label--buy{
+ top:14px;
+ font:800 17px/1.15 'Noto Serif TC',serif;
+ color:#f5dfc2;
+ opacity:1;
+ transform:translateY(0) scale(1.08);
+}
+.market-v13 .market-v0824__exchange .market-v0824__switch-label--sell{
+ top:123px;
+ font:650 17px/1.15 'Noto Serif TC',serif;
+ color:#aaa0a0;
+ opacity:.52;
+ transform:translateY(0) scale(.81);
+}
+.market-v13 .market-v0824__exchange .market-v0824__toggle.is-sell .market-v0824__switch-label--buy{
+ color:#aaa0a0;
+ opacity:.52;
+ transform:translateY(109px) scale(.81);
+}
+.market-v13 .market-v0824__exchange .market-v0824__toggle.is-sell .market-v0824__switch-label--sell{
+ color:#f5dfc2;
+ opacity:1;
+ transform:translateY(-109px) scale(1.08);
+}
+.market-v13 .market-v0824__exchange .market-v0824__switch-arrow{
+ top:65px;
+ left:50%;
+ display:grid;
+ place-items:center;
+ width:52px;
+ height:52px;
+ padding:0;
+ transform:translateX(-50%);
+}
+.market-v13 .market-v0824__exchange .market-v0824__switch-icon{
+ display:block;
+ width:100%;
+ height:100%;
+ transform-origin:50% 50%;
+}
+.market-v13 .market-v0824__exchange .market-v0824__switch-arrow .market-v0824__switch-foot{
+ box-sizing:border-box;
+ position:absolute;
+ inset:0;
+ z-index:2;
+ display:grid;
+ place-items:center;
+ width:100%;
+ height:100%;
+ padding:0;
+ margin:0;
+ color:#b98263;
+ font:750 11px/1.2 'Noto Sans TC',sans-serif;
+ letter-spacing:0;
+ text-align:center;
+ text-shadow:0 1px 2px #000b;
+ pointer-events:none;
+}
+.market-v13 .market-v0824__exchange .market-v0824__toggle:hover .market-v0824__switch-foot,
+.market-v13 .market-v0824__exchange .market-v0824__toggle:focus-visible .market-v0824__switch-foot{
+ color:#edb98c;
+}
+/* A tiny spring in the right table only after a mode-change event. Distinct
+ * animation names guarantee a fresh spring on both buy->sell and sell->buy. */
+.market-v13 .market-v0824__exchange>.market-v12__table.market-v0825__catalog--buy{
+ animation:market-v0825-catalog-buy .4s cubic-bezier(.22,.7,.2,1) both;
+}
+.market-v13 .market-v0824__exchange>.market-v12__table.market-v0825__catalog--sell{
+ animation:market-v0825-catalog-sell .4s cubic-bezier(.22,.7,.2,1) both;
+}
+@keyframes market-v0825-catalog-buy{
+ 0%{transform:translateY(5px) scale(.993);opacity:.82}
+ 58%{transform:translateY(-2px) scale(1.002);opacity:1}
+ 100%{transform:translateY(0) scale(1);opacity:1}
+}
+@keyframes market-v0825-catalog-sell{
+ 0%{transform:translateY(5px) scale(.993);opacity:.82}
+ 58%{transform:translateY(-2px) scale(1.002);opacity:1}
+ 100%{transform:translateY(0) scale(1);opacity:1}
+}
+/* Unmounted market UI remains hidden until the local scene WebP is decoded.
+ * Fixed viewport cover also works when the app uses a centered mobile frame. */
+.market-v0825__loading{
+ box-sizing:border-box;
+ position:fixed;
+ inset:0;
+ z-index:9999;
+ display:grid;
+ place-items:center;
+ width:100%;
+ min-width:0;
+ min-height:100dvh;
+ padding:20px;
+ overflow-y:auto;
+ background:
+  radial-gradient(ellipse at 50% 45%,#251a2c 0%,#0b0b11 51%,#030407 100%);
+ color:#e7d8d2;
+}
+.market-v0825__loading-content{
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ align-items:center;
+ gap:13px;
+ width:min(100%,360px);
+ padding:24px 18px;
+ border:1px solid #665462;
+ border-radius:9px;
+ background:linear-gradient(155deg,#26212a,#14151b 84%);
+ box-shadow:0 12px 38px #000c,inset 0 1px 0 #fff1;
+ text-align:center;
+}
+.market-v0825__loading-kicker{
+ color:#bda5be;
+ font:650 9px/1.3 Inter,sans-serif;
+ letter-spacing:.12em;
+}
+.market-v0825__loading-icon{
+ color:#c9a2d9;
+ animation:market-v0825-loader-spin 2.3s linear infinite;
+}
+.market-v0825__error-icon{color:#e0b2a5}
+.market-v0825__loading-content>strong{
+ color:#f0e2dd;
+ font:750 17px/1.4 'Noto Serif TC',serif;
+}
+.market-v0825__loading-content>p{
+ max-width:30ch;
+ margin:0;
+ color:#bdb1b9;
+ font-size:11px;
+ line-height:1.6;
+ overflow-wrap:anywhere;
+}
+.market-v0825__loading-actions{
+ display:flex;
+ flex-wrap:wrap;
+ justify-content:center;
+ align-items:center;
+ gap:8px;
+}
+.market-v0825__loading-actions button,
+.market-v0825__loading-actions a{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:5px;
+ min-height:34px;
+ padding:6px 10px;
+ border:1px solid #957992;
+ border-radius:5px;
+ background:#3f3041;
+ color:#f0dfec;
+ text-decoration:none;
+ font-size:11px;
+ line-height:1.3;
+}
+.market-v0825__loading-actions button:focus-visible,
+.market-v0825__loading-actions a:focus-visible{
+ outline:2px solid #eecaa4;
+ outline-offset:2px;
+}
+@keyframes market-v0825-loader-spin{
+ to{transform:rotate(360deg)}
+}
+@media(max-width:375px){
+ .market-v13 .market-v0824__exchange .market-v0824__switch-label--buy,
+ .market-v13 .market-v0824__exchange .market-v0824__switch-label--sell{font-size:15px}
+ .market-v13 .market-v0824__exchange .market-v0824__switch-arrow{
+  width:46px;
+  height:46px;
+  top:68px;
+ }
+ .market-v13 .market-v12__dialogue.market-v0823__dialogue.market-v0825__speech{
+  left:42%;
+  right:6px;
+  top:44px;
+  max-height:57px;
+  font-size:10px;
+  line-height:1.45;
+ }
+ .market-v0825__loading{padding:10px}
+ .market-v0825__loading-content{padding:20px 12px}
+}
+@media(max-height:700px){
+ .market-v13 .market-v0824__exchange .market-v0824__switch-label--buy{top:7px}
+ .market-v13 .market-v0824__exchange .market-v0824__switch-label--sell{top:103px}
+ .market-v13 .market-v0824__exchange .market-v0824__toggle.is-sell .market-v0824__switch-label--buy{transform:translateY(96px) scale(.81)}
+ .market-v13 .market-v0824__exchange .market-v0824__toggle.is-sell .market-v0824__switch-label--sell{transform:translateY(-96px) scale(1.08)}
+ .market-v13 .market-v0824__exchange .market-v0824__switch-arrow{
+  top:50px;
+  width:45px;
+  height:45px;
+ }
+ .market-v13 .market-v12__dialogue.market-v0823__dialogue.market-v0825__speech{
+  top:39px;
+  max-height:57px;
+ }
+}
+@media(max-height:520px){
+ .market-v13 .market-v0824__exchange .market-v0824__switch-label{
+  height:37px!important;
+  font-size:13px;
+ }
+ .market-v13 .market-v0824__exchange .market-v0824__switch-label--buy{top:4px}
+ .market-v13 .market-v0824__exchange .market-v0824__switch-label--sell{top:83px}
+ .market-v13 .market-v0824__exchange .market-v0824__toggle.is-sell .market-v0824__switch-label--buy{transform:translateY(79px) scale(.8)}
+ .market-v13 .market-v0824__exchange .market-v0824__toggle.is-sell .market-v0824__switch-label--sell{transform:translateY(-79px) scale(1.08)}
+ .market-v13 .market-v0824__exchange .market-v0824__switch-arrow{
+  top:42px;
+  width:40px;
+  height:40px;
+ }
+ .market-v13 .market-v0824__exchange .market-v0824__switch-foot{font-size:9px}
+ .market-v13 .market-v12__dialogue.market-v0823__dialogue.market-v0825__speech{
+  top:31px;
+  max-height:46px;
+  font-size:9px;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .market-v0825__speech-text,
+ .market-v0825__loading-icon,
+ .market-v13 .market-v0824__exchange>.market-v12__table.market-v0825__catalog--buy,
+ .market-v13 .market-v0824__exchange>.market-v12__table.market-v0825__catalog--sell{
+  animation:none!important;
+  transform:none!important;
+  opacity:1!important;
+ }
+ .market-v13 .market-v0824__exchange .market-v0824__switch-label,
+ .market-v13 .market-v0824__exchange .market-v0824__switch-icon{
+  transition:none!important;
+ }
+}

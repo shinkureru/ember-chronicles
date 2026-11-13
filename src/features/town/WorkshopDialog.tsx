@@ -15,6 +15,11 @@ export default function WorkshopDialog({onClose}:{onClose:()=>void}){
  const {state:s,dispatch,pauseClock}=useGame();
  const [selected,setSelected]=useState<ArmorSlot>(()=>equippedArmorEntries(s)[0]?.slot??'body');
  const list=useVerticalDragScroll();
+ const selectSlot=(slot:ArmorSlot)=>{
+  setSelected(slot);
+  // Keep the current inspection in view rather than preserving an old part's scroll offset.
+  if(list.scrollRef.current)list.scrollRef.current.scrollTop=0;
+ };
  useEffect(()=>{
   pauseClock('dialog',true);
   const escape=(e:KeyboardEvent)=>{if(e.key==='Escape')onClose()};
@@ -52,11 +57,7 @@ export default function WorkshopDialog({onClose}:{onClose:()=>void}){
     <span className="workshop-dialog__lamp"/><span className="workshop-dialog__anvil"><Hammer size={61} strokeWidth={1.5}/></span>
     <div><strong>「破損的地方，會比傷口更早提醒你。」</strong><small>工匠・羅叔</small></div>
    </div>
-   <div className="workshop-dialog__scroll" ref={list.scrollRef} tabIndex={0} role="region"
-    aria-label="裝備耐久與修理選項，可使用滑鼠拖曳或上下滑動"
-    onPointerDown={list.onPointerDown} onPointerMove={list.onPointerMove}
-    onPointerUp={list.onPointerUp} onPointerCancel={list.onPointerCancel}
-    onClickCapture={list.onClickCapture}>
+   <div className="workshop-dialog__selection">
     <div className="workshop-dialog__intro">
      <span><Shield size={16}/>四個防護部位獨立磨損</span><small>僅敵人真正造成生命傷害時，才隨機命中一件防具</small>
     </div>
@@ -64,7 +65,8 @@ export default function WorkshopDialog({onClose}:{onClose:()=>void}){
      {ARMOR_SLOTS.map(slot=>{
       const id=s.equipment[slot],count=id?armorHits(s,id):0;
       const condition=armorStage(count);
-      return <button key={slot} type="button" aria-pressed={selected===slot} onClick={()=>setSelected(slot)}
+      return <button key={slot} type="button" aria-pressed={selected===slot} aria-controls="workshop-inspection"
+       onClick={()=>selectSlot(slot)}
        className={`workshop-dialog__slot ${selected===slot?'is-selected':''} ${condition!=='intact'?'is-worn':''}`}>
        <span>{ARMOR_SLOT_NAMES[slot]}</span>
        <strong>{id?ITEMS[id]?.name??id:'未裝備'}</strong>
@@ -72,6 +74,12 @@ export default function WorkshopDialog({onClose}:{onClose:()=>void}){
       </button>;
      })}
     </div>
+   </div>
+   <div id="workshop-inspection" className="workshop-dialog__scroll" ref={list.scrollRef} tabIndex={0} role="region"
+    aria-label="所選防具耐久、預計修理結果與修理選項，可使用滑鼠拖曳或上下滑動"
+    onPointerDown={list.onPointerDown} onPointerMove={list.onPointerMove}
+    onPointerUp={list.onPointerUp} onPointerCancel={list.onPointerCancel}
+    onClickCapture={list.onClickCapture}>
     {item?<section className="workshop-dialog__inspection">
      <div className="workshop-dialog__gear">
       <span className="workshop-dialog__art"><ItemArt id={itemId!}/></span>

@@ -54,6 +54,6 @@ describe('v0.8.10 desktop mouse drag continuity',()=>{
   expect(workshop).toContain("'workshop_upgrade'");
   expect(market).toContain("type:'MARKET_BUY_ITEM'");
   expect(market).toContain("type:'MARKET_SELL_ITEM'");
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.10');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });

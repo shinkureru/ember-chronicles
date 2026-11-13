@@ -1,0 +1,264 @@
+/* v0.8.11 — Compact workshop: keep four slot choices and footer anchored
+   while only the selected equipment inspection is scrollable.
+   This final import deliberately overrides the old v0.8.4 dimensions. */
+.workshop-overlay .workshop-dialog{
+ width:min(96vw,610px)!important;
+ height:min(88dvh,770px)!important;
+ max-height:calc(100dvh - 18px)!important;
+ min-height:0!important;
+}
+.workshop-dialog > .workshop-dialog__header{
+ flex:0 0 auto;
+ min-height:55px;
+ gap:9px;
+ padding:9px 12px;
+}
+.workshop-dialog__mark{width:35px;height:35px;flex:none}
+.workshop-dialog__header h2{font-size:20px}
+.workshop-dialog__header > button{width:34px;height:34px;flex:none}
+.workshop-dialog > .workshop-dialog__scene{
+ flex:0 0 79px!important;
+ height:79px!important;
+ padding:8px 14px;
+}
+.workshop-dialog__scene .workshop-dialog__anvil svg{width:44px;height:44px}
+.workshop-dialog__scene strong{font-size:12px;line-height:1.45}
+.workshop-dialog__scene small{font-size:10px}
+.workshop-dialog__lamp{height:18px}
+.workshop-dialog__lamp:after{top:14px;height:15px;left:-21px;width:43px}
+/* Static selector prevents jumps when a part switches to an empty/longer detail. */
+.workshop-dialog__selection{
+ box-sizing:border-box;
+ flex:0 0 auto;
+ min-width:0;
+ padding:9px 12px 10px;
+ border-bottom:1px solid #54484c;
+ background:#18161b;
+}
+.workshop-dialog__selection .workshop-dialog__intro{
+ display:flex;align-items:center;justify-content:space-between;
+ flex-wrap:wrap;gap:4px 10px;
+ margin:0 0 7px;
+ min-width:0;
+}
+.workshop-dialog__selection .workshop-dialog__intro span{
+ gap:5px;font-size:11px;line-height:1.4;
+}
+.workshop-dialog__selection .workshop-dialog__intro small{
+ font-size:9px;line-height:1.4;overflow-wrap:anywhere;
+}
+.workshop-dialog__selection .workshop-dialog__slots{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ grid-auto-rows:minmax(88px,auto);
+ align-items:stretch;
+ gap:6px;
+ margin:0;
+}
+.workshop-dialog__selection .workshop-dialog__slots > .workshop-dialog__slot{
+ box-sizing:border-box;
+ display:grid;
+ grid-template-rows:minmax(12px,auto) minmax(2.65em,auto) minmax(2.5em,auto);
+ align-content:start;
+ justify-content:stretch;
+ gap:3px;
+ width:100%;
+ min-width:0;
+ min-height:88px;
+ height:100%;
+ padding:8px 8px 7px;
+ border-radius:8px;
+ text-align:left;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog__selection .workshop-dialog__slot > span{
+ font-size:10px;line-height:1.25;
+}
+.workshop-dialog__selection .workshop-dialog__slot > strong{
+ display:block;
+ min-width:0;
+ min-height:2.65em;
+ font-size:11px;
+ line-height:1.33;
+ font-weight:750;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog__selection .workshop-dialog__slot > small{
+ display:block;
+ min-width:0;
+ min-height:2.5em;
+ font-size:9px;
+ line-height:1.3;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog__selection .workshop-dialog__slot:focus-visible{
+ outline:2px solid #f0cfbd;
+ outline-offset:2px;
+}
+.workshop-dialog > .workshop-dialog__scroll{
+ box-sizing:border-box;
+ flex:1 1 0!important;
+ min-height:0!important;
+ padding:9px 12px 12px!important;
+ overflow-y:auto!important;
+ overflow-x:hidden!important;
+ overscroll-behavior-y:contain;
+ touch-action:pan-y;
+ scrollbar-width:none!important;
+}
+.workshop-dialog__scroll::-webkit-scrollbar{width:0!important;display:none!important}
+.workshop-dialog__inspection{
+ box-sizing:border-box;
+ min-width:0;
+ gap:8px;
+ padding:10px;
+ border-radius:9px;
+}
+.workshop-dialog__gear{gap:9px;min-width:0}
+.workshop-dialog__art{width:46px;height:46px}
+.workshop-dialog__art svg,.workshop-dialog__art>span{width:38px;height:38px;font-size:32px}
+.workshop-dialog__gear > div{min-width:0}
+.workshop-dialog__gear small{font-size:9px;line-height:1.3}
+.workshop-dialog__gear h3{
+ margin:2px 0;
+ font-size:15px;
+ line-height:1.35!important;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog__gear p{
+ font-size:10px;
+ line-height:1.45!important;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog__durability{gap:5px}
+.workshop-dialog__durability > div:first-child{font-size:11px}
+.workshop-dialog__track{height:9px}
+.workshop-dialog__durability > small{font-size:9px;line-height:1.45}
+.workshop-dialog__preview{
+ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+ gap:8px;
+ padding:7px 8px;
+}
+.workshop-dialog__preview > div{min-width:0}
+.workshop-dialog__preview span{font-size:10px;line-height:1.3;overflow-wrap:anywhere}
+.workshop-dialog__preview strong{font-size:18px;line-height:1.2}
+.workshop-dialog__perfect{padding:6px 8px}
+.workshop-dialog__actions{gap:7px}
+.workshop-dialog__actions button{
+ box-sizing:border-box;
+ min-height:51px;
+ padding:7px 8px;
+ gap:7px;
+ line-height:1.3;
+}
+.workshop-dialog__actions button > svg{width:16px;height:16px}
+.workshop-dialog__actions button > span{min-width:0;gap:3px}
+.workshop-dialog__actions button strong{font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+.workshop-dialog__actions button small{
+ font-size:9px;line-height:1.4;flex-wrap:wrap;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog__lock{font-size:10px;line-height:1.4;overflow-wrap:anywhere}
+.workshop-dialog__chance{
+ margin:0;
+ padding:3px 0 0;
+ font-size:10px;
+ line-height:1.5!important;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog__last{
+ min-width:0;
+ margin:7px 0 0;
+ padding:7px 9px;
+ line-height:1.5;
+ font-size:10px;
+ overflow:visible;
+ overflow-wrap:anywhere;
+}
+/* Empty part uses the same inspection viewport, not an oversized filler card. */
+.workshop-dialog__empty{
+ box-sizing:border-box;
+ min-height:160px;
+ padding:15px 12px;
+ gap:7px;
+ justify-content:center;
+}
+.workshop-dialog__empty p{
+ max-width:42ch;
+ font-size:11px;
+ line-height:1.55;
+ overflow-wrap:anywhere;
+}
+.workshop-dialog > footer{
+ box-sizing:border-box;
+ flex:0 0 auto!important;
+ min-height:52px;
+ padding:7px 12px!important;
+ background:#151419;
+}
+.workshop-dialog > footer button{
+ min-height:38px;
+ padding:7px 12px;
+ font-size:11px;
+ line-height:1.45;
+}
+/* Narrow browser and phones: 2 × 2 grid, with predictable line heights. */
+@media(max-width:639px){
+ .workshop-dialog__selection .workshop-dialog__slots{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-auto-rows:minmax(72px,auto);
+ }
+ .workshop-dialog__selection .workshop-dialog__slots > .workshop-dialog__slot{
+  min-height:72px;
+  padding:6px 8px;
+  gap:2px;
+ }
+ .workshop-dialog__selection .workshop-dialog__slot > strong{
+  min-height:1.33em;
+  font-size:11px;
+ }
+ .workshop-dialog__selection .workshop-dialog__slot > small{min-height:1.3em}
+}
+@media(max-width:380px){
+ .workshop-overlay .workshop-dialog{width:calc(100vw - 14px)!important}
+ .workshop-dialog__selection{padding:7px 9px 9px}
+ .workshop-dialog__selection .workshop-dialog__intro{gap:3px;margin-bottom:6px}
+ .workshop-dialog__selection .workshop-dialog__intro span{font-size:10px}
+ .workshop-dialog__selection .workshop-dialog__intro small{font-size:9px}
+ .workshop-dialog__selection .workshop-dialog__slots{gap:5px}
+ .workshop-dialog > .workshop-dialog__scroll{padding:8px 9px 11px!important}
+ .workshop-dialog__inspection{padding:8px;gap:7px}
+ .workshop-dialog__actions button{gap:4px;padding:7px 5px}
+ .workshop-dialog__actions button > svg{width:14px;height:14px}
+}
+@media(max-height:700px){
+ .workshop-overlay .workshop-dialog{
+  height:calc(100dvh - 14px)!important;
+  max-height:calc(100dvh - 14px)!important;
+ }
+ .workshop-dialog > .workshop-dialog__header{min-height:50px;padding:7px 10px}
+ .workshop-dialog > .workshop-dialog__scene{
+  flex-basis:58px!important;
+  height:58px!important;
+  padding:5px 10px;
+ }
+ .workshop-dialog__scene .workshop-dialog__anvil svg{width:35px;height:35px}
+ .workshop-dialog__selection{padding-top:6px;padding-bottom:7px}
+ .workshop-dialog__selection .workshop-dialog__intro{margin-bottom:5px}
+ .workshop-dialog__selection .workshop-dialog__slots{grid-auto-rows:minmax(66px,auto)}
+ .workshop-dialog__selection .workshop-dialog__slots > .workshop-dialog__slot{
+  min-height:66px;
+  padding-top:5px;padding-bottom:5px;
+ }
+ .workshop-dialog > footer{min-height:45px;padding:5px 10px!important}
+ .workshop-dialog > footer button{min-height:35px}
+}
+@media(max-height:520px){
+ /* Preserve an operable details pane even on landscape phones. */
+ .workshop-dialog > .workshop-dialog__scene{display:none!important}
+ .workshop-dialog__selection .workshop-dialog__intro small{display:none}
+ .workshop-dialog__selection{padding-top:4px;padding-bottom:5px}
+}
+@media(prefers-reduced-motion:reduce){
+ .workshop-dialog__slot{transition:none!important}
+}

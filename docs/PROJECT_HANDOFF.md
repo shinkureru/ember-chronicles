@@ -1,5 +1,17 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜v0.8.11 第二批：工坊緊湊四部位＋獨立詳情（本批待 Merge）
+
+- **本輪真實 GitHub 基準**：`main` `59a952d43e7ae49bfcf301cf7b8fb0945b5b3548`，上一批 **PR #36 已合併**、Pages 部署成功、開始時 open PR 0；`v0.8.10` 舊標題的「待 Merge」是歷史紀錄。使用者已明確通知繼續第二批。
+- **唯一分支**：`fix/v0.8.11-workshop-compact-layout`，package + lock v0.8.11。本批**只調修理工坊 UI**，不修改診所、黑市、攻防計算、修理費、交易、存檔/路由。
+- `WorkshopDialog.tsx` 將四卡部位選擇從原 scroll 中分離成固定 `workshop-dialog__selection`，詳情獨立 `workshop-inspection` 垂直捲動；切換部位重設詳情 scrollTop = 0，避免長/短裝備內容造成位置錯亂。按鈕保留 `aria-pressed`，加上 `aria-controls`。title/scene/footer 都保持原有內容、位置固定。
+- 新樣式 `src/styles/_v0811-workshop-compact.scss`（在 main.scss 最末載入，覆蓋 v0.8.4 92dvh 版型）：桌面>=640px 四欄一列，每格最少 88px；窄螢幕兩欄兩列，最少 72px；字體、狀態、卡片及詳情內距緊縮但保留換行；窗高上限 770px，底部按鈕維持可達。短高與橫置狀態另有 RWD，內容過長只捲動詳情。沒有刪除完整修理規則文案。
+- 新測試 `tests/v0811-workshop-compact.test.ts`，修正舊 v0.8.10 固定版本斷言；詳細驗收文件 `docs/V0811_WORKSHOP_COMPACT_QA.md`。CI／實機手測以實際結果為準，勿宣稱提交即部署。
+- **下一批** v0.8.12 診所預覽精簡；之後 v0.8.13 黑市陳列與卡片密度。**完成一個 PR 就停，等待使用者手動 Merge 並明確回覆才動下一批。**
+
+---
+
+
 ## 2026-11-13｜v0.8.10 第一批：桌面 Web 拖曳穩定性（本分支待使用者 Merge）
 
 - **已核對的起點**：`main` commit `3431fbb95f20586cac6abc1673ae55d75afe55f5`，PR #35（v0.8.9）已 Merge；GitHub Actions Pages 部署成功；建立分支前 open PR = 0。舊的 v0.8.9 段落提到「未 Merge」是歷史紀錄，不可視為最新狀態。

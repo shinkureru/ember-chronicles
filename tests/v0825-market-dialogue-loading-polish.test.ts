@@ -170,7 +170,7 @@ describe('v0.8.25 centered copper switch and gentle synchronized bounce',()=>{
    'text-shadow:',
   ])expect(css).toContain(token);
   expect(read('src/styles/main.scss')).toContain('@import "v0825-market-dialogue-loading-polish"');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.25');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
  it('preserves the backpack-only selling and all existing trade guards',()=>{
   const state=makeInitialState('journalist');

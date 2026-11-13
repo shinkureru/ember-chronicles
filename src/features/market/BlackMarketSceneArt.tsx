@@ -3,7 +3,7 @@
  * The illustration is atmospheric: vendor identity remains live game data.
  */
 export default function BlackMarketSceneArt(){
- const imageUrl=`${import.meta.env.BASE_URL}black-market-merchant.avif`;
+ const imageUrl=`${import.meta.env.BASE_URL}black-market-merchant.webp`;
  return <svg className="market-v0823__art" viewBox="0 0 960 536"
   preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
   <defs>

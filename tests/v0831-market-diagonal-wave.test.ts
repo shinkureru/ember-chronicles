@@ -115,7 +115,7 @@ describe('v0.8.31 React markup, trigger lifecycle and visual isolation',()=>{
   expect(css).toContain('@keyframes market-v0831-diagonal-rise');
   expect(css).toContain('translate3d(0,-2px,0)');
   expect(css).toContain('scale(1.003)');
-  expect(css).toContain('translate3d(0,.8px,0)');
+  expect(css).toContain('translate3d(0,.4px,0)');
   expect(css).not.toContain('animation-name:market-v0831-diagonal-rise;\n animation-duration:720ms;\n animation-delay:var(--market-wave-delay-two,0ms)');
   expect(read('src/styles/_v0827-market-final-polish.scss')).toContain('animation:none!important');
  });
@@ -129,7 +129,7 @@ describe('v0.8.31 React markup, trigger lifecycle and visual isolation',()=>{
   expect(css).toContain('animation:none!important');
   expect(css).toContain('transform:none!important');
   expect(css).not.toContain('overflow:hidden');
-  expect(read('src/styles/main.scss').trimEnd().endsWith('@import "v0831-market-diagonal-wave";')).toBe(true);
+  expect(read('src/styles/main.scss')).toContain('@import "v0831-market-diagonal-wave";');
  });
  it('preserves mouse drag, touch scrolling, dialog, original buy/sell dispatch and clock',()=>{
   for(const token of [

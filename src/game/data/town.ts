@@ -20,7 +20,7 @@ export const TOWN_FACILITIES:TownFacility[]=[
  {id:'clinic',name:'地下診所',subtitle:'CLINIC / INJURIES',icon:'heart',description:'真正處理外傷、感染、中毒和疾病；藥物消耗與恢復時間不同。',keeper:'護理師・周苡',lateKeeper:'值夜醫師・唐洛',greeting:'「傷口不是逞強就會自己癒合的。讓我看看。」',hours:[0,24]},
  {id:'workshop',name:'修理工坊',subtitle:'WORKSHOP / EQUIPMENT',icon:'wrench',description:'修復磨損裝備，投入材料將裝備永久改良，強化防禦。',keeper:'工匠・羅叔',lateKeeper:'值班技師・坤仔',greeting:'「這件還修得好。但你下次要更小心一點。」',hours:[7,22]},
  {id:'tavern',name:'情報酒館',subtitle:'RUMORS / CONTACTS',icon:'wine',description:'不同時段會交換不同的謠言；確實取得線索才有情報加成。',keeper:'情報販子・阿鈞',lateKeeper:'酒保・蘇姐',greeting:'「在這裡，說實話的人通常最先出事。」',hours:[14,3]},
- {id:'training',name:'訓練場所',subtitle:'PERMANENT GROWTH',icon:'target',description:'每天最多專注一項永久屬性。投入時間、舊幣，獲得真實的數值成長。',keeper:'訓練官・程野',lateKeeper:'晚班教練・阿敬',greeting:'「今天只練一樣。把那樣做好，再想其他的。」',hours:[6,23]},
+ {id:'training',name:'訓練場所',subtitle:'PERMANENT GROWTH',icon:'target',description:'每天最多專注一項永久屬性。投入舊幣進行訓練，獲得真實的數值成長。',keeper:'訓練官・程野',lateKeeper:'晚班教練・阿敬',greeting:'「今天只練一樣。把那樣做好，再想其他的。」',hours:[6,23]},
  {id:'noticeboard',name:'公告欄',subtitle:'SIDE QUESTS / LEADS',icon:'clipboard',description:'承接委託、回關卡收集證物，完成後獲得舊幣及指定的永久屬性。',keeper:'社區聯絡人・林姐',lateKeeper:'收件處・匿名投遞',greeting:'「有人留下這些委託。你可以決定要不要接。」',hours:[0,24]},
  {id:'laundry',name:'公共澡堂／洗衣店',subtitle:'CLEANUP / SOCIAL',icon:'droplets',description:'整理身體與衣著。短暫降低壓力，讓後續交涉更得體。',keeper:'洗衣店主・薛伯',lateKeeper:'夜班店員・小齊',greeting:'「先把灰塵洗掉，路上再吵也不會跟著你回家。」',hours:[5,23]},
  {id:'canteen',name:'公共食堂',subtitle:'FOOD / SOCIAL LIFE',icon:'utensils',description:'吃飽可以減輕飢餓與疲勞，也有機會聽到附近居民的閒談。',keeper:'食堂師傅・吳阿嬤',lateKeeper:'早班備餐・阿仁',greeting:'「趁熱吃。想知道什麼，就坐著慢慢聽。」',hours:[5,22]},

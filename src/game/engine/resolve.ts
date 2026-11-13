@@ -18,12 +18,13 @@ import { getEquippedDefense, mitigateCounterDamage } from '../data/equipmentEffe
 import { applyArmorImpact,ARMOR_DAMAGE_STAGES,ARMOR_SLOT_NAMES,expirePerfectRepairs } from './armor';
 import { getVendorStockKey, marketSellPrice, vendorById } from '../data/marketVendors';
 import type { GameState, Outcome, ProfessionId, LootDrop } from '../types';
+import {getTaipeiClock} from './taipeiClock';
 
 export type GameAction =
   | {type:'SELECT_PROFESSION';profession:ProfessionId}
   | {type:'START_ATTEMPT'}
   | {type:'SELECT_STAGE';stageId:1|2}
-  | {type:'WORLD_CLOCK_TICK';minutes?:number}
+  | {type:'WORLD_CLOCK_SYNC';nowMs?:number}
   | {type:'ENEMY_COUNTER_WINDUP'}
   | {type:'ENEMY_COUNTER_THROW'}
   | {type:'ENEMY_COUNTER_HIT'}
@@ -51,21 +52,13 @@ export type GameAction =
   | {type:'WITHDRAW_ITEM';itemId:string}
   | {type:'DEPOSIT_ITEM';itemId:string}
   | {type:'USE_ITEM';itemId:string}
-  | {type:'DEBUG';patch:{kind:'health'|'stamina'|'courage'|'resource'|'minute';value:number}}
+  | {type:'DEBUG';patch:{kind:'health'|'stamina'|'courage'|'resource';value:number}}
   | {type:'RESET'};
 
 const activeNpc=(s:GameState)=>s.stageId===2?(s.alleyNpc??s.npc):s.npc;
 const nextRand=(state:GameState)=>{
   state.rngSeed=(Math.imul(1664525,state.rngSeed)+1013904223)>>>0;
   return state.rngSeed/4294967296;
-};
-const advanceTime=(s:GameState,minutes:number,restorative=false)=>{
-  const total=s.world.minute+minutes;
-  s.world.day+=Math.floor(total/1440);
-  s.world.minute=total%1440;
-  s.player.hunger=clamp(s.player.hunger+Math.floor(minutes/15),0,100);
-  // Sleep, medical rest and washing are restorative despite taking world time.
-  if(!restorative)s.player.fatigue=clamp(s.player.fatigue+Math.floor(minutes/12),0,100);
 };
 const drawCards=(s:GameState,count:number)=>{
   for(let i=0;i<count;i++){
@@ -125,8 +118,6 @@ const resolveOutcome=(s:GameState,outcome:Outcome)=>{
   if(outcome==='defeat'){
     s.player.health=1;
     ensureConditions(s).wounds=Math.max(1,s.conditions?.wounds??0);
-    // A defeat costs two in-world hours plus treatment planning, but never gear or coins.
-    advanceTime(s,120,true);
     npc.remembers=Array.from(new Set([...npc.remembers,isAlley?'alley_defeat':'defeated_player']));
     npc.adaptations.talk=Math.min(12,(npc.adaptations.talk??0)+3);
     const clueNo=(npc.playerDefeats??0)+1;
@@ -173,20 +164,16 @@ const resolveOutcome=(s:GameState,outcome:Outcome)=>{
 export const gameReducer=(state:GameState,action:GameAction):GameState=>{
   if(action.type==='RESET')return makeInitialState();
   if(action.type==='SELECT_PROFESSION')return makeInitialState(action.profession);
+  if(action.type==='WORLD_CLOCK_SYNC'){
+   const now=getTaipeiClock(action.nowMs??Date.now());
+   if(state.world.day===now.day&&state.world.minute===now.minute&&state.world.clockBasis==='taipei-realtime')return state;
+   return {...state,world:{...state.world,...now,clockBasis:'taipei-realtime'}};
+  }
   const s:GameState=structuredClone(state);
   switch(action.type){
     case 'SELECT_STAGE':{
       if(s.mode!=='home'||action.stageId>s.chapterProgress.unlocked)return state;
       s.stageId=action.stageId;
-      return s;
-    }
-    case 'WORLD_CLOCK_TICK':{
-      // World time advances even on map and during missions. Do not mutate other events.
-      // Five in-game minutes per ten seconds of visible unpaused play.
-      const minutes=action.minutes??5;
-      if(!Number.isFinite(minutes)||minutes<=0||minutes>1440)return state;
-      if(s.mode==='result')return state;
-      advanceTime(s,minutes);
       return s;
     }
     case 'ENEMY_COUNTER_WINDUP':{
@@ -288,7 +275,6 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       const card=action.skillId?CARDS[action.skillId]:undefined;
       const skill=card&&isSkillCompatible(choice,card)&&s.hand.includes(card.id)&&s.player.resource>=card.resourceCost?card:undefined;
       const preview=calculateActionPreview(s,choice,skill?.id??null);
-      advanceTime(s,preview.minutes);
       s.player.stamina=preview.projectedStamina;
       s.player.courage=preview.projectedCourage;
       s.player.resource=clamp(s.player.resource-preview.resourceCost,0,s.player.maxResource);
@@ -373,7 +359,6 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
     case 'RETREAT':{
       if(s.mode!=='adventure'||s.enemyCounter)return state;
       const preview=retreatPreview(s);
-      advanceTime(s,preview.minutes);
       s.player.stamina=clamp(s.player.stamina-preview.staminaCost,0,s.player.maxStamina);
       s.player.courage=clamp(s.player.courage-preview.courageLoss,0,100);
       const passed=nextRand(s)*100<preview.chance;
@@ -396,7 +381,6 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
         const moved=Math.min(qty,Math.max(0,maxQty));
         if(moved>0){s.warehouse[id]=(s.warehouse[id]??0)+moved;s.bag[id]=qty-moved;if(s.bag[id]===0)delete s.bag[id];}
       }
-      advanceTime(s,35);
       // Returning to the hub is not free healing. The player must use the inn,
       // supplies or clinic. Keep the one-HP defeat state until treatment.
       s.mode='home';s.lastEvent=bagWeight(s.bag)>0?'已自動整理戰利品；部分物品因保護設定或倉庫容量，仍保留在背包中。':'戰利品已自動入倉，常用裝備會保留在身上。';
@@ -468,11 +452,8 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       return s;
     }
     case 'TOWN_SERVICE':{
-      const result=applyTownService(s,action.serviceId,action.attribute,action.itemId);
-      if(!result)return state;
+       if(!applyTownService(s,action.serviceId,action.attribute,action.itemId))return state;
       awardExperience(s,`town:${action.serviceId}`,6);
-      const restorative=['rest_cot','rest_private','rest_short','clinic_illness','bath','wash_clothes'].includes(action.serviceId);
-      advanceTime(s,result.minutes,restorative);
       return s;
     }
     case 'CLINIC_BUY_ITEM':{
@@ -488,7 +469,6 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.town!.visits.clinic=(s.town!.visits.clinic??0)+1;
       s.lastEvent=`我向診所購買了「${ITEMS[item.id]?.name}」，花費 ${price} 枚舊幣。`;
       awardExperience(s,`clinic:buy:${item.id}`,5);
-      advanceTime(s,5);
       return s;
     }
     case 'CLINIC_ACCEPT_DAILY':{
@@ -516,7 +496,6 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.town!.visits.clinic=(s.town!.visits.clinic??0)+1;
       s.lastEvent=`我完成「${q.title}」，取得 ${q.coins} 舊幣，診所好感 +${q.favor}；藥品折扣改善了。`;
       awardExperience(s,'clinic:complete-daily',14);
-      advanceTime(s,10);
       return s;
     }
     case 'TOWN_ACCEPT_QUEST':{
@@ -548,14 +527,11 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.lastEvent=quest.ending+` 得到 ${quest.rewardCoins} 舊幣及一項永久屬性成長。`;
       s.log.push(`委託完成：「${quest.title}」。`);
       awardExperience(s,`quest:complete:${quest.id}`,22);
-      advanceTime(s,10);
       return s;
     }
     case 'REST_TOWN':{
-      const result=applyTownService(s,'rest_cot');
-      if(!result)return state;
+       if(!applyTownService(s,'rest_cot'))return state;
       awardExperience(s,'town:rest_cot',6);
-      advanceTime(s,result.minutes,true);
       return s;
     }
     case 'ALLOCATE_POINT':{
@@ -578,7 +554,6 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if(previous&&!Object.values(s.equipment).includes(previous))s.protectedItems=s.protectedItems.filter(id=>id!==previous);
       if(!s.protectedItems.includes(action.itemId))s.protectedItems.push(action.itemId);
       s.lastEvent=`我將「${ITEMS[action.itemId]!.name}」指定為常用裝備。`;
-      if(s.mode==='adventure')advanceTime(s,2);
       return s;
     }
     case 'UNEQUIP_ITEM':{
@@ -587,7 +562,6 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       s.equipment[action.slot]=null;
       if(!Object.values(s.equipment).includes(id))s.protectedItems=s.protectedItems.filter(item=>item!==id);
       s.lastEvent='我卸下了常用裝備。';
-      if(s.mode==='adventure')advanceTime(s,2);
       return s;
     }
     case 'UPGRADE_CARD':{
@@ -641,13 +615,11 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
       if(s.bag[action.itemId]===0)delete s.bag[action.itemId];
       s.lastEvent=`我使用了「${ITEMS[action.itemId]!.name}」：${preview.changes.map(x=>x.label+(x.amount>0?'+':'')+x.amount).join('、')}。`;
       awardExperience(s,`use:${action.itemId}`,1);
-      advanceTime(s,3);
       return s;
     }
     case 'DEBUG':{
       if(!import.meta.env.DEV)return state;
-      if(action.patch.kind==='minute')s.world.minute=clamp(action.patch.value,0,1439);
-      else if(action.patch.kind==='resource')s.player.resource=clamp(action.patch.value,0,s.player.maxResource);
+      if(action.patch.kind==='resource')s.player.resource=clamp(action.patch.value,0,s.player.maxResource);
       else if(action.patch.kind==='health')s.player.health=clamp(action.patch.value,1,s.player.maxHealth);
       else if(action.patch.kind==='stamina')s.player.stamina=clamp(action.patch.value,0,s.player.maxStamina);
       else s.player.courage=clamp(action.patch.value,0,100);

@@ -1,5 +1,17 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜第二輪第4批 v0.8.17 人物裝備高密度頁（待 Merge）
+
+- **最新 GitHub 基準**：`main` `64f9a01046dd0611d181cd327b158fc9dc8ddf2c`，前一 PR #42 已 Merge、Pages 成功、開工時 open PR 0。舊 v0.8.16「待 Merge」為歷史文字。
+- 唯一分支 `ui/v0.8.17-character-equipment-board`；package/lock `0.8.17`。只處理 `docs/UI_COMPACT_REDESIGN_ROADMAP.md` 第4批（全身裝備頁），沒有提前做屬性、NPC、牌組後續批次。
+- `CharacterPage.tsx` 抽出 `CharacterEquipmentPanel.tsx` 及 `equipmentInventory.ts`：中央既有原創 `SurvivorFigure`、七個裝備插槽左3右4、六個真實數值（HP/ST/DEF/移動/觀察/韌性）、下方背包＋倉庫合計的 ItemArt 六欄格子。物品資訊先點擊開詳情，按確定才送既有 `EQUIP_ITEM`，同時支援 `UNEQUIP_ITEM`；前端提供錯槽／重複／倉庫超15kg等禁用原因，遊戲 reducer 為權威，不更動遊戲邏輯與存檔。
+- 新樣式 `src/styles/_v0817-character-equipment-board.scss` 最後載入：暗色銅金視覺，只有 Inventory Grid 在物品多時捲動，極矮屏才降級為裝備主容器捲動；原五頁導覽與其它4頁內容不改。v0.8.18 才將18項永久屬性在一頁式內收斂。
+- 測試 `tests/v0817-character-equipment-board.test.ts` 對七槽、真實數值、庫存、裝備許可、實際 reducer、Responsive 契約；更新舊 `tests/v0816-character-navigation.test.ts` 裝備合約來源與版號。人工 QA 在 `docs/V0817_CHARACTER_EQUIPMENT_QA.md`。CI/PR/手機驗收請以 GitHub 與使用者實測為準。
+- **停止規則**：本次僅一個 PR，CI 全綠後停止；不得自行 Merge。使用者 Merge 並通知後才重查 GitHub 最新 main/PR/交接、進入 v0.8.18。
+
+---
+
+
 ## 2026-11-13｜第二輪第3批 v0.8.16：人物檔案導航/屬性整合（PR 待 Merge）
 
 - **開工 GitHub preflight**：`main` `2fcbba8ac9b8afe232980542a2577d59c058507a`，PR #41（v0.8.15）已合併、Pages 部署成功，open PR = 0。較舊 v0.8.15「待 Merge」等為歷史內容。

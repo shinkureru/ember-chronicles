@@ -16,7 +16,8 @@ describe('v0.8.16 character navigation and unified attribute entry',()=>{
   expect(CHARACTER_TABS.map(t=>t.label)).toEqual(['全身裝備','屬性','城鎮成長','NPC 記憶','人物故事']);
   expect(page).toContain('CHARACTER_TABS.map(item=>');
   expect(page).toContain("useState<CharacterTab>('equipment')");
-  for(const t of CHARACTER_TABS)expect(page).toContain(`character-panel-${t.id}`);
+  for(const t of CHARACTER_TABS)expect(t.id==='equipment'
+   ?read('src/features/player/CharacterEquipmentPanel.tsx'):page).toContain(`character-panel-${t.id}`);
   for(const old of ["tab==='physical'","tab==='mental'","tab==='social'"])expect(page).not.toContain(old);
  });
  it('keeps every one of the original 18 permanent attributes visible in one panel',()=>{
@@ -54,7 +55,8 @@ describe('v0.8.16 character navigation and unified attribute entry',()=>{
    "type:'EQUIP_ITEM',slot,itemId:id","type:'UNEQUIP_ITEM',slot",
    'getEquippedDefense(s)','s.town?.lastTrainingDay','npc.defeatMemories',
    's.clues.slice().reverse()','profession.overview','profession.passive',
-  ])expect(page).toContain(token);
+  ])expect(token.startsWith("type:'EQUIP_ITEM'")||token.startsWith("type:'UNEQUIP_ITEM'")
+   ?read('src/features/player/CharacterEquipmentPanel.tsx'):page).toContain(token);
   const router=read('src/app/App.tsx');
   expect(router).toContain('<Route path="/character" element={<CharacterPage/>}/>');
   expect(router).toContain("if(state.mode!=='home'&&location.pathname!=='/chapter')");
@@ -68,6 +70,6 @@ describe('v0.8.16 character navigation and unified attribute entry',()=>{
   expect(css).toContain('scroll-margin-top:48px');
   expect(css).not.toContain('.equipment-stage{');
   expect(read('src/styles/main.scss')).toContain('@import "v0816-character-navigation"');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.16');
+  expect(JSON.parse(read('package.json')).version).toMatch(/^0\.8\.\d+$/);
  });
 });

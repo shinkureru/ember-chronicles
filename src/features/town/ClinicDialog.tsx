@@ -1,3 +1,4 @@
+import {taipeiDate} from '../../game/engine/taipeiClock';
 import {useEffect,useState} from 'react';
 import {createPortal} from 'react-dom';
 import {Activity,ArrowRight,ClipboardList,Coins,HeartPulse,Package,ShieldPlus,X} from 'lucide-react';
@@ -111,7 +112,7 @@ export default function ClinicDialog({onClose}:{onClose:()=>void}){
       const outcomes=clinicTreatmentOutcomes(s,service.id);
       return <article className="clinic-dialog__card clinic-dialog__card--treatment" key={service.id}>
        <div className="clinic-dialog__therapy-heading"><strong>{service.name}</strong><small>{service.summary}</small>
-        <span><Coins size={13}/>{preview.fee} 舊幣 · {service.minutes} 分鐘</span>
+        <span><Coins size={13}/>{preview.fee} 舊幣 · 時間不快轉</span>
        </div>
        <button type="button" disabled={!!blocked} onClick={()=>click({type:'TOWN_SERVICE',serviceId:service.id})}>接受治療 <ArrowRight size={14}/></button>
        <div className="clinic-dialog__outcomes" aria-label={`${service.name}預計治療效果`}>
@@ -126,7 +127,7 @@ export default function ClinicDialog({onClose}:{onClose:()=>void}){
      </div>
     </div>}
     {tab==='daily'&&<article className="clinic-dialog__daily">
-     <span className="clinic-dialog__kicker">DAILY REQUEST / DAY {s.world.day}</span>
+     <span className="clinic-dialog__kicker">DAILY REQUEST / TAIPEI {taipeiDate(s.world.day)}</span>
      <h3>{quest.title}</h3><p>{quest.detail}</p>
      <p>目前擁有：{ITEMS[quest.id]?.name} {stock(quest.id)}/{quest.quantity}</p>
      <p className="clinic-dialog__reward"><Coins size={14}/> 報酬 {quest.coins} 舊幣 · <ShieldPlus size={14}/> 診所好感 +{quest.favor}</p>
@@ -134,7 +135,7 @@ export default function ClinicDialog({onClose}:{onClose:()=>void}){
       clinic.acceptedDay===s.world.day?
        <><button type="button" disabled={!!clinicQuestBlock(s,true)} onClick={()=>click({type:'CLINIC_COMPLETE_DAILY'})}>交付物資並領取報酬</button>{clinicQuestBlock(s,true)&&<small>{clinicQuestBlock(s,true)}</small>}</>:
        <button type="button" disabled={!!clinicQuestBlock(s,false)} onClick={()=>click({type:'CLINIC_ACCEPT_DAILY'})}>承接今日委託</button>}
-     <small>每個遊戲日只可完成一次。好感會提高藥房優惠，最高折扣 15%。</small>
+     <small>每個台北日只可完成一次。好感會提高藥房優惠，最高折扣 15%。</small>
     </article>}
     {tab==='shop'&&<div className="clinic-dialog__cards">
      {CLINIC_SUPPLIES.map(item=>{

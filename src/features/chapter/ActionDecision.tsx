@@ -89,7 +89,7 @@ export default function ActionDecision({actions,state,selected,skillId,skillCoun
       <div className="action-object-panel__stats">
        <strong>{preview?.chance}% <small>成功率</small></strong>
        <span>體力 -{preview?.staminaCost} · 膽量 {preview&&preview.courageDelta>0?'+':''}{preview?.courageDelta}</span>
-       <span>時間 +{preview?.minutes} 分 · 資源 {preview&&preview.resourceCost<=0?'+':''}{preview&&-preview.resourceCost}</span>
+       <span>時間不快轉 · 資源 {preview&&preview.resourceCost<=0?'+':''}{preview&&-preview.resourceCost}</span>
        {selected.attackCardId&&<span>攻擊傷害 {preview?.damage??0} · 對方生命 {state.enemy.health}/{state.enemy.maxHealth}</span>}
        {selected.lootSource&&hasSearchedBefore(state,selected.lootSource)&&<span>剩餘搜刮次數：{remainingSearches(state,selected.lootSource)}</span>}
       </div>

@@ -66,7 +66,7 @@ export default function TownFacilityDialog({facility,onClose}:{facility:Secondar
      <select id="town-attribute-dialog" value={attribute} onChange={event=>setAttribute(event.target.value as AttributeId)}>
       {skillGroups.map(group=><optgroup key={group.name} label={group.name}>{group.attributes.map(id=><option value={id} key={id}>{ATTRIBUTE_LABELS[id]} · Lv.{s.player.attributes[id]}</option>)}</optgroup>)}
      </select>
-     <small>每個遊戲日只能練習一項；單項上限 20。今日{town?.lastTrainingDay===s.world.day?'已使用訓練機會':'尚未訓練'}。</small>
+     <small>每個台北日只能練習一項；單項上限 20。今日{town?.lastTrainingDay===s.world.day?'已使用訓練機會':'尚未訓練'}。</small>
     </div>}
     {facility==='noticeboard'?<div className="town-v15__quests">
      {TOWN_QUESTS.map(quest=>{
@@ -87,7 +87,7 @@ export default function TownFacilityDialog({facility,onClose}:{facility:Secondar
       const fee=getTownServiceFee(s,service.id,attribute);
       return <article className="town-v15__service" key={service.id}>
        <div><strong>{service.name}</strong><p>{service.summary}</p>
-        <small><Coins size={12}/>{fee} 舊幣 <Clock3 size={12}/>{service.minutes} 分鐘</small>
+        <small><Coins size={12}/>{fee} 舊幣 <Clock3 size={12}/>時間不快轉</small>
        </div>
        <button type="button" disabled={!!reason} onClick={()=>enact(service.id)}>
         {reason?<LockKeyhole size={15}/>:<ChevronRight size={17}/>}<span>{reason?'不可用':'執行'}</span>

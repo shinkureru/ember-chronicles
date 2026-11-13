@@ -1,5 +1,18 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜黑市第三輪第1批 v0.8.22：四階級商品卡片（本 PR 待使用者 Merge）
+
+- **GitHub 最新開工基準**：`main` `b959b5df1a81b2290f9f6c1d77490f554be951c2`，上一輪 PR #47 v0.8.21 **已 Merge**，Pages 成功、開工時 open PR 0。下方上一輪 v0.8.21「待 Merge」是歷史記錄；不得當成當下狀態。
+- **新一輪細分六批**，詳細 `docs/BLACK_MARKET_REDESIGN_ROADMAP.md`，用戶原始圖片1-3是本輪參考。**本次只執行第一批** `ui/v0.8.22-market-product-tiers`；後續 v0.8.23 場景圖片/眼睛/燈光、v0.8.24 左側買賣切換及圖3 recolor、v0.8.25 十則自言自語10秒輪播、v0.8.26 世界時間的商人輪班倒數、v0.8.27 最終 RWD/回歸；未得到使用者合併通知前不提前施工。
+- **本批新增** `src/features/market/marketProductPresentation.ts`，四階 UI 等級灰/綠/藍/紫及 Lv；現有 `ITEMS` 沒有本身 rarity/level 欄，物品只顯示**展示級別**5/15/30/50、不影響實際能力/售價；黑市卡牌交易都是 Lv.1 的升級複本，稀有度按現有 CARDS.rarity 映射到綠/藍/紫。不新增商品/假禁忌牌；原卡買入內部 sentinel 99 應顯示「庫存不限」，不是錯誤的99張。
+- `BlackMarketPage.tsx` 商品卡現在同時含頂部 Lv/階、圖案、兩行名稱、正確價格/舊幣icon、購買庫存或出售持有數，彩色但暗色的細框/底色；商品詳情加入展示等級說明與數量處理。保留原 `market-v12__meeting`、`market-v13__filters`、買賣按鈕、`MARKET_BUY/SELL(_ITEM)` 分派、商人交易身份/數據、`useVerticalDragScroll`。SCSS最後 `_v0822-market-product-tiers.scss` 覆蓋，不改引擎或存檔。
+- 專項 `tests/v0822-market-product-tiers.test.ts` 完整五位商人的商品覆蓋、四階級、實際原價格/買入stock/按班拒絕/卡牌出售、UI四欄位、RWD；舊固定 v0821 版本測試改為0.8.x。QA `docs/V0822_MARKET_PRODUCT_TIERS_QA.md`；版本 package/lock 0.8.22。
+- **圖片預處理**：用戶圖2原JPEG 1376×768 / 695,892 bytes，本地壓縮測到 WebP 960×536 / 32,380 bytes（-95.35%），但**尚未把圖檔提交或引用至網站**；第2批才處理，避免商品/場景同時改版造成回歸。圖3 PNG recolor 將在第3批處理。
+- **止步**：單一 PR，CI npm run build/test 全綠後停止。不自行 Merge。使用者合併、通知後，重新核對 GitHub main/PR/交接/市場 TSX/SCSS/測試，再進下一批。
+
+---
+
+
 ## 2026-11-13｜第二輪第8批（最後批）v0.8.21：攻擊型主動牌＋事前準備版面（本 PR 待使用者 Merge）
 
 - **本批 GitHub 開工核對**：`main` `c3dba2f9a0ee8c098eec32cdbc11dd5f86da2167`；前批 PR #46／v0.8.20 已 Merge，最新 GitHub Pages 部署成功，開工時 open PR = 0。下面歷史「待 Merge」皆以當時資料紀錄，不代表現在真實狀態。下次開工仍須先讀此檔／查最新 main+PR+CI。

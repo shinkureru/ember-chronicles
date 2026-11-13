@@ -10,6 +10,7 @@ import { playCue } from '../../audio/sound';
 import { bagWeight, worldPhaseToken, worldPhase, worldClock } from '../../game/engine/rules';
 import BlackMarketSceneArt from './BlackMarketSceneArt';
 import MarketIdleSpeech from './MarketIdleSpeech';
+import MarketShiftCountdown from './MarketShiftCountdown';
 import MarketLoadingScreen from './MarketLoadingScreen';
 import {useMarketSceneLoad} from './useMarketSceneLoad';
 import MarketTradeSwitchIcon from './MarketTradeSwitchIcon';
@@ -88,6 +89,12 @@ export default function BlackMarketPage(){
  }),[offers,kind,narrow]);
  const selected=offers.find(o=>o.id===selectedId)??null;
  useEffect(()=>setSelectedId(null),[mode,kind,narrow,vendor.id]);
+ // A new shift means a different inventory and purchasing policy.
+ // Clear stale filters so the incoming vendor's catalog is visible at once.
+ useEffect(()=>{
+  setKind('all');setNarrow('any');setMore(false);
+  offersScroll.scrollRef.current?.scrollTo({top:0});
+ },[vendor.id]);
  useEffect(()=>{
   if(!selected)return;
   const close=(event:KeyboardEvent)=>{if(event.key==='Escape')setSelectedId(null);};
@@ -125,7 +132,10 @@ export default function BlackMarketPage(){
     <p className="market-v12__dialogue market-v0823__dialogue market-v0825__speech" aria-label="商人自言自語">
      <MarketIdleSpeech key={vendor.id} vendor={vendor}/>
     </p>
-    <div className="market-v12__time market-v0823__time"><Clock3 size={12}/>{worldPhase(s.world.minute)} {worldClock(s.world.minute)}</div>
+    <div className="market-v12__time market-v0823__time market-v0826__shift">
+     <div className="market-v0826__now"><Clock3 size={12}/><span>{worldPhase(s.world.minute)} {worldClock(s.world.minute)}</span></div>
+     <MarketShiftCountdown minute={s.world.minute}/>
+    </div>
     <div className="market-v13__favor market-v0823__favor">
      <div className="market-v0823__favor-line">
       <HeartHandshake size={15}/><span>商人好感度</span>

@@ -1,5 +1,17 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-13｜新一輪8批 UI 重設計：v0.8.14 第1批（本分支尚待使用者 Merge）
+
+- **本次 GitHub preflight**：`main` commit `a8e6860f6ec1f4408f595815bacc7720325b2fd2`，前批 PR #39／v0.8.13 已 Merge，Pages 部署成功，開工前 open PR = 0。下方 v0.8.13「待 Merge」為歷史狀態；**永遠以新 GitHub preflight 與最新交接頁首為準**。
+- 使用者 2026-11-13 提供四張新版參照圖，要求大型改版細分可獨立 Merge 批次。**現已排成8批**：v0.8.14 工坊；v0.8.15 全域雙色結果進度條（旅店/診所）；v0.8.16 人物頁導覽；v0.8.17 全身裝備頁；v0.8.18 身體＋思維＋社交合併加點頁；v0.8.19 城鎮成長/NPC記憶/故事；v0.8.20 牌組圖鑑/被動；v0.8.21 主動卡/事前準備。**詳見 `docs/UI_COMPACT_REDESIGN_ROADMAP.md`**，後續批次僅規劃未施工。
+- 第1批唯一分支 `ui/v0.8.14-workshop-selector-refinement`、版本 0.8.14。工坊保留既有結構，新增 `src/styles/_v0814-workshop-refinement.scss` 在 `main.scss` 最後：選擇卡桌面四欄(61px高起)、手機兩欄(60px高起)，短狀態、名稱最多兩行；縮小插畫/詳情/耐久/對照/按鈕，僅 detail 區可捲動，footer 固定。
+- `WorkshopDialog.tsx` 新增 `showNotice` 僅在成功點選工坊服務時顯示 `s.lastEvent`，切換部位清除，避免其他設施過往事件被誤顯示。未裝備卡簡寫「空欄位」，完整說明留在詳情。
+- 新增 `tests/v0814-workshop-refinement.test.ts`、QA `docs/V0814_WORKSHOP_REFINEMENT_QA.md`。不碰引擎／存檔／修理價格／戰鬥／其他設施。Build / Tests / PR 及實機狀態**以 GitHub/使用者實際結果為準**；未通過時於原 PR 修正。
+- **使用者日後每次說 Merge 好了/繼續**：自動透過 GitHub connector 先讀 `docs/PROJECT_HANDOFF.md`、查最新 main SHA、PR、相關程式和現有測試，依 roadmap 僅開下一批1個分支PR；CI 全綠就停，**禁止自己 Merge 或提前施工下一批**。如 connector 不可用，明說而不猜已部署或 PR。
+
+---
+
+
 ## 2026-11-13｜v0.8.13 第四批：黑市陳列面積與商品卡密度（PR 待 Merge）
 
 - **已核對最新 GitHub**：`main` `94e2c6f00ba7673a618c75c9f41adb03eddd52d7`；PR #38／v0.8.12 已合併、GitHub Pages 部署成功；本批開始時 open PR = 0。過去交接檔中所有「待 Merge」字樣屬歷史狀態，不得覆蓋 GitHub 最新狀態。

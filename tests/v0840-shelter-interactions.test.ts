@@ -27,8 +27,9 @@ describe('v0.8.40 — real-alpha selectable furniture and non-destructive hint f
   expect(bed.x).toBe(-23);
   expect(cooking.x).toBe(-52);
   expect([cooking.width,cooking.height,cooking.scale]).toEqual([914,1225,.4]);
-  expect(stagePointToFurniturePixel({x:bed.x+bed.scale*100,y:bed.y+bed.scale*250},bed))
-   .toEqual({x:100,y:250});
+  const pixel=stagePointToFurniturePixel({x:bed.x+bed.scale*100,y:bed.y+bed.scale*250},bed)!;
+  expect(pixel.x).toBeCloseTo(100);
+  expect(pixel.y).toBeCloseTo(250);
   expect(stagePointToFurniturePixel({x:bed.x-1,y:bed.y},bed)).toBeNull();
   expect(stagePointToFurniturePixel({x:bed.x+bed.width*bed.scale+1,y:bed.y},bed)).toBeNull();
   expect(WAREHOUSE_LAYOUT.assets.bed.x).toBe(-23);

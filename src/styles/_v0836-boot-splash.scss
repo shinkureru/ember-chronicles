@@ -1,0 +1,32 @@
+/* v0.8.36: simple full-viewport, every-start boot cover. Separate from 468px game frame. */
+.shelter-boot{
+ position:fixed;inset:0;z-index:9999;
+ width:100vw;min-height:100svh;
+ display:flex;justify-content:center;align-items:center;
+ overflow:hidden;color:#d5d4d0;
+ background:radial-gradient(circle at 50% 37%,#253037 0%,#0b1015 36%,#06080a 78%),#06080a;
+ font-family:'Noto Sans TC',system-ui,sans-serif;
+ isolation:isolate;
+}
+.shelter-boot__noise{
+ position:absolute;inset:0;pointer-events:none;opacity:.12;
+ background:repeating-linear-gradient(0deg,transparent 0 3px,#a7b8b022 4px 5px),
+ repeating-linear-gradient(90deg,transparent 0 72px,#ffffff0c 73px 74px);
+}
+.shelter-boot__center{position:relative;z-index:1;width:min(82vw,420px);text-align:center;display:flex;flex-direction:column;align-items:center;gap:13px}
+.shelter-boot__seal{display:grid;place-items:center;width:72px;height:72px;border:1px solid #9c7e6a88;border-radius:50%;font:400 21px/1 'Noto Serif TC',serif;letter-spacing:.22em;color:#b98f7b;box-shadow:0 0 42px #9e706c12,inset 0 0 18px #9e706c13}
+.shelter-boot__eyebrow{font:500 10px/1.5 Inter,sans-serif;letter-spacing:.4em;color:#a97b73}
+.shelter-boot h1{font:600 clamp(30px,6.5vw,47px)/1.25 'Noto Serif TC',serif;letter-spacing:.24em;color:#eee3d5}
+.shelter-boot p{color:#b9b4ab;font:400 13px/1.8 'Noto Sans TC',sans-serif;letter-spacing:.1em}
+.shelter-boot__track{width:min(280px,76vw);height:2px;background:#343c42;overflow:hidden;margin-top:19px;border-radius:4px}
+.shelter-boot__track span{display:block;width:48%;height:100%;background:linear-gradient(90deg,transparent,#ba8880,transparent);animation:shelter-boot-load 1.1s ease-in-out infinite}
+.shelter-boot small{font:400 11px/1.6 'Noto Sans TC',sans-serif;letter-spacing:.11em;color:#879096}
+.shelter-boot__footer{position:absolute;bottom:max(20px,env(safe-area-inset-bottom));left:12px;right:12px;text-align:center;color:#70767a;letter-spacing:.16em;font:400 10px/1.5 Inter,sans-serif}
+@keyframes shelter-boot-load{from{transform:translateX(-120%)}to{transform:translateX(330%)}}
+@media(max-height:520px){
+ .shelter-boot__center{gap:7px}.shelter-boot__seal{width:48px;height:48px;font-size:15px}
+ .shelter-boot__track{margin-top:3px}
+}
+@media(prefers-reduced-motion:reduce){
+ .shelter-boot__track span{animation:none;transform:translateX(55%);width:45%}
+}

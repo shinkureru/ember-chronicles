@@ -1,5 +1,18 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-14｜第五輪第1批 v0.8.36：避難所改版開工、全畫面啟動、原型刪檔重啟（本 PR 待使用者 Merge）
+
+- **GitHub 真實基準**：PR #61 v0.8.35 確已 Merge，main `ee8b71d9d4c54b79f7987f23b613cb7a9fe6f5bc`，開工時 open PR 0。唯一分支 `feat/v0.8.36-shelter-boot-restart-roadmap`，package/lock 0.8.36，**只做第1批，不自行 Merge**。此前文檔的「PR 待 merge」只描述歷史當下。
+- **素材/校正**：目前使用者已提供空/滿倉庫768×1376、八張更新 PNG、`warehouse-shelter-layout-v3.json`（同尺寸；位置由玩家親自調整），醫療命名PNG視覺上是**證物調查板**。第1批先保存規格與交接，**尚未將二進位素材加入 repo**，不能聲稱主畫面已更換或場景已部署。完整來源/規格見 `docs/SHELTER_REBUILD_ROADMAP.md`。
+- **啟動畫面**：新 `src/app/BootSplash.tsx` 用 `BOOT_PRESENTATION_MS=1100` 約1.1秒的簡易暗色封面和淡入進度線，**每次完整載入/refresh 都重新掛載**，採獨立 `GameBootGate` 包在 `Frame` 之外，沒有遊戲 HUD、地圖或內頁在開場下偷顯示。沒有假的百分比、沒有存檔完成旗標；真正載入進度條未實作，封面仍是臨時稿。
+- **原型重設與完整重啟**：`storage.ts` 新增 `clearPrototypeSave`/`resetPrototypeAndReload`，只移除 localStorage `ember-chronicles-prototype-v1`，成功後 `window.location.reload()`；設定頁「存檔與重設」與本地 DEV 頁共用，清楚確認所有舊進度會永久刪掉。瀏覽器拒刪時不 reload 並顯示錯誤。先前 reducer `RESET` action 留著避免舊引擎測試破壞。重啟後的職業/地圖流程仍是**上一版現況**。
+- **六批停點**：v0.8.37 新手故事→教學必敗占位→三基地選擇/存檔；v0.8.38 真正空/滿倉庫與 PNG slot 圖層、三基地首頁/地圖退出首頁；v0.8.39 開發用快速隨機購入與逐件動畫；v0.8.40 家具光邊/提示可互動；v0.8.41 全系統回歸/手機。**每批 PR 結束等使用者自己 Merge 後再續**。
+- **測試/文件**：新 `tests/v0836-shelter-boot.test.ts` 驗證只刪除遊戲 key、確實呼叫 reload、失敗不 reload、設定頁/DEV 共用、封面不被468px框架包住及 reduced-motion；調整歷史測試的固定版本/最後樣式匯入斷言。此批只完成 GitHub Actions 自動檢驗，不能冒充真實手機人工 QA。
+- **下一回合必先做**：讀此文件及新路線圖，重新確認 main/PR/CI，再從 v0.8.37 開始；不可跳版本、不可擅自清除玩家既有進度。
+
+---
+
+
 ## 2026-11-14｜第四輪第8批 v0.8.35：八批正式整合、真實時間/飢餓平衡與全域 QA（此 PR 待使用者 Merge）
 
 - **開工基準**：PR #60 / v0.8.34 已 Merge；latest main `5fc578e5e42dbd303e090cb9bec9599a30c51bfb`，open PR 0；唯一分支 `feat/v0.8.35-final-integrated-qa`，package/lock 版本 `0.8.35`，每批唯一 PR，**不自行 Merge**。交接以最新 GitHub main 和本批 PR head 為準，歷史批次文件的「本 PR 待 Merge」不代表現況。

@@ -97,7 +97,7 @@ export default function ShelterScene({owned,selectedId=null,attentionId=null,onS
       style={{left:`${left}%`,top:`${top}%`,zIndex:100+layer.z}}
       onPointerEnter={()=>setHovered(layer.id)}
       onPointerLeave={()=>setHovered(null)}
-      onClick={event=>{event.stopPropagation();onSelect(layer.id)}}>
+      onClick={event=>{event.stopPropagation();onSelect?.(layer.id)}}>
        <span className="shelter-scene__marker-center" aria-hidden="true"/>
       </button>;
    })}

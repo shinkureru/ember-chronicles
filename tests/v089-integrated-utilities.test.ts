@@ -15,7 +15,7 @@ describe('v0.8.9 full removal of global navbar and safe integrated system access
   expect(frame).not.toContain('app-header__version');
   expect(frame).not.toContain('app-header__settings');
   expect(frame).toContain('<main key={location.pathname}');
-  expect(frame).toContain('!inMission&&!onMap&&!returnInsidePage');
+  expect(frame).toContain('!inMission&&!inOnboarding&&!onMap&&!returnInsidePage');
   expect(frame).toContain('<GameUtilities className="game-utilities--dock"/>');
   expect(frame).toContain('<ReturnMainLink/>');
   expect(frame).toContain('<GameFeedback/>');
@@ -40,7 +40,9 @@ describe('v0.8.9 full removal of global navbar and safe integrated system access
   const chapter=read('src/features/chapter/ChapterPage.tsx');
   expect(home).toContain('home-hero__top');
   expect(home).toContain('<GameUtilities className="game-utilities--prologue"/>');
-  expect(home).toContain('if(state.profession)return <ChapterMapPage/>');
+  expect(home).toContain('if(state.profession)return <>');
+  expect(home).toContain('<ChapterMapPage/></>');
+  expect(home).toContain('目前避難所：');
   expect(missionSettings).toContain('<BuildVersion/>');
   expect(missionSettings).not.toContain('<GameUtilities');
   expect(chapter).toContain('<GameSettingsDialog');

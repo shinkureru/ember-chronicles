@@ -20,9 +20,10 @@ describe('v0.8.8 safe return-to-main navigation',()=>{
  it('shows a bottom-right navigation dock on regular pages but not the map, mission, or inlined pages',()=>{
   expect(frame).toContain("const onMap=location.pathname==='/'");
   expect(frame).toContain("const returnInsidePage=['/black-market','/cards','/preparation'].includes(location.pathname)");
-  expect(frame).toContain('!inMission&&!onMap&&!returnInsidePage&&<nav className="return-main-dock"');
+  expect(frame).toContain('!inMission&&!inOnboarding&&!onMap&&!returnInsidePage&&<nav className="return-main-dock"');
   expect(frame).toContain('<ReturnMainLink/>');
   expect(frame).toContain("const inMission=state.mode!=='home'");
+  expect(frame).toContain("const inOnboarding=state.onboarding.phase!=='complete'");
   const routes=read('src/app/App.tsx');
   const special=frame.split('const returnInsidePage=')[1]?.split(';')[0]??'';
   for(const path of ['/town','/warehouse','/character','/settings','/dev']){

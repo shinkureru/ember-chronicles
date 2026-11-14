@@ -78,6 +78,17 @@ export const loadGame=():GameState=>{
     };
   }catch{return makeInitialState();}
 };
+/** Only the game's own key is removed: audio, browser and unrelated site data stay intact.
+ * The default reload remounts the provider + splash, rather than merely RESET-ing React state.
+ */
+export const clearPrototypeSave=():boolean=>{
+ try{localStorage.removeItem(KEY);return true;}catch{return false;}
+};
+export const resetPrototypeAndReload=(reload:()=>void=()=>window.location.reload()):boolean=>{
+ if(!clearPrototypeSave())return false;
+ reload();
+ return true;
+};
 export const saveGame=(s:GameState):boolean=>{
   try{localStorage.setItem(KEY,JSON.stringify(s));return true;}catch{return false;}
 };

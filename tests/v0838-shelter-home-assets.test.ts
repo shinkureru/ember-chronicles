@@ -130,14 +130,14 @@ describe('v0.8.38: exact designer assets, shelter home and saved furniture owner
   expect(src('src/features/chapter/HomePage.tsx')).toContain('<ShelterHomePage/>');
   expect(src('src/components/Frame.tsx')).toContain("location.pathname==='/world-map'");
   expect(home).toContain('import.meta.env.DEV');
-  expect(src('src/styles/main.scss').trimEnd()).toMatch(/@import "v0839-shelter-build";$/);
+  expect(src('src/styles/main.scss').trimEnd()).toMatch(/@import "v0840-shelter-interactions";$/);
  });
  it('does not implement future purchase commands or alter the HUD/mission route',()=>{
   const game=src('src/game/engine/resolve.ts');
   expect(game).not.toContain("type:'SHELTER_PURCHASE'");
   expect(src('src/app/App.tsx')).toContain("if(state.mode!=='home'&&location.pathname!=='/chapter')");
   expect(src('src/components/Frame.tsx')).toContain('<GameFeedback/>');
-  expect(JSON.parse(src('package.json')).version).toBe('0.8.39');
-  expect(JSON.parse(src('package-lock.json')).packages[''].version).toBe('0.8.39');
+  expect(JSON.parse(src('package.json')).version).toBe('0.8.40');
+  expect(JSON.parse(src('package-lock.json')).packages[''].version).toBe('0.8.40');
  });
 });

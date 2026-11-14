@@ -174,7 +174,7 @@ describe('v0.8.34 single-sourced hunger price and bounded state',()=>{
   ] as const)for(const token of parts)expect(read(file),file).toContain(token);
   expect(read('src/game/engine/resolve.ts')).not.toContain('advanceTime(');
   expect(read('src/app/GameContext.tsx')).toContain("type:'WORLD_CLOCK_SYNC'");
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.39');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.39');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.40');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.40');
  });
 });

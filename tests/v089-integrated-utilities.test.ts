@@ -36,6 +36,7 @@ describe('v0.8.9 full removal of global navbar and safe integrated system access
  });
  it('makes system settings available before first character creation and displays build inside mission settings',()=>{
   const home=read('src/features/chapter/HomePage.tsx');
+  const routing=read('src/app/App.tsx');
   const missionSettings=read('src/features/settings/GameSettingsDialog.tsx');
   const chapter=read('src/features/chapter/ChapterPage.tsx');
   expect(home).toContain('import ShelterHomePage');

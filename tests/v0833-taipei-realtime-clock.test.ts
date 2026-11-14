@@ -105,6 +105,6 @@ describe('v0.8.33 Asia/Taipei civil clock as the only source of time',()=>{
   expect(ctx).not.toContain('WORLD_CLOCK_TICK');
   expect(resolve).not.toContain('advanceTime(');
   expect(read('src/game/state/storage.ts')).toContain("clockBasis:'taipei-realtime'");
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.40');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.41');
  });
 });

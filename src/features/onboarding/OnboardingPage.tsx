@@ -78,7 +78,7 @@ export default function OnboardingPage(){
     <span className="onboarding-eyebrow">SHELTER SELECTION</span>
     <h1>你需要一個能活下去的地方。</h1>
     <p>失去意識後，你終於甦醒。接下來，選擇一處廢棄建築作為自己的第一個避難所。</p>
-    <small>目前三個據點只有文字占位；能力差異尚未定案。選擇將寫入本機存檔。</small>
+    <small>廢棄倉庫已有正式場景與家具配置；公寓、防空室仍預留美術圖像。能力差異尚未定案，選擇將寫入本機存檔。</small>
    </section>
    <div className="onboarding-shelter-list">
     {SHELTER_OPTIONS.map(s=>{
@@ -91,7 +91,7 @@ export default function OnboardingPage(){
      </button>;
     })}
    </div>
-   <p className="onboarding-shelter-footnote">避難所場景、家具及後續建築功能將在 v0.8.38 起陸續接上。目前選擇後先回到既有原型主畫面。</p>
+   <p className="onboarding-shelter-footnote">選定後將以你的避難所作為主畫面。倉庫提供建築與家具互動測試；其他兩種據點待加入專屬圖片。這仍是原型測試版本。</p>
   </div>;
  }
  return null;

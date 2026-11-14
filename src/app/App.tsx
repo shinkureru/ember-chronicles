@@ -16,6 +16,7 @@ import CharacterPage from '../features/player/CharacterPage';
 import DevPage from '../features/dev/DevPage';
 import TownPage from '../features/town/TownPage';
 import BlackMarketPage from '../features/market/BlackMarketPage';
+import OnboardingPage from '../features/onboarding/OnboardingPage';
 
 function SettingsPage(){
  const [tab,setTab]=useState('audio');const [resetError,setResetError]=useState(false);
@@ -29,6 +30,8 @@ function NotFound(){return <section className="surface-card"><h2>找不到這個
 /** Prevent players from bypassing the in-mission navigation lock by editing the URL. */
 function GameRoutes(){
  const {state}=useGame(),location=useLocation();
+ // All first-run screens are controlled by persisted onboarding progress, never URL navigation.
+ if(state.onboarding.phase!=='complete')return <OnboardingPage/>;
  if(state.mode!=='home'&&location.pathname!=='/chapter')return <Navigate to="/chapter" replace/>;
  return <Routes>
   <Route path="/" element={<HomePage/>}/>

@@ -20,7 +20,7 @@ import { getVendorStockKey, marketSellPrice, vendorById } from '../data/marketVe
 import type { GameState, Outcome, ProfessionId, ShelterId, LootDrop } from '../types';
 import {getTaipeiClock} from './taipeiClock';
 import {isShelterId,INTRO_STORY_PAGES,TUTORIAL_PLACEHOLDER_STEPS} from './onboarding';
-import {isShelterFurnitureId,normalizeShelterOwned,SHELTER_FURNITURE_IDS} from './shelterVisuals';
+import {isShelterFurnitureId,normalizeShelterOwned} from './shelterVisuals';
 import {normalizeShelterBuildOrder,nextShelterBuildItem} from './shelterBuild';
 import {applyHungerCost,HUNGER_CLINIC_PURCHASE_COST,HUNGER_DEFEAT_COST,HUNGER_FIELD_GEAR_COST,HUNGER_QUEST_HANDIN_COST} from './hungerCosts';
 

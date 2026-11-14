@@ -7,6 +7,7 @@ import {SHELTER_OPTIONS} from '../../game/engine/onboarding';
 import {normalizeShelterOwned,getWarehouseVisualMode,SHELTER_FURNITURE_IDS} from '../../game/engine/shelterVisuals';
 import type {ProfessionId,ShelterId} from '../../game/types';
 import GameUtilities from '../../components/GameUtilities';
+import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
 import ShelterScene from './ShelterScene';
 import ShelterBuildDemoPanel from './ShelterBuildDemoPanel';
 import ShelterFacilityPanel from './ShelterFacilityPanel';
@@ -46,6 +47,9 @@ function ProfessionSetup(){
 }
 export default function ShelterHomePage(){
  const {state}=useGame();
+ // The safehouse contains a full portrait scene and many build tools. Use the
+ // existing robust mouse-drag helper; touch, wheel and keyboard scroll natively.
+ const shelterScroll=useVerticalDragScroll();
  const [previewWarehouse,setPreviewWarehouse]=useState(false);
  const [selectedId,setSelectedId]=useState<ShelterFurnitureId|null>(null);
  const detailRef=useRef<HTMLDivElement>(null);
@@ -88,7 +92,13 @@ export default function ShelterHomePage(){
   setSelectedId(id);
   setQueue(previous=>previous.filter(alert=>alert.targetId!==id));
  };
- return <div className="page-stack shelter-home-page viewport-page">
+ return <div className="page-stack shelter-home-page viewport-page"
+  ref={shelterScroll.scrollRef} tabIndex={0} aria-label="避難所主畫面，可上下捲動"
+  onPointerDown={shelterScroll.onPointerDown}
+  onPointerMove={shelterScroll.onPointerMove}
+  onPointerUp={shelterScroll.onPointerUp}
+  onPointerCancel={shelterScroll.onPointerCancel}
+  onClickCapture={shelterScroll.onClickCapture}>
   <header className="shelter-home-heading">
    <div><span className="eyebrow">EMBER CHRONICLES / SAFEHOUSE</span><h1>{option?.name??'尚未指定據點'}</h1><p>{option?.short??'選擇避難所後即可在此建立家園'} · 你的生存據點</p></div>
    <GameUtilities className="game-utilities--shelter"/>

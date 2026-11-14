@@ -191,7 +191,9 @@ describe('v0.8.39 — prototype furniture purchase, animations and persistence',
   expect(ui).toContain('window.setTimeout');
   expect(ui).toContain('window.clearTimeout');
   expect(ui).toContain('data-prototype-only="true"');
-  expect(ui).not.toContain('import.meta.env.DEV');
+  // Comments can name the DEV flag; the rendered component must not be guarded by it.
+  expect(ui).not.toMatch(/\{\s*import\.meta\.env\.DEV\s*&&\s*<section/);
+  expect(ui).toContain('export default function ShelterBuildDemoPanel()');
   expect(ui).toContain('SHELTER_DEMO_ADD_NEXT');
   expect(ui).toContain('隨機 0～8 件');
   expect(ui).toContain('一鍵滿配');

@@ -157,14 +157,14 @@ describe('v0.8.35 final integration: real time, hunger, equipment, market and UI
   expect(ctx).toContain("type:'WORLD_CLOCK_SYNC'");
   expect(ctx).not.toContain('WORLD_CLOCK_TICK');
   expect(resolver).not.toContain('advanceTime(');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.38');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.38');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.39');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.39');
  });
  it('keeps warnings visible, mobile cost lines untruncated, scrollable short modals and reduced motion',()=>{
   const css=read('src/styles/_v0835-final-integrated.scss');
   for(const breakpoint of ['320px','360px','390px','720px','520px'])expect(css).toContain(breakpoint);
   for(const marker of ['overflow-wrap:anywhere','max-width:calc(100vw','prefers-reduced-motion:reduce','overscroll-behavior-y:contain','min-height:0'])expect(css).toContain(marker);
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0838-shelter-hub";$/);
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0839-shelter-build";$/);
   expect(read('src/features/town/ClinicDialog.tsx')).toContain('hunger.appliedDelta');
   expect(read('src/features/town/TownFacilityDialog.tsx')).toContain('hunger.appliedDelta');
   expect(read('src/features/chapter/ActionCard.tsx')).toContain('preview.appliedHungerCost');

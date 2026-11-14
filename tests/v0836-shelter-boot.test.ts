@@ -24,7 +24,7 @@ describe('v0.8.36: boot cover and prototype full-restart',()=>{
   expect(css).toContain('position:fixed;inset:0');
   expect(css).toContain('100svh');
   expect(css).toContain('prefers-reduced-motion:reduce');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0841-shelter-integration";$/);
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0841-shelter-scroll-hotfix";$/);
  });
  it('deletes only this game save then calls full-page reload instead of RESET',()=>{
   const original=makeInitialState('journalist');

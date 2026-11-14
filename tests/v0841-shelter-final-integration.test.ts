@@ -264,7 +264,7 @@ describe('v0.8.41 — six-batch shelter and first-play integration',()=>{
   expect(css).toContain('@media(min-width:720px)');
   expect(css).toContain('@media(max-height:520px)');
   expect(css).toContain('@media(prefers-reduced-motion:reduce)');
-  expect(source('src/styles/main.scss').trimEnd()).toMatch(/@import "v0841-shelter-integration";$/);
+  expect(source('src/styles/main.scss').trimEnd()).toMatch(/@import "v0841-shelter-scroll-hotfix";$/);
   expect(JSON.parse(source('package.json')).version).toBe('0.8.41');
   expect(JSON.parse(source('package-lock.json')).packages[''].version).toBe('0.8.41');
   expect(source('src/app/BootSplash.tsx')).toContain('BOOT_PRESENTATION_MS=1100');

@@ -130,7 +130,7 @@ describe('v0.8.38: exact designer assets, shelter home and saved furniture owner
   expect(src('src/features/chapter/HomePage.tsx')).toContain('<ShelterHomePage/>');
   expect(src('src/components/Frame.tsx')).toContain("location.pathname==='/world-map'");
   expect(home).toContain('import.meta.env.DEV');
-  expect(src('src/styles/main.scss').trimEnd()).toMatch(/@import "v0841-shelter-integration";$/);
+  expect(src('src/styles/main.scss').trimEnd()).toMatch(/@import "v0841-shelter-scroll-hotfix";$/);
  });
  it('does not implement future purchase commands or alter the HUD/mission route',()=>{
   const game=src('src/game/engine/resolve.ts');

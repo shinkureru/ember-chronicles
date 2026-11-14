@@ -17,12 +17,18 @@ import { EQUIPMENT_SLOTS } from '../data/equipment';
 import { getEquippedDefense, mitigateCounterDamage } from '../data/equipmentEffects';
 import { applyArmorImpact,ARMOR_DAMAGE_STAGES,ARMOR_SLOT_NAMES,expirePerfectRepairs } from './armor';
 import { getVendorStockKey, marketSellPrice, vendorById } from '../data/marketVendors';
-import type { GameState, Outcome, ProfessionId, LootDrop } from '../types';
+import type { GameState, Outcome, ProfessionId, ShelterId, LootDrop } from '../types';
 import {getTaipeiClock} from './taipeiClock';
+import {isShelterId,INTRO_STORY_PAGES,TUTORIAL_PLACEHOLDER_STEPS} from './onboarding';
 import {applyHungerCost,HUNGER_CLINIC_PURCHASE_COST,HUNGER_DEFEAT_COST,HUNGER_FIELD_GEAR_COST,HUNGER_QUEST_HANDIN_COST} from './hungerCosts';
 
 export type GameAction =
   | {type:'SELECT_PROFESSION';profession:ProfessionId}
+  | {type:'ONBOARDING_STORY_NEXT'}
+  | {type:'ONBOARDING_STORY_SKIP'}
+  | {type:'ONBOARDING_TUTORIAL_NEXT'}
+  | {type:'ONBOARDING_TUTORIAL_DEFEAT'}
+  | {type:'ONBOARDING_SELECT_SHELTER';shelterId:ShelterId}
   | {type:'START_ATTEMPT'}
   | {type:'SELECT_STAGE';stageId:1|2}
   | {type:'WORLD_CLOCK_SYNC';nowMs?:number}
@@ -165,7 +171,35 @@ const resolveOutcome=(s:GameState,outcome:Outcome)=>{
 };
 export const gameReducer=(state:GameState,action:GameAction):GameState=>{
   if(action.type==='RESET')return makeInitialState();
-  if(action.type==='SELECT_PROFESSION')return makeInitialState(action.profession);
+  if(action.type==='SELECT_PROFESSION'){
+    // Preserve the one-time chosen shelter when the existing profession screen finishes.
+    if(state.mode!=='home'||state.profession!==null||state.onboarding.phase!=='complete')return state;
+    return {...makeInitialState(action.profession),onboarding:state.onboarding};
+  }
+  if(action.type==='ONBOARDING_STORY_NEXT'){
+    if(state.onboarding.phase!=='story')return state;
+    const next=state.onboarding.storyPage+1;
+    return {...state,onboarding:next>=INTRO_STORY_PAGES.length
+      ? {...state.onboarding,phase:'tutorial',storyPage:INTRO_STORY_PAGES.length-1,tutorialStep:0}
+      : {...state.onboarding,storyPage:next}};
+  }
+  if(action.type==='ONBOARDING_STORY_SKIP'){
+    if(state.onboarding.phase!=='story')return state;
+    return {...state,onboarding:{...state.onboarding,phase:'tutorial',tutorialStep:0}};
+  }
+  if(action.type==='ONBOARDING_TUTORIAL_NEXT'){
+    if(state.onboarding.phase!=='tutorial'||state.onboarding.tutorialStep>=TUTORIAL_PLACEHOLDER_STEPS.length-1)return state;
+    return {...state,onboarding:{...state.onboarding,tutorialStep:state.onboarding.tutorialStep+1}};
+  }
+  if(action.type==='ONBOARDING_TUTORIAL_DEFEAT'){
+    // Fictional/scripted tutorial outcome; absolutely no real HP, hunger, XP, attempt or NPC mutation.
+    if(state.onboarding.phase!=='tutorial'||state.onboarding.tutorialStep!==TUTORIAL_PLACEHOLDER_STEPS.length-1)return state;
+    return {...state,onboarding:{...state.onboarding,phase:'shelter'}};
+  }
+  if(action.type==='ONBOARDING_SELECT_SHELTER'){
+    if(state.onboarding.phase!=='shelter'||!isShelterId(action.shelterId))return state;
+    return {...state,onboarding:{...state.onboarding,phase:'complete',shelter:action.shelterId}};
+  }
   if(action.type==='WORLD_CLOCK_SYNC'){
    const now=getTaipeiClock(action.nowMs??Date.now());
    if(state.world.day===now.day&&state.world.minute===now.minute&&state.world.clockBasis==='taipei-realtime')return state;

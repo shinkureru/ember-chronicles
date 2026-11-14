@@ -1,4 +1,7 @@
 export type ProfessionId = 'journalist' | 'courier' | 'infiltrator';
+export type ShelterId = 'warehouse' | 'apartment' | 'bunker';
+export type OnboardingPhase = 'story' | 'tutorial' | 'shelter' | 'complete';
+export interface OnboardingProgress { phase:OnboardingPhase; storyPage:number; tutorialStep:number; shelter:ShelterId|null }
 export type Mode = 'home' | 'adventure' | 'result';
 export type SceneId = 'gate' | 'survey' | 'inside' | 'confrontation' | 'loot';
 export type ActionTag = 'talk' | 'observe' | 'sneak' | 'run' | 'search' | 'fight' | 'survival';
@@ -74,6 +77,8 @@ export interface GameState {
   progression?:LevelProgression;
   mode: Mode;
   profession: ProfessionId | null;
+  /** First-play story/tutorial/shelter choice; migrated legacy players go straight to shelter selection. */
+  onboarding:OnboardingProgress;
   player: { health: number; maxHealth: number; stamina: number; maxStamina: number; courage: number; hunger: number; fatigue: number; temperature: number; resource: number; maxResource: number; attributes: Attributes };
   world: { minute: number; day: number; weather: 'clear' | 'rain'; clockBasis?:'taipei-realtime' };
   town?:TownProgress;

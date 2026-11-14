@@ -82,6 +82,8 @@ export interface GameState {
   onboarding:OnboardingProgress;
   /** Only explicitly acquired furniture; initial selection begins with an empty shelter. */
   shelterOwned?:ShelterFurnitureId[];
+  /** Prototype-only order for replaying flexible furniture acquisition. No build costs. */
+  shelterBuildOrder?:ShelterFurnitureId[];
   player: { health: number; maxHealth: number; stamina: number; maxStamina: number; courage: number; hunger: number; fatigue: number; temperature: number; resource: number; maxResource: number; attributes: Attributes };
   world: { minute: number; day: number; weather: 'clear' | 'rain'; clockBasis?:'taipei-realtime' };
   town?:TownProgress;

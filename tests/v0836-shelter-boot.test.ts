@@ -24,7 +24,7 @@ describe('v0.8.36: boot cover and prototype full-restart',()=>{
   expect(css).toContain('position:fixed;inset:0');
   expect(css).toContain('100svh');
   expect(css).toContain('prefers-reduced-motion:reduce');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0838-shelter-hub";$/);
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0839-shelter-build";$/);
  });
  it('deletes only this game save then calls full-page reload instead of RESET',()=>{
   const original=makeInitialState('journalist');
@@ -70,8 +70,8 @@ describe('v0.8.36: boot cover and prototype full-restart',()=>{
   expect(read('src/app/App.tsx')).toContain('resetPrototypeAndReload()');
  });
  it('updates both package versions and does not add new UI or world clock rules',()=>{
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.38');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.38');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.39');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.39');
   expect(read('src/app/GameContext.tsx')).toContain("type:'WORLD_CLOCK_SYNC'");
   expect(read('src/app/App.tsx')).toContain('<Route path="/chapter" element={<ChapterPage/>}/>');
   expect(read('src/app/App.tsx')).toContain('<Route path="/black-market" element={<BlackMarketPage/>}/>');

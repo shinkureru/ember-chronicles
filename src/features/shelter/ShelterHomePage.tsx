@@ -1,5 +1,6 @@
 import {Archive,Building2,ChevronRight,Fingerprint,Info,Map,Shield,Skull,Warehouse} from 'lucide-react';
 import {Link} from 'react-router-dom';
+import {useState} from 'react';
 import {useGame} from '../../app/GameContext';
 import {PROFESSIONS} from '../../game/data/professions';
 import {SHELTER_OPTIONS} from '../../game/engine/onboarding';
@@ -7,6 +8,7 @@ import {normalizeShelterOwned,getWarehouseVisualMode,SHELTER_FURNITURE_IDS} from
 import type {ProfessionId,ShelterId} from '../../game/types';
 import GameUtilities from '../../components/GameUtilities';
 import ShelterScene from './ShelterScene';
+import ShelterBuildDemoPanel from './ShelterBuildDemoPanel';
 import {playCue} from '../../audio/sound';
 
 const icons={warehouse:Warehouse,apartment:Building2,bunker:Shield} as const;
@@ -39,7 +41,9 @@ function ProfessionSetup(){
 }
 export default function ShelterHomePage(){
  const {state}=useGame();
+ const [previewWarehouse,setPreviewWarehouse]=useState(false);
  const shelterId=state.onboarding.shelter;
+ const showWarehouse=shelterId==='warehouse'||previewWarehouse;
  const option=SHELTER_OPTIONS.find(s=>s.id===shelterId);
  const owned=normalizeShelterOwned(state.shelterOwned);
  const mode=getWarehouseVisualMode(owned);
@@ -48,26 +52,33 @@ export default function ShelterHomePage(){
    <div><span className="eyebrow">EMBER CHRONICLES / SAFEHOUSE</span><h1>{option?.name??'尚未指定據點'}</h1><p>{option?.short??'選擇避難所後即可在此建立家園'} · 你的生存據點</p></div>
    <GameUtilities className="game-utilities--shelter"/>
   </header>
+  {shelterId!=='warehouse'&&<div className="shelter-build-demo-preview" data-prototype-only="true">
+   <span>家具美術測試：已選據點不會更改。可以暫時預覽倉庫建設系統。</span>
+   <button type="button" aria-pressed={previewWarehouse} onClick={()=>setPreviewWarehouse(v=>!v)}>
+    {previewWarehouse?'返回我的避難所':'預覽倉庫家具建設'}
+   </button>
+  </div>}
   <section className="shelter-home-scene-panel" aria-label="避難所場景">
-   {shelterId==='warehouse'
+   {showWarehouse
     ? <ShelterScene owned={owned}/>
     :shelterId==='apartment'||shelterId==='bunker'
      ?<ShelterPlaceholder shelterId={shelterId}/>
      :<div className="shelter-placeholder" role="status"><Skull size={38}/><p>尚未選擇避難所</p></div>}
    <div className="shelter-home-scene-caption">
-    <span>{shelterId==='warehouse'
+    <span>{showWarehouse
      ?mode==='full'?'FULLY EQUIPPED / 高品質滿配原圖':mode==='empty'?'EMPTY SHELTER / 空屋':`FURNITURE LAYERS / ${owned.length} 件`
      :'SCENE PLACEHOLDER / 圖片預留'}</span>
-    {shelterId==='warehouse'&&<strong>{owned.length} / {SHELTER_FURNITURE_IDS.length}</strong>}
+    {showWarehouse&&<strong>{owned.length} / {SHELTER_FURNITURE_IDS.length}</strong>}
    </div>
   </section>
+  {showWarehouse&&<ShelterBuildDemoPanel/>}
   <section className="shelter-home-intro surface-card">
    <span className="eyebrow">SHELTER CONSTRUCTION</span>
    <h2>這裡會慢慢成為你的家。</h2>
-   <p>{shelterId==='warehouse'
-    ?'倉庫已接入空屋場景與八件原始透明家具圖層。日後每買進一件家具，就會出現在你校正好的位置。全部八件購入時會自動換成最完整的高品質場景圖。'
+   <p>{showWarehouse
+    ?'家具建設測試已啟用：你可以逐件購入、隨機產生配置或自動建設。完成全部八件家具時，場景自動使用高品質滿配置原圖。'
     :'這座避難所的室內主畫面仍在美術製作階段。已保留未來的空屋、家具與互動系統位置。'}</p>
-   <div className="shelter-home-footnote"><Info size={15} aria-hidden="true"/><span>家具購買、逐件加入與隨機配置測試按鈕將在下一批 v0.8.39 開放。本批不會替玩家預先購買家具。</span></div>
+   <div className="shelter-home-footnote"><Info size={15} aria-hidden="true"/><span>目前為開發測試功能，沒有建造成本；v0.8.40 才會新增家具可點擊區域與柔和提示特效。</span></div>
   </section>
   {!state.profession&&<ProfessionSetup/>}
   {import.meta.env.DEV&&state.profession&&<Link className="shelter-map-test-link" to="/world-map">

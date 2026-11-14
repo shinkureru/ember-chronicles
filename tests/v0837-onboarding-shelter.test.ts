@@ -170,8 +170,8 @@ describe('v0.8.37 first-launch story, forced-defeat placeholder and chosen shelt
   expect(css).toContain('max-width:390px');
   expect(css).toContain('max-height:560px');
   expect(css).toContain('prefers-reduced-motion:reduce');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0838-shelter-hub";$/);
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.38');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.38');
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0839-shelter-build";$/);
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.39');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.39');
  });
 });

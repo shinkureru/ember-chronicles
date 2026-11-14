@@ -1,5 +1,20 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-15｜第五輪第4批 v0.8.39：家具購入模擬、重洗路線、逐件建設動畫、存檔（本 PR 待使用者 Merge）
+
+- **開工核對**：第三批 PR #65 已由使用者 Merge，main `b9ad1d4f0dc4dd6eaf2694e2fb421c96d1a95677`，open PR 0；競爭 #64 已關閉且沒有 Merge。唯一開發分支 `feat/v0.8.39-shelter-build-simulator`，package/lock 0.8.39，**本批不自行 Merge**。
+- **主線規格**：倉庫每件家具只能出現在使用者 `src/game/data/shelter/warehouse-layout.json` 原始校正位置；本批**未改動任何圖片、JSON 座標、陰影、rotation、opacity、Z 圖層或其底圖**。0件原空屋 JPG、1–7件疊原 PNG、8件切原滿配置 JPG；畫布768×1376與 cooking PNG 914×1225不變。
+- **純狀態與資料**：`src/game/engine/shelterBuild.ts` 定義穩定初始8件序列、合法訂單正規化、Fisher-Yates 隨機順序（可注入 RNG 供測試）、下件判定；`GameState.shelterBuildOrder?:ShelterFurnitureId[]` 獨立於既有 `shelterOwned`，初始為所有8件、舊存檔欠缺欄位則安全遷移；選職業仍保留兩個欄位，不影響職業或避難所選擇。
+- **原型 reducer 指令**（只有 `mode==='home'`、首次選基地完成且 shelter 不為 null 時才允許）：`SHELTER_DEMO_SET_ORDER`（重洗次序不清空現有物件）、`SHELTER_DEMO_ADD_NEXT`（按持久化次序取下一個尚未擁有的家具）、`SHELTER_DEMO_TOGGLE`（單件購入或移除）、`SHELTER_DEMO_SET_OWNED`（隨機3/5/0-8、清空、滿配，單 action 原子寫入 order/owned）。所有ID都經白名單正規化；防重複/未知資料；不變更舊幣、角色、飢餓、生命、NPC記憶、世界台北時鐘、關卡進度或物資。
+- **正式首頁的測試 UI**：`src/features/shelter/ShelterBuildDemoPanel.tsx` 在倉庫顯示8件對應按鈕、購入下一件、重洗路線、自動播放/停止、隨機3/5、隨機0–8、全配/清空與百分比進度。自動播放每850ms只追加一件，React effect timeout 能在切頁/停止/全滿時取消，不會多買第9件；小尺寸與 `prefers-reduced-motion` 無快速閃爍。購買圖片在進入時淡入，最後滿8時切高畫質原 JPG（`src/styles/_v0839-shelter-build.scss`）。
+- **公寓／防空室也能測試倉庫**：使用者可能先選公寓；主畫面另外設有「預覽倉庫家具建設」按鈕，可臨時預覽倉庫和面板，**不會改掉原先選擇的避難所**，回到自己的公寓/防空室仍是獨立美術占位。這批的 `shelterOwned` 僅是共用的倉庫 demo 擁有清單；公寓/防空室正式家具經濟、各自的存檔架構應在未來美術提供後另行規劃。
+- **開發安全**：工具 UI **可在部署的 GitHub Pages 顯示**（刻意不受 `import.meta.env.DEV` 限制，方便使用者用真實網址測試），每處有 `data-prototype-only` 與「開發測試」標示；**正式版必須移除／改為受控開發模式**，否則免費購入會破壞平衡。本批尚無正式家具購買價格、解鎖需求、任務條件、修理功能。
+- **驗收測試**：新增 `tests/v0839-shelter-build-simulator.test.ts` 以純 reducer 驗隨機順序、所有1–8流程、單件切換、完整圖切換、舊存檔/職業保留、據點不被動到、無任何經濟/戰鬥副作用、路由保護及 CSS 動效；其他版本固定 package 和最後樣式匯入斷言更新至0.8.39。手動驗收見 `docs/V0839_SHELTER_BUILD_SIM_QA.md`。
+- **只做到這裡**：v0.8.40 才新增家具可點擊熱區和柔和指引，v0.8.41才全域手機與整合。未改 HUD、地圖解鎖、三基地先天數值、劇情及家具建造經濟，**每批 PR 使用者自行 Merge**。
+
+---
+
+
 > **第3批 PR 去重校正（2026-11-15）**：v0.8.38 因先前逾時重試而產生兩個競爭的 PR #64 與 #65，應只保留並 Merge **#65**，重複 #64 關閉且未合併，不可同時合併。已修正 #65 的料理台原始透明 PNG 畫布尺寸為 **914×1225**（原先誤用896×1200），同步新增 PNG IHDR 尺寸及圖層 width/height百分比測試。所有使用者校正 JSON 座標維持原值。未來接續 v0.8.39 只以 Merge 後 main + 此交接內容為準。
 
 

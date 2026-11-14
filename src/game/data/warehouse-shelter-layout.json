@@ -1,0 +1,117 @@
+{
+  "schema": "ember-shelter-layout-v3",
+  "stage": {
+    "width": 768,
+    "height": 1376
+  },
+  "shelter": "warehouse",
+  "owned": [
+    "bed",
+    "storage",
+    "workbench",
+    "radio",
+    "board",
+    "generator",
+    "cooking",
+    "computer"
+  ],
+  "purchaseOrder": [
+    "radio",
+    "bed",
+    "board",
+    "computer",
+    "storage",
+    "workbench",
+    "cooking",
+    "generator"
+  ],
+  "selected": "radio",
+  "assets": {
+    "bed": {
+      "x": -23,
+      "y": 695,
+      "scale": 0.205,
+      "z": 20,
+      "rotation": 0,
+      "opacity": 1,
+      "src": "assets/bed.png",
+      "slot": "左側休息區"
+    },
+    "storage": {
+      "x": 135,
+      "y": 547,
+      "scale": 0.274,
+      "z": 10,
+      "rotation": 0,
+      "opacity": 1,
+      "src": "assets/storage.png",
+      "slot": "左後牆"
+    },
+    "workbench": {
+      "x": 327,
+      "y": 631,
+      "scale": 0.23,
+      "z": 30,
+      "rotation": 0,
+      "opacity": 1,
+      "src": "assets/workbench.png",
+      "slot": "中央工作區"
+    },
+    "radio": {
+      "x": 0,
+      "y": 543,
+      "scale": 0.655,
+      "z": 40,
+      "rotation": 0,
+      "opacity": 1,
+      "src": "assets/radio.png",
+      "slot": "中央台面"
+    },
+    "board": {
+      "x": 576,
+      "y": 572,
+      "scale": 0.22,
+      "z": 15,
+      "rotation": 0,
+      "opacity": 1,
+      "src": "assets/board.png",
+      "slot": "右後牆"
+    },
+    "generator": {
+      "x": 504,
+      "y": 738,
+      "scale": 0.155,
+      "z": 50,
+      "rotation": 0,
+      "opacity": 1,
+      "src": "assets/generator.png",
+      "slot": "中央前景"
+    },
+    "cooking": {
+      "x": -52,
+      "y": 789,
+      "scale": 0.4,
+      "z": 60,
+      "rotation": 0,
+      "opacity": 1,
+      "src": "assets/cooking.png",
+      "slot": "左前生活區"
+    },
+    "computer": {
+      "x": 442,
+      "y": 736,
+      "scale": 0.425,
+      "z": 70,
+      "rotation": 0,
+      "opacity": 1,
+      "src": "assets/computer.png",
+      "slot": "右前情報區"
+    }
+  },
+  "reference": {
+    "enabled": false,
+    "opacity": 0.44,
+    "grid": true,
+    "boardWhiteKeyPreview": true
+  }
+}

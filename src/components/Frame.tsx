@@ -9,6 +9,7 @@ import type { SoundscapeId } from '../audio/soundscapes';
 export default function Frame({children}:{children:ReactNode}){
   const location=useLocation(),{state,pauseClock}=useGame();
   const inMission=state.mode!=='home';
+  const inOnboarding=state.onboarding.phase!=='complete';
   const onMap=location.pathname==='/';
   const returnInsidePage=['/black-market','/cards','/preparation'].includes(location.pathname);
   useEffect(()=>{
@@ -40,11 +41,11 @@ export default function Frame({children}:{children:ReactNode}){
      }}><div className="desktop-world__accent desktop-world__accent--left"/><div className="desktop-world__accent desktop-world__accent--right"/>
     <div className={`game-frame ${inMission?'game-frame--mission':''} ${state.enemyCounter?.phase==='hit'&&state.enemyCounter.hit?'game-frame--damaged':''}`}>
       <main key={location.pathname} className={`app-main ${inMission?'app-main--mission':''}`} id="main">{children}</main>
-      {!inMission&&!onMap&&!returnInsidePage&&<nav className="return-main-dock" aria-label="主畫面及系統操作">
+      {!inMission&&!inOnboarding&&!onMap&&!returnInsidePage&&<nav className="return-main-dock" aria-label="主畫面及系統操作">
        <GameUtilities className="game-utilities--dock"/>
        <ReturnMainLink/>
       </nav>}
-      {!inMission&&import.meta.env.DEV&&<div className="dev-shortcut"><NavLink to="/dev">DEV · 測試工具</NavLink></div>}
+      {!inMission&&!inOnboarding&&import.meta.env.DEV&&<div className="dev-shortcut"><NavLink to="/dev">DEV · 測試工具</NavLink></div>}
       <GameFeedback/>
     </div>
   </div>;

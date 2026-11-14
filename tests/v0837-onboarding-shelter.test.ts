@@ -67,7 +67,8 @@ describe('v0.8.37 first-launch story, forced-defeat placeholder and chosen shelt
  it('offers only the three distinct shelters and persists the same choice, never overwriting it',()=>{
   const choices:ShelterId[]=['warehouse','apartment','bunker'];
   expect(SHELTER_OPTIONS.map(x=>x.id)).toEqual(choices);
-  expect(SHELTER_OPTIONS.every(x=>x.art.includes('待製作')||x.art.includes('v0.8.38'))).toBe(true);
+  expect(SHELTER_OPTIONS.find(x=>x.id==='warehouse')?.art).toContain('已備妥');
+  expect(SHELTER_OPTIONS.filter(x=>x.id!=='warehouse').every(x=>x.art.includes('尚待製作'))).toBe(true);
   expect(choices.every(isShelterId)).toBe(true);
   expect(isShelterId('clinic')).toBe(false);
   for(const id of choices){
@@ -169,8 +170,8 @@ describe('v0.8.37 first-launch story, forced-defeat placeholder and chosen shelt
   expect(css).toContain('max-width:390px');
   expect(css).toContain('max-height:560px');
   expect(css).toContain('prefers-reduced-motion:reduce');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0837-onboarding";$/);
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.37');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.37');
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0838-shelter-hub";$/);
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.38');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.38');
  });
 });

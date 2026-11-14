@@ -1,5 +1,20 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-15｜第五輪第3批 v0.8.38：真實倉庫資產、首頁避難所、舊地圖獨立保留（本 PR 待使用者 Merge）
+
+- **開工核對**：PR #63／v0.8.37 已由使用者 Merge，最新 main `6c0cb6c0b60bee2b9d371540a45ef265dce1030c`，open PR 0；分支 `feat/v0.8.38-shelter-home-artwork`。package/lock 升 v0.8.38。獨立 PR，絕不自行 Merge。
+- **10 張精確素材完整入庫**：`public/assets/shelter/warehouse/background_empty.jpg`、`background_full.jpg` 與八件原始家具 `bed,storage,workbench,radio,board,generator,cooking,computer.png`。本輪使用者最後提交的更新 PNG（含陰影和調查板去背），**未重新去背、裁切或重新壓縮**。使用 GitHub `create_blob` base64 導入，與容器原始檔的 Git blob SHA-1 完全相同。注意板子素材原檔名 `medical(1).png`，應為 `board.png`（不是醫療床）。
+- **唯一座標資料**：`src/game/data/shelter/warehouse-layout.json` 是使用者上傳的 `warehouse-shelter-layout-v3.json` 原內容，不可重新推測。畫布 `768×1376`，床 x=-23、料理 x=-52，其餘 x/y/scale/z/rotation/opacity 與 src 原圖透明邊界均保留，**不能 clamp 負座標**。layout.JSON 裡的 `owned` 是設計師 Demo 全開參考，絕對不可當真實初始擁有紀錄。
+- **遊戲存檔**：新增可選 `GameState.shelterOwned?:ShelterFurnitureId[]`，初始為 `[]`；`loadGame` 將舊存檔欠缺欄位安全遷移為 `[]`，去除重複和非法 ID；`SELECT_PROFESSION` 保留已擁有家具與先前選定的避難所；不動其他經濟/戰鬥/每日/時鐘資料。
+- **渲染三態**：`src/game/engine/shelterVisuals.ts` 掌管純函式及校正定位；`ShelterScene.tsx` 0件 = 原高品質空倉庫 JPEG、1–7件 = 同張空景 + Z 排序、按 768×1376 %轉換原位置與尺寸的 PNG、八件獨立全數購入 = **直接切換高品質滿配置 JPEG**，不再重複疊 PNG。玩家購買順序不同但擁有集合相同時應畫面相同。
+- **三基地首頁**：`src/features/shelter/ShelterHomePage.tsx` + `src/features/chapter/HomePage.tsx` 改成玩家選定基地的主場景；廢棄公寓／地下防空室尚無素材，必須是中性文字＋圖像預留，不可借倉庫圖。選完基地後仍可選原型職業，選完不再跳到世界地圖，仍留在基地。原 `ChapterMapPage` 移至 `#/world-map` 測試路由，DEV 有入口（正式版不新增地圖強制解鎖規則），`/preparation`/ `/chapter` 等現有任務流程照舊。
+- **不可超範圍**：v0.8.39 才實作逐件購買／模擬隨機／動畫和本機存檔互動；v0.8.40 才有家具高亮／點擊熱區；v0.8.41 才全面跨裝置 QA。本批不新增正式經濟消耗、不修改 HUD、不把世界地圖預先綁到工作台／地圖桌。
+- **驗證交接**：新增 `tests/v0838-shelter-home-assets.test.ts` 驗 SHA256、原始 JSON 坐標、全八與部分圖層、與順序無關、初始空屋／舊存檔／職業切換、三基地主畫面及舊路由。更新舊測試中的歷史首頁和版本斷言；另見 `docs/V0838_SHELTER_HOME_QA.md`、`docs/SHELTER_REBUILD_ROADMAP.md`。GitHub Actions CI 全綠才可交給使用者，不能當作真實手機人工驗收。
+- **下一批 v0.8.39**：正式加入 prototype-only 家具一鍵購入、隨機購入、逐件淡入、全部清空/滿配、可跨重開存檔；使用者 Merge 本批後才開始，不能自行前進。
+
+---
+
+
 ## 2026-11-15｜第五輪第2批 v0.8.37：首次故事、必敗教學占位、三種避難所選擇（本 PR 待使用者 Merge）
 
 - **開工核對**：PR #62 v0.8.36 已由使用者 Merge，main `880c286be5a90f87be09d202e74d4e0056359bc4`，開工 open PR 0，唯一分支 `feat/v0.8.37-onboarding-shelter-choice`；package/lock 0.8.37；**本批不自行 Merge**。

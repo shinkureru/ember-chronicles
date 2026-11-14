@@ -137,7 +137,7 @@ describe('v0.8.40 — real-alpha selectable furniture and non-destructive hint f
   expect(style).toContain('shelter-aura-breathe 2.8s');
   expect(style).toContain('prefers-reduced-motion:reduce');
   expect(style).toContain('max-width:360px');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0841-shelter-integration";$/);
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0841-shelter-scroll-hotfix";$/);
  });
  it('provides a cancellable three-kind notification demo only for actually installed furniture',()=>{
   const ui=read('src/features/shelter/ShelterAttentionPanel.tsx');

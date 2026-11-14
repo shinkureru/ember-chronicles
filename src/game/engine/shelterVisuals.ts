@@ -12,7 +12,7 @@ export const WAREHOUSE_ASSET_DIMENSIONS:Record<ShelterFurnitureId,{width:number;
  bed:{width:1200,height:896},storage:{width:1200,height:896},
  workbench:{width:1200,height:896},radio:{width:896,height:1200},
  board:{width:896,height:1200},generator:{width:1200,height:896},
- cooking:{width:896,height:1200},computer:{width:768,height:1376},
+ cooking:{width:914,height:1225},computer:{width:768,height:1376},
 };
 export const isShelterFurnitureId=(value:unknown):value is ShelterFurnitureId=>
  typeof value==='string'&&(SHELTER_FURNITURE_IDS as readonly string[]).includes(value);

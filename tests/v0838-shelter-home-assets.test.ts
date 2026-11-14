@@ -48,6 +48,14 @@ describe('v0.8.38: exact designer assets, shelter home and saved furniture owner
    expect([lay.x,lay.y,lay.scale,lay.z]).toEqual(values);
    expect([lay.rotation,lay.opacity]).toEqual([0,1]);
   }
+  // The user's updated cooking PNG is 914×1225, not the former 896×1200 editor canvas.
+  // A wrong canvas dimension visibly shifts its calibrated 768×1376 placement.
+  const cookingAsset=file('public/assets/shelter/warehouse/cooking.png');
+  expect([cookingAsset.readUInt32BE(16),cookingAsset.readUInt32BE(20)]).toEqual([914,1225]);
+  const cookingLayer=getWarehouseFurnitureLayers(['cooking'])[0];
+  expect([cookingLayer.width,cookingLayer.height]).toEqual([914,1225]);
+  expect(cookingLayer.widthPct).toBeCloseTo(914*.4/768*100);
+  expect(cookingLayer.heightPct).toBeCloseTo(1225*.4/1376*100);
   const bed=getWarehouseFurnitureLayers(['bed'])[0];
   const cooking=getWarehouseFurnitureLayers(['cooking'])[0];
   expect(bed.leftPct).toBeCloseTo(-23/768*100);

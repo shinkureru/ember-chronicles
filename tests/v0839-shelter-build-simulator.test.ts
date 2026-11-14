@@ -205,8 +205,8 @@ describe('v0.8.39 — prototype furniture purchase, animations and persistence',
   expect(styles).toContain('shelter-furniture-reveal');
   expect(styles).toContain('prefers-reduced-motion:reduce');
   expect(styles).toContain('max-width:360px');
-  expect(source('src/styles/main.scss').trimEnd()).toMatch(/@import "v0839-shelter-build";$/);
-  expect(JSON.parse(source('package.json')).version).toBe('0.8.39');
-  expect(JSON.parse(source('package-lock.json')).packages[''].version).toBe('0.8.39');
+  expect(source('src/styles/main.scss').trimEnd()).toMatch(/@import "v0840-shelter-interactions";$/);
+  expect(JSON.parse(source('package.json')).version).toBe('0.8.40');
+  expect(JSON.parse(source('package-lock.json')).packages[''].version).toBe('0.8.40');
  });
 });

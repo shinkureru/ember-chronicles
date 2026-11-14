@@ -1,5 +1,20 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-15｜第五輪第2批 v0.8.37：首次故事、必敗教學占位、三種避難所選擇（本 PR 待使用者 Merge）
+
+- **開工核對**：PR #62 v0.8.36 已由使用者 Merge，main `880c286be5a90f87be09d202e74d4e0056359bc4`，開工 open PR 0，唯一分支 `feat/v0.8.37-onboarding-shelter-choice`；package/lock 0.8.37；**本批不自行 Merge**。
+- **唯一首次流程存檔**：`GameState.onboarding:{phase:'story'|'tutorial'|'shelter'|'complete',storyPage,tutorialStep,shelter}`；新的 `makeInitialState()` 從 `story` 啟動，`makeInitialState('journalist'|'courier'|'infiltrator')` 仍可直接建立已完成職業的測試狀態。`src/game/engine/onboarding.ts` 為 3 篇故事占位、3 段教學占位、3 基地唯一資料來源；只在實際按下按鈕時變更純 reducer。台北時間照舊實時，不透過教學推進時鐘。
+- **故事/跳過**：`src/features/onboarding/OnboardingPage.tsx` 上方右側「跳過 →」只將 `story` 切到 `tutorial`，不能繞過強制教學。故事插畫均為明確 `圖像預留`，沒有冒用尚未提供的新素材。支援翻頁、進度、可讀性與手機窄版。
+- **不可跳過的教學占位/固定必敗**：先呈現觀察、行動、固定戰敗 3 段示範（沒有真正的戰鬥引擎）；只有最後一段確認劇情戰敗才能進入 `shelter`。絕不改玩家真實生命、飢餓、金錢、NPC 記憶、XP、`attempt` 或 `outcome`，也不呼叫 `resolveOutcome`。
+- **三選一**：`warehouse` 廢棄倉庫、`apartment` 廢棄公寓、`bunker` 地下防空室；3個選項分開顯示中性圖像占位與文字。選擇後進入 `complete`，保存在既有單一 localStorage key；下一次啟動只看第1批全屏封面，不重播序章/教學/避難所選擇。選職業的舊 `SELECT_PROFESSION` 更新為保留已選避難所與完成進度。
+- **舊存檔遷移**：`storage.ts` 若舊 v0.8.36 存檔缺少 `onboarding`，直接進入一次 `shelter` 選擇（**不要求重看序章、重打必敗**），保留原生命、職業、關卡進度、角色成長、物資、金錢、NPC記憶與當前任務；選完後不重選。若舊玩家正在 mission，選完保留原 mission guard 與章節頁入口。
+- **本批停點**：避難所選完後暫時仍顯示原職業選擇/路線圖，新增畫面提示說明「v0.8.38 才改成避難所首頁」；本批**未**將 8張PNG、空屋/滿配圖入 repo，也**未**更改真實章節引擎、HUD、職業數量、地圖解鎖條件或遊戲經濟。
+- **回歸**：`tests/v0837-onboarding-shelter.test.ts` 驗證 skip 不跳教程、強制必敗不扣真實角色資源、三選一持續儲存、歷史成就/經濟/任務保留、職業選擇不清除 shelter、路由防繞過與 RWD；舊固定版號/CSS尾端斷言只依新版本更新。新 `docs/V0837_ONBOARDING_QA.md`；持續更新 `docs/SHELTER_REBUILD_ROADMAP.md`、`docs/PROJECT_HANDOFF.md`。GitHub Actions `npm run build`、`npm test` 須完成。
+- **下一批 v0.8.38**：開始真正主畫面避難所與 PNG 圖層，使用者 JSON 768×1376 為唯一座標基準；0件空場景／1–7透明分層／8件滿配高品質，公寓/防空室顯示圖像占位；舊關卡地圖留可獨立測試入口，是否與工作台/地圖桌掛鉤尚未決定。**使用者 Merge 後才能動工**。
+
+---
+
+
 ## 2026-11-14｜第五輪第1批 v0.8.36：避難所改版開工、全畫面啟動、原型刪檔重啟（本 PR 待使用者 Merge）
 
 - **GitHub 真實基準**：PR #61 v0.8.35 確已 Merge，main `ee8b71d9d4c54b79f7987f23b613cb7a9fe6f5bc`，開工時 open PR 0。唯一分支 `feat/v0.8.36-shelter-boot-restart-roadmap`，package/lock 0.8.36，**只做第1批，不自行 Merge**。此前文檔的「PR 待 merge」只描述歷史當下。

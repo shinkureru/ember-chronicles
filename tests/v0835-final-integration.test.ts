@@ -157,14 +157,14 @@ describe('v0.8.35 final integration: real time, hunger, equipment, market and UI
   expect(ctx).toContain("type:'WORLD_CLOCK_SYNC'");
   expect(ctx).not.toContain('WORLD_CLOCK_TICK');
   expect(resolver).not.toContain('advanceTime(');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.36');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.36');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.37');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.37');
  });
  it('keeps warnings visible, mobile cost lines untruncated, scrollable short modals and reduced motion',()=>{
   const css=read('src/styles/_v0835-final-integrated.scss');
   for(const breakpoint of ['320px','360px','390px','720px','520px'])expect(css).toContain(breakpoint);
   for(const marker of ['overflow-wrap:anywhere','max-width:calc(100vw','prefers-reduced-motion:reduce','overscroll-behavior-y:contain','min-height:0'])expect(css).toContain(marker);
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0836-boot-splash";$/);
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0837-onboarding";$/);
   expect(read('src/features/town/ClinicDialog.tsx')).toContain('hunger.appliedDelta');
   expect(read('src/features/town/TownFacilityDialog.tsx')).toContain('hunger.appliedDelta');
   expect(read('src/features/chapter/ActionCard.tsx')).toContain('preview.appliedHungerCost');

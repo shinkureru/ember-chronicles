@@ -164,7 +164,7 @@ describe('v0.8.35 final integration: real time, hunger, equipment, market and UI
   const css=read('src/styles/_v0835-final-integrated.scss');
   for(const breakpoint of ['320px','360px','390px','720px','520px'])expect(css).toContain(breakpoint);
   for(const marker of ['overflow-wrap:anywhere','max-width:calc(100vw','prefers-reduced-motion:reduce','overscroll-behavior-y:contain','min-height:0'])expect(css).toContain(marker);
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0841-shelter-integration";$/);
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0841-shelter-scroll-hotfix";$/);
   expect(read('src/features/town/ClinicDialog.tsx')).toContain('hunger.appliedDelta');
   expect(read('src/features/town/TownFacilityDialog.tsx')).toContain('hunger.appliedDelta');
   expect(read('src/features/chapter/ActionCard.tsx')).toContain('preview.appliedHungerCost');

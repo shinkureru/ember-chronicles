@@ -1,5 +1,20 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-15｜第五輪第5批 v0.8.40：家具 Alpha 點選、柔和圖形高亮、設施資訊與通知測試（本 PR 待使用者 Merge）
+
+- **最新基準**：第4批 PR #66 已由使用者合併，main `d9bf6dbfaf1e504eac5e6e9b28d859d5a08afdce`，開工 open PR 0。第5批唯一分支 `feat/v0.8.40-shelter-furniture-interactions`，package/lock 0.8.40；**只開一個 PR，不自行 Merge，不能提前開始 v0.8.41**。
+- **沒有改圖和坐標**：原倉庫空/滿 2 JPG、八張帶設計師原有透明與陰影 PNG 完全不動；`src/game/data/shelter/warehouse-layout.json` 仍768×1376，保留 bed x=-23、cooking x=-52 以及 Z、rotation、scale、opacity。0件仍空 JPEG、1–7件原 PNG 圖層、8/8仍整張高畫質滿 JPEG。不得因 alpha hit test 而覆寫圖片或位置。
+- **真實 Alpha 點擊引擎**：`src/game/engine/shelterInteractions.ts` 負責 `clientToStagePoint`、旋轉矩陣反運算 `stagePointToFurniturePixel` 與依Z反序 `pickWarehouseFurniture`，把響應式 DOM 點擊換算回 768×1376，當點在透明像素（包含 PNG 的大量留白）時不誤判成家具。新 `src/features/shelter/shelterAlphaHit.ts` 在瀏覽器端載入同源透明 PNG，以 384px 寬縮圖 canvas `getImageData` 取得 Alpha≥96 遮罩，節省點擊時反覆取色或大圖記憶體；讀圖失敗則仍可用鍵盤/觸控標記與資訊面板，不作大矩形 fallback。最上層重疊物件優先選取；滿配純 JPEG 仍用8件 PNG 的 Alpha 遮罩決定可點範圍。這是**實際畫面有效區**，不是 Sprite 變形。
+- **通用互動點／無障礙**：`ShelterScene.tsx` 對已購入家具提供可聚焦 `<button>` 介面標記，標記靠 PNG 真實 alpha 加權中心，支援鼠標／觸控／Tab+Enter，未購入家具永遠沒有可點標記。單擊場景有效 PNG Alpha 也可以開啟設施。當 Alpha 圖未讀取完成可先直接點標記；全滿JPEG之上依然有標記。絕不藉此改玩家錢、NPC、任務、時鐘及家具資料。
+- **設施內容預留**：`ShelterFacilityPanel.tsx` 只顯示已購入設施的名稱、用途、未來功能及尚未實作事項。共8件有統一 `SHELTER_FACILITIES`，包括電腦敵情資料庫／加密通訊／隱藏支線、工作台裝備修理製作、調查板線索關聯等，**沒有真正提供新功能或增加成功率**。移除家具後詳情自動不再顯示。
+- **輕柔提示與可取消佇列**：`SHELTER_ATTENTION_LABELS`、`enqueueShelterAttention`、`dismissShelterAttention`、`availableShelterAttention` 提供三類基礎：教學/重要支線/設施可用。開發演示分別指向已購入調查板／電腦／工作台；重複通知不重複入列；用戶可忽略或查看設施，下一則排隊顯示；移除家具時自動清掉相關提示。UI 使用 PNG 原 Alpha 形狀（CSS `maskImage`/`WebkitMaskImage`）的淡色輪廓與小提示點，約3秒低頻呼吸，`prefers-reduced-motion` 不做動畫。專用提醒**不永久儲存**；重開後重要事件需由未來正式規則重新判斷，不能當成持久任務狀態。
+- **公寓／防空室**：仍可先透過上批「預覽倉庫家具建設」查看上述互動，退出預覽不改原選擇避難所。無素材時仍保留各自占位，不能用倉庫冒充公寓/防空室。
+- **嚴格停點**：本批**不做**正式隱藏支線、電腦弱點機率提升、工作台解鎖世界地圖、真正材料扣款/資源生產、HUD 改版；何時亮邊/觸發提示尚待使用者討論，現階段只手動觸發 UI 測試。第6批 `v0.8.41` 整合回歸和手機真實裝置 QA。
+- **測試/交接**：`tests/v0840-shelter-interactions.test.ts` 驗證觸控縮放換算、旋轉反算、負座標、透明像素、最上層家具、384px Alpha 閾值、原滿配 JPG 可點標記、8/8設施資訊、3種可取消/去重提示、減少動畫、package/lock 與末端 CSS。舊測試版本文字斷言只更新固定版本/匯入，繼續要求原10圖 checksum。手動檢查見 `docs/V0840_SHELTER_INTERACTIONS_QA.md`。**PR CI 全綠才可交付，CI 不代表真實手機人工驗收**。
+
+---
+
+
 ## 2026-11-15｜第五輪第4批 v0.8.39：家具購入模擬、重洗路線、逐件建設動畫、存檔（本 PR 待使用者 Merge）
 
 - **開工核對**：第三批 PR #65 已由使用者 Merge，main `b9ad1d4f0dc4dd6eaf2694e2fb421c96d1a95677`，open PR 0；競爭 #64 已關閉且沒有 Merge。唯一開發分支 `feat/v0.8.39-shelter-build-simulator`，package/lock 0.8.39，**本批不自行 Merge**。

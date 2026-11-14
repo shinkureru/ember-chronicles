@@ -20,7 +20,8 @@ import { getVendorStockKey, marketSellPrice, vendorById } from '../data/marketVe
 import type { GameState, Outcome, ProfessionId, ShelterId, LootDrop } from '../types';
 import {getTaipeiClock} from './taipeiClock';
 import {isShelterId,INTRO_STORY_PAGES,TUTORIAL_PLACEHOLDER_STEPS} from './onboarding';
-import {normalizeShelterOwned} from './shelterVisuals';
+import {isShelterFurnitureId,normalizeShelterOwned,SHELTER_FURNITURE_IDS} from './shelterVisuals';
+import {normalizeShelterBuildOrder,nextShelterBuildItem} from './shelterBuild';
 import {applyHungerCost,HUNGER_CLINIC_PURCHASE_COST,HUNGER_DEFEAT_COST,HUNGER_FIELD_GEAR_COST,HUNGER_QUEST_HANDIN_COST} from './hungerCosts';
 
 export type GameAction =
@@ -30,6 +31,11 @@ export type GameAction =
   | {type:'ONBOARDING_TUTORIAL_NEXT'}
   | {type:'ONBOARDING_TUTORIAL_DEFEAT'}
   | {type:'ONBOARDING_SELECT_SHELTER';shelterId:ShelterId}
+  /** Temporary furniture testing commands; all are free and allowed only at the warehouse home. */
+  | {type:'SHELTER_DEMO_SET_ORDER';order:readonly string[]}
+  | {type:'SHELTER_DEMO_ADD_NEXT'}
+  | {type:'SHELTER_DEMO_TOGGLE';furnitureId:string}
+  | {type:'SHELTER_DEMO_SET_OWNED';owned:readonly string[];order?:readonly string[]}
   | {type:'START_ATTEMPT'}
   | {type:'SELECT_STAGE';stageId:1|2}
   | {type:'WORLD_CLOCK_SYNC';nowMs?:number}
@@ -175,7 +181,36 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
   if(action.type==='SELECT_PROFESSION'){
     // Preserve the one-time chosen shelter when the existing profession screen finishes.
     if(state.mode!=='home'||state.profession!==null||state.onboarding.phase!=='complete')return state;
-    return {...makeInitialState(action.profession),onboarding:state.onboarding,shelterOwned:normalizeShelterOwned(state.shelterOwned)};
+    return {...makeInitialState(action.profession),onboarding:state.onboarding,
+      shelterOwned:normalizeShelterOwned(state.shelterOwned),
+      shelterBuildOrder:normalizeShelterBuildOrder(state.shelterBuildOrder)};
+  }
+  if(action.type==='SHELTER_DEMO_SET_ORDER'||action.type==='SHELTER_DEMO_ADD_NEXT'||
+     action.type==='SHELTER_DEMO_TOGGLE'||action.type==='SHELTER_DEMO_SET_OWNED'){
+    // Never mutate during missions, unfinished onboarding, or other shelter types.
+    if(state.mode!=='home'||state.onboarding.phase!=='complete'||state.onboarding.shelter!=='warehouse')return state;
+    const owned=normalizeShelterOwned(state.shelterOwned);
+    const order=normalizeShelterBuildOrder(state.shelterBuildOrder);
+    if(action.type==='SHELTER_DEMO_SET_ORDER'){
+      const nextOrder=normalizeShelterBuildOrder(action.order);
+      return nextOrder.every((id,i)=>id===order[i])?state:{...state,shelterBuildOrder:nextOrder};
+    }
+    if(action.type==='SHELTER_DEMO_ADD_NEXT'){
+      const id=nextShelterBuildItem(owned,order);
+      return id?{...state,shelterOwned:normalizeShelterOwned([...owned,id]),shelterBuildOrder:order}:state;
+    }
+    if(action.type==='SHELTER_DEMO_TOGGLE'){
+      if(!isShelterFurnitureId(action.furnitureId))return state;
+      const next=owned.includes(action.furnitureId)
+       ?owned.filter(id=>id!==action.furnitureId)
+       :normalizeShelterOwned([...owned,action.furnitureId]);
+      return {...state,shelterOwned:next,shelterBuildOrder:order};
+    }
+    const nextOwned=normalizeShelterOwned(action.owned);
+    const nextOrder=action.order===undefined?order:normalizeShelterBuildOrder(action.order);
+    if(nextOwned.length===owned.length&&nextOwned.every((id,i)=>id===owned[i])&&
+       nextOrder.every((id,i)=>id===order[i]))return state;
+    return {...state,shelterOwned:nextOwned,shelterBuildOrder:nextOrder};
   }
   if(action.type==='ONBOARDING_STORY_NEXT'){
     if(state.onboarding.phase!=='story')return state;

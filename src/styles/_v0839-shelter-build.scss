@@ -1,0 +1,42 @@
+/* v0.8.39: furniture prototype testing. Deliberately distinct from permanent HUD and economy. */
+.shelter-build-demo{display:flex;flex-direction:column;gap:11px;border-color:#7764517a!important;background:linear-gradient(180deg,#28211eae,#10191de8)!important}
+.shelter-build-demo__header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.shelter-build-demo__eyebrow{display:inline-flex;gap:7px;align-items:center;font-size:10px;letter-spacing:.1em;color:#d9ae86;font-weight:600}
+.shelter-build-demo__header strong{font:600 16px/1.4 Inter,'Noto Sans TC',sans-serif;color:#ead4b4;white-space:nowrap}
+.shelter-build-demo__progress{display:block;width:100%;height:6px;border:0;border-radius:999px;appearance:none;background:#374047;overflow:hidden}
+.shelter-build-demo__progress::-webkit-progress-bar{background:#374047}
+.shelter-build-demo__progress::-webkit-progress-value{background:linear-gradient(90deg,#98665c,#d5aa77);border-radius:999px}
+.shelter-build-demo__progress::-moz-progress-bar{background:linear-gradient(90deg,#98665c,#d5aa77);border-radius:999px}
+.shelter-build-demo__note,.shelter-build-demo__footer{font-size:11px;line-height:1.7;color:#b4bdba}
+.shelter-build-demo__primary{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:7px}
+.shelter-build-demo__primary button,.shelter-build-demo__quick button{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;min-height:40px;min-width:0;border:1px solid #775c4e;border-radius:8px;background:linear-gradient(180deg,#48362f,#262525);color:#e8ddc9;font-size:11px;font-weight:600;line-height:1.45;cursor:pointer;white-space:normal;overflow-wrap:anywhere}
+.shelter-build-demo__primary button.active{background:#70463d;border-color:#ba816c}
+.shelter-build-demo__primary button:hover:not(:disabled),.shelter-build-demo__quick button:hover:not(:disabled){border-color:#deb192;filter:brightness(1.1)}
+.shelter-build-demo__primary button:disabled,.shelter-build-demo__quick button:disabled{opacity:.45;cursor:not-allowed}
+.shelter-build-demo__quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.shelter-build-demo__quick button{background:linear-gradient(180deg,#2d3237,#1d262b);border-color:#596469;min-height:36px;font-size:10px;padding:7px 5px}
+.shelter-build-demo__section-title{border-top:1px solid #8a75604f;padding-top:12px;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:5px;color:#e0c5a5;font-size:12px;font-weight:650}
+.shelter-build-demo__section-title span{color:#a0afaa;font-size:10px;font-weight:400}
+.shelter-build-demo__furniture-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.shelter-build-demo__furniture-list button{display:flex;align-items:center;gap:7px;min-width:0;padding:10px 8px;border:1px solid #495661;border-radius:8px;background:#182329;color:#d6d8d4;text-align:left;cursor:pointer;transition:border-color .15s ease,background .15s ease}
+.shelter-build-demo__furniture-list button.is-owned{border-color:#9e896776;background:#302e29}
+.shelter-build-demo__furniture-list button:hover,.shelter-build-demo__furniture-list button:focus-visible{border-color:#d1a881}
+.shelter-build-demo__position{display:grid;place-items:center;flex:none;border:1px solid #6a6968;border-radius:50%;width:19px;height:19px;font:600 10px/1 Inter,sans-serif;color:#b6ada2}
+.shelter-build-demo__furniture-name{flex:1;min-width:0;font-size:11px}
+.shelter-build-demo__status{display:inline-flex;gap:2px;align-items:center;color:#b6b6ae;font-size:9px;white-space:nowrap}
+.shelter-build-demo__furniture-list button.is-owned .shelter-build-demo__status{color:#d3b587}
+.shelter-build-demo__footer{margin:0;padding:9px 10px;background:#101b20;border-radius:7px}
+.shelter-build-demo__footer span{display:block;color:#938d83;margin-top:3px}
+.shelter-scene__furniture{animation:shelter-furniture-reveal .55s ease-out both}
+.shelter-scene[data-scene-mode="full"] .shelter-scene__background{animation:shelter-full-scene-reveal .8s ease-out both}
+@keyframes shelter-furniture-reveal{from{opacity:0;filter:brightness(1.2)}to{opacity:1;filter:brightness(1)}}
+@keyframes shelter-full-scene-reveal{from{opacity:0}to{opacity:1}}
+@media(max-width:360px){
+ .shelter-build-demo__furniture-list{grid-template-columns:1fr}
+ .shelter-build-demo__primary{grid-template-columns:1fr}
+ .shelter-build-demo__quick{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(prefers-reduced-motion:reduce){
+ .shelter-scene__furniture,.shelter-scene[data-scene-mode="full"] .shelter-scene__background{animation:none!important}
+ .shelter-build-demo__furniture-list button{transition:none}
+}

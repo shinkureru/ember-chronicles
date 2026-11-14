@@ -13,7 +13,7 @@ export default function ShelterScene({owned}:{owned:readonly ShelterFurnitureId[
  return <div className="shelter-scene" data-shelter-scene="warehouse" data-scene-mode={mode}
   style={{aspectRatio:`${WAREHOUSE_STAGE.width} / ${WAREHOUSE_STAGE.height}`}}
   aria-label={mode==='full'?'已完整建設的廢棄倉庫':mode==='empty'?'空蕩的廢棄倉庫':`已擺放 ${layers.length} 件家具的廢棄倉庫`}>
-   <img className="shelter-scene__background" src={url(mode==='full'?'background_full.jpg':'background_empty.jpg')}
+   <img key={mode==='full'?'completed':'unfinished'} className="shelter-scene__background" src={url(mode==='full'?'background_full.jpg':'background_empty.jpg')}
     alt={mode==='full'?'倉庫完整家具配置場景':'廢棄倉庫空屋場景'} draggable={false}/>
    {layers.map(layer=><img key={layer.id} src={url(layer.file)} className="shelter-scene__furniture"
     data-furniture-id={layer.id} alt="" aria-hidden="true" draggable={false}

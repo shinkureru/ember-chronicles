@@ -7,6 +7,7 @@ import {normalizeShelterOwned,getWarehouseVisualMode,SHELTER_FURNITURE_IDS} from
 import type {ProfessionId,ShelterId} from '../../game/types';
 import GameUtilities from '../../components/GameUtilities';
 import ShelterScene from './ShelterScene';
+import ShelterBuildDemoPanel from './ShelterBuildDemoPanel';
 import {playCue} from '../../audio/sound';
 
 const icons={warehouse:Warehouse,apartment:Building2,bunker:Shield} as const;
@@ -61,13 +62,14 @@ export default function ShelterHomePage(){
     {shelterId==='warehouse'&&<strong>{owned.length} / {SHELTER_FURNITURE_IDS.length}</strong>}
    </div>
   </section>
+  {shelterId==='warehouse'&&<ShelterBuildDemoPanel/>}
   <section className="shelter-home-intro surface-card">
    <span className="eyebrow">SHELTER CONSTRUCTION</span>
    <h2>這裡會慢慢成為你的家。</h2>
    <p>{shelterId==='warehouse'
-    ?'倉庫已接入空屋場景與八件原始透明家具圖層。日後每買進一件家具，就會出現在你校正好的位置。全部八件購入時會自動換成最完整的高品質場景圖。'
+    ?'家具建設測試已啟用：你可以逐件購入、隨機產生配置或自動建設。完成全部八件家具時，場景自動使用高品質滿配置原圖。'
     :'這座避難所的室內主畫面仍在美術製作階段。已保留未來的空屋、家具與互動系統位置。'}</p>
-   <div className="shelter-home-footnote"><Info size={15} aria-hidden="true"/><span>家具購買、逐件加入與隨機配置測試按鈕將在下一批 v0.8.39 開放。本批不會替玩家預先購買家具。</span></div>
+   <div className="shelter-home-footnote"><Info size={15} aria-hidden="true"/><span>目前為開發測試功能，沒有建造成本；v0.8.40 才會新增家具可點擊區域與柔和提示特效。</span></div>
   </section>
   {!state.profession&&<ProfessionSetup/>}
   {import.meta.env.DEV&&state.profession&&<Link className="shelter-map-test-link" to="/world-map">

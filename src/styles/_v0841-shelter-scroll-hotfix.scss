@@ -1,0 +1,53 @@
+/* v0.8.41 scroll hotfix.
+ * _viewport.scss intentionally locks the document and limits normal menus to one screen.
+ * A portrait shelter with 768x1376 art + construction tools must scroll INSIDE app-main.
+ * Do not release the global html/body lock or the mission viewport will regress.
+ */
+.app-main > .shelter-home-page.viewport-page{
+ display:flex;
+ flex-direction:column;
+ height:100%;
+ min-height:0;
+ max-height:100%;
+ overflow-x:hidden!important;
+ overflow-y:auto!important;
+ overscroll-behavior-y:contain;
+ touch-action:pan-y;
+ -webkit-overflow-scrolling:touch;
+ scrollbar-width:thin;
+ scrollbar-color:#836b60 transparent;
+ padding-bottom:max(36px, env(safe-area-inset-bottom));
+}
+/* The previous fixed-viewport flex algorithm shrank the entire hero scene to
+ * approximately zero pixels at 8/8 furniture, leaving only the test controls. */
+.app-main > .shelter-home-page.viewport-page > *{
+ flex-shrink:0;
+ max-width:100%;
+}
+.app-main > .shelter-home-page.viewport-page > .shelter-home-scene-panel{
+ flex:0 0 auto;
+ display:block;
+ width:100%;
+ min-height:0;
+}
+.app-main > .shelter-home-page.viewport-page .shelter-scene{
+ display:block;
+ position:relative;
+ width:100%;
+ height:auto;
+ aspect-ratio:768 / 1376;
+ min-height:0;
+ touch-action:pan-y pinch-zoom;
+}
+.app-main > .shelter-home-page.viewport-page .shelter-scene__background{
+ display:block;
+ width:100%;
+ height:100%;
+}
+/* Scope the exception to the safehouse only. Story, mission, world map and
+ * compact menus must keep their existing scroll behavior and HUD geometry. */
+@media(max-height:520px){
+ .app-main > .shelter-home-page.viewport-page{
+  overflow-y:auto!important;
+ }
+}

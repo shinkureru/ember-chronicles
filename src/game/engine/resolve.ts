@@ -174,7 +174,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
   if(action.type==='SELECT_PROFESSION'){
     // Preserve the one-time chosen shelter when the existing profession screen finishes.
     if(state.mode!=='home'||state.profession!==null||state.onboarding.phase!=='complete')return state;
-    return {...makeInitialState(action.profession),onboarding:state.onboarding};
+    return {...makeInitialState(action.profession),onboarding:state.onboarding,shelterFurniture:state.shelterFurniture};
   }
   if(action.type==='ONBOARDING_STORY_NEXT'){
     if(state.onboarding.phase!=='story')return state;

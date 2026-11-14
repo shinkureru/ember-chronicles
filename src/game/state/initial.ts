@@ -10,7 +10,7 @@ import {makeInitialOnboarding} from '../engine/onboarding';
 export const makeInitialState=(profession:ProfessionId|null=null):GameState=>{
   const deck=profession?STARTER_CARDS[profession]:[];
   return {
-    version:1,hpRulesVersion:2,growthRulesVersion:2,progression:makeInitialProgression(),mode:'home',profession,onboarding:makeInitialOnboarding(profession),
+    version:1,hpRulesVersion:2,growthRulesVersion:2,progression:makeInitialProgression(),mode:'home',profession,onboarding:makeInitialOnboarding(profession),shelterFurniture:[],
     player:{health:10,maxHealth:10,stamina:10,maxStamina:10,courage:55,hunger:20,fatigue:12,temperature:36.5,resource:6,maxResource:6,attributes:{...INITIAL_ATTRIBUTES}},
     world:{...getTaipeiClock(),clockBasis:'taipei-realtime',weather:'clear'},
     town:{visits:{},lastTrainingDay:0,lastRumorDay:0,lastCanteenTalkDay:0,socialPoiseUntil:0,upgrades:{},wear:{},armorHits:{},perfectRepairs:{},quests:{}},

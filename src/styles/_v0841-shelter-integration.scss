@@ -1,0 +1,69 @@
+/* v0.8.41 final shelter integration: 320-1280px and compact-height safeguards.
+ * Do not alter artist PNG/JPG, stage coordinates or permanent HUD decisions.
+ */
+.shelter-scene-access-tip{color:#aeb9b5;font-size:11px;line-height:1.75;
+ margin:0;padding:1px 3px;overflow-wrap:anywhere}
+.shelter-facility-index{display:flex;flex-direction:column;gap:10px;min-width:0;
+ background:linear-gradient(180deg,#1d292c,#131c20)!important}
+.shelter-facility-index__header{display:flex;align-items:baseline;
+ justify-content:space-between;flex-wrap:wrap;gap:5px}
+.shelter-facility-index__header>span{font-size:12px;font-weight:650;color:#e3d4bc}
+.shelter-facility-index__header>small{font-size:10px;color:#9ca9a7}
+.shelter-facility-index__list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.shelter-facility-index__list button{display:flex;align-items:center;justify-content:center;gap:7px;min-width:0;
+ min-height:44px;padding:10px 9px;border-radius:8px;background:#1e2c30;
+ border:1px solid #64726f70;color:#d3ded8;font:600 12px/1.5 'Noto Sans TC',sans-serif;
+ overflow-wrap:anywhere;text-align:center;touch-action:manipulation;cursor:pointer}
+.shelter-facility-index__list button:hover,.shelter-facility-index__list button:focus-visible,
+.shelter-facility-index__list button.is-selected{background:#43352e;color:#ffe1b6;
+ border-color:#e3b28a;outline-offset:2px}
+.shelter-facility-index__unread{display:inline-block;flex:none;width:7px;height:7px;border-radius:50%;
+ background:#e7ba8b;box-shadow:0 0 7px #e7ba8b7a}
+.shelter-home-page .shelter-home-scene-panel,.shelter-home-page .shelter-scene{min-width:0}
+.shelter-home-page .shelter-scene__marker{touch-action:manipulation}
+.shelter-home-page .shelter-home-heading{min-width:0;flex-wrap:wrap}
+.shelter-home-page .shelter-home-heading>div:first-child{overflow-wrap:anywhere}
+.shelter-build-demo .shelter-build-demo__primary button,
+.shelter-build-demo .shelter-build-demo__quick button,
+.shelter-build-demo .shelter-build-demo__furniture-list button,
+.shelter-attention-demo .shelter-attention-demo__actions button,
+.shelter-attention-demo .shelter-attention-demo__current-actions button{min-height:44px;touch-action:manipulation}
+.shelter-home-page .shelter-build-demo,.shelter-home-page .shelter-facility-panel,
+.shelter-home-page .shelter-attention-demo{min-width:0;max-width:100%;overflow-wrap:anywhere}
+@media(max-width:390px){
+ .shelter-home-page{gap:10px}
+ .shelter-home-heading h1{font-size:clamp(20px,6vw,24px)}
+ .shelter-facility-index__list{gap:6px}
+ .shelter-facility-index__list button{font-size:11px;padding:8px 6px}
+ .shelter-build-demo__primary{grid-template-columns:1fr}
+ .shelter-build-demo__quick{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .shelter-attention-demo__actions{grid-template-columns:1fr}
+ .shelter-attention-demo__actions button{justify-content:center}
+ .shelter-attention-demo__current-actions button{flex:1}
+ .shelter-home-scene-caption{flex-wrap:wrap}
+ .shelter-placeholder{min-height:0}
+}
+@media(max-width:320px){
+ .shelter-facility-index__list{grid-template-columns:1fr}
+ .shelter-home-heading .game-utilities{width:100%;justify-content:flex-start}
+ .shelter-build-demo__furniture-list{grid-template-columns:1fr}
+ .shelter-scene__marker{width:32px;height:32px}
+}
+@media(min-width:720px){
+ .shelter-facility-index__list{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-height:520px){
+ .shelter-home-page{overflow:visible}
+ .shelter-facility-index,.shelter-attention-demo,.shelter-build-demo{overflow:visible}
+ .shelter-placeholder{min-height:250px}
+ .onboarding-page{min-height:0;padding-bottom:12px}
+ .onboarding-scene{min-height:150px}
+ .onboarding-story-text{min-height:0}
+}
+@media(prefers-reduced-motion:reduce){
+ .shelter-scene__aura,.shelter-scene__marker--attention,
+ .shelter-scene__furniture,.shelter-scene[data-scene-mode="full"] .shelter-scene__background{
+  animation:none!important;transition:none!important
+ }
+ .shelter-build-demo .shelter-build-demo__furniture-list button{transition:none!important}
+}

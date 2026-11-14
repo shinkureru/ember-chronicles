@@ -55,6 +55,10 @@ export default function ShelterScene({owned,selectedId=null,attentionId=null,onS
  };
  const onMove=(event:ReactPointerEvent<HTMLDivElement>)=>{
   if(!interactive||event.pointerType!=='mouse')return;
+  // When the pointer is over an explicit marker, its own interaction wins.
+  // Do not let the parent alpha picker overwrite the marker's hover state.
+  const target=event.target;
+  if(target instanceof Element&&target.closest('[data-furniture-marker]'))return;
   const id=pick(event.clientX,event.clientY);
   setHovered(prev=>prev===id?prev:id);
  };

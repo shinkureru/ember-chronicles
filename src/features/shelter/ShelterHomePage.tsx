@@ -11,7 +11,7 @@ import ShelterScene from './ShelterScene';
 import ShelterBuildDemoPanel from './ShelterBuildDemoPanel';
 import ShelterFacilityPanel from './ShelterFacilityPanel';
 import ShelterAttentionPanel from './ShelterAttentionPanel';
-import {availableShelterAttention,enqueueShelterAttention,dismissShelterAttention,makeDemoShelterAttention,
+import {SHELTER_FACILITIES,availableShelterAttention,enqueueShelterAttention,dismissShelterAttention,makeDemoShelterAttention,
  type ShelterAttention,type ShelterAttentionKind} from '../../game/engine/shelterInteractions';
 import type {ShelterFurnitureId} from '../../game/types';
 import {playCue} from '../../audio/sound';
@@ -60,8 +60,12 @@ export default function ShelterHomePage(){
  const pending=availableShelterAttention(queue,owned);
  const attention=pending[0]??null;
  useEffect(()=>{
+  const installed=new Set(ownedKey.split('|'));
+  // Removing a facility must invalidate both its active panel and temporary notifications.
+  // Otherwise re-buying that furniture could unexpectedly reopen an old panel.
+  setSelectedId(previous=>previous&&!installed.has(previous)?null:previous);
   setQueue(previous=>{
-   const next=previous.filter(alert=>ownedKey.split('|').includes(alert.targetId));
+   const next=previous.filter(alert=>installed.has(alert.targetId));
    return next.length===previous.length?previous:next;
   });
  },[ownedKey]);
@@ -98,6 +102,24 @@ export default function ShelterHomePage(){
     {showWarehouse&&<strong>{owned.length} / {SHELTER_FURNITURE_IDS.length}</strong>}
    </div>
   </section>
+  {showWarehouse&&<p className="shelter-scene-access-tip">點擊家具或圓形標記即可查看資訊。手機也可使用下方的設施清單。</p>}
+  {showWarehouse&&owned.length>0&&<section className="shelter-facility-index surface-card" aria-label="已建設家具操作清單">
+   <header className="shelter-facility-index__header">
+    <span>已建設設施 · 點選開啟</span>
+    <small>滑鼠 / 觸控 / Tab + Enter</small>
+   </header>
+   <div className="shelter-facility-index__list">
+    {SHELTER_FURNITURE_IDS.filter(id=>owned.includes(id)).map(id=>
+     <button type="button" key={id} data-facility-access={id}
+      aria-pressed={activeSelected===id}
+      className={activeSelected===id?'is-selected':''}
+      onClick={()=>onInspect(id)}>
+      {SHELTER_FACILITIES[id].name}
+      {attention?.targetId===id&&<span className="shelter-facility-index__unread" aria-label="有待處理提示" />}
+     </button>
+    )}
+   </div>
+  </section>}
   {showWarehouse&&activeSelected&&<ShelterFacilityPanel id={activeSelected} onClose={()=>setSelectedId(null)}/>}
   {showWarehouse&&<ShelterAttentionPanel owned={owned} queue={queue} onTrigger={onTrigger}
    onInspect={onInspect} onDismiss={id=>setQueue(previous=>dismissShelterAttention(previous,id))}/>}

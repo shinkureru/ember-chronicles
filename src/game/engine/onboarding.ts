@@ -14,7 +14,7 @@ export const TUTORIAL_PLACEHOLDER_STEPS=[
 ] as const;
 
 export const SHELTER_OPTIONS=[
- {id:'warehouse',name:'廢棄倉庫',en:'ABANDONED WAREHOUSE',short:'資源與設備',description:'空間寬敞，適合搜刮物資及設置工作設備。家具場景將在下一批導入。',art:'倉庫背景將於 v0.8.38 導入'},
+ {id:'warehouse',name:'廢棄倉庫',en:'ABANDONED WAREHOUSE',short:'資源與設備',description:'空間寬敞，適合搜刮物資及設置工作設備。已準備完整的倉庫場景。',art:'廢棄倉庫場景已備妥'},
  {id:'apartment',name:'廢棄公寓',en:'ABANDONED APARTMENT',short:'居住與生存',description:'生活機能的起點，適合偏向日常生存與休息的據點規劃。',art:'公寓場景圖片尚待製作'},
  {id:'bunker',name:'地下防空室',en:'UNDERGROUND BUNKER',short:'隱蔽與安全',description:'封閉且隱密的生存空間，未來可朝防護與安全設施發展。',art:'防空室場景圖片尚待製作'},
 ] as const satisfies ReadonlyArray<{id:ShelterId;name:string;en:string;short:string;description:string;art:string}>;

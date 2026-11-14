@@ -7,6 +7,7 @@ import type { GameState } from '../types';
 import {getTaipeiClock} from '../engine/taipeiClock';
 import {normalizeHunger} from '../engine/hungerCosts';
 import {restoreOnboarding} from '../engine/onboarding';
+import {normalizeShelterOwned} from '../engine/shelterVisuals';
 const KEY='ember-chronicles-prototype-v1';
 export const loadGame=():GameState=>{
   try{
@@ -59,6 +60,7 @@ export const loadGame=():GameState=>{
     return { ...old,
       hpRulesVersion:2,growthRulesVersion:2,progression:old.progression??makeInitialProgression(),
       onboarding:restoreOnboarding(old.onboarding),
+      shelterOwned:normalizeShelterOwned(old.shelterOwned),
       player:{
        ...old.player,
        hunger:normalizeHunger(old.player.hunger),

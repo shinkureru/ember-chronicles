@@ -1,5 +1,6 @@
 export type ProfessionId = 'journalist' | 'courier' | 'infiltrator';
 export type ShelterId = 'warehouse' | 'apartment' | 'bunker';
+export type ShelterFurnitureId = 'bed' | 'storage' | 'workbench' | 'radio' | 'board' | 'generator' | 'cooking' | 'computer';
 export type OnboardingPhase = 'story' | 'tutorial' | 'shelter' | 'complete';
 export interface OnboardingProgress { phase:OnboardingPhase; storyPage:number; tutorialStep:number; shelter:ShelterId|null }
 export type Mode = 'home' | 'adventure' | 'result';
@@ -79,6 +80,8 @@ export interface GameState {
   profession: ProfessionId | null;
   /** First-play story/tutorial/shelter choice; migrated legacy players go straight to shelter selection. */
   onboarding:OnboardingProgress;
+  /** Only explicitly acquired furniture; initial selection begins with an empty shelter. */
+  shelterOwned?:ShelterFurnitureId[];
   player: { health: number; maxHealth: number; stamina: number; maxStamina: number; courage: number; hunger: number; fatigue: number; temperature: number; resource: number; maxResource: number; attributes: Attributes };
   world: { minute: number; day: number; weather: 'clear' | 'rain'; clockBasis?:'taipei-realtime' };
   town?:TownProgress;

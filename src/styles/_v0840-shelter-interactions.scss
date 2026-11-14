@@ -1,0 +1,66 @@
+/* v0.8.40: PNG alpha-accurate interaction affordances.
+ * Silhouette glows always follow the original transparent source and designer positioning.
+ * All overlays are visual / ephemeral; no scene flattening, canvas editing or HUD change.
+ */
+.shelter-scene--interactive{cursor:crosshair}
+.shelter-scene__aura{position:absolute;display:block;pointer-events:none;user-select:none;
+ background:#e5bb82;opacity:.17;mix-blend-mode:screen;
+ filter:drop-shadow(0 0 6px #e4b98a) drop-shadow(0 0 13px #cb967d);
+ animation:shelter-aura-breathe 2.8s ease-in-out infinite}
+.shelter-scene__aura--attention{background:#edc8a0;opacity:.28;animation:shelter-aura-attention 3.2s ease-in-out infinite}
+@keyframes shelter-aura-breathe{0%,100%{opacity:.08}50%{opacity:.21}}
+@keyframes shelter-aura-attention{0%,100%{opacity:.14}50%{opacity:.32}}
+.shelter-scene__marker{
+ position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;
+ border:1px solid #d2b292a8;background:#192027cc;color:#f7dac0;
+ width:31px;height:31px;border-radius:50%;padding:0;cursor:pointer;
+ box-shadow:0 0 0 3px #10171a77,0 0 11px #ab835f44;opacity:.78;
+ transition:opacity .18s ease,box-shadow .18s ease,background .18s ease;
+ touch-action:manipulation}
+.shelter-scene__marker-center{height:7px;width:7px;border:1px solid #fee0b1;background:#b8865e;border-radius:50%}
+.shelter-scene__marker:hover,.shelter-scene__marker:focus-visible,
+.shelter-scene__marker--selected{opacity:1;box-shadow:0 0 0 3px #10171aaa,0 0 13px #e9bc8990;border-color:#ffe0ab;background:#5d4130e8;outline-offset:2px}
+.shelter-scene__marker--attention{opacity:1;animation:shelter-marker-breathe 2.8s ease-in-out infinite;border-color:#ffe1a2}
+@keyframes shelter-marker-breathe{0%,100%{box-shadow:0 0 0 3px #10171aaa,0 0 7px #f7b88355}50%{box-shadow:0 0 0 4px #10171aaa,0 0 16px #ffdbafad}}
+.shelter-facility-panel,.shelter-attention-demo{display:flex;flex-direction:column;gap:10px;min-width:0;
+ border:1px solid #79695a88!important;background:linear-gradient(180deg,#272b2a,#111c21)!important}
+.shelter-facility-panel__header,.shelter-attention-demo__header{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#d5ad91}
+.shelter-facility-panel__eyebrow,.shelter-attention-demo__header>span{display:inline-flex;align-items:center;gap:7px;
+ font:600 11px/1.5 Inter,'Noto Sans TC',sans-serif;letter-spacing:.06em}
+.shelter-facility-panel__header button{background:#263034;color:#cfcec7;border:1px solid #656964;border-radius:7px;
+ padding:6px;display:grid;place-items:center;cursor:pointer}
+.shelter-facility-panel__header button:hover,.shelter-facility-panel__header button:focus-visible{border-color:#d6b38f}
+.shelter-facility-panel__title{display:flex;align-items:center;gap:9px;color:#efddc7}
+.shelter-facility-panel__title h2{font:600 18px/1.5 'Noto Serif TC',serif;margin:0}
+.shelter-facility-panel>p{display:flex;align-items:flex-start;gap:9px;font-size:12px;line-height:1.8;color:#b7c6c3;margin:0}
+.shelter-facility-panel>p svg,.shelter-facility-panel__note svg{flex:none;margin-top:3px}
+.shelter-facility-panel__future{padding:11px 12px;background:#263038;border:1px solid #52605e77;border-radius:8px}
+.shelter-facility-panel__future>span{color:#e2c5a3;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600}
+.shelter-facility-panel__future p{font-size:12px;line-height:1.85;color:#b7c5c8;margin:7px 0 0}
+.shelter-facility-panel__note{color:#a9a19a!important;font-size:11px!important}
+.shelter-attention-demo__header small{font:500 9px/1.5 Inter,sans-serif;color:#948c83;letter-spacing:.13em}
+.shelter-attention-demo>p{font-size:11px;line-height:1.75;color:#aebcb9;margin:0}
+.shelter-attention-demo__actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.shelter-attention-demo__actions button,.shelter-attention-demo__current-actions button{
+ display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:0;min-height:40px;
+ padding:8px 6px;border:1px solid #756550;background:#332c2a;color:#e5d4bf;border-radius:7px;
+ font-size:10px;font-weight:600;line-height:1.5;cursor:pointer;white-space:normal}
+.shelter-attention-demo__actions button:disabled{opacity:.4;cursor:not-allowed}
+.shelter-attention-demo__actions button:hover:not(:disabled),.shelter-attention-demo__actions button:focus-visible,
+.shelter-attention-demo__current-actions button:hover,.shelter-attention-demo__current-actions button:focus-visible{
+ border-color:#efbc8a;background:#504037}
+.shelter-attention-demo__current{display:flex;flex-direction:column;gap:10px;padding:11px 12px;border:1px solid #ad825e88;
+ border-radius:9px;background:linear-gradient(120deg,#442d267d,#1a2929)}
+.shelter-attention-demo__current strong{color:#f0d1a9;font-size:12px;line-height:1.5}
+.shelter-attention-demo__current p{font-size:11px;line-height:1.75;color:#c0cbc3;margin:6px 0}
+.shelter-attention-demo__current small{color:#a6a89e;font-size:10px}
+.shelter-attention-demo__current-actions{display:flex;flex-wrap:wrap;gap:8px}
+.shelter-attention-demo__current-actions button{min-height:36px;padding:7px 11px}
+.shelter-attention-demo__empty{color:#939e9a!important;padding:9px 11px;border:1px dashed #63716c70;border-radius:7px}
+@media(max-width:360px){.shelter-attention-demo__actions{grid-template-columns:1fr}
+ .shelter-scene__marker{width:28px;height:28px}
+}
+@media(prefers-reduced-motion:reduce){
+ .shelter-scene__aura,.shelter-scene__aura--attention,.shelter-scene__marker--attention{animation:none!important}
+ .shelter-scene__marker{transition:none!important}
+}

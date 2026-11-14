@@ -1,20 +1,54 @@
-import { ChevronRight, Fingerprint, Info, Skull } from 'lucide-react';
-import { useGame } from '../../app/GameContext';
-import { PROFESSIONS } from '../../game/data/professions';
-import type { ProfessionId } from '../../game/types';
-import ChapterMapPage from '../world-map/ChapterMapPage';
-import { playCue } from '../../audio/sound';
-import GameUtilities from '../../components/GameUtilities';
+import {Link} from 'react-router-dom';
+import {Archive,BookOpenText,FlaskConical,Landmark,Layers3,Map,Store,UserRound} from 'lucide-react';
+import {useGame} from '../../app/GameContext';
 import {SHELTER_OPTIONS} from '../../game/engine/onboarding';
+import {sanitizeShelterFurniture} from '../../game/data/shelter';
+import GameUtilities from '../../components/GameUtilities';
+import Hud from '../../components/Hud';
+import ShelterScene from '../shelter/ShelterScene';
+
+const hubLinks=[
+ {label:'城鎮',Icon:Landmark,to:'/town'},
+ {label:'黑市',Icon:Store,to:'/black-market'},
+ {label:'物資倉庫',Icon:Archive,to:'/warehouse'},
+ {label:'人物',Icon:UserRound,to:'/character'},
+ {label:'牌組',Icon:Layers3,to:'/cards'},
+] as const;
+
+/** The main screen is always the player's chosen shelter, never the chapter map. */
 export default function HomePage(){
- const {state,dispatch}=useGame();
- const shelterName=SHELTER_OPTIONS.find(s=>s.id===state.onboarding.shelter)?.name;
- if(state.profession)return <><section className="onboarding-hub-notice" role="status">目前避難所：{shelterName??'尚待選擇'} · 第3批將替換為避難所主畫面，暫時保留舊關卡路線圖供測試。</section><ChapterMapPage/></>;
- return <div className="page-stack home-page viewport-page">
-  <section className="home-hero"><div className="home-hero__top"><span className="eyebrow">EMBER CHRONICLES / PROLOGUE</span><GameUtilities className="game-utilities--prologue"/></div><div className="home-hero__symbol"><Skull size={46} strokeWidth={1}/></div><h1>灰燼之下，<br/>沒有人是清白的。</h1><p>「這座城有些人失蹤了。更可怕的是，沒有人願意承認自己知道原因。」</p><span className="hero-scroll">你的身分，將改變每一個答案。</span></section>
-  <section className="onboarding-hub-notice" role="status">已選擇據點：{shelterName??'尚待選擇'}。本批先沿用原型職業選擇，下一批接上真正的避難所主畫面。</section>
-  <section className="surface-card"><span className="eyebrow">CHOOSE YOUR PAST</span><h2>我曾經是誰？</h2><p className="muted">目前開放三種職業原型。正式企劃將逐步擴充成六種截然不同的人生背景。</p>
-   <div className="profession-cards">{(Object.entries(PROFESSIONS) as [ProfessionId,typeof PROFESSIONS[ProfessionId]][]).map(([id,p])=><button key={id} type="button" className="profession-card" onClick={()=>{playCue('confirm');dispatch({type:'SELECT_PROFESSION',profession:id})}}><span className="profession-card__icon"><Fingerprint size={29}/></span><span><small>{p.en}</small><strong>{p.name}</strong><em>{p.tagline}</em></span><ChevronRight size={19}/></button>)}</div>
-  </section><div className="tip-panel"><Info size={16}/>原型使用瀏覽器本機存檔。選擇職業後進入第一章互動地圖。</div>
+ const {state}=useGame();
+ const shelter=SHELTER_OPTIONS.find(s=>s.id===state.onboarding.shelter);
+ const owned=sanitizeShelterFurniture(state.shelterFurniture);
+ return <div className="page-stack viewport-page shelter-hub">
+  <header className="shelter-hub__header">
+   <div><span className="eyebrow">EMBER CHRONICLES / MY SHELTER</span><h1>{shelter?.name??'尚未指定避難所'}</h1><small>{shelter?.en??'SHELTER UNASSIGNED'}</small></div>
+   <GameUtilities className="game-utilities--shelter"/>
+  </header>
+  <section className="shelter-hub__visual" aria-label="避難所主場景">
+   <ShelterScene shelter={state.onboarding.shelter} owned={owned}/>
+   <div className="shelter-hub__scene-info">
+    <span>{shelter?.short??'待選擇'}</span>
+    <strong>{state.onboarding.shelter==='warehouse'?owned.length+'/8 件家具':'場景待製作'}</strong>
+   </div>
+  </section>
+  {state.onboarding.shelter==='warehouse'
+   ? <p className="shelter-hub__build-note">目前顯示已取得的家具。當八件全部取得，場景將自動換成完整高畫質倉庫圖。購買／隨機建設按鈕於下一批接入。</p>
+   : <p className="shelter-hub__build-note">這個避難所的正式場景圖片仍待設計。你的選擇已保存，不會自動換成其他類型。</p>}
+  <Hud/>
+  {!state.profession&&<section className="shelter-hub__identity surface-card">
+   <div><span className="eyebrow">YOUR PAST / 職業原型</span><h2>尚未選擇過去的身分</h2><p>選擇職業後，可以沿用原有關卡與戰鬥系統。避難所選擇不受影響。</p></div>
+   <Link className="primary-button" to="/profession"><BookOpenText size={16}/>選擇職業</Link>
+  </section>}
+  <nav className="shelter-hub__links" aria-label="避難所功能入口">
+   {hubLinks.map(({label,Icon,to})=><Link to={to} key={to} className="shelter-hub__link">
+    <Icon size={20} aria-hidden="true"/><span>{label}</span>
+   </Link>)}
+  </nav>
+  <details className="shelter-hub__prototype">
+   <summary><FlaskConical size={15} aria-hidden="true"/>原型測試入口（暫時保留）</summary>
+   <p>舊章節路線圖已從主畫面移除。是否透過家具解鎖仍未定案，目前只作開發與關卡驗證。</p>
+   <Link to={state.profession?'/world-map':'/profession'}><Map size={16}/>{state.profession?'開啟舊關卡路線圖':'先選擇職業再進入關卡路線圖'}</Link>
+  </details>
  </div>;
 }

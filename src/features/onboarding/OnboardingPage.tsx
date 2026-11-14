@@ -85,7 +85,9 @@ export default function OnboardingPage(){
      const Icon=iconByShelter[s.id];
      return <button type="button" className={'onboarding-shelter-card onboarding-shelter-card--'+s.id}
       key={s.id} data-shelter-id={s.id} onClick={()=>choose(s.id)}>
-      <span className="onboarding-shelter-art" role="img" aria-label={s.art}><Icon size={28} strokeWidth={1.2} aria-hidden="true"/><small>{s.art}</small></span>
+      <span className={'onboarding-shelter-art '+(s.id==='warehouse'?'onboarding-shelter-art--warehouse':'')} role="img" aria-label={s.id==='warehouse'?'廢棄倉庫空屋照片':s.art}>
+      {s.id==='warehouse'?<img src={import.meta.env.BASE_URL+'assets/shelter/warehouse/background_empty.jpg'} alt="" aria-hidden="true"/>:<><Icon size={28} strokeWidth={1.2} aria-hidden="true"/><small>{s.art}</small></>}
+     </span>
       <span className="onboarding-shelter-card__body"><small>{s.en} · {s.short}</small><strong>{s.name}</strong><span>{s.description}</span></span>
       <ChevronRight size={19} className="onboarding-shelter-card__arrow" aria-hidden="true"/>
      </button>;

@@ -8,6 +8,9 @@ import ViewTabs from '../components/ViewTabs';
 import AudioSettingsControls from '../features/settings/AudioSettingsControls';
 import Frame from '../components/Frame';
 import HomePage from '../features/chapter/HomePage';
+import ProfessionPage from '../features/chapter/ProfessionPage';
+import ChapterMapPage from '../features/world-map/ChapterMapPage';
+import {Link} from 'react-router-dom';
 import ChapterPage from '../features/chapter/ChapterPage';
 import CardsPage from '../features/cards/CardsPage';
 import PreparationPage from '../features/preparation/PreparationPage';
@@ -26,15 +29,18 @@ function SettingsPage(){
  {tab==='data'&&<div className="settings-data viewport-list"><section className="surface-card"><h3>存檔與設備</h3><p>遊戲會自動儲存到目前瀏覽器。GitHub Pages 尚未提供跨裝置同步功能。</p></section><section className="surface-card"><h3><ShieldAlert size={17}/>重設遊戲（開發測試）</h3><p>此功能僅供原型測試。將清除本遊戲的本機存檔、重新整理整個頁面，重新演示全螢幕開場畫面；正式版預計移除。</p><button type="button" className="danger-button" data-prototype-only="true" onClick={()=>{if(window.confirm('確定刪除全部原型存檔並重新開啟遊戲？NPC 記憶、牌組、裝備與倉庫都會清除且無法還原。')){if(!resetPrototypeAndReload())setResetError(true)}}}><RotateCcw size={15}/>刪除本機存檔並重啟</button>{resetError&&<p role="alert">無法刪除本機存檔。請檢查瀏覽器的儲存權限。</p>}</section></div>}
  </div>;
 }
-function NotFound(){return <section className="surface-card"><h2>找不到這個頁面</h2><a href="#/">返回章節地圖</a></section>}
+function NotFound(){return <section className="surface-card"><h2>找不到這個頁面</h2><a href="#/">返回避難所</a></section>}
 /** Prevent players from bypassing the in-mission navigation lock by editing the URL. */
 function GameRoutes(){
  const {state}=useGame(),location=useLocation();
  // All first-run screens are controlled by persisted onboarding progress, never URL navigation.
  if(state.onboarding.phase!=='complete')return <OnboardingPage/>;
  if(state.mode!=='home'&&location.pathname!=='/chapter')return <Navigate to="/chapter" replace/>;
+ if(state.mode==='home'&&!state.profession&&['/world-map','/chapter','/preparation'].includes(location.pathname))return <Navigate to="/profession" replace/>;
  return <Routes>
   <Route path="/" element={<HomePage/>}/>
+  <Route path="/profession" element={state.profession?<Navigate to="/" replace/>:<ProfessionPage/>}/>
+  <Route path="/world-map" element={<div className="world-map-prototype"><div className="world-map-prototype__notice"><span>開發測試 · 原有關卡系統</span><Link to="/">返回避難所</Link></div><ChapterMapPage/></div>}/>
   <Route path="/town" element={<TownPage/>}/>
   <Route path="/black-market" element={<BlackMarketPage/>}/>
   <Route path="/chapter" element={<ChapterPage/>}/>

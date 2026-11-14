@@ -1,5 +1,17 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-15｜v0.8.41 緊急修正：倉庫主畫面被壓扁、無法上下滑動（待 Merge）
+
+- **使用者真實回報**：已 Merge PR #68 的 v0.8.41、main `8e4f1e7943ad3e912579484fbf3eb4b5dbd60ff9`。使用者手機長截圖能看到「廢棄倉庫」標題、已建設8件清單、設施提示與 DEVELOPMENT ONLY 面板，**卻完全看不到應有的滿配置 JPG，亦無法手指／滑鼠向下拖曳頁面**。這是主畫面佈局錯誤，**並非玩家卡在開場／新手教學或有壞存檔**；不可要求使用者刪存檔以「修復」。
+- **已查明根因**：早期 `src/styles/_viewport.scss` 為章節及緊湊菜單採用 `html,body,#root{overflow:hidden}`、`.app-main>.viewport-page{overflow:hidden!important;display:flex;flex-direction:column;min-height:0;gap:9px}`；倉庫新版 `ShelterHomePage.tsx` 仍帶 `page-stack shelter-home-page viewport-page`，繼承 `overflow:hidden!important`，而 `src/styles/_v0838-shelter-hub.scss` 也設 `.shelter-home-page{overflow:hidden}`。長直式倉庫美術 `ShelterScene` 的父層是可伸縮 flex child，於100dvh固定容器內被壓到接近零高度；玩家只能看到餘下控制元件。此前 v0.8.41 的 CSS「響應式規格」測試只確認 CSS 規則存在，漏掉跨版本 cascade 互相覆蓋，因此未抓到此問題。
+- **實際修正**：新 `src/styles/_v0841-shelter-scroll-hotfix.scss` **最後 import**，高優先度選擇器 `.app-main > .shelter-home-page.viewport-page` 覆寫僅此頁 `overflow-y:auto!important`、`overflow-x:hidden!important`，維持固定 root/body 及任務專用 HUD；主場景及所有頂層子項 `flex-shrink:0`、專門維持768/1376 aspect ratio，空/部分/滿配圖均正常呈現。支援 mobile `touch-action:pan-y`、`-webkit-overflow-scrolling:touch`、短高520px、底部安全內距，場景沿原設計師 JSON/PNG/JPG 對齊，素材**一律未修改**。
+- **桌面滑鼠拖動**：`ShelterHomePage.tsx` 使用專案已經修好的 `src/components/useVerticalDragScroll.ts`；與其他城鎮/黑市/工坊相同的 document capture 滑鼠拖動（>7px才阻擋點擊），touch 原生、滾輪和Tab鍵維持原行為，拖曳後不會意外點到家具或試買。倉庫造訪者選擇的基地、已有8件家具、資源、任務與NPC都不動。
+- **防止重發**：新增 `tests/v0841-shelter-scroll-hotfix.test.ts` 驗根因 CSS、最後 import 修正優先度、場景不可縮、滿配 JPG/8個標記、既有桌面拖動 hook、只有避難所例外不改 global/missions。修正 v0839/v0840/v0841 測試中「最後樣式匯入」歷史斷言，保持 package **0.8.41**（同版號緊急修補）及原有美術 SHA256 測試。手動 QA 已附於 `docs/V0841_SHELTER_FINAL_QA.md`，CI 仍不能等同已做手機實機驗收。
+- **GitHub 工作方式**：本次唯一 bugfix 分支 `fix/v0.8.41-shelter-scroll-collapse`，從已 Merge 的 main 建立**單一 PR，使用者自行 Merge**。不擅自開始第7批、不動正式 HUD/金錢/飢餓/NPC/家具正式玩法。原型測試按鈕仍非最終公開功能。
+
+---
+
+
 ## 2026-11-15｜第五輪第6批 v0.8.41：六批避難所整合回歸與行動裝置操作（本 PR 待使用者 Merge）
 
 - **開工真實基準**：第5批 PR #67 v0.8.40 已由使用者合併，最新 main `7c6e6d6f80fe34a7fffaabbff979291a9c60941e`，開工時 open PR 0。本批唯一分支 `feat/v0.8.41-shelter-final-integration-qa`、package/lock `0.8.41`。**僅建立一個 PR、永不自行 Merge，完成即停，不延伸第7批**。

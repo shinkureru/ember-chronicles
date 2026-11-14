@@ -67,3 +67,6 @@
  }
  .shelter-build-demo .shelter-build-demo__furniture-list button{transition:none!important}
 }
+
+.shelter-facility-detail-anchor{min-width:0;scroll-margin-block:16px;outline-offset:4px}
+.shelter-facility-detail-anchor:focus:not(:focus-visible){outline:none}

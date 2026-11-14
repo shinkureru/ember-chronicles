@@ -1,6 +1,6 @@
 import {Archive,Building2,ChevronRight,Fingerprint,Info,Map,Shield,Skull,Warehouse} from 'lucide-react';
 import {Link} from 'react-router-dom';
-import {useCallback,useEffect,useState} from 'react';
+import {useCallback,useEffect,useRef,useState} from 'react';
 import {useGame} from '../../app/GameContext';
 import {PROFESSIONS} from '../../game/data/professions';
 import {SHELTER_OPTIONS} from '../../game/engine/onboarding';
@@ -48,6 +48,7 @@ export default function ShelterHomePage(){
  const {state}=useGame();
  const [previewWarehouse,setPreviewWarehouse]=useState(false);
  const [selectedId,setSelectedId]=useState<ShelterFurnitureId|null>(null);
+ const detailRef=useRef<HTMLDivElement>(null);
  const [queue,setQueue]=useState<ShelterAttention[]>([]);
  const selectFurniture=useCallback((id:ShelterFurnitureId)=>setSelectedId(id),[]);
  const shelterId=state.onboarding.shelter;
@@ -57,6 +58,15 @@ export default function ShelterHomePage(){
  const mode=getWarehouseVisualMode(owned);
  const ownedKey=owned.join('|');
  const activeSelected=selectedId&&owned.includes(selectedId)?selectedId:null;
+ // The portrait image can be taller than a mobile viewport. Without this, tapping
+ // a marker appears to do nothing because the new information is below the fold.
+ useEffect(()=>{
+  if(!activeSelected||!showWarehouse)return;
+  const detail=detailRef.current;
+  if(!detail)return;
+  detail.focus({preventScroll:true});
+  detail.scrollIntoView({block:'nearest',behavior:'auto'});
+ },[activeSelected,showWarehouse]);
  const pending=availableShelterAttention(queue,owned);
  const attention=pending[0]??null;
  useEffect(()=>{
@@ -120,7 +130,10 @@ export default function ShelterHomePage(){
     )}
    </div>
   </section>}
-  {showWarehouse&&activeSelected&&<ShelterFacilityPanel id={activeSelected} onClose={()=>setSelectedId(null)}/>}
+  {showWarehouse&&activeSelected&&<div ref={detailRef} className="shelter-facility-detail-anchor" tabIndex={-1}
+   id="shelter-facility-detail" aria-live="polite" aria-label="目前選取的家具設施">
+   <ShelterFacilityPanel id={activeSelected} onClose={()=>setSelectedId(null)}/>
+  </div>}
   {showWarehouse&&<ShelterAttentionPanel owned={owned} queue={queue} onTrigger={onTrigger}
    onInspect={onInspect} onDismiss={id=>setQueue(previous=>dismissShelterAttention(previous,id))}/>}
   {showWarehouse&&<ShelterBuildDemoPanel/>}

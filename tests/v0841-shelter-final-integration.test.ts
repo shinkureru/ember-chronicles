@@ -244,6 +244,8 @@ describe('v0.8.41 — six-batch shelter and first-play integration',()=>{
   expect(home).toContain('data-facility-access={id}');
   expect(home).toContain('aria-pressed={activeSelected===id}');
   expect(home).toContain('onClick={()=>onInspect(id)}');
+  expect(home).toContain("detail.scrollIntoView({block:'nearest',behavior:'auto'})");
+  expect(home).toContain("detail.focus({preventScroll:true})");
   expect(home).toContain('setSelectedId(previous=>previous&&!installed.has(previous)?null:previous)');
   expect(home).toContain('owned.length>0&&<section');
   const scene=source('src/features/shelter/ShelterScene.tsx');
@@ -265,7 +267,7 @@ describe('v0.8.41 — six-batch shelter and first-play integration',()=>{
   expect(source('src/styles/main.scss').trimEnd()).toMatch(/@import "v0841-shelter-integration";$/);
   expect(JSON.parse(source('package.json')).version).toBe('0.8.41');
   expect(JSON.parse(source('package-lock.json')).packages[''].version).toBe('0.8.41');
-  expect(source('src/app/BootSplash.tsx')).toContain('position'); // test CSS below is the authority for full-screen coverage
+  expect(source('src/app/BootSplash.tsx')).toContain('BOOT_PRESENTATION_MS=1100');
   expect(source('src/styles/_v0836-boot-splash.scss')).toContain('position:fixed;inset:0');
  });
 });

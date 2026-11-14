@@ -1,5 +1,20 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-15｜第五輪第3批 v0.8.38：避難所首頁、十張原始圖片及家具圖層（本 PR 待使用者 Merge）
+
+- **開工狀態**：第2批 PR #63 v0.8.37 **已 Merge**，main `6c0cb6c0b60bee2b9d371540a45ef265dce1030c`、open PR 0；唯一工作分支 `feat/v0.8.38-shelter-hub-warehouse-art`，版本 package/lock `0.8.38`。此批只建一個 PR，不自行 Merge，等使用者確認後開始 v0.8.39。
+- **原始素材已入 GitHub**：`public/assets/shelter/warehouse/background_empty.jpg`、`background_full.jpg` 與 `bed.png`、`storage.png`、`workbench.png`、`radio.png`、`board.png`、`generator.png`、`cooking.png`、`computer.png` 共10張。用本輪設計師更新後的檔案原始位元組建立 Git blobs，Git Tree 已核對全部大小，未重壓、裁切或二次去背；`board.png` 原始來源為設計師上傳 `medical(1).png`（實際是證物調查板）。專項測試逐張核對 SHA256/PNG RGBA 尺寸。
+- **校正來源**：`src/game/data/warehouse-shelter-layout.json` 原封保留使用者 `warehouse-shelter-layout-v3.json` 768×1376 全部欄位（含參考圖/購買序列，不代表玩家已持有全部）。`src/game/data/shelter.ts` 以此檔案為唯一座標來源：保持 x/y、scale、z、rotation、opacity/slot 和原 PNG 畫布尺寸，負 x 如床 -23、料理台 -52 不應 clamp；src URL 加 `import.meta.env.BASE_URL` 以支援 GitHub Pages 子路徑。
+- **真實首頁已切換**：`src/features/chapter/HomePage.tsx` 主頁變成已選擇的避難所場景。`ShelterScene` 依玩家 `shelterFurniture` 判斷：0 件用**空景原圖**，1–7件按照固定 z 由小到大疊加使用者透明PNG，8件全數取得時**直接只顯示滿配置原圖**。無論購買順序如何，同一 owned 集合都得到相同畫面。公寓/防空室用明確的美術占位，絕不能引用倉庫圖冒充。首次避難所選擇的**倉庫卡片**也改真實空屋預覽。
+- **職業與關卡保留**：從首頁移除 `ChapterMapPage`，將既有章節路線圖移至 `/world-map`（首頁折疊「原型測試入口」），舊職業選擇移至 `/profession`，首次選基地後可立即看到自己的基地；未選職業時從首頁按鈕前往職業頁。既有 `/chapter`／`/preparation`／城鎮／商人／牌組／倉庫／角色功能照舊。沒有決定「工作台/地圖桌解鎖路線圖」，不強迫玩家購買任何家具才可測關卡。
+- **存檔相容**：新增 `GameState.shelterFurniture:WarehouseFurnitureId[]` 預設空陣列；`loadGame()` 補舊存檔缺失及過濾錯誤/重複 ID，不影響金錢、戰鬥、NPC 記憶、職業、避難所、商店；`SELECT_PROFESSION` 保留已存在的基地與家具。**v0.8.38 不新增買家具／快速隨機測試按鈕，全部留 v0.8.39**，因此目前新存檔倉庫只顯示 0 件空景屬正常。
+- **視覺發現**：設計師現有無線電設備素材依附中央工作台，單獨購買會出現懸浮及無底座的情況。這是美術配置的真實限制，**此批不修改座標、不偷偷加上必先買工作台的前置條件**，後續請使用者決定補無線電基座或建立合理相依。其他背景高畫質 8/8 圖與原PNG疊圖相比看起來略有不同，8件一律以設計師指定的滿配置原圖為準。
+- **驗證與交接**：`tests/v0838-shelter-hub.test.ts` 針對圖像 SHA256、位圖尺寸、資料與 UI、0/1–7/8 場景、z、順序、舊存檔遷移及路由測試；回歸 `npm run build`、`npm test` 與實際 PR head Actions 結果請查最新 CI。另見 `docs/V0838_SHELTER_HUB_QA.md` 的人工裝置/圖片 QA；**沒有宣稱已用實體手機做目視驗收**。
+- **下一步**：使用者 Merge 這一個 PR 後再開始 `v0.8.39` 原型購買、隨機配置、逐件動畫及存檔；`v0.8.40` 家具可點提示效果，`v0.8.41` 全域 QA。永久交接請優先對照 GitHub main、PR 狀態和本文件，切勿把歷史「待 Merge」當現在狀態。
+
+---
+
+
 ## 2026-11-15｜第五輪第2批 v0.8.37：首次故事、必敗教學占位、三種避難所選擇（本 PR 待使用者 Merge）
 
 - **開工核對**：PR #62 v0.8.36 已由使用者 Merge，main `880c286be5a90f87be09d202e74d4e0056359bc4`，開工 open PR 0，唯一分支 `feat/v0.8.37-onboarding-shelter-choice`；package/lock 0.8.37；**本批不自行 Merge**。

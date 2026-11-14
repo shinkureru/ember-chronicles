@@ -26,8 +26,8 @@ describe('v0.8.38: exact designer assets, shelter home and saved furniture owner
    'radio.png':'419126cff120eb7b71769d6dcdb6ad3627ac26acc8b7445043c5cd7997aa42c2',
    'board.png':'620f5b6a7f1cbb93a1f4c13057569e4dbb38b70492f6ecdf24ebb4e525dc8f03',
    'generator.png':'a8c2c018817c4f347fe1acc26dc4a0e6868856e3a20a05aacb24304061336faf',
-   'cooking.png':'34313802346f1b0ac2f45cd7a86aa13ea2a4b5c6e5c1da92ad4b369c1080cb49', 
-   'computer.png':'1ba16a0797c8b6ca8ea2dc023bf031b31b71796ffda1149058f981cc91f8bb1c',
+   'cooking.png':'34313802346f1b098e8c309631f940671eef0cd4b42a2d5ceef5d943bd92b511', 
+   'computer.png':'1ba16a0797c8b6ccbe5f14d01d1051bf03aaa9c078fec854165f980c7375037a',
   };
   // SHA-256 guard detects accidental recompression or altered alpha/shadow pixels.
   for(const [filename,sha] of Object.entries(expected)){

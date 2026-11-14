@@ -187,8 +187,9 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
   }
   if(action.type==='SHELTER_DEMO_SET_ORDER'||action.type==='SHELTER_DEMO_ADD_NEXT'||
      action.type==='SHELTER_DEMO_TOGGLE'||action.type==='SHELTER_DEMO_SET_OWNED'){
-    // Never mutate during missions, unfinished onboarding, or other shelter types.
-    if(state.mode!=='home'||state.onboarding.phase!=='complete'||state.onboarding.shelter!=='warehouse')return state;
+    // Prototype sandbox may show the warehouse even if the player chose an apartment/bunker.
+    // Never mutate during missions or unfinished onboarding; never alter selected shelter.
+    if(state.mode!=='home'||state.onboarding.phase!=='complete'||!state.onboarding.shelter)return state;
     const owned=normalizeShelterOwned(state.shelterOwned);
     const order=normalizeShelterBuildOrder(state.shelterBuildOrder);
     if(action.type==='SHELTER_DEMO_SET_ORDER'){

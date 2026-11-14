@@ -40,3 +40,8 @@
  .shelter-scene__furniture,.shelter-scene[data-scene-mode="full"] .shelter-scene__background{animation:none!important}
  .shelter-build-demo__furniture-list button{transition:none}
 }
+
+.shelter-build-demo-preview{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:9px 11px;border-radius:9px;border:1px solid #6b655876;background:#21272b;color:#afa99e;font-size:11px;line-height:1.7}
+.shelter-build-demo-preview span{flex:1;min-width:165px}
+.shelter-build-demo-preview button{border-radius:7px;border:1px solid #a28670;background:#3f3029;color:#e8d2b9;padding:8px 12px;min-height:36px;font:600 11px/1.5 'Noto Sans TC',sans-serif;cursor:pointer}
+.shelter-build-demo-preview button:hover,.shelter-build-demo-preview button:focus-visible{border-color:#e4ae86}

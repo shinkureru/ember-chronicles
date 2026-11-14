@@ -17,6 +17,7 @@ import DevPage from '../features/dev/DevPage';
 import TownPage from '../features/town/TownPage';
 import BlackMarketPage from '../features/market/BlackMarketPage';
 import OnboardingPage from '../features/onboarding/OnboardingPage';
+import ChapterMapPage from '../features/world-map/ChapterMapPage';
 
 function SettingsPage(){
  const [tab,setTab]=useState('audio');const [resetError,setResetError]=useState(false);
@@ -26,7 +27,7 @@ function SettingsPage(){
  {tab==='data'&&<div className="settings-data viewport-list"><section className="surface-card"><h3>存檔與設備</h3><p>遊戲會自動儲存到目前瀏覽器。GitHub Pages 尚未提供跨裝置同步功能。</p></section><section className="surface-card"><h3><ShieldAlert size={17}/>重設遊戲（開發測試）</h3><p>此功能僅供原型測試。將清除本遊戲的本機存檔、重新整理整個頁面，重新演示全螢幕開場畫面；正式版預計移除。</p><button type="button" className="danger-button" data-prototype-only="true" onClick={()=>{if(window.confirm('確定刪除全部原型存檔並重新開啟遊戲？NPC 記憶、牌組、裝備與倉庫都會清除且無法還原。')){if(!resetPrototypeAndReload())setResetError(true)}}}><RotateCcw size={15}/>刪除本機存檔並重啟</button>{resetError&&<p role="alert">無法刪除本機存檔。請檢查瀏覽器的儲存權限。</p>}</section></div>}
  </div>;
 }
-function NotFound(){return <section className="surface-card"><h2>找不到這個頁面</h2><a href="#/">返回章節地圖</a></section>}
+function NotFound(){return <section className="surface-card"><h2>找不到這個頁面</h2><a href="#/">返回避難所</a></section>}
 /** Prevent players from bypassing the in-mission navigation lock by editing the URL. */
 function GameRoutes(){
  const {state}=useGame(),location=useLocation();
@@ -35,6 +36,7 @@ function GameRoutes(){
  if(state.mode!=='home'&&location.pathname!=='/chapter')return <Navigate to="/chapter" replace/>;
  return <Routes>
   <Route path="/" element={<HomePage/>}/>
+  <Route path="/world-map" element={state.profession?<ChapterMapPage/>:<Navigate to="/" replace/>}/>
   <Route path="/town" element={<TownPage/>}/>
   <Route path="/black-market" element={<BlackMarketPage/>}/>
   <Route path="/chapter" element={<ChapterPage/>}/>

@@ -10,7 +10,7 @@ export default function Frame({children}:{children:ReactNode}){
   const location=useLocation(),{state,pauseClock}=useGame();
   const inMission=state.mode!=='home';
   const inOnboarding=state.onboarding.phase!=='complete';
-  const onMap=location.pathname==='/';
+  const onMap=location.pathname==='/'||location.pathname==='/world-map';
   const returnInsidePage=['/black-market','/cards','/preparation'].includes(location.pathname);
   useEffect(()=>{
    pauseClock('route',location.pathname==='/settings');

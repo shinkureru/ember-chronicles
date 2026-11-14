@@ -1,0 +1,30 @@
+/* v0.8.38: portrait shelter hub, designer-authored 768×1376 scene, 0/partial/full assets. */
+.shelter-home-page{gap:13px;padding-bottom:32px;max-width:100%;overflow:hidden}
+.shelter-home-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:1px 2px 0}
+.shelter-home-heading>div:first-child{min-width:0}
+.shelter-home-heading h1{font-family:'Noto Serif TC',serif;font-size:clamp(23px,5vw,29px);line-height:1.45;letter-spacing:.06em;margin:4px 0}
+.shelter-home-heading p{color:#a5b5b7;font-size:11px}
+.shelter-home-heading .game-utilities{flex:0 0 auto}
+.shelter-home-scene-panel{border:1px solid #6b635b8a;border-radius:12px;overflow:hidden;background:#0b1217;box-shadow:0 20px 58px #0105086c;max-width:100%}
+.shelter-scene{position:relative;width:100%;isolation:isolate;overflow:hidden;background:#070e13}
+.shelter-scene__background{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;user-select:none;pointer-events:none}
+.shelter-scene__furniture{position:absolute;display:block;object-fit:fill;pointer-events:none;user-select:none;max-width:none;max-height:none;will-change:auto}
+.shelter-home-scene-caption{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;background:linear-gradient(90deg,#1c2225,#111e23);font:500 10px/1.5 Inter,'Noto Sans TC',sans-serif;color:#b4bbb6;letter-spacing:.065em}
+.shelter-home-scene-caption strong{font-weight:700;color:#d7c1a3}
+.shelter-placeholder{width:100%;min-height:420px;aspect-ratio:768/1376;display:flex;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 40%,#3c33342c,transparent 43%),linear-gradient(155deg,#1b2227,#080e13 75%);color:#b7a398}
+.shelter-placeholder__frame{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;max-width:82%;min-height:210px;padding:18px;border:1px dashed #6f655b95;border-radius:10px}
+.shelter-placeholder__frame>span{font:500 10px/1.5 Inter,sans-serif;letter-spacing:.2em;color:#938b88}
+.shelter-placeholder__frame>strong{font:600 22px/1.4 'Noto Serif TC',serif}
+.shelter-placeholder__frame p{color:#b8ad9e;font-size:12px;line-height:1.7}
+.shelter-placeholder__frame small{font-size:10px;color:#8b999b}
+.shelter-home-intro h2,.shelter-profession h2{font-size:17px;margin:6px 0 9px}
+.shelter-home-intro>p,.shelter-profession>p{color:#b4bcbc;line-height:1.85;font-size:12px}
+.shelter-home-footnote{display:flex;gap:8px;align-items:flex-start;font-size:11px;color:#d3b89f;line-height:1.7;border-top:1px solid #6b645a55;margin-top:11px;padding-top:10px}
+.shelter-home-footnote svg{flex:none;margin-top:2px}
+.shelter-map-test-link{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:13px 14px;border:1px solid #7e6b4b77;background:#29221999;border-radius:9px;font-size:12px;color:#dac6b0}
+.shelter-home-footer-links{display:flex;gap:10px;flex-wrap:wrap;padding:0 2px}
+.shelter-home-footer-links a{color:#b4c2bc;border:1px solid #6b77715f;border-radius:7px;padding:6px 9px;display:inline-flex;align-items:center;gap:5px;font-size:11px}
+.shelter-home-footer-links a:hover,.shelter-home-footer-links a:focus-visible{border-color:#c4b09b;color:#fff0d9}
+@media(max-width:365px){.shelter-home-heading h1{font-size:21px}.shelter-home-heading .game-utilities{gap:3px}.shelter-home-scene-caption{padding:8px 9px;font-size:9px}}
+@media(max-height:520px){.shelter-placeholder{min-height:300px;aspect-ratio:auto}.shelter-home-page{overflow:visible}}
+@media(prefers-reduced-motion:reduce){.shelter-scene__furniture{animation:none!important;transition:none!important}}

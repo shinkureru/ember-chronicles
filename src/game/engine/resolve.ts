@@ -20,6 +20,7 @@ import { getVendorStockKey, marketSellPrice, vendorById } from '../data/marketVe
 import type { GameState, Outcome, ProfessionId, ShelterId, LootDrop } from '../types';
 import {getTaipeiClock} from './taipeiClock';
 import {isShelterId,INTRO_STORY_PAGES,TUTORIAL_PLACEHOLDER_STEPS} from './onboarding';
+import {normalizeShelterOwned} from './shelterVisuals';
 import {applyHungerCost,HUNGER_CLINIC_PURCHASE_COST,HUNGER_DEFEAT_COST,HUNGER_FIELD_GEAR_COST,HUNGER_QUEST_HANDIN_COST} from './hungerCosts';
 
 export type GameAction =
@@ -174,7 +175,7 @@ export const gameReducer=(state:GameState,action:GameAction):GameState=>{
   if(action.type==='SELECT_PROFESSION'){
     // Preserve the one-time chosen shelter when the existing profession screen finishes.
     if(state.mode!=='home'||state.profession!==null||state.onboarding.phase!=='complete')return state;
-    return {...makeInitialState(action.profession),onboarding:state.onboarding};
+    return {...makeInitialState(action.profession),onboarding:state.onboarding,shelterOwned:normalizeShelterOwned(state.shelterOwned)};
   }
   if(action.type==='ONBOARDING_STORY_NEXT'){
     if(state.onboarding.phase!=='story')return state;

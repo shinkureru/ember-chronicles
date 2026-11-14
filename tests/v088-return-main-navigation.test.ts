@@ -18,7 +18,7 @@ describe('v0.8.8 safe return-to-main navigation',()=>{
   expect(read('src/features/chapter/ChapterPage.tsx')).toContain("dispatch({type:'RETURN_HUB'})");
  });
  it('shows a bottom-right navigation dock on regular pages but not the map, mission, or inlined pages',()=>{
-  expect(frame).toContain("const onMap=location.pathname==='/'");
+  expect(frame).toContain("const onMap=location.pathname==='/'||location.pathname==='/world-map'");
   expect(frame).toContain("const returnInsidePage=['/black-market','/cards','/preparation'].includes(location.pathname)");
   expect(frame).toContain('!inMission&&!inOnboarding&&!onMap&&!returnInsidePage&&<nav className="return-main-dock"');
   expect(frame).toContain('<ReturnMainLink/>');

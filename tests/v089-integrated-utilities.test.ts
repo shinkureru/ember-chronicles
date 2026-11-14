@@ -36,13 +36,15 @@ describe('v0.8.9 full removal of global navbar and safe integrated system access
  });
  it('makes system settings available before first character creation and displays build inside mission settings',()=>{
   const home=read('src/features/chapter/HomePage.tsx');
+  const profession=read('src/features/chapter/ProfessionPage.tsx');
   const missionSettings=read('src/features/settings/GameSettingsDialog.tsx');
   const chapter=read('src/features/chapter/ChapterPage.tsx');
-  expect(home).toContain('home-hero__top');
-  expect(home).toContain('<GameUtilities className="game-utilities--prologue"/>');
-  expect(home).toContain('if(state.profession)return <>');
-  expect(home).toContain('<ChapterMapPage/></>');
-  expect(home).toContain('目前避難所：');
+  expect(profession).toContain('home-hero__top');
+  expect(profession).toContain('<GameUtilities className="game-utilities--prologue"/>');
+  expect(home).toContain('<GameUtilities className="game-utilities--shelter"/>');
+  expect(home).toContain('<ShelterScene shelter={state.onboarding.shelter}');
+  expect(read('src/app/App.tsx')).toContain('path="/profession"');
+  expect(read('src/app/App.tsx')).toContain('path="/world-map"');
   expect(missionSettings).toContain('<BuildVersion/>');
   expect(missionSettings).not.toContain('<GameUtilities');
   expect(chapter).toContain('<GameSettingsDialog');

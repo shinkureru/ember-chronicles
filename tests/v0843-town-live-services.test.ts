@@ -85,7 +85,7 @@ describe('v0.8.43 — playable city facility access and district interactions',(
   expect(src).toContain("playCue('confirm')");
   expect(src).toContain('dialog?.querySelector<HTMLElement>');
   expect(src).toContain('trigger.current?.focus({preventScroll:true})');
-  expect(src).toContain("setActive(null);setRestCinematic(null)");
+  expect(src).toContain("setActive(null);setListOpen(false);setRestCinematic(null)");
   const original=read('src/features/town/TownPage.tsx');
   expect(original).toContain("dispatch({type:'TOWN_SERVICE',serviceId})");
   expect(original).toContain('<InnRestDialog');

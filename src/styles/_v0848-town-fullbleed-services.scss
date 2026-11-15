@@ -1,0 +1,195 @@
+/* v0.8.48: full-bleed street art with pixel-aligned clickable business bodies.
+   Covers ONLY live district detail pages. All original WebP assets intact. */
+.app-main > .city-district-page.city-district-page--v0848.viewport-page{
+ display:block;position:relative;isolation:isolate;
+ width:100%;height:100%;min-height:0;max-height:100%;
+ padding:0;overflow:hidden!important;background:#08131c;
+}
+.app-main > .city-district-page--v0848 .city-district-scene{
+ position:absolute;inset:0;z-index:0;
+ display:block;width:100%;height:100%;
+ max-height:none;min-height:0;flex:none;
+ padding:0;margin:0;border:0;border-radius:0;
+ overflow:hidden;isolation:isolate;background:#09151e;
+}
+.city-district-page--v0848 .city-district-scene__stage{
+ position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+ width:100%;height:100%;aspect-ratio:768 / 1376;
+ max-width:none;max-height:none;min-width:0;min-height:0;
+ padding:0;border:0;border-radius:0;overflow:hidden;
+ box-shadow:none;flex:none;
+}
+.city-district-page--v0848 .city-district-scene__image{
+ position:absolute;inset:0;width:100%;height:100%;
+ object-fit:fill;pointer-events:none;user-select:none;
+}
+.city-district-page--v0848 .city-district-scene__lights{
+ position:absolute;inset:0;z-index:2;pointer-events:none;contain:paint;
+}
+.city-district-page--v0848 .city-district-scene__light{
+ position:absolute;display:block;pointer-events:none;
+ aspect-ratio:1.15 / 1;border-radius:50%;opacity:.54;
+ transform:translate(-50%,-50%) scale(.93);
+ background:radial-gradient(ellipse,#8fe9f876 0%,#5bb6e036 31%,transparent 72%);
+ mix-blend-mode:screen;
+ animation:v0848-district-glow 8s ease-in-out infinite alternate;
+}
+.city-district-page--v0848 .city-district-scene__light--amber{
+ background:radial-gradient(ellipse,#ffe5a196 0%,#e4a46143 36%,transparent 73%);
+}
+.city-district-page--v0848 .city-district-scene__light--violet{
+ background:radial-gradient(ellipse,#f6aae85e 0%,#9874d846 30%,transparent 76%);
+}
+@keyframes v0848-district-glow{
+ 0%{opacity:.21;transform:translate(-50%,-50%) scale(.86)}
+ 42%{opacity:.63}
+ 68%{opacity:.39}
+ 100%{opacity:.85;transform:translate(-50%,-50%) scale(1.16)}
+}
+/* A large transparent facility body is clickable; the marker is subtle.
+   One single real button per site, never a fake foreground overlay. */
+.city-district-page--v0848 .city-district-hotspot,
+.city-district-page--v0848 .city-district-hotspot--left,
+.city-district-page--v0848 .city-district-hotspot--right{
+ position:absolute;z-index:4;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ width:clamp(56px,13%,98px);min-width:56px;max-width:unset;
+ height:clamp(50px,9%,86px);min-height:50px;
+ padding:4px;border:1px solid #c9e6dc17;border-radius:48%;
+ background:radial-gradient(ellipse,#e4fff116,#080f1500 68%);
+ box-shadow:none;color:#f9f3e8;gap:3px;
+ transform:translate(-50%,-50%);
+ -webkit-backdrop-filter:none;backdrop-filter:none;
+ transition:border-color .22s,background .22s,box-shadow .22s;
+}
+.city-district-page--v0848 .city-district-hotspot__beacon{
+ width:7px;height:7px;flex:none;display:block;
+ border:1px solid #f9e7c9;background:#e5bd8c;border-radius:50%;
+ box-shadow:0 0 8px #fbd6a6a6,0 0 17px #94ebef42;
+}
+.city-district-page--v0848 .city-district-hotspot.is-closed .city-district-hotspot__beacon{
+ background:#84959b;box-shadow:0 0 4px #b4c2c250;
+}
+.city-district-page--v0848 .city-district-hotspot__text{
+ min-width:0;display:flex;align-items:center;
+ flex-direction:column;gap:0;
+ padding:2px 4px;border-radius:4px;
+ background:#091924a6;text-shadow:0 1px 3px #000;
+ opacity:.5;transition:opacity .22s;
+}
+.city-district-page--v0848 .city-district-hotspot__text strong{font-size:9px;white-space:nowrap}
+.city-district-page--v0848 .city-district-hotspot__text small{display:none}
+.city-district-page--v0848 .city-district-hotspot__lock{display:none}
+.city-district-page--v0848 .city-district-hotspot:is(:hover,:focus-visible,[aria-expanded="true"]){
+ z-index:6;border:1px solid #f6d9a5a8;
+ background:radial-gradient(ellipse,#e8d6ad42,#17384616 68%);
+ box-shadow:0 0 18px #eed09a4a,0 3px 14px #0005;
+ outline:2px solid #f5e7c4;outline-offset:1px;
+}
+.city-district-page--v0848 .city-district-hotspot:is(:hover,:focus-visible,[aria-expanded="true"]) .city-district-hotspot__text{
+ opacity:1;
+}
+.city-district-page--v0848 .city-district-heading,
+.city-district-page--v0848 .city-district-live-status,
+.city-district-page--v0848 .city-district-controls{
+ position:absolute;left:0;right:0;z-index:20;
+ display:flex;align-items:center;pointer-events:none;
+}
+.city-district-page--v0848 .city-district-heading{
+ top:0;justify-content:space-between;
+ padding:10px max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left));
+ background:linear-gradient(180deg,#040c15e8,#09111a00);
+}
+.city-district-page--v0848 .city-district-heading a{pointer-events:auto;min-width:44px;min-height:44px}
+.city-district-page--v0848 .city-district-heading h1{
+ font:650 clamp(17px,4.3vw,24px)/1.25 'Noto Serif TC',serif;
+ text-align:center;text-shadow:0 2px 8px #000;
+}
+.city-district-page--v0848 .city-district-heading .eyebrow{text-align:center;display:block}
+.city-district-page--v0848 .city-district-live-status{
+ top:66px;padding:2px 10px;gap:5px;justify-content:space-between;
+ font-size:10px;text-shadow:0 2px 5px #000e;
+}
+.city-district-page--v0848 .city-district-controls{
+ bottom:max(12px,env(safe-area-inset-bottom));
+ padding:0 9px;gap:8px;justify-content:space-between;
+}
+.city-district-page--v0848 .city-district-controls__list{
+ display:flex;align-items:center;justify-content:center;gap:5px;
+ min-height:44px;min-width:100px;padding:9px 12px;
+ border-radius:8px;border:1px solid #9cbbbe9c;
+ background:#132831dd;color:#d9e7e3;cursor:pointer;
+ font-size:11px;pointer-events:auto;
+}
+.city-district-page--v0848 .city-district-controls>span{
+ font-size:9px;text-align:right;color:#f1e6d2bd;
+ text-shadow:0 2px 4px #000;
+}
+.city-district-page--v0848 .city-district-footer{display:none}
+.city-district-page--v0848 .city-district-services--live{
+ display:flex;position:absolute;z-index:25;
+ bottom:calc(max(12px,env(safe-area-inset-bottom)) + 52px);
+ left:9px;right:9px;width:auto;margin:0;max-height:56%;
+ min-height:0;overflow-y:auto;overflow-x:hidden;
+ padding:12px!important;background:#0b1a23f2;
+ border:1px solid #a8b9ad87;border-radius:11px;
+ box-shadow:0 5px 29px #000c;-webkit-overflow-scrolling:touch;
+ touch-action:pan-y;overscroll-behavior:contain;
+}
+.city-district-page--v0848 .city-district-services--live[hidden]{display:none!important}
+.city-district-page--v0848 .city-district-services__integrated{
+ color:#edcb9c;font-size:11px;line-height:1.5;
+}
+.city-district-page--v0848 .city-district-service--live{
+ min-height:44px;
+}
+.town-v0848-tavern-tabs{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:7px;padding:10px 12px;
+ border-top:1px solid #58666b7d;border-bottom:1px solid #5e707987;
+ background:#10242b;
+}
+.town-v0848-tavern-tabs [role="tab"]{
+ min-height:44px;padding:7px 10px;border-radius:7px;
+ border:1px solid #668389;background:#152a34;
+ color:#b6c6cb;font:650 12px/1.3 'Noto Sans TC',sans-serif;
+ cursor:pointer;
+}
+.town-v0848-tavern-tabs [role="tab"][aria-selected="true"]{
+ color:#ffe5bd;background:#3c342b;border-color:#e8b77e;
+ box-shadow:inset 0 -2px #f2c188a8,0 0 13px #e8af6921;
+}
+.town-v0848-tavern-tabs [role="tab"]:focus-visible,
+.city-district-page--v0848 .city-district-controls__list:focus-visible{
+ outline:2px solid #fff2ce;outline-offset:2px;
+}
+@media(max-width:390px){
+ .city-district-page--v0848 .city-district-heading{padding:6px}
+ .city-district-page--v0848 .city-district-heading h1{font-size:18px}
+ .city-district-page--v0848 .city-district-live-status{top:55px;font-size:9px}
+ .city-district-page--v0848 .city-district-hotspot__text strong{font-size:8px}
+ .city-district-page--v0848 .city-district-services__list{grid-template-columns:1fr}
+}
+@media(max-height:600px){
+ .city-district-page--v0848 .city-district-live-status{top:50px}
+ .city-district-page--v0848 .city-district-hotspot{
+  min-height:48px;height:48px;min-width:48px;width:48px;
+ }
+ .city-district-page--v0848 .city-district-services--live{max-height:50%}
+}
+@media(hover:none){
+ .city-district-page--v0848 .city-district-hotspot__text{opacity:.82}
+}
+@media(prefers-reduced-motion:reduce),(update:slow){
+ .city-district-page--v0848 .city-district-scene__light,
+ .city-district-page--v0848 .city-district-hotspot.is-open .city-district-hotspot__beacon{
+  animation:none!important;transition:none!important;
+ }
+}
+@media(forced-colors:active){
+ .city-district-page--v0848 .city-district-hotspot:focus-visible,
+ .town-v0848-tavern-tabs [role="tab"]:focus-visible,
+ .city-district-page--v0848 .city-district-controls__list:focus-visible{
+  outline:2px solid Highlight!important;outline-offset:2px;
+ }
+}

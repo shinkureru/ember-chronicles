@@ -18,9 +18,13 @@ import type {RestServiceId} from '../../game/engine/innRest';
 import {getTownDistrict,townAsset} from './townDistricts';
 import {getTownDistrictHotspots} from './townDistrictHotspots';
 import {fitPortraitStage} from '../../components/ui/portraitStageFit';
+import {coverTownStage} from './townStageCover';
+import {TOWN_DISTRICT_LIGHTS} from './townDistrictLights';
 
-/** Full-image 768x1376 space: never crop the illustration behind hotspot pixels.
- * ResizeObserver handles both width-limited portrait phones and height-limited desktop.
+/** Scene art and its hit targets share a single cover-fit coordinate space.
+ * The art fills the entire viewport, without stretching; only unavoidable
+ * edge cropping occurs when the screen ratio differs from 768:1376.
+ * The accessible facility drawer remains available when a point is cropped.
  */
 function DistrictStage({children}:{children:ReactNode}){
  const host=useRef<HTMLDivElement>(null);
@@ -31,7 +35,9 @@ function DistrictStage({children}:{children:ReactNode}){
   const measure=()=>{
    const fit=fitPortraitStage(element.clientWidth,element.clientHeight);
    if(!fit)return;
-   setDimensions(old=>old&&Math.abs(old.width-fit.width)<.5&&Math.abs(old.height-fit.height)<.5?old:fit);
+   const cover=coverTownStage(fit,element.clientWidth,element.clientHeight);
+   if(!cover)return;
+   setDimensions(old=>old&&Math.abs(old.width-cover.width)<.5&&Math.abs(old.height-cover.height)<.5?old:cover);
   };
   measure();
   const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(measure):null;
@@ -39,7 +45,7 @@ function DistrictStage({children}:{children:ReactNode}){
   window.addEventListener('resize',measure);
   return()=>{observer?.disconnect();window.removeEventListener('resize',measure)};
  },[]);
- return <div className="city-district-scene" ref={host} role="group" aria-label="街區完整背景與互動設施">
+ return <div className="city-district-scene" ref={host} role="group" aria-label="街區滿版背景與互動設施">
   <div className="city-district-scene__stage"
    style={dimensions?{width:dimensions.width,height:dimensions.height}:undefined}>
    {children}
@@ -55,6 +61,7 @@ export default function TownDistrictPage(){
  const district=getTownDistrict(districtId??'');
  const {state:s,dispatch}=useGame();
  const [active,setActive]=useState<TownFacilityId|null>(null);
+ const [listOpen,setListOpen]=useState(false);
  const [restCinematic,setRestCinematic]=useState<RestServiceId|null>(null);
  const trigger=useRef<HTMLButtonElement|null>(null);
  const restCommitting=useRef(false);
@@ -70,7 +77,7 @@ export default function TownDistrictPage(){
  };
  // Navigating between /town/:districtId paths must never retain a different
  // district's previously opened modal / cinematic.
- useEffect(()=>{setActive(null);setRestCinematic(null);restCommitting.current=false},[districtId]);
+ useEffect(()=>{setActive(null);setListOpen(false);setRestCinematic(null);restCommitting.current=false},[districtId]);
  useEffect(()=>{
   if(!active)return;
   const frame=window.requestAnimationFrame(()=>{
@@ -112,22 +119,19 @@ export default function TownDistrictPage(){
   <h1>找不到這個街區</h1><Link to="/town">返回城鎮總覽</Link>
  </section>;
  const hotspots=getTownDistrictHotspots(district.id);
- return <div className={`city-district-page city-district-page--${district.lighting} city-district-page--live viewport-page`}
-  data-town-district-page={district.id}>
-  <header className="city-district-heading">
-   <Link to="/town" className="city-district-back" aria-label="返回城鎮總覽"><ArrowLeft size={18}/></Link>
-   <div><span className="eyebrow">{district.number} / {district.english}</span><h1>{district.title}</h1></div>
-   <Link to="/" className="city-district-home" aria-label="返回避難所"><Home size={17}/></Link>
-  </header>
-  <div className="city-district-live-status" aria-live="off">
-   <span><Clock3 size={13}/> 台北 {taipeiDate(s.world.day)} · {worldPhase(s.world.minute)} {worldClock(s.world.minute)}</span>
-   <strong><Coins size={13}/> {s.economy.coins} 舊幣</strong>
-  </div>
+ return <div className={`city-district-page city-district-page--${district.lighting} city-district-page--live city-district-page--v0848 viewport-page`}
+  data-town-district-page={district.id} data-fullbleed-district="true">
   <DistrictStage>
    <img className="city-district-scene__image" src={townAsset(district.image)}
     alt={district.title+'城市場景'} draggable={false}/>
    <span className={`city-district-scene__atmosphere city-district-scene__atmosphere--${district.id}`} aria-hidden="true"/>
-   <span className="city-district-scene__kicker" aria-hidden="true"><MapPinned size={13}/> CITY SECTOR / {district.number}</span>
+   <div className="city-district-scene__lights" aria-hidden="true">
+    {TOWN_DISTRICT_LIGHTS[district.id].map((light,index)=>
+     <span key={index} className={`city-district-scene__light city-district-scene__light--${light.tone}`}
+      style={{left:`${light.x}%`,top:`${light.y}%`,width:`${light.size}%`,
+       animationDelay:`-${light.delay}s`,animationDuration:`${light.duration}s`}}/>
+    )}
+   </div>
    {hotspots.map(h=>{
     const open=isTownOpen(h.facility,s.world.minute);
     return <button type="button" key={h.facility}
@@ -145,8 +149,27 @@ export default function TownDistrictPage(){
     </button>;
    })}
   </DistrictStage>
-  <section className="city-district-services city-district-services--live surface-card">
-   <header><h2>街區設施</h2><small>點選場景標記或下方清單</small></header>
+  <header className="city-district-heading">
+   <Link to="/town" className="city-district-back" aria-label="返回城鎮總覽"><ArrowLeft size={18}/></Link>
+   <div><span className="eyebrow">{district.number} / {district.english}</span><h1>{district.title}</h1></div>
+   <Link to="/" className="city-district-home" aria-label="返回避難所"><Home size={17}/></Link>
+  </header>
+  <div className="city-district-live-status" aria-live="off">
+   <span><Clock3 size={13}/> 台北 {taipeiDate(s.world.day)} · {worldPhase(s.world.minute)} {worldClock(s.world.minute)}</span>
+   <strong><Coins size={13}/> {s.economy.coins} 舊幣</strong>
+  </div>
+  <div className="city-district-controls">
+   <button type="button" className="city-district-controls__list"
+    aria-controls="town-v0848-facility-list" aria-expanded={listOpen}
+    onClick={()=>setListOpen(value=>!value)}>
+    <MapPinned size={15}/> {listOpen?'收起設施':'設施清單'}
+   </button>
+   <span>直接點選場景中的設施</span>
+  </div>
+  <section id="town-v0848-facility-list"
+   className="city-district-services city-district-services--live surface-card"
+   aria-label="街區設施輔助清單" hidden={!listOpen}>
+   <header><h2>街區設施</h2><small>鍵盤／窄螢幕的備用入口</small></header>
    <p>{district.summary}</p>
    <div className="city-district-services__list">
     {district.facilities.map((id,i)=>{
@@ -168,6 +191,7 @@ export default function TownDistrictPage(){
       <strong>{name}</strong><span className="city-district-service__pending">尚未開放</span>
      </div>)}
    </div>
+   {district.id==='old-core'&&<p className="city-district-services__integrated">公告欄委託已整合至「情報酒館」的公告欄頁籤。</p>}
    <div className="city-district-services__notice"><Info size={15}/><span>已直接連接原有城鎮服務。未營業時仍可查看，但無法繞過營業時間、舊幣、飢餓或每日次數限制。</span></div>
    <Link to="/town/classic" className="city-district-services__legacy">前往原有城鎮功能 <ChevronRight size={16}/></Link>
   </section>

@@ -13,3 +13,11 @@
 第 1 批規則：三區每段仍取單張 city-overview.webp 的各三分之一，同一個玻璃層使畫面和局部光效一同柔焦，文字浮在前景。選外環時上段下移一列，其餘向下離場；選蒸霧時上段向上／下段向下；選舊城時下段上移，上方兩段向上。對應的原完整詳頁圖由中段向上下展開、blur 歸零，900ms 後導入現有詳頁。尊重 reduced-motion / update:slow；不得更動八項現有城鎮服務、遊戲數值與存檔。
 
 每批均需最新 GitHub Actions npm run build 和 npm test 成功，真機視覺與 FPS 另由使用者人工驗收。各批完成後更新 docs/PROJECT_HANDOFF.md 與各版 QA 文件。合併權完全交由使用者，不自動做下一批。
+
+
+## 第 2 批 v0.8.48：實作交接（PR 待自行 Merge）
+
+- 基準 PR #75 已 Merge，main `7f4aac241246e91e72a56d4c18263657f4febc2f`。唯一分支 `feat/v0.8.48-fullbleed-district-tavern-noticeboard`，只做第 2 批。
+- 三街區原圖滿版 cover-fit，圖片與熱點同比例放大並在中心裁邊。七處校正點依使用者附圖黃點位置；酒館內新增公告欄委託分頁，原八設施和原任務資料完整保留。
+- 舊設施列表改為預設收合的輔助抽屜；新增局部霓虹光點，支援 reduced-motion / update:slow。原圖 SHA256 和存檔 schema 不變。
+- 測試 `tests/v0848-town-fullbleed-services.test.ts`；人工 QA `docs/V0848_FULLBLEED_DISTRICT_QA.md`。使用者 Merge 並告知後，才做第 3 批 v0.8.49。

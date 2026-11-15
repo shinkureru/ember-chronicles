@@ -1,5 +1,18 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-16｜第七輪第 2 批 v0.8.48：三街區滿版原圖、七處設施校正、情報酒館公告欄頁籤（本 PR 待自行 Merge）
+
+- **版本基準**：第1批 PR #75 已由使用者 Merge，main `7f4aac241246e91e72a56d4c18263657f4febc2f`；開始時 Open PR 0。唯一分支 `feat/v0.8.48-fullbleed-district-tavern-noticeboard`；package / package-lock = 0.8.48。此第七輪第2／5批，不自行 merge，也不預做 v0.8.49。
+- **場景滿版**：`TownDistrictPage.tsx` 保留原三張 768×1376 WebP，舞台採比例正確的 cover-fill，真正填滿整個街區可用畫面。先用共用 `fitPortraitStage()` 求 contain，再由新增的 `coverTownStage()` 計算共同放大倍率；圖片和熱點一起保持置中，不可只改圖片尺寸使點擊位置失準。不同畫面比例不可避免的邊緣裁切由預設收起、可開啟的設施清單補救。這批不修改避難所家具數學或圖片。
+- **使用者黃點精準定位**：三張附圖只是視覺座標校準，**不得寫入專案、覆蓋原始圖片**。取得黃點中心／參考圖原長寬，換算百分比：外環旅店 14.99/48.81；蒸霧公共澡堂 20.80/44.21、公共食堂 84.33/40.21；舊城工坊 30.60/38.22、診所 17.80/55.10、酒館 88.73/44.67、訓練場 76.77/59.40。新 `townDistrictHotspots.ts` 僅保留 1+2+4=7 個實體場景入口，點該建物區域的原 button 才開啟原 dialog；公告欄不再外環單獨設點。
+- **公告欄完整保留**：底層 `TOWN_FACILITIES` 仍 8 項。`TownFacilityDialog.tsx` 的 tavern 增加「酒館情報／公告欄委託」頁籤（tablist/tab/panel），切到公告欄時照舊顯示全部 `TOWN_QUESTS`，仍走原 `TOWN_ACCEPT_QUEST` / `TOWN_COMPLETE_QUEST` reducer，原現有獎勵/需求/每日鎖不變；舊 /town/classic 的獨立公告欄仍保留作回歸入口。
+- **光影與互動**：新 `townDistrictLights.ts` 按原圖可見亮處設 7～8 個局部透明徑向光點，CSS `opacity+transform` 以不同週期呼吸；維持 v0.8.45 的既有薄霧與營業中提示。完整規則在 `_v0848-town-fullbleed-services.scss`，最後匯入且限於 `city-district-page--v0848`，不覆蓋總覽轉場、黑市、HUD；低動態/低更新率停止動態。重整顯示為原圖＋角落導覽，長列表預設 hidden，只有按「設施清單」才展開可內捲抽屜，仍支援 Tab/Enter/焦點返回。
+- **測試及保護**：新增 `tests/v0848-town-fullbleed-services.test.ts`，測 3 圖 7 熱點比例與預設收合清單、共用放大數學、原八服務與公告欄對話切換、原交易/委託 reducer 與 CSS 降動態。保留 v0832～v0847 歷史測試、同步改版號與局部已變更的舊場景期望；v0846 14 張原圖 SHA256 固定值仍生效，所有原始圖片沒有更動。人工 QA 在 `docs/V0848_FULLBLEED_DISTRICT_QA.md`；GitHub Actions 最新 commit build + test 必須全綠，不能宣稱 iOS/Android 真機已實測。
+- **停止點**：本批只建一個 PR，由使用者自行 Merge 並通知後，才開工 v0.8.49（PNG 生命／體力外框＋非同步細粒子與流紋）。不提前做稀有度彩框或金屬材質。
+
+---
+
+
 ## 2026-11-15｜第七輪第 1 批 v0.8.47：城鎮滿版毛玻璃總覽與分區展開過場（本 PR 待使用者 Merge）
 
 - **基準與停止點**：PR #74 已由使用者 Merge，最新 main d1b6ee5471312fe25da69cfb09d518fe24cb759d，起工時無 Open PR。本批唯一分支 feat/v0.8.47-town-overview-transition。原定第七輪五批 v0.8.47～v0.8.51，詳見 docs/SEVENTH_ROUND_VISUAL_ROADMAP.md。這次只做第 1 批，不預做第 2 批，不自動 Merge。

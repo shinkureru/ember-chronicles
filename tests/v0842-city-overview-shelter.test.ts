@@ -36,10 +36,11 @@ describe('v0.8.42 batch 1 — town visual overview and one-viewport safehouse',(
  });
  it('keeps ALL eight legacy facilities reachable during the staged town transition',()=>{
   const ids=TOWN_DISTRICTS.flatMap(x=>x.facilities);
-  expect(ids).toHaveLength(8);
-  expect(new Set(ids).size).toBe(8);
-  expect([...ids].sort()).toEqual(TOWN_FACILITIES.map(x=>x.id).sort());
-  expect(TOWN_DISTRICTS[0].facilities).toEqual(['inn','noticeboard']);
+  expect(ids).toHaveLength(7);
+  expect(new Set(ids).size).toBe(7);
+  expect([...ids].sort()).toEqual(TOWN_FACILITIES.map(x=>x.id).filter(id=>id!=='noticeboard').sort());
+  expect(TOWN_FACILITIES.map(x=>x.id)).toContain('noticeboard');
+  expect(TOWN_DISTRICTS[0].facilities).toEqual(['inn']);
   expect(TOWN_DISTRICTS[1].facilities).toEqual(['laundry','canteen']);
   expect(TOWN_DISTRICTS[2].facilities).toEqual(['clinic','workshop','tavern','training']);
   expect(TOWN_DISTRICTS[0].facilityNames.at(-1)).toBe('尚未開放');
@@ -130,7 +131,7 @@ describe('v0.8.42 batch 1 — town visual overview and one-viewport safehouse',(
  it('prioritizes a fixed safehouse scene and actual scrollable drawer, not the old whole-page scroll CSS',()=>{
   const css=read('src/styles/_v0842-city-shelter.scss');
   const root=read('src/styles/main.scss');
-  expect(root.trimEnd()).toMatch(/@import "v0847-town-overview-transition";$/);
+  expect(root.trimEnd()).toMatch(/@import "v0848-town-fullbleed-services";$/);
   expect(root.indexOf('@import "v0841-shelter-scroll-hotfix"')).toBeLessThan(root.indexOf('@import "v0842-city-shelter"'));
   expect(css).toContain('.shelter-home-page.shelter-home-page--compact.viewport-page');
   expect(css).toContain('overflow:hidden!important');
@@ -151,8 +152,8 @@ describe('v0.8.42 batch 1 — town visual overview and one-viewport safehouse',(
   const app=read('src/app/App.tsx');
   expect(app).toContain('if(state.mode!==\'home\'&&location.pathname!==\'/chapter\')');
   expect(state).toContain('localStorage');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.47');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.47');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.48');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.48');
   expect(read('src/styles/_viewport.scss')).toContain('.app-main--mission');
   expect(read('src/styles/_v0838-shelter-hub.scss')).toContain('768×1376');
  });

@@ -126,7 +126,7 @@ describe('v0.8.53 — actual HUD, precious gold preview and iPhone 13 Pro produc
   expect(app).not.toContain('import UiShowcasePage');
   expect(app).not.toContain('path="/ui-lab"');
   expect(app).not.toContain('UI 實驗室');
-  expect(app).not.toContain('tab===\\'visual\\'');
+  expect(app).not.toContain("tab==='visual'");
   expect(app).toContain('存檔與重設');
   expect(app).toContain('resetPrototypeAndReload()');
   expect(app).toContain("if(state.mode!=='home'&&location.pathname!=='/chapter')");

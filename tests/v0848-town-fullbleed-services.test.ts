@@ -111,14 +111,14 @@ describe('v0.8.48 — three full-bleed scenes, seven calibrated venues, nested n
   expect(scene).toContain("getTownDistrictHotspots(district.id)");
   expect(scene).not.toContain('backgroundSize:');
   expect(css).not.toContain('url(');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0849-hud-liquid";$/);
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0850-rarity-selection-gold";$/);
  });
  it('keeps game save schema and original 14 asset checksums locked by previous regression',()=>{
   const previous=read('tests/v0846-urban-final-integration.test.ts');
   for(const asset of ['city-overview.webp','outer-ring.webp','steam-street.webp','old-core.webp',
    'background_empty.jpg','background_full.jpg','bed.png','computer.png'])expect(previous).toContain(asset);
   expect(read('src/game/state/storage.ts')).toContain('ember-chronicles-prototype-v1');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.49');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.49');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.50');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.50');
  });
 });

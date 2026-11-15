@@ -87,11 +87,11 @@ describe('v0.8.49 — actual original-PNG HUD, liquid smoke and separate fine pa
   ])expect(css).toContain(token);
   expect(css).not.toContain('requestAnimationFrame');
   expect(read('src/components/ui/hudParticles.ts')).not.toContain('Math.random(');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0849-hud-liquid";$/);
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0850-rarity-selection-gold";$/);
  });
  it('only updates package release and leaves 14 original town/warehouse assets and save schema intact',()=>{
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.49');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.49');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.50');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.50');
   const old=read('tests/v0846-urban-final-integration.test.ts');
   for(const token of ['city-overview.webp','outer-ring.webp','steam-street.webp','old-core.webp','background_full.jpg','bed.png'])expect(old).toContain(token);
   expect(read('src/game/state/storage.ts')).toContain('ember-chronicles-prototype-v1');

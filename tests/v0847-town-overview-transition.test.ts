@@ -11,7 +11,7 @@ const read=(p:string)=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 describe('v0.8.47 — town glass atlas and directional reveal',()=>{
  it('shifts the selected part into the center and others out',()=>{
   expect(TOWN_OVERVIEW_ORDER).toEqual(['outer-ring','steam-street','old-core']);
-  expect(TOWN_OVERVIEW_TRANSITION_MS).toBe(900);
+  expect(TOWN_OVERVIEW_TRANSITION_MS).toBe(1050);
   expect([0,1,2].map(i=>getTownOverviewShiftRows(0,i))).toEqual([1,2.1,2.1]);
   expect([0,1,2].map(i=>getTownOverviewShiftRows(1,i))).toEqual([-2.1,0,2.1]);
   expect([0,1,2].map(i=>getTownOverviewShiftRows(2,i))).toEqual([-2.1,-2.1,-1]);
@@ -54,12 +54,12 @@ describe('v0.8.47 — town glass atlas and directional reveal',()=>{
    'prefers-reduced-motion:reduce','update:slow','forced-colors:active',
    ':focus-visible','pointer-events:none','@supports not'])expect(css).toContain(part);
   expect(css).not.toContain('.city-district-page--live');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0851-brushed-metal-final";$/);
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0852-viewport-town-cinematic-audit";$/);
  });
  it('does not change old routes, playable eight services or content version',()=>{
   expect(TOWN_DISTRICTS.flatMap(d=>d.facilities)).toHaveLength(7);
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.51');
-  expect(JSON.parse(read('package-lock.json')).version).toBe('0.8.51');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.52');
+  expect(JSON.parse(read('package-lock.json')).version).toBe('0.8.52');
   expect(read('src/app/App.tsx')).toContain('<Route path="/town/:districtId" element={<TownDistrictPage/>}/>');
  });
 });

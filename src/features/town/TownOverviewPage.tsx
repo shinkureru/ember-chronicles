@@ -27,7 +27,7 @@ export default function TownOverviewPage(){
  const openDistrict=(event:MouseEvent<HTMLAnchorElement>,district:TownDistrict)=>{
   if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
   if(selected){event.preventDefault();return}
-  if(typeof window==='undefined'||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+  if(typeof window==='undefined'||(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches||window.matchMedia?.('(update: slow)').matches))return;
   event.preventDefault();
   preload(district.image);
   setSelected(district.id);

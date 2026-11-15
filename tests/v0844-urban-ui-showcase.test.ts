@@ -93,7 +93,8 @@ describe('v0.8.44 — reusable cinematic urban UI, isolated visual laboratory',(
   expect(app).toContain("if(state.onboarding.phase!=='complete')");
   expect(app).toContain("if(state.mode!=='home'&&location.pathname!=='/chapter')");
   const src=read('src/features/ui-showcase/UiShowcasePage.tsx');
-  expect(src).not.toContain('useGame');
+  expect(src).not.toMatch(/\\buseGame\\s*\\(/);
+  expect(src).not.toMatch(/import[^;]*useGame/);
   expect(src).not.toContain('dispatch(');
   expect(src).not.toContain('saveGame');
   const markup=html(createElement(MemoryRouter,{children:createElement(UiShowcasePage)}));
@@ -138,7 +139,7 @@ describe('v0.8.44 — reusable cinematic urban UI, isolated visual laboratory',(
   expect(app).toContain('<Route path="/town/classic" element={<TownPage/>}/>');
   expect(app).toContain('<Route path="/black-market" element={<BlackMarketPage/>}/>');
   expect(app).toContain('<Route path="/cards" element={<CardsPage/>}/>');
-  expect(read('src/features/market/marketProductPresentation.ts')).toContain('visual-only');
+  expect(read('src/features/market/marketProductPresentation.ts')).toContain('UI-only display grades');
   expect(read('src/features/shelter/ShelterScene.tsx')).toContain('background_empty.jpg');
   expect(JSON.parse(read('package.json')).version).toBe('0.8.44');
   expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.44');

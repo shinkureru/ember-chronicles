@@ -20,7 +20,7 @@
 }
 .urban-rarity-artwork .urban-slot__rim::after,
 .urban-showcase__rarities .urban-slot:not(.is-selected) .urban-slot__rim::after{
- animation:none!important;opacity:0!important;
+ animation:none!important;opacity:0;
 }
 /* Without an actual selection, mouse-hover and focus MUST NOT reveal a
  * colored rarity frame. Keyboard focus uses a separate accessible outline. */
@@ -45,6 +45,31 @@
  border-color:var(--market-product-edge)!important;
  box-shadow:0 0 0 1px var(--market-product-edge),inset 0 1px 2px #fff3,0 0 16px color-mix(in srgb,var(--market-product-glow) 46%,transparent)!important;
 }
+
+/* Card archive outer tile previously used its LEVEL color as a permanent
+ * rarity-like border. Keep a quiet plate when idle; selected card gets
+ * its actual card RARITY (normal/rare/chaos) to match the square artwork. */
+.cards-viewport .card-library-grid--scroll .card-library-tile.urban-v0845-codex-card,
+.cards-viewport .card-library-grid--scroll .card-library-tile.urban-v0845-codex-card:not(.is-selected):is(:hover,:focus-visible){
+ border-color:#78879061!important;
+ box-shadow:inset 0 1px #ffffff0a,0 2px 8px #0008!important;
+}
+.cards-viewport .card-library-grid--scroll .card-library-tile.urban-v0845-codex-card.is-selected{
+ --v0850-codex-edge:var(--urban-rarity-gray);
+ --v0850-codex-glow:#aeb6ba;
+ border-color:var(--v0850-codex-edge)!important;
+ box-shadow:0 0 0 1px var(--v0850-codex-edge),inset 0 1px 2px #fff2,
+  0 0 13px color-mix(in srgb,var(--v0850-codex-glow) 43%,transparent)!important;
+}
+.cards-viewport .card-library-grid--scroll .card-library-tile.urban-v0845-codex-card.is-selected.rarity-tile--rare{
+ --v0850-codex-edge:var(--urban-rarity-blue);
+ --v0850-codex-glow:#82d3f2;
+}
+.cards-viewport .card-library-grid--scroll .card-library-tile.urban-v0845-codex-card.is-selected.rarity-tile--chaos{
+ --v0850-codex-edge:var(--urban-rarity-purple);
+ --v0850-codex-glow:#cd93e7;
+}
+
 /* Explicit selection is also reflected on the real card archive & skill
  * action button; each reuses only the original nested decorative artwork. */
 .urban-showcase__rarities .urban-slot.is-selected > .urban-slot__square,
@@ -73,7 +98,6 @@
 .cards-viewport .urban-v0845-codex-card.is-selected .urban-slot__rim::after,
 .skill-tile.urban-v0845-skill-tile.is-selected:not(:disabled) .urban-slot__rim::after{
  animation:urban-rarity-flow 7.4s ease-in-out -1.8s infinite!important;
- opacity:.34!important;
 }
 /* Gold is strictly a selected UI laboratory preview; only rare, brief
  * highlights rather than a continuously blazing border. */

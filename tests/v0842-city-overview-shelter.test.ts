@@ -5,6 +5,7 @@ import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {MemoryRouter,Route,Routes} from 'react-router-dom';
 import TownDistrictPage from '../src/features/town/TownDistrictPage';
+import {GameProvider} from '../src/app/GameContext';
 import {CITY_OVERVIEW_IMAGE,TOWN_DISTRICTS,getTownDistrict,isTownDistrictId} from '../src/features/town/townDistricts';
 import {TOWN_FACILITIES} from '../src/game/data/town';
 import {getWarehouseVisualMode,SHELTER_FURNITURE_IDS} from '../src/game/engine/shelterVisuals';
@@ -70,10 +71,11 @@ describe('v0.8.42 batch 1 — town visual overview and one-viewport safehouse',(
   expect(overview).toContain('city-overview-glass');
   expect(overview).not.toContain("type:'TOWN_SERVICE'");
  });
- it('renders all three real district skeleton routes and back to hub, with future actions explicitly deferred',()=>{
+ it('renders all three accessible real-service district routes with stage art and return navigation',()=>{
   for(const x of TOWN_DISTRICTS){
-   const html=renderToStaticMarkup(createElement(MemoryRouter,{initialEntries:['/town/'+x.id]},
-    createElement(Routes,null,createElement(Route,{path:'/town/:districtId',element:createElement(TownDistrictPage)}))));
+   const html=renderToStaticMarkup(createElement(GameProvider,null,
+    createElement(MemoryRouter,{initialEntries:['/town/'+x.id]},
+     createElement(Routes,null,createElement(Route,{path:'/town/:districtId',element:createElement(TownDistrictPage)})))));
    expect(html).toContain(x.title);
    expect(html).toContain(x.image);
    expect(html).toContain('前往原有城鎮功能');
@@ -82,12 +84,17 @@ describe('v0.8.42 batch 1 — town visual overview and one-viewport safehouse',(
    expect(html).toContain('返回避難所');
   }
  });
- it('does not sneakily turn all city functional panels into fake action buttons',()=>{
+ it('opens the real original eight-service dialogs instead of fake buttons',()=>{
   const district=read('src/features/town/TownDistrictPage.tsx');
-  expect(district).toContain('功能入口於下一批接入');
+  expect(district).toContain('onClick={event=>openFacility(id,event)}');
   expect(district).toContain('尚未開放');
-  expect(district).toContain('原有服務未移除');
-  expect(district).not.toContain("dispatch({type:'TOWN_SERVICE'");
+  expect(district).toContain('已直接連接原有城鎮服務');
+  expect(district).toContain("dispatch({type:'TOWN_SERVICE',serviceId})");
+  expect(district).toContain('<TownFacilityDialog');
+  expect(district).toContain('<ClinicDialog');
+  expect(district).toContain('<WorkshopDialog');
+  expect(district).toContain('<InnRestDialog');
+  expect(district).toContain('<RestCinematic');
   const old=read('src/features/town/TownPage.tsx');
   expect(old).toContain("dispatch({type:'TOWN_SERVICE',serviceId})");
   expect(old).toContain('<ClinicDialog');
@@ -123,7 +130,7 @@ describe('v0.8.42 batch 1 — town visual overview and one-viewport safehouse',(
  it('prioritizes a fixed safehouse scene and actual scrollable drawer, not the old whole-page scroll CSS',()=>{
   const css=read('src/styles/_v0842-city-shelter.scss');
   const root=read('src/styles/main.scss');
-  expect(root.trimEnd()).toMatch(/@import "v0842-city-shelter";$/);
+  expect(root.trimEnd()).toMatch(/@import "v0843-town-district-live";$/);
   expect(root.indexOf('@import "v0841-shelter-scroll-hotfix"')).toBeLessThan(root.indexOf('@import "v0842-city-shelter"'));
   expect(css).toContain('.shelter-home-page.shelter-home-page--compact.viewport-page');
   expect(css).toContain('overflow:hidden!important');
@@ -144,8 +151,8 @@ describe('v0.8.42 batch 1 — town visual overview and one-viewport safehouse',(
   const app=read('src/app/App.tsx');
   expect(app).toContain('if(state.mode!==\'home\'&&location.pathname!==\'/chapter\')');
   expect(state).toContain('localStorage');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.42');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.42');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.43');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.43');
   expect(read('src/styles/_viewport.scss')).toContain('.app-main--mission');
   expect(read('src/styles/_v0838-shelter-hub.scss')).toContain('768×1376');
  });

@@ -29,3 +29,11 @@
 - 使用者原始 PNG 雙色框已轉 512×70 透明精簡 PNG 保存於 `public/assets/ui/hud-frames-v0849.png`，HP=上半部紅銅金屬，STA=下半部藍銀金屬；此批新增檔、不覆蓋任何舊圖片。
 - 正式 HUD opt-in 液流，原 `StatBar` 維持預設邏輯；每條9顆固定不同粒子軌跡/相位，HP/STA分別動畫，黑煙液流 2 組不同週期。低動態與 update:slow 禁用動畫，保留實際數值和安全比例。
 - 測試 `tests/v0849-hud-liquid-particles.test.ts`；人工 QA `docs/V0849_HUD_LIQUID_QA.md`。使用者 Merge 後才繼續 v0.8.50。
+
+
+## 第 4 批 v0.8.50｜已提交分支，PR 由使用者自行 Merge
+
+- 前批 PR #77 已 Merge；起始 main cf121e898c17d3e3ce1237c6b1ec2a31368c8e48。新分支 feat/v0.8.50-rarity-selected-gold-glimmer。
+- 正方圖格、黑市整卡及圖鑑整卡未選取只有中性底盤；真正選取後灰綠藍紫按原稀有度亮框。既有 onClick/交易/卡牌操作不改。
+- 僅 UI 實驗室金色選取格新增偶發星芒和雙層水紋，無正式金色掉落。低動態/低更新率關閉特效。
+- 永久交接 docs/PROJECT_HANDOFF.md；自動測試 tests/v0850-rarity-selection-gold.test.ts；人工 docs/V0850_RARITY_SELECTION_QA.md。待使用者 Merge 後才進入最後第 5 批 v0.8.51。

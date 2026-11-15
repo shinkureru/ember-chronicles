@@ -34,7 +34,7 @@ export default function TownOverviewPage(){
   timer.current=setTimeout(()=>navigate('/town/'+district.id),TOWN_OVERVIEW_TRANSITION_MS);
  };
  const chosen=selected?TOWN_DISTRICTS.find(item=>item.id===selected):undefined;
- return <div className={'city-overview-page city-overview-page--v0847 city-overview-page--v0852 viewport-page'+(selected?' is-transitioning':'')+(arrivingFromDistrict?' is-return-arrival':'')}
+ return <div className={'city-overview-page city-overview-page--v0847 city-overview-page--v0852 viewport-page'+(selected?' is-transitioning':'')+(arrivingFromDistrict?' is-return-arrival':' is-opening-town')}
   aria-label="城鎮設施總覽" data-town-overview-version="0.8.47">
   <header className="city-overview-heading">
    <div><span className="eyebrow">EMBER CHRONICLES / CITY DISTRICTS</span><h1>城鎮設施</h1></div>

@@ -12,7 +12,7 @@ import {townHungerProjection,hungerRisk} from '../../game/engine/hungerCosts';
 import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
 import ItemArt from '../../components/ItemArt';
 
-export default function WorkshopDialog({onClose}:{onClose:()=>void}){
+export default function WorkshopDialog({onClose,backLabel='返回避難所'}:{onClose:()=>void;backLabel?:string}){
  const {state:s,dispatch,pauseClock}=useGame();
  const [selected,setSelected]=useState<ArmorSlot>(()=>equippedArmorEntries(s)[0]?.slot??'body');
  const [showNotice,setShowNotice]=useState(false);
@@ -124,7 +124,7 @@ export default function WorkshopDialog({onClose}:{onClose:()=>void}){
     </div>}
     {showNotice&&s.lastEvent&&<p className="workshop-dialog__last" role="status">{s.lastEvent}</p>}
    </div>
-   <footer><button type="button" onClick={onClose}>返回避難所</button></footer>
+   <footer><button type="button" onClick={onClose}>{backLabel}</button></footer>
   </section>
  </div>,document.body);
 }

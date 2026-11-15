@@ -22,7 +22,7 @@ const skillGroups:{name:string;attributes:AttributeId[]}[]=[
 
 /** The five original town services remain available, without a permanent
  * detail panel below the eight facility buttons on the town overview. */
-export default function TownFacilityDialog({facility,onClose}:{facility:SecondaryTownFacility;onClose:()=>void}){
+export default function TownFacilityDialog({facility,onClose,backLabel='返回避難所'}:{facility:SecondaryTownFacility;onClose:()=>void;backLabel?:string}){
  const {state:s,dispatch,pauseClock}=useGame();
  const [attribute,setAttribute]=useState<AttributeId>('observation');
  const [hasAction,setHasAction]=useState(false);
@@ -102,7 +102,7 @@ export default function TownFacilityDialog({facility,onClose}:{facility:Secondar
     </div>}
     {hasAction&&s.lastEvent&&<p className="town-facility-dialog__result" role="status">{s.lastEvent}</p>}
    </div>
-   <footer><button type="button" onClick={onClose}>返回避難所</button></footer>
+   <footer><button type="button" onClick={onClose}>{backLabel}</button></footer>
   </section>
  </div>,document.body);
 }

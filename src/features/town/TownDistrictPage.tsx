@@ -17,6 +17,7 @@ import TownFacilityDialog,{type SecondaryTownFacility} from './TownFacilityDialo
 import type {RestServiceId} from '../../game/engine/innRest';
 import {getTownDistrict,townAsset} from './townDistricts';
 import {getTownDistrictHotspots} from './townDistrictHotspots';
+import {fitPortraitStage} from '../../components/ui/portraitStageFit';
 
 /** Full-image 768x1376 space: never crop the illustration behind hotspot pixels.
  * ResizeObserver handles both width-limited portrait phones and height-limited desktop.
@@ -28,10 +29,9 @@ function DistrictStage({children}:{children:ReactNode}){
   const element=host.current;
   if(!element)return;
   const measure=()=>{
-   const w=element.clientWidth,h=element.clientHeight;
-   if(w<=0||h<=0)return;
-   const width=Math.min(w,h*768/1376),height=width*1376/768;
-   setDimensions(old=>old&&Math.abs(old.width-width)<.5&&Math.abs(old.height-height)<.5?old:{width,height});
+   const fit=fitPortraitStage(element.clientWidth,element.clientHeight);
+   if(!fit)return;
+   setDimensions(old=>old&&Math.abs(old.width-fit.width)<.5&&Math.abs(old.height-fit.height)<.5?old:fit);
   };
   measure();
   const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(measure):null;

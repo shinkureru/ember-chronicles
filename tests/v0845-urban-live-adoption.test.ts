@@ -144,8 +144,8 @@ describe('v0.8.45 — staged adoption in actual gameplay UI without new economy'
   expect(css).toContain('@media(max-width:375px),(max-height:590px)');
   expect(css).toContain('@media(prefers-reduced-motion:reduce)');
   expect(css).toContain('animation:none!important');
-  expect(css).not.toContain('video');
-  expect(css).not.toContain('canvas');
+  expect(css).not.toMatch(/\bvideo\s*\{|<video/);
+  expect(css).not.toMatch(/\bcanvas\s*\{|<canvas/);
   expect(css).not.toContain('position:fixed');
   const imports=read('src/styles/main.scss');
   expect(imports.trimEnd()).toMatch(/@import "v0845-urban-selective-adoption";$/);

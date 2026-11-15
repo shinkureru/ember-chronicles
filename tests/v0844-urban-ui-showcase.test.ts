@@ -93,7 +93,7 @@ describe('v0.8.44 — reusable cinematic urban UI, isolated visual laboratory',(
   expect(app).toContain("if(state.onboarding.phase!=='complete')");
   expect(app).toContain("if(state.mode!=='home'&&location.pathname!=='/chapter')");
   const src=read('src/features/ui-showcase/UiShowcasePage.tsx');
-  expect(src).not.toMatch(/\\buseGame\\s*\\(/);
+  expect(src).not.toMatch(/\buseGame\s*\(/);
   expect(src).not.toMatch(/import[^;]*useGame/);
   expect(src).not.toContain('dispatch(');
   expect(src).not.toContain('saveGame');

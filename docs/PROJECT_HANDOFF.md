@@ -1,5 +1,17 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-16｜第七輪第 4 批 v0.8.50：未選取只留底盤、選取稀有框與金色偶發星芒（本 PR 待自行 Merge）
+
+- GitHub 基準：前批 PR #77 已由使用者 Merge；main cf121e898c17d3e3ce1237c6b1ec2a31368c8e48，無其他 Open PR。本批唯一分支 feat/v0.8.50-rarity-selected-gold-glimmer，第七輪第 4／5 批，不自行 Merge，不提前做 v0.8.51。
+- 真實問題：v0.8.44～v0.8.46 的 .urban-slot__square、.urban-slot__rim、黑市商品外層 .market-v0822__product、圖鑑外層 .card-library-tile 均在未選取時顯示稀有度色框；先前只限制流光，並未移除彩色輪廓。本版新增 src/styles/_v0850-rarity-selection-gold.scss 最後匯入，集中做 selected-only 樣式。
+- 選取來源：黑市 BlackMarketPage.tsx 現有 button 加 selectedId===offer.id 的 is-selected 和 aria-pressed；CardsPage.tsx 現有卡片 button 加 selectedId===variant.id && selectedLevel===variant.level 的 is-selected 和 aria-pressed；技能卡現有 is-selected 及 UI 實驗室原 selected 不重寫。不新增巢狀 button，不修改點擊觸發交易、升級、卡牌拖曳或彈窗。背景圖案未選取僅深色底盤與透明占位邊線，focus-visible 使用獨立中性 outline；選取後方按原 rarity/tier 對應顏色亮框。黑市外層產品框和圖鑑外層等級框未選取時亦改為中性。
+- 金色只展示：使用者想要的金色稀有感由 UI 實驗室 selected gold 的三組 CSS 精細效果提供：雙層 11.3s/13.7s 不同步同心水紋、10.7s 稀疏短暫星芒、11.9s 間歇掠光。未選取完全停止動態。Gold 仍是 URBAN_RARITIES 預留展示級，實際 market 四色 gray/green/blue/purple、card 三色 gray/blue/purple 無改變。
+- 既有功能保護：不碰 src/game/data、reducer、交易價格、存貨、掉落、卡片等級、狀態、角色/任務/時間、HUD、v1 存檔 schema、城鎮/倉庫 14 張原始圖片或 v0.8.49 PNG。只改 UI classes、樣式與 UI 實驗室說明。CSS 遵循 reduced-motion、update:slow、forced-colors，選中才啟動金色特效，沒有 canvas、interval、RAF。
+- 測試、永久交接與停止點：package/lock 升 0.8.50；新增 tests/v0850-rarity-selection-gold.test.ts 與 docs/V0850_RARITY_SELECTION_QA.md，並同步歷史測試最新版本及最後 SCSS import。GitHub Actions 最新 HEAD build+test 全綠才建議 Merge；Chrome/Android/iOS 真人視覺/FPS 需部署後驗收。PR 僅一個，由使用者自行合併，通知後才開始第 5 批 v0.8.51 銀色金屬框材質與總回歸。
+
+---
+
+
 ## 2026-11-16｜第七輪第 3 批 v0.8.49：生命／體力 PNG 金屬外框、獨立粒子與黑煙液流（本 PR 待自行 Merge）
 
 - **起點**：前批 PR #76 已 Merge，main `503846b410ae020f52c3011404647ab1ee68467e`，無其他 Open PR。本批專用分支 `feat/v0.8.49-hud-liquid-particles`，只做第七輪第 3/5 批，完成後單 PR，使用者自行 Merge。

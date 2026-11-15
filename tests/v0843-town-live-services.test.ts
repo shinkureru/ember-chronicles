@@ -177,10 +177,10 @@ describe('v0.8.43 — playable city facility access and district interactions',(
   expect(app).toContain('<Route path="/town/classic" element={<TownPage/>}/>');
   expect(app).toContain('<Route path="/town/:districtId" element={<TownDistrictPage/>}/>');
   expect(app).toContain("if(state.mode!=='home'&&location.pathname!=='/chapter')");
-  expect(css.trimEnd()).toMatch(/@import "v0844-urban-ui-showcase";$/);
+  expect(css.trimEnd()).toMatch(/@import "v0845-urban-selective-adoption";$/);
   expect(read('src/styles/_v0842-city-shelter.scss')).toContain('.shelter-stage-fit');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.44');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.44');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.45');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.45');
   expect(read('src/game/state/storage.ts')).toContain('localStorage');
  });
 });

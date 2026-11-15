@@ -1,0 +1,169 @@
+/* v0.8.47: full-viewport glass composite and direction-aware district reveal.
+   ONLY the overview is affected; original image assets and district pages stay intact. */
+.app-main > .city-overview-page.city-overview-page--v0847.viewport-page{
+ display:block;position:relative;isolation:isolate;
+ width:100%;height:100%;min-height:0;max-height:100%;
+ padding:0;overflow:hidden!important;background:#07131c;
+}
+.city-overview-page--v0847 .city-overview-art{
+ position:absolute;inset:0;z-index:0;display:block;
+ width:100%;height:100%;min-height:0;
+ overflow:hidden;border:0;border-radius:0;box-shadow:none;background:#101f2b;
+}
+.city-overview-page--v0847 .city-overview-zone{
+ position:absolute;left:0;right:0;height:33.3333333%;width:100%;
+ display:flex;align-items:center;justify-content:center;
+ overflow:hidden;padding:0;min-height:0;isolation:isolate;
+ border:0!important;background:transparent;color:#f2f2ed;
+ text-decoration:none;touch-action:manipulation;opacity:1;
+ transition:transform 690ms cubic-bezier(.3,.75,.2,1),opacity 520ms ease;
+}
+.city-overview-page--v0847 .city-overview-zone::after{
+ content:"";position:absolute;bottom:0;left:0;right:0;height:1px;
+ z-index:4;background:#dfe4df93;pointer-events:none;
+}
+.city-overview-page--v0847 .city-overview-zone__composite{
+ position:absolute;z-index:0;left:0;width:100%;height:300%;
+ max-width:none;object-fit:fill;pointer-events:none;user-select:none;
+}
+.city-overview-page--v0847 .city-overview-zone__lights{
+ position:absolute;inset:-18%;z-index:1;pointer-events:none;opacity:.58;
+ background:
+ radial-gradient(ellipse 12% 9% at 17% 60%,#ffad635c,transparent 85%),
+ radial-gradient(ellipse 9% 8% at 77% 45%,#67c7e870,transparent 83%),
+ radial-gradient(ellipse 18% 13% at 57% 80%,#72b4ca35,transparent 82%);
+ animation:town-overview-breath-a 6.8s ease-in-out infinite alternate;
+}
+.city-overview-page--v0847 .city-overview-zone__lights--warm{
+ background:
+ radial-gradient(ellipse 14% 12% at 21% 52%,#fdbb7c7d,transparent 85%),
+ radial-gradient(ellipse 17% 10% at 74% 39%,#ffb86d6b,transparent 87%),
+ radial-gradient(ellipse 10% 8% at 49% 76%,#54d0d969,transparent 85%);
+ animation-name:town-overview-breath-b;animation-duration:8.3s;
+}
+.city-overview-page--v0847 .city-overview-zone__lights--industrial{
+ background:
+ radial-gradient(ellipse 10% 8% at 27% 70%,#55ded774,transparent 80%),
+ radial-gradient(ellipse 13% 10% at 76% 49%,#88d7f061,transparent 83%),
+ radial-gradient(ellipse 15% 14% at 61% 28%,#f7b98438,transparent 80%);
+ animation-duration:7.6s;animation-delay:-2.2s;
+}
+@keyframes town-overview-breath-a{
+ from{opacity:.35;transform:translate3d(-1%,.5%,0) scale(.99)}
+ to{opacity:.75;transform:translate3d(1%,-1.5%,0) scale(1.045)}
+}
+@keyframes town-overview-breath-b{
+ from{opacity:.4;transform:translate3d(1%,-1%,0) scale(1)}
+ to{opacity:.8;transform:translate3d(-1%,1%,0) scale(1.065)}
+}
+.city-overview-page--v0847 .city-overview-zone__blur{
+ position:absolute;z-index:2;inset:-1px;pointer-events:none;
+ background:#10192338;
+ -webkit-backdrop-filter:blur(9px) saturate(.82);
+ backdrop-filter:blur(9px) saturate(.82);
+}
+.city-overview-page--v0847 .city-overview-glass{
+ position:relative;z-index:3;width:auto;max-width:94%;
+ display:flex;flex-direction:column;gap:5px;padding:6px 12px;text-align:center;
+ border:0;border-radius:0;box-shadow:none;background:transparent;
+ -webkit-backdrop-filter:none;backdrop-filter:none;
+ transition:opacity 250ms ease,transform 250ms ease;
+}
+.city-overview-page--v0847 .city-overview-glass__number{
+ color:#e0e8e5ba;font:500 9px/1.4 Inter,sans-serif;
+ letter-spacing:.2em;text-shadow:0 1px 6px #07121f;
+}
+.city-overview-page--v0847 .city-overview-glass strong{
+ color:#faf6ed;font:650 clamp(24px,6.1vw,40px)/1.3 'Noto Serif TC',serif;
+ letter-spacing:.13em;text-shadow:0 3px 14px #000f,0 1px 5px #000b;
+}
+.city-overview-page--v0847 .city-overview-glass__action{
+ margin:0;justify-content:center;color:#e6dbcb9c;font-size:9px;
+ opacity:0;transition:opacity 200ms ease;
+}
+@media(hover:hover) and (pointer:fine){
+ .city-overview-page--v0847 .city-overview-zone:hover .city-overview-glass__action{opacity:1}
+ .city-overview-page--v0847 .city-overview-zone:hover .city-overview-glass{
+  background:transparent;transform:scale(1.055);
+ }
+}
+.city-overview-page--v0847 .city-overview-zone:focus-visible{
+ outline:3px solid #fbe2a6;outline-offset:-4px;
+}
+.city-overview-page--v0847 .city-overview-zone:focus-visible .city-overview-glass__action{opacity:1}
+.city-overview-page--v0847 .city-overview-heading,
+.city-overview-page--v0847 .city-overview-subhead,
+.city-overview-page--v0847 .city-overview-footer{
+ position:absolute;left:0;right:0;z-index:6;
+ padding:9px 12px;margin:0;pointer-events:none;
+ background:linear-gradient(180deg,#06101bd9,#06101b00);
+}
+.city-overview-page--v0847 .city-overview-heading{top:0}
+.city-overview-page--v0847 .city-overview-subhead{
+ top:56px;justify-content:space-between;font-size:10px;background:none;
+ text-shadow:0 2px 5px #000a;
+}
+.city-overview-page--v0847 .city-overview-footer{
+ bottom:0;min-height:41px;align-items:center;
+ background:linear-gradient(0deg,#06101bed,#06101b00);
+}
+.city-overview-page--v0847 .city-overview-heading a,
+.city-overview-page--v0847 .city-overview-footer a{pointer-events:auto}
+.city-overview-page--v0847 .city-overview-home{min-height:44px}
+.city-overview-page--v0847.is-transitioning .city-overview-heading,
+.city-overview-page--v0847.is-transitioning .city-overview-subhead,
+.city-overview-page--v0847.is-transitioning .city-overview-footer{
+ opacity:0;transition:opacity 250ms ease;pointer-events:none;
+}
+.city-overview-page--v0847.is-transitioning .city-overview-zone{
+ pointer-events:none;will-change:transform,opacity;
+}
+.city-overview-page--v0847.is-transitioning .city-overview-glass{
+ opacity:0;transition:opacity 310ms ease;
+}
+.city-overview-page--v0847.is-transitioning .city-overview-zone.is-selected{z-index:2}
+.city-overview-page--v0847 .city-overview-reveal{
+ position:absolute;inset:0;z-index:5;pointer-events:none;overflow:hidden;
+ opacity:0;clip-path:inset(33.333333% 0 33.333333% 0);
+ animation:town-overview-expand 900ms cubic-bezier(.3,.75,.2,1) forwards;
+}
+.city-overview-page--v0847 .city-overview-reveal img{
+ display:block;width:100%;height:100%;object-fit:fill;
+ user-select:none;pointer-events:none;
+}
+@keyframes town-overview-expand{
+ 0%,18%{opacity:0;clip-path:inset(33.333333% 0 33.333333% 0);filter:blur(10px)}
+ 48%{opacity:.75;clip-path:inset(18% 0 18% 0);filter:blur(5px)}
+ 100%{opacity:1;clip-path:inset(0 0 0 0);filter:blur(0)}
+}
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+ .city-overview-page--v0847 .city-overview-zone__composite{filter:blur(10px)}
+ .city-overview-page--v0847 .city-overview-zone__lights{filter:blur(8px)}
+}
+@media(max-width:390px){
+ .city-overview-page--v0847 .city-overview-glass strong{font-size:clamp(23px,7vw,30px)}
+ .city-overview-page--v0847 .city-overview-subhead{top:50px;font-size:9px}
+ .city-overview-page--v0847 .city-overview-footer{font-size:9px}
+}
+@media(max-height:560px){
+ .city-overview-page--v0847 .city-overview-heading{padding-top:4px;padding-bottom:2px}
+ .city-overview-page--v0847 .city-overview-heading h1{font-size:17px}
+ .city-overview-page--v0847 .city-overview-subhead{top:40px}
+ .city-overview-page--v0847 .city-overview-glass strong{font-size:21px}
+ .city-overview-page--v0847 .city-overview-glass__number{font-size:8px}
+ .city-overview-page--v0847 .city-overview-footer{padding:2px 7px}
+}
+@media(prefers-reduced-motion:reduce), (update:slow){
+ .city-overview-page--v0847 .city-overview-zone__lights,
+ .city-overview-page--v0847 .city-overview-reveal{animation:none!important}
+ .city-overview-page--v0847 .city-overview-zone,
+ .city-overview-page--v0847 .city-overview-glass{transition:none!important}
+}
+@media(forced-colors:active){
+ .city-overview-page--v0847 .city-overview-zone:focus-visible{
+  outline:3px solid Highlight!important;outline-offset:-3px;
+ }
+ .city-overview-page--v0847 .city-overview-glass strong,
+ .city-overview-page--v0847 .city-overview-glass__number{color:CanvasText;text-shadow:none}
+ .city-overview-page--v0847 .city-overview-zone__blur{background:Canvas}
+}

@@ -73,7 +73,7 @@ export default function TownDistrictPage(){
   event.preventDefault();
   if(isReturning)return;
   const navigateBack=()=>navigate('/town',{state:{fromDistrict:district.id}});
-  if(typeof window==='undefined'||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){navigateBack();return}
+  if(typeof window==='undefined'||(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches||window.matchMedia?.('(update: slow)').matches)){navigateBack();return}
   setIsReturning(true);
   returnTimer.current=setTimeout(navigateBack,640);
  };

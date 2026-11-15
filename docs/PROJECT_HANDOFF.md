@@ -1,5 +1,17 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-15｜第七輪第 1 批 v0.8.47：城鎮滿版毛玻璃總覽與分區展開過場（本 PR 待使用者 Merge）
+
+- **基準與停止點**：PR #74 已由使用者 Merge，最新 main d1b6ee5471312fe25da69cfb09d518fe24cb759d，起工時無 Open PR。本批唯一分支 feat/v0.8.47-town-overview-transition。原定第七輪五批 v0.8.47～v0.8.51，詳見 docs/SEVENTH_ROUND_VISUAL_ROADMAP.md。這次只做第 1 批，不預做第 2 批，不自動 Merge。
+- **原圖**：三個街區仍取原 public/assets/town/city-overview.webp 同一張圖按 1/3 裁片，不重新繪圖或替換。三段滿版毛玻璃 backdrop-filter:blur(9px)，動態局部霓虹在玻璃後以 CSS transform/opacity 持續柔和呼吸，名稱以簡約繁體中文清晰置中。無動畫影片、canvas 或大範圍額外重排。
+- **動態導航**：新增 townOverviewTransition.ts 純函數確定各區的位移方向；選上區：向下居中，下兩區向下淡出；選中區：上區向上、下區向下淡出；選下區：向上居中，上兩區向上淡出。同步疊入對應原始獨立街區 WebP，在中心由模糊解除並向上／下展開；900ms 後 React Router 導航。保留 Link 原生修飾鍵行為、避免連點、卸載清除 timer，prefers-reduced-motion 立即導航、update:slow 停止霓虹動畫。
+- **範圍保護**：只修改 TownOverviewPage.tsx、新增局部 _v0847-town-overview-transition.scss 並最後 import；既有詳頁 TownDistrictPage、三區熱點和所有舊 8 項服務、營業時刻、角色、黑市、卡牌、HUD、避難所、遊戲結算和 localStorage schema 都不變。參考黃點重新定位、酒館公告欄頁籤與滿版詳頁明確留給 v0.8.48。
+- **測試和文件**：package/lock 升至 0.8.47，新增 tests/v0847-town-overview-transition.test.ts（方向、三等分 SSR、原圖和路由、低動態與局部 CSS），保留全部 v0832～v0846 回歸；原四張城鎮 WebP、兩倉庫 JPG 和八家具 PNG 的 SHA256 保護不變。人工檢查項目在 docs/V0847_TOWN_OVERVIEW_QA.md，CI 不等於 Safari/Android 已人工完成驗收。
+- **交接**：最新 PR HEAD 須 GitHub Actions build + test 全綠。PR 僅交由使用者自行 Merge；用戶明確說繼續才開始 v0.8.48。
+
+---
+
+
 ## 2026-11-15｜第六輪第5批（**最後一批**）v0.8.46：都市科幻 UI／城鎮／避難所完整整合收尾（本 PR 待自行 Merge）
 
 - **最新 GitHub 狀態**：第4批 PR #73 已由使用者 Merge，起點 main `0d2584570453f900d05f72fcda6e492d8f42ddf9`；開工時 Open PR 0。此批唯一分支 `feat/v0.8.46-urban-final-integration`，專注於原定 v0.8.42～v0.8.46 的第5批；提交後交由使用者自行 Merge。**此五批計畫在此正式收尾，不自行建立第6批或額外 PR。**

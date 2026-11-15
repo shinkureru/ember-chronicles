@@ -84,12 +84,12 @@ describe('v0.8.44 — reusable cinematic urban UI, isolated visual laboratory',(
    expect(output).toContain('內容');
   }
  });
- it('is reachable from settings while obeying the original onboarding and chapter guards',()=>{
+ it('keeps original visual component fixtures for tests while removing the player-facing laboratory route',()=>{
   const app=read('src/app/App.tsx');
-  expect(app).toContain('import UiShowcasePage');
-  expect(app).toContain('<Route path="/ui-lab" element={<UiShowcasePage/>}/>');
-  expect(app).toContain("label:'UI 實驗室'");
-  expect(app).toContain('<Link to="/ui-lab"');
+  expect(app).not.toContain('import UiShowcasePage');
+  expect(app).not.toContain('<Route path="/ui-lab"');
+  expect(app).not.toContain("label:'UI 實驗室'");
+  expect(app).not.toContain('<Link to="/ui-lab"');
   expect(app).toContain("if(state.onboarding.phase!=='complete')");
   expect(app).toContain("if(state.mode!=='home'&&location.pathname!=='/chapter')");
   const src=read('src/features/ui-showcase/UiShowcasePage.tsx');
@@ -129,7 +129,7 @@ describe('v0.8.44 — reusable cinematic urban UI, isolated visual laboratory',(
   expect(css).toContain('@media(max-height:560px)');
   expect(css).not.toContain('canvas');
   const root=read('src/styles/main.scss');
-  expect(root.trimEnd()).toMatch(/@import "v0852-viewport-town-cinematic-audit";$/);
+  expect(root.trimEnd()).toMatch(/@import "v0853-live-hud-gold-market";$/);
   expect(root.indexOf('@import "v0843-town-district-live";'))
    .toBeLessThan(root.indexOf('@import "v0844-urban-ui-showcase";'));
  });
@@ -141,8 +141,8 @@ describe('v0.8.44 — reusable cinematic urban UI, isolated visual laboratory',(
   expect(app).toContain('<Route path="/cards" element={<CardsPage/>}/>');
   expect(read('src/features/market/marketProductPresentation.ts')).toContain('UI-only display grades');
   expect(read('src/features/shelter/ShelterScene.tsx')).toContain('background_empty.jpg');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.52');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.52');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.53');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.53');
   expect(read('src/game/state/storage.ts')).toContain('localStorage');
  });
 });

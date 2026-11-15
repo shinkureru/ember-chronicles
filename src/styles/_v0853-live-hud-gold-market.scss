@@ -196,9 +196,9 @@
 }
 @keyframes v0853-gold-spark{
  0%,57%,100%{opacity:0;transform:translate(-50%,-50%) scale(.18)}
- 63%{opacity:.9;transform:translate(calc(-50% + var(--spark-dx) * .25),calc(-50% + var(--spark-dy) * .25)) scale(.9)}
- 67%{opacity:1;transform:translate(calc(-50% + var(--spark-dx) * .42),calc(-50% + var(--spark-dy) * .42)) scale(1)}
- 73%{opacity:.45;transform:translate(calc(-50% + var(--spark-dx) * .85),calc(-50% + var(--spark-dy) * .85)) scale(.65)}
+ 63%{opacity:.9;transform:translate(calc(-50% + var(--spark-mid-x)),calc(-50% + var(--spark-mid-y))) scale(.9)}
+ 67%{opacity:1;transform:translate(calc(-50% + var(--spark-mid-x)),calc(-50% + var(--spark-mid-y))) scale(1)}
+ 73%{opacity:.45;transform:translate(calc(-50% + var(--spark-late-x)),calc(-50% + var(--spark-late-y))) scale(.65)}
  82%{opacity:0;transform:translate(calc(-50% + var(--spark-dx)),calc(-50% + var(--spark-dy))) scale(.22)}
 }
 @media(prefers-reduced-motion:reduce),(update:slow){
@@ -229,4 +229,25 @@
   width:var(--spark-size);height:var(--spark-size);
  }
  .market-v13 .market-v081__catalog .market-v12__offer{min-width:0}
+}
+
+/* iOS Safari cross-version compatibility: avoid typed multiplication in
+ * calc() for particle motion. Positions/delays stay seeded per bar. */
+.hud--v0853-real-meter .statbar--v0849-red .statbar__particle{
+ animation-name:v0853-hp-spray-compatible;
+}
+.hud--v0853-real-meter .statbar--v0849-mint .statbar__particle{
+ animation-name:v0853-st-spray-compatible;
+}
+@keyframes v0853-hp-spray-compatible{
+ 0%,10%{opacity:0;transform:translate3d(0,0,0) scale(.2)}
+ 23%{opacity:.93}
+ 64%{opacity:.66}
+ 90%,100%{opacity:0;transform:translate3d(var(--v0849-dx),var(--v0849-dy),0) scale(.12)}
+}
+@keyframes v0853-st-spray-compatible{
+ 0%,15%{opacity:0;transform:translate3d(0,0,0) scale(.2)}
+ 31%{opacity:.86}
+ 66%{opacity:.55}
+ 92%,100%{opacity:0;transform:translate3d(var(--v0849-dx),var(--v0849-dy),0) scale(.12)}
 }

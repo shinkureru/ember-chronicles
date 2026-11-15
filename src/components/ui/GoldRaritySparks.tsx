@@ -20,6 +20,8 @@ export default function GoldRaritySparks(){
    style={{
     '--spark-x':p.x+'%','--spark-y':p.y+'%',
     '--spark-dx':p.dx+'px','--spark-dy':p.dy+'px',
+    '--spark-mid-x':(p.dx*.42).toFixed(2)+'px','--spark-mid-y':(p.dy*.42).toFixed(2)+'px',
+    '--spark-late-x':(p.dx*.85).toFixed(2)+'px','--spark-late-y':(p.dy*.85).toFixed(2)+'px',
     '--spark-delay':p.delay+'s','--spark-duration':p.duration+'s',
     '--spark-size':p.size+'px'
    } as CSSProperties}/>)}

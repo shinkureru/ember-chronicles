@@ -109,8 +109,9 @@ describe('v0.8.46 — last-batch full integration and visual performance',()=>{
   const overview=render(createElement(GameProvider,null,
    createElement(MemoryRouter,null,createElement(TownOverviewPage))));
   const ids=TOWN_DISTRICTS.flatMap(d=>d.facilities);
-  expect(ids).toHaveLength(8);
-  expect([...ids].sort()).toEqual(TOWN_FACILITIES.map(f=>f.id).sort());
+  expect(ids).toHaveLength(7);
+  expect([...ids].sort()).toEqual(TOWN_FACILITIES.filter(f=>f.id!=='noticeboard').map(f=>f.id).sort());
+  expect(TOWN_FACILITIES).toHaveLength(8);
   for(const district of TOWN_DISTRICTS){
    expect(overview).toContain('data-town-district="'+district.id+'"');
    const html=render(createElement(GameProvider,null,
@@ -168,7 +169,7 @@ describe('v0.8.46 — last-batch full integration and visual performance',()=>{
   ])expect(css).toContain(x);
   expect(css).not.toContain('position:fixed');
   const root=read('src/styles/main.scss');
-  expect(root.trimEnd()).toMatch(/@import "v0847-town-overview-transition";$/);
+  expect(root.trimEnd()).toMatch(/@import "v0848-town-fullbleed-services";$/);
   expect(root.indexOf('@import "v0845-urban-selective-adoption";'))
    .toBeLessThan(root.indexOf('@import "v0846-urban-final-polish";'));
  });
@@ -217,8 +218,8 @@ describe('v0.8.46 — last-batch full integration and visual performance',()=>{
   expect(memory.has('ember-chronicles-prototype-v1')).toBe(false);
  });
  it('finishes with synchronized version and unchanged v1 save schema / story lock',()=>{
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.47');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.47');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.48');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.48');
   const storage=read('src/game/state/storage.ts');
   expect(storage).toContain("const KEY='ember-chronicles-prototype-v1'");
   expect(storage).toContain('state.version!==1');

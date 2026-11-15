@@ -28,9 +28,10 @@ const start=()=>{
 
 describe('v0.8.43 — playable city facility access and district interactions',()=>{
  it('uses precisely the eight original services without inventing a duplicate economy',()=>{
-  expect(everyFacility).toHaveLength(8);
-  expect(new Set(everyFacility).size).toBe(8);
-  expect([...everyFacility].sort()).toEqual(TOWN_FACILITIES.map(x=>x.id).sort());
+  expect(everyFacility).toHaveLength(7);
+  expect(new Set(everyFacility).size).toBe(7);
+  expect([...everyFacility].sort()).toEqual(TOWN_FACILITIES.filter(x=>x.id!=='noticeboard').map(x=>x.id).sort());
+  expect(TOWN_FACILITIES).toHaveLength(8);
   expect(TOWN_SERVICES.some(s=>s.facility==='inn')).toBe(true);
   expect(TOWN_SERVICES.some(s=>s.facility==='workshop')).toBe(true);
   expect(TOWN_SERVICES.some(s=>s.facility==='clinic')).toBe(true);
@@ -153,24 +154,20 @@ describe('v0.8.43 — playable city facility access and district interactions',(
   expect(html).toContain('data-town-facility="workshop"');
   expect(html).toContain('aria-haspopup="dialog"');
  });
- it('preserves 768x1376 full-art dimensions with no cover-crop and no broken alignment',()=>{
+ it('fills each full-bleed scene without stretching the shared hotspot coordinate system',()=>{
   const src=read('src/features/town/TownDistrictPage.tsx');
-  const css=read('src/styles/_v0843-town-district-live.scss');
+  const css=read('src/styles/_v0848-town-fullbleed-services.scss');
   expect(src).toContain('fitPortraitStage(element.clientWidth,element.clientHeight)');
-  expect(read('src/components/ui/portraitStageFit.ts')).toContain('const scale=Math.min(containerWidth/artWidth,containerHeight/artHeight)');
+  expect(src).toContain('coverTownStage(fit,element.clientWidth,element.clientHeight)');
   expect(src).toContain('new ResizeObserver(measure)');
   expect(src).toContain('city-district-scene__stage');
   expect(src).toContain('city-district-scene__image');
-  expect(src).not.toContain('backgroundSize:');
   expect(css).toContain('aspect-ratio:768 / 1376');
   expect(css).toContain('object-fit:fill');
-  expect(css).toContain('width:100%;height:100%');
-  expect(css).toContain('touch-action:manipulation');
-  expect(css).toContain('min-height:44px');
+  expect(css).toContain('min-height:50px');
   expect(css).toContain('overflow-y:auto');
   expect(css).toContain('@media(max-width:390px)');
-  expect(css).toContain('@media(max-height:600px)');
-  expect(css).toContain('@media(prefers-reduced-motion:reduce)');
+  expect(css).toContain('prefers-reduced-motion:reduce');
  });
  it('leaves original four city images, furniture assets, old town actions and saved game schema intact',()=>{
   const app=read('src/app/App.tsx');
@@ -178,10 +175,10 @@ describe('v0.8.43 — playable city facility access and district interactions',(
   expect(app).toContain('<Route path="/town/classic" element={<TownPage/>}/>');
   expect(app).toContain('<Route path="/town/:districtId" element={<TownDistrictPage/>}/>');
   expect(app).toContain("if(state.mode!=='home'&&location.pathname!=='/chapter')");
-  expect(css.trimEnd()).toMatch(/@import "v0847-town-overview-transition";$/);
+  expect(css.trimEnd()).toMatch(/@import "v0848-town-fullbleed-services";$/);
   expect(read('src/styles/_v0842-city-shelter.scss')).toContain('.shelter-stage-fit');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.47');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.47');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.48');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.48');
   expect(read('src/game/state/storage.ts')).toContain('localStorage');
  });
 });

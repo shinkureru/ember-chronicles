@@ -17,6 +17,14 @@
 - 原 768×1376 全圖改用 ResizeObserver 等比例顯示與共用定位座標，修復上一批 cover 裁切場景；熱點位置為**初步視覺定位**，真機與美術仍需人工校正。新增 `src/styles/_v0843-town-district-live.scss` 最後匯入、焦點/響應式/營業狀態/已到訪數量。
 - 詳細驗收 `docs/V0843_TOWN_LIVE_SERVICES_QA.md`，永久更新 `docs/PROJECT_HANDOFF.md`。只有 CI build/test 在最新 head 全綠才能告知用戶 Merge；**在 PR 合併前絕不啟動第3批**。
 
+## 第3批 v0.8.44（2026-11-15 已開發，PR 待 Merge）
+
+- 第2批 PR #71 已 Merge，main `a29f8aeec50b4b7e8e5c47949ae0737ceff698fc`。本批分支 `feat/v0.8.44-ui-showcase-tokens`；只有這一個 PR，待使用者自行 Merge。
+- 新增 `src/components/ui/` 四個檔：安全進度比例與五色 token、`LuminousProgressBar`（HP、體力、>100%數字）、`SquareRaritySlot`（正方形圖層＋卡片名稱分離）、`MetalFrame`（主/次/輕）。現有卡牌和物品的稀有度規則、價格、屬性完全不變。
+- 從「設定」第三頁標籤進入 `#/ui-lab`，可拉 0～1500 HP、0～900 ST，獨立開關柔光動畫和小粒子、點選5種色彩、比較3個銀色框。新頁沒有遊戲 reducer 或本機存檔修改權限。
+- 動畫用 CSS 漸層、transform 與 opacity，不需影片；`prefers-reduced-motion` 停止動態。多數視覺僅在 Showroom 出現，第4批再逐步選用，先避免全域視覺疲勞與畫面回歸。
+- 新 QA `docs/V0844_URBAN_UI_SHOWCASE_QA.md`；前批四張都市 WebP 及八家具與 JSON 由原測試鎖住、不改檔。每批完成必 GitHub Actions 最終 build/test 全綠。
+
 ## 批次與停止條件
 | 批次 | 版本 | 可交付範圍 | 明確不做 |
 |---|---|---|---|

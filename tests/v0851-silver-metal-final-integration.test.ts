@@ -88,7 +88,7 @@ describe('v0.8.51 — final metal texture and entire seventh-round regression',(
   expect(market).toContain('market-v10__close');
  });
  it('preserves three blurred districts, directional transition and full-bleed seven target geometry',()=>{
-  expect(TOWN_OVERVIEW_TRANSITION_MS).toBe(900);
+  expect(TOWN_OVERVIEW_TRANSITION_MS).toBe(1050);
   expect([0,1,2].map(n=>getTownOverviewShiftRows(1,n))).toEqual([-2.1,0,2.1]);
   const index=render(createElement(GameProvider,null,createElement(MemoryRouter,null,createElement(TownOverviewPage))));
   expect((index.match(/data-town-district="/g)??[])).toHaveLength(3);

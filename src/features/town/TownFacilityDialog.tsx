@@ -26,11 +26,14 @@ export default function TownFacilityDialog({facility,onClose,backLabel='返回�
  const {state:s,dispatch,pauseClock}=useGame();
  const [attribute,setAttribute]=useState<AttributeId>('observation');
  const [hasAction,setHasAction]=useState(false);
+ const [tavernTab,setTavernTab]=useState<'rumors'|'noticeboard'>('rumors');
+ const showingQuests=facility==='noticeboard'||(facility==='tavern'&&tavernTab==='noticeboard');
+ const displayFacility:TownFacilityId=showingQuests?'noticeboard':facility;
  const scroll=useVerticalDragScroll();
  const active=TOWN_FACILITIES.find(x=>x.id===facility)!;
  const Icon=icons[facility];
- const isOpen=isTownOpen(facility,s.world.minute);
- const services=TOWN_SERVICES.filter(x=>x.facility===facility);
+ const isOpen=isTownOpen(displayFacility,s.world.minute);
+ const services=TOWN_SERVICES.filter(x=>x.facility===displayFacility);
  const town=s.town;
  useEffect(()=>{
   pauseClock('dialog',true);
@@ -55,12 +58,20 @@ export default function TownFacilityDialog({facility,onClose,backLabel='返回�
     <button type="button" onClick={onClose} aria-label={`離開${active.name}`}><X size={20}/></button>
    </header>
    <div className="town-facility-dialog__meta"><span><Coins size={14}/> {s.economy.coins} 舊幣</span><span>到訪 {town?.visits[facility]??0} 次</span></div>
-   <div className="town-facility-dialog__body" ref={scroll.scrollRef} role="region" tabIndex={0}
+   {facility==='tavern'&&<div className="town-v0848-tavern-tabs" role="tablist" aria-label="情報酒館功能切換">
+    <button type="button" id="town-v0848-rumors-tab" role="tab" aria-selected={tavernTab==='rumors'} aria-controls="town-v0848-panel"
+     onClick={()=>{setTavernTab('rumors');setHasAction(false);playCue('select')}}>酒館情報</button>
+    <button type="button" id="town-v0848-noticeboard-tab" role="tab" aria-selected={tavernTab==='noticeboard'} aria-controls="town-v0848-panel"
+     onClick={()=>{setTavernTab('noticeboard');setHasAction(false);playCue('select')}}>公告欄委託</button>
+   </div>}
+   <div className="town-facility-dialog__body" ref={scroll.scrollRef} role={facility==='tavern'?'tabpanel':'region'}
+    id={facility==='tavern'?'town-v0848-panel':undefined}
+    aria-labelledby={facility==='tavern'?(tavernTab==='rumors'?'town-v0848-rumors-tab':'town-v0848-noticeboard-tab'):undefined} tabIndex={0}
     aria-label={`${active.name}服務與委託，可上下拖曳`}
     onPointerDown={scroll.onPointerDown} onPointerMove={scroll.onPointerMove}
     onPointerUp={scroll.onPointerUp} onPointerCancel={scroll.onPointerCancel}
     onClickCapture={scroll.onClickCapture}>
-    <div className="town-v15__keeper"><span><MessageCircle size={14}/>{townKeeper(facility,s.world.minute)}</span><p>{active.greeting}</p></div>
+    <div className="town-v15__keeper"><span><MessageCircle size={14}/>{townKeeper(displayFacility,s.world.minute)}</span><p>{TOWN_FACILITIES.find(item=>item.id===displayFacility)!.greeting}</p></div>
     {!isOpen&&<p className="town-v15__closed"><LockKeyhole size={14}/>目前不營業；開放時間 {String(active.hours[0]).padStart(2,'0')}:00–{active.hours[1]===24?'24':String(active.hours[1]).padStart(2,'0')}:00</p>}
     {facility==='training'&&<div className="town-v15__selector">
      <label htmlFor="town-attribute-dialog">今天要訓練的永久屬性</label>
@@ -69,7 +80,7 @@ export default function TownFacilityDialog({facility,onClose,backLabel='返回�
      </select>
      <small>每個台北日只能練習一項；單項上限 20。今日{town?.lastTrainingDay===s.world.day?'已使用訓練機會':'尚未訓練'}。</small>
     </div>}
-    {facility==='noticeboard'?<div className="town-v15__quests">
+    {showingQuests?<div className="town-v15__quests">
      {TOWN_QUESTS.map(quest=>{
       const status=town?.quests[quest.id],ready=townQuestReady(s,quest);
       return <article className={`town-v15__quest ${status==='completed'?'is-done':''}`} key={quest.id}>

@@ -1,5 +1,19 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-16｜第七輪第 5／5 批 v0.8.51：拉絲粗糙銀色框材質＋全輪最終整合 QA（本 PR 待使用者 Merge）
+
+- **GitHub 基準**：PR #78 已由使用者合併，main `246c69228ced5ae17260b726cb065e765d381c07`；無其他 Open PR。只建立一個分支 `feat/v0.8.51-silver-metal-final-qa`、一個 PR，**絕不自行 Merge**。本批結束代表第七輪功能開發完成，部署後的人工視覺驗收與手機效能仍需使用者確認。
+- **靜態材質實際檔案**：新增 `src/assets/brushed-silver-v0851.svg`，128×128、原創、可重複鋪排的金屬刷痕/細凹點圖樣（112 道不均勻短刮痕、105 個微孔，刮痕出界時鏡像接續），不需線上尋圖、不觸及來源人物/原城鎮圖。SVG 只有靜態 path／ellipse，沒有 filter、影片、動畫、JS 或外部請求。CSS `url('../assets/brushed-silver-v0851.svg')` 由 Vite 打包為帶 BASE_URL 的 URL，避免 GitHub Pages 子路徑 404。
+- **真正可見的材質與厚度**：新增最後載入 `src/styles/_v0851-brushed-metal-final.scss`，現有三層 `MetalFrame`：主框 6px 銀色紋理環/2px 主邊，次框 4px/2px、輕框 3px/1px，透過靜態 `background-image`、金屬過渡漸層、混色及 `mask-composite:exclude` / WebKit xor 建立立體框表面；對應 `::after` `pointer-events:none`，只在四邊顯示、不蓋住內容。無蒙版支援時仍保留 1～2px 標準金屬色邊線。窄手機／低高度框環縮減一級，防止文字空間被擠壓。
+- **正式遊戲選擇性套用**：既有城鎮 `TownFacilityDialog.tsx`、黑市 `BlackMarketPage.tsx` 交易詳頁、卡牌圖鑑 `CardsPage.tsx` 詳頁（原 `role=dialog`）增加純外觀標記 `urban-metal-surface--v0851` 與主／次層級 class，不改任何 onClick、購買/委託/升級、對話框關閉事件、scroll 容器或遊戲狀態。UI-Lab `MetalFrame` 三級透過原 class 生效。商品稀有選取彩框／金色演示沿用 v0.8.50、HUD 原雙色 PNG/粒子沿用 v0.8.49。僅視窗外框金屬化，絕不讓每張商品卡、所有路由都鍍銀。
+- **效能/可及性保護**：新增材質沒有 interval、RAF、Canvas、`feTurbulence` 等昂貴像素操作；CSS 紋理靜止、無 animation；`prefers-reduced-motion`、`update:slow` 和 `forced-colors` 均有安全分支；原有 Tab/Enter/role/dialog/scroll、觸控 44px 可達性與底部安全區由 v0846～v0850 既有 CSS 保留。瀏覽器放大 200%、320～430px 與各種視窗比例需人工再次確認。
+- **原始資源與存檔**：保留 v0846 測試釘住的 4 張 768×1376 城鎮原 WebP 及 10 張倉庫原始圖的 SHA-256；v0849 使用者 HUD PNG SHA-256 仍由測試釘住。保留 7 處城市實體熱點 + 酒館二頁公告欄、3 區總覽過場、兩條非同步 9 顆粒子、黑市/圖鑑未選取無稀有框與金色 preview-only；不變更 `src/game/data/`、`src/game/engine/`、`src/game/state/`、任何價格/掉落/角色/任務/計時/存檔 schema。
+- **整輪最終 QA**：`tests/v0851-silver-metal-final-integration.test.ts` 包含三層 SSR、靜態 SVG 紋理原檔、實際三種 dialog CSS/ARIA、完整街區與七處熱點、HUD PNG/非同步粒子、純展示金、真實經濟與存檔回歸、RWD/低動態/高對比保護。保留所有歷史測試，只同步最新版本/最後 import；`docs/V0851_FINAL_VISUAL_QA.md` 提供 Chrome/Edge/iOS Safari/Android 手動驗收矩陣。只有 GitHub Actions 最新 PR HEAD `npm run build` 和 `npm test` 全部成功才建議合併。
+- **明確停止點**：此輪第 5 批完成只開一個 PR，使用者自行 Merge。v0.8.52 並沒有在本輪授權，下一輪需求須使用者重新指示。真機效能/光影/金屬辨識仍有人工 QA，不能將 CI 綠燈寫成已完成真機驗收。
+
+---
+
+
 ## 2026-11-16｜第七輪第 4 批 v0.8.50：未選取只留底盤、選取稀有框與金色偶發星芒（本 PR 待自行 Merge）
 
 - GitHub 基準：前批 PR #77 已由使用者 Merge；main cf121e898c17d3e3ce1237c6b1ec2a31368c8e48，無其他 Open PR。本批唯一分支 feat/v0.8.50-rarity-selected-gold-glimmer，第七輪第 4／5 批，不自行 Merge，不提前做 v0.8.51。

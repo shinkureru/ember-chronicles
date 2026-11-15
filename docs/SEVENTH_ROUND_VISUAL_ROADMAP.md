@@ -37,3 +37,11 @@
 - 正方圖格、黑市整卡及圖鑑整卡未選取只有中性底盤；真正選取後灰綠藍紫按原稀有度亮框。既有 onClick/交易/卡牌操作不改。
 - 僅 UI 實驗室金色選取格新增偶發星芒和雙層水紋，無正式金色掉落。低動態/低更新率關閉特效。
 - 永久交接 docs/PROJECT_HANDOFF.md；自動測試 tests/v0850-rarity-selection-gold.test.ts；人工 docs/V0850_RARITY_SELECTION_QA.md。待使用者 Merge 後才進入最後第 5 批 v0.8.51。
+
+
+## 第 5 批 v0.8.51｜最終批：厚重拉絲銀色框及全輪 QA（PR 待自行 Merge）
+
+- 基準：PR #78 已 Merge，main `246c69228ced5ae17260b726cb065e765d381c07`。唯一分支 `feat/v0.8.51-silver-metal-final-qa`。
+- 原創靜態 128×128 拉絲／磨點可平鋪 SVG 存 `src/assets/brushed-silver-v0851.svg`，三層 `MetalFrame` 的框環主 6px、次 4px、輕 3px（窄手機縮減），採專用 SCSS `src/styles/_v0851-brushed-metal-final.scss` 最後匯入；局部加在真實城鎮設施、黑市詳情、卡牌詳情 dialog。不改全域商品格或 HUD。
+- 新測試 `tests/v0851-silver-metal-final-integration.test.ts` 覆蓋紋理與三級框、v0847 轉場／v0848 七處熱點／v0849 PNG／v0850 選取與金色 preview、真實交易/委託和 v1 存檔。歷史 14 個原始圖片 SHA256 測試保留。
+- 完整人工驗收在 `docs/V0851_FINAL_VISUAL_QA.md`，iOS Safari／Android FPS、實際光影質感仍需要使用者部署後確認。這是第七輪第 5／5 批：只有一個 PR，使用者自行 Merge；不得無授權自行開始 v0.8.52。

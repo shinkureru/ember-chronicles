@@ -163,6 +163,47 @@
  100%{opacity:1;transform:translateY(0)}
 }
 
+
+/* Home / main menu → town overview. Three softly divided panels arrive
+   independently, so the atlas itself participates in the entrance. */
+.city-overview-page--v0852.is-opening-town:not(.is-transitioning) .city-overview-zone{
+ animation:v0852-open-panel 960ms cubic-bezier(.22,1,.36,1) both;
+}
+.city-overview-page--v0852.is-opening-town:not(.is-transitioning) .city-overview-zone:nth-child(1){
+ animation-name:v0852-open-panel-left;animation-delay:0ms;
+}
+.city-overview-page--v0852.is-opening-town:not(.is-transitioning) .city-overview-zone:nth-child(2){
+ animation-name:v0852-open-panel-right;animation-delay:85ms;
+}
+.city-overview-page--v0852.is-opening-town:not(.is-transitioning) .city-overview-zone:nth-child(3){
+ animation-delay:160ms;
+}
+.city-overview-page--v0852.is-opening-town:not(.is-transitioning) :is(.city-overview-heading,.city-overview-subhead,.city-overview-footer){
+ animation:v0852-open-label 1000ms cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes v0852-open-panel-left{
+ 0%{opacity:0;transform:translate3d(-13%,4%,0);filter:blur(9px)}
+ 42%{opacity:.86;filter:blur(4px)}
+ 78%{opacity:1;transform:translate3d(-1%,0,0);filter:blur(.7px)}
+ 100%{opacity:1;transform:none;filter:blur(0)}
+}
+@keyframes v0852-open-panel-right{
+ 0%{opacity:0;transform:translate3d(13%,-4%,0);filter:blur(9px)}
+ 42%{opacity:.86;filter:blur(4px)}
+ 78%{opacity:1;transform:translate3d(1%,0,0);filter:blur(.7px)}
+ 100%{opacity:1;transform:none;filter:blur(0)}
+}
+@keyframes v0852-open-panel{
+ 0%{opacity:0;transform:translate3d(0,11%,0);filter:blur(10px)}
+ 45%{opacity:.84;filter:blur(4px)}
+ 82%{opacity:1;transform:translate3d(0,1%,0);filter:blur(.7px)}
+ 100%{opacity:1;transform:none;filter:blur(0)}
+}
+@keyframes v0852-open-label{
+ 0%,32%{opacity:0;transform:translateY(7px)}
+ 100%{opacity:1;transform:translateY(0)}
+}
+
 /* Idle merchandise retains its own grade face. Still absolutely NO
    colored rarity frame until selected; no constant glow on every item. */
 .urban-showcase__rarities .urban-slot:not(.is-selected) > .urban-slot__square,
@@ -211,6 +252,8 @@
  .city-overview-page--v0852 .city-overview-reveal__light,
  .city-overview-page--v0852 .city-overview-return-curtain__half,
  .city-overview-page--v0852 .city-overview-glass,
+ .city-overview-page--v0852.is-opening-town .city-overview-zone,
+ .city-overview-page--v0852.is-opening-town :is(.city-overview-heading,.city-overview-subhead,.city-overview-footer),
  .city-district-page--v0852 .city-district-return-curtain__half{
   animation:none!important;transition:none!important;
  }

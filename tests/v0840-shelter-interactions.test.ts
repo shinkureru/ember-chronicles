@@ -137,7 +137,7 @@ describe('v0.8.40 — real-alpha selectable furniture and non-destructive hint f
   expect(style).toContain('shelter-aura-breathe 2.8s');
   expect(style).toContain('prefers-reduced-motion:reduce');
   expect(style).toContain('max-width:360px');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0843-town-district-live";$/);
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0844-urban-ui-showcase";$/);
  });
  it('provides a cancellable three-kind notification demo only for actually installed furniture',()=>{
   const ui=read('src/features/shelter/ShelterAttentionPanel.tsx');
@@ -153,7 +153,7 @@ describe('v0.8.40 — real-alpha selectable furniture and non-destructive hint f
   expect(home).toContain('onSelect={selectFurniture}');
   expect(home).toContain("shelterId==='warehouse'||previewWarehouse");
   expect(home).toContain('const activeSelected=selectedId&&owned.includes(selectedId)?selectedId:null');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.43');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.43');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.44');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.44');
  });
 });

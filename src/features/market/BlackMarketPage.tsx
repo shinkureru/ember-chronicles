@@ -19,6 +19,8 @@ import MarketTradeSwitchIcon from './MarketTradeSwitchIcon';
 import {getBackpackMarketItemIds,doesVendorAcceptMarketItem} from './marketSellInventory';
 import ItemArt from '../../components/ItemArt';
 import {getMarketProductPresentation,formatMarketOfferQuantity} from './marketProductPresentation';
+import RarityArtwork from '../../components/ui/RarityArtwork';
+import {marketTierToUrbanRarity} from '../../components/ui/urbanUiAdapters';
 import GameUtilities from '../../components/GameUtilities';
 import ReturnMainLink from '../../components/ReturnMainLink';
 import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
@@ -207,7 +209,7 @@ export default function BlackMarketPage(){
          '--market-wave-delay-two':`${marketWaveDelay(index,2)}ms`,
         } as CSSProperties}>
         <button type="button"
-        className={`market-v12__offer market-v0822__product market-v0822__product--${appearance.tier} ${offer.canTrade?'':'is-unavailable'}`}
+        className={`market-v12__offer market-v0822__product market-v0822__product--${appearance.tier} urban-v0845-market-product ${offer.canTrade?'':'is-unavailable'}`}
         onClick={()=>{setSelectedId(offer.id);playCue('select')}}
         title={offer.canTrade?'點擊查看交易資訊':offer.reason}
         aria-label={`${offer.name}，${appearance.name}階，${appearance.isDisplayOnly?'展示級別':'卡牌等級'} ${appearance.level}，${mode==='buy'?'庫存':'持有'} ${count}，${offer.price} 舊幣${offer.canTrade?'':`，無法交易：${offer.reason}`}`}>
@@ -215,7 +217,7 @@ export default function BlackMarketPage(){
          <span className="market-v0822__level" title={appearance.isDisplayOnly?'商品展示級別，不改變物品效果':'交易的是 Lv.1 升級複本'}>Lv.{appearance.level}</span>
          <span className="market-v12__offer-type">{appearance.name}</span>
         </span>
-        <span className="market-v12__offer-icon" aria-hidden="true">{offer.type==='item'?<ItemArt id={offer.id}/>:offer.emoji}</span>
+        <span className="market-v12__offer-icon urban-v0845-market-art" aria-hidden="true"><RarityArtwork rarity={marketTierToUrbanRarity(appearance.tier)} icon={offer.type==='item'?<ItemArt id={offer.id}/>:offer.emoji}/></span>
         <strong className="market-v0822__product-name" title={offer.name}>{offer.name}</strong>
         <span className="market-v0822__product-footer">
          <small><Coins size={11}/>{offer.price}</small>

@@ -25,6 +25,15 @@
 - 動畫用 CSS 漸層、transform 與 opacity，不需影片；`prefers-reduced-motion` 停止動態。多數視覺僅在 Showroom 出現，第4批再逐步選用，先避免全域視覺疲勞與畫面回歸。
 - 新 QA `docs/V0844_URBAN_UI_SHOWCASE_QA.md`；前批四張都市 WebP 及八家具與 JSON 由原測試鎖住、不改檔。每批完成必 GitHub Actions 最終 build/test 全綠。
 
+## 第4批 v0.8.45（2026-11-15 已開發，本 PR 待使用者 Merge）
+
+- 第3批 PR #72 已 Merge，main `2630331ab8f0ea0532d327deb2ac16605f91c06d`，本批唯一分支 `feat/v0.8.45-urban-ui-selective-adoption`。GitHub Actions 最終 head `npm run build` / `npm test` 全綠後交由使用者 Merge。
+- 將 `SquareRaritySlot` 的無互動 1:1 子視覺獨立成 `RarityArtwork`，進入三處正式**原本就有的 button**：黑市 `market-v12__offer` 的圖示槽、牌庫 `card-library-tile__art`、關卡 `skill-tile__illustration`。外部文字、數量、舊幣、升級、技能費用與原 disabled 均保留。
+- `urbanUiAdapters` 把現有黑市4 tier→灰綠藍紫、現有卡牌 normal/rare/chaos→灰藍紫；正式畫面**不顯示金色**，第3批實驗室金色預覽仍可用。遊戲掉落、等級、價格與存檔不變。
+- 章節 HUD 只對既有 `StatBar` 的生命/體力作 opt-in 小亮點，不強塞實驗室 37px 高完整元件。城鎮圖上加不可互動低 z-index CSS 霧氣、營業中標記柔光，尊重 reduced-motion、不能搶走前景按鈕或裁切原圖。
+- 以 `src/styles/_v0845-urban-selective-adoption.scss` 最後匯入，處理窄手機、短高、視覺層級與降低動態。詳細專項測試 `tests/v0845-urban-live-adoption.test.ts` 和人工 QA `docs/V0845_URBAN_LIVE_ADOPTION_QA.md`。
+- **完成就停**：第5批 `v0.8.46` 僅在使用者 Merge 並通知後進行；本次不碰新劇情、金色掉落、HUD 重建與額外商品階級。
+
 ## 批次與停止條件
 | 批次 | 版本 | 可交付範圍 | 明確不做 |
 |---|---|---|---|

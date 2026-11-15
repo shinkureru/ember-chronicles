@@ -1,5 +1,6 @@
 import type {ReactNode} from 'react';
 import {URBAN_RARITIES,type UrbanRarity} from './urbanUiTokens';
+import RarityArtwork from './RarityArtwork';
 
 interface SquareRaritySlotProps{
  rarity:UrbanRarity;
@@ -20,11 +21,7 @@ export default function SquareRaritySlot({rarity,name,icon,detail,selected=false
  return <button type="button" className={`urban-slot urban-slot--${rarity} ${selected?'is-selected':''} ${className}`.trim()}
   data-urban-rarity={rarity} aria-pressed={selected} aria-label={`${name}，${grade.label}${detail?'，'+detail:''}`}
   disabled={disabled} onClick={onSelect}>
-  <span className="urban-slot__square" aria-hidden="true">
-   <span className="urban-slot__brushed-metal"/>
-   <span className="urban-slot__icon">{icon}</span>
-   <span className="urban-slot__rim"/>
-  </span>
+  <RarityArtwork rarity={rarity} icon={icon}/>
   <span className="urban-slot__info">
    <strong>{name}</strong>
    <small>{detail??grade.label}</small>

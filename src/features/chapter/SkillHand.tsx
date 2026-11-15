@@ -2,6 +2,8 @@ import { LockKeyhole, Layers3 } from 'lucide-react';
 import ProfessionResourceIcon from '../../components/ProfessionResourceIcon';
 import { useGame } from '../../app/GameContext';
 import { CARDS } from '../../game/data/cards';
+import RarityArtwork from '../../components/ui/RarityArtwork';
+import {cardRarityToUrbanRarity} from '../../components/ui/urbanUiAdapters';
 import { PROFESSIONS } from '../../game/data/professions';
 import { isSkillCompatible } from '../../game/engine/rules';
 import { getSkillComparison } from '../../game/engine/skillComparison';
@@ -65,9 +67,9 @@ export default function SkillHand({choice,skillId,onChange,layoutSeed=0}:{
         const card=CARDS[id];if(!card)return null;
         const allowed=!!choice&&isSkillCompatible(choice,card)&&state.player.resource>=card.resourceCost;
         return <button type="button" key={`${id}-${i}`} style={phase(layoutSeed,i+1)}
-          disabled={!allowed} className={`skill-tile skill-tile--scatter ${skillId===id?'is-selected':''}`}
+          disabled={!allowed} className={`skill-tile skill-tile--scatter urban-v0845-skill-tile ${skillId===id?'is-selected':''}`}
           onClick={()=>selectSkill(id)} aria-pressed={skillId===id} title={card.description}>
-          <div className="skill-tile__illustration"><span>{card.emoji}</span>{!allowed&&<LockKeyhole size={12} className="skill-tile__lock"/>}</div>
+          <div className="skill-tile__illustration urban-v0845-skill-art"><RarityArtwork rarity={cardRarityToUrbanRarity(card.rarity)} icon={card.emoji}/>{!allowed&&<LockKeyhole size={12} className="skill-tile__lock"/>}</div>
           <strong>{card.name} <span className="skill-level">{['','I','II','III','IV','V'][state.ownedCards[id]?.level??1]}</span></strong>
           <small className="skill-tile__resource">{card.resourceCost>0?`−${card.resourceCost}`:card.resourceCost<0?`+${-card.resourceCost}`:'0'} <ProfessionResourceIcon profession={state.profession} size={13}/></small>
         </button>;

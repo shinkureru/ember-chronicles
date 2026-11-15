@@ -1,5 +1,22 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-15｜第六輪第4批 v0.8.45：正式場景小範圍採用金屬方格與微動態（本 PR 待自行 Merge）
+
+- **起點與合併界線**：v0.8.44 第3批 PR **#72** 已由使用者 Merge，`main` 起點 `2630331ab8f0ea0532d327deb2ac16605f91c06d`，起工時 Open PR 0。第4批唯一分支 `feat/v0.8.45-urban-ui-selective-adoption`；package/lock `0.8.45`。只做第4批；**不得自行 Merge**，不得做第5批 `v0.8.46`。
+- **建立可重用純美術子元件**：新增 `src/components/ui/RarityArtwork.tsx`，把第3批 `SquareRaritySlot` 的內部 1:1 彩框抽離成**無 button 的** `<span>` 元件；`SquareRaritySlot.tsx` 改為共用相同美術子元件，其原 `button`、aria-pressed、selected/disabled 設計仍保留。供真實已有的黑市/卡牌/技能按鈕**只增加內層方形美術、避免在按鈕裡面放一顆 button**。
+- **保留原系統等級，正式版不顯示金色**：新增 `src/components/ui/urbanUiAdapters.ts` 純視覺映射：現有黑市 `scrap→gray`、`field→green`、`special→blue`、`forbidden→purple`；現有卡牌 `normal→gray`、`rare→blue`、`chaos→purple`。無 gold 回傳值、無掉落機率/價格計算/稀有度儲存變更。等級1～5既有卡牌收藏升級不被誤認為金色品質；真正的市場卡牌仍是 Lv.1 複本。
+- **黑市局部套用**：`BlackMarketPage.tsx` 的原 `market-v12__offer` button 保留，`market-v0822__product-top` 級別、名稱、`market-v0822__product-footer` 舊幣/庫存/持有、原點擊檢視與 buy/sell 動作不變。只在原 `market-v12__offer-icon` 裡掛 `<RarityArtwork>` 並加 `urban-v0845-market-art`，對應真正四階視覺。
+- **卡牌圖鑑局部套用**：`CardsPage.tsx` 的原 `card-library-tile` button、等級、數量、功能卡成功率與成本/攻擊卡傷害與武器狀態/詳情/升級皆保留。只替換原 `card-library-tile__art` 裡面圖示。沒有碰 `CARDS`/`ATTACK_CARDS` 和 `ownedCards`。
+- **關卡手牌局部套用**：`SkillHand.tsx` 保留旋轉/散開/滑鼠拖動、手機滑動、`isSkillCompatible`、不可用技能的 disabled、原 `onChange` 與職業資源預測，僅把卡牌圖片包進 `RarityArtwork`。無技能傷害/成功率或章節邏輯修改。
+- **HUD 輕量對齊，避開大改**：`StatBar.tsx` 新增預設 `urban=false` 可選參數；只在 `Hud.tsx` 真實生命、體力條 opt-in `urban`，保留舊數字、`statbar` DOM、畫面格寬與原色。CSS 只加進度前緣少量光澤，**沒有**把大版 `LuminousProgressBar` 強迫塞入高度緊迫的章節 HUD。
+- **三區局部動態**：`TownDistrictPage.tsx` 在原 768×1376 完整靜態圖片之上增加 `aria-hidden`、`pointer-events:none` 的 `city-district-scene__atmosphere`。以 CSS 緩慢 opacity/transform 呈現外環冷霧、蒸霧商街蒸氣、舊城淡霧，營業中熱點小圓點有弱呼吸光；打烊熱點不閃。圖層 z-index 低於可點熱點（原地區服務視窗/進度照常）；沒有影片、RAF、Canvas、重新下載圖片、不改熱點百分比座標。
+- **CSS 範圍與低動態**：新增 `src/styles/_v0845-urban-selective-adoption.scss` 在 `main.scss` 最後 import；以 `.urban-v0845-*`、`.hud--urban-v0845`、`.city-district-page--live` 局部選擇器為主，不全域裝飾所有按鈕。窄螢幕 ≤375px 與短高 ≤590px 降低方格尺寸；`@media(prefers-reduced-motion:reduce)` 取消稀有度微光、霧氣及小燈動畫。其他原 `v0842` 避難所滿家具/空屋與開發 Drawer、`v0843` 真實城鎮8店、`v0844` UI Lab 都保留。
+- **測試與驗收**：新增 `tests/v0845-urban-live-adoption.test.ts` 驗枚舉視覺映射包含所有商人販售/卡牌、不產生金色、正方美術不是第二顆 button、原市場/牌庫/手牌動作/路徑與生存 HUD/城鎮熱點不被替換、原減少動態/小手機樣式、原 reducer 商人購買扣錢且不變更測試前 state。更新 v0832–v0844 歷史測試最新版本與 CSS 匯入斷言；GitHub Actions 需最後 head `npm run build` 與 `npm test` 全綠。**CI 為自動檢查，不可宣稱手機 Safari/Android 已人工實測**。人工校驗請看 `docs/V0845_URBAN_LIVE_ADOPTION_QA.md`。
+- **下一批明確停點**：等使用者自行 Merge 本批 PR 並說「繼續」才做第5批 `v0.8.46`，集中最後視覺/效能/響應式/存檔/真機人工驗收清單與文件。當次不得啟動其他 UI 大幅改版或新掉落機制。
+
+---
+
+
 ## 2026-11-15｜第六輪第3批 v0.8.44：都市寫實 UI 共用元件庫與互動實驗室（待使用者 Merge）
 
 - **真實基準**：第2批 PR #71（`v0.8.43`）已由使用者 Merge，最新 main = `a29f8aeec50b4b7e8e5c47949ae0737ceff698fc`，起工時 Open PR = 0。本批唯一分支 `feat/v0.8.44-ui-showcase-tokens`，只做五批規劃中的第3批；新版本 package/lock `0.8.44`。禁止擅自 Merge、禁止開始第4批 `v0.8.45`。

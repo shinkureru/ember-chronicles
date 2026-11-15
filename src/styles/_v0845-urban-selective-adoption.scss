@@ -1,0 +1,196 @@
+/* v0.8.45 — selective reuse of the v0.8.44 square artwork.
+ * Real market/card/skill buttons stay authoritative. This stylesheet is last
+ * and never decorates the app globally or adds a new gameplay rarity.
+ */
+.urban-rarity-artwork{
+ --urban-slot-edge:var(--urban-rarity-gray);
+ --urban-slot-face:#40454e;
+ --urban-slot-glow:#8d929d;
+ display:grid;place-items:center;
+ flex:0 0 auto;
+ pointer-events:none;
+}
+.urban-rarity-artwork.urban-slot--gray{
+ --urban-slot-edge:var(--urban-rarity-gray);
+ --urban-slot-face:#40454e;
+ --urban-slot-glow:#8d929d;
+}
+.urban-rarity-artwork.urban-slot--green{
+ --urban-slot-edge:var(--urban-rarity-green);
+ --urban-slot-face:#184634;
+ --urban-slot-glow:#6cdf90;
+}
+.urban-rarity-artwork.urban-slot--blue{
+ --urban-slot-edge:var(--urban-rarity-blue);
+ --urban-slot-face:#1a3f5d;
+ --urban-slot-glow:#71c4ef;
+}
+.urban-rarity-artwork.urban-slot--purple{
+ --urban-slot-edge:var(--urban-rarity-purple);
+ --urban-slot-face:#472653;
+ --urban-slot-glow:#cf8ff1;
+}
+.urban-rarity-artwork.urban-slot--gold{
+ --urban-slot-edge:var(--urban-rarity-gold);
+ --urban-slot-face:#594b24;
+ --urban-slot-glow:#ffe3a2;
+}
+/* Market: maintain the original button's type/level/name/coins/stock
+ * and a slightly smaller square icon to fit existing ~115px rows. */
+.market-v13 .market-v081__catalog .market-v0822__product.urban-v0845-market-product{
+ border-color:color-mix(in srgb,var(--market-product-edge) 55%,#829298)!important;
+ box-shadow:inset 0 1px #cad0d014,0 2px 9px #0009!important;
+}
+.market-v13 .market-v081__catalog .market-v0822__product .market-v12__offer-icon.urban-v0845-market-art{
+ display:grid!important;place-items:center;
+ flex:0 0 35px!important;
+ height:35px!important;min-height:35px!important;max-height:35px!important;
+ width:100%;padding:0!important;overflow:visible;
+ filter:none!important;
+}
+.market-v13 .market-v081__catalog .market-v0822__product .urban-v0845-market-art .urban-rarity-artwork{
+ box-sizing:border-box;
+ height:32px!important;width:32px!important;min-width:32px;
+ aspect-ratio:1 / 1;
+ border-width:1px;border-radius:6px;
+}
+.market-v13 .market-v081__catalog .market-v0822__product .urban-v0845-market-art .urban-slot__icon{
+ font-size:clamp(18px,4vw,25px);
+}
+.market-v13 .market-v081__catalog .market-v0822__product .urban-v0845-market-art .urban-slot__icon svg{
+ max-width:25px!important;max-height:25px!important;width:auto;height:auto;
+}
+.market-v13 .market-v081__catalog .urban-v0845-market-product:is(:hover,:focus-visible) .urban-rarity-artwork{
+ border-color:#ece1c5;
+ box-shadow:0 0 0 1px var(--urban-slot-edge),0 0 9px #fff2c31f;
+}
+/* Card codex: square art is contained inside its original tile. This avoids
+ * adding nested buttons and keeps LV, upgrade copies, damage and weapon tags. */
+.cards-viewport .card-library-grid--scroll .urban-v0845-codex-card .card-library-tile__art.urban-v0845-codex-art{
+ display:grid;place-items:center;
+ overflow:visible;padding:0;filter:none;
+ flex:1 1 auto;
+ min-height:20px;max-height:46px;
+}
+.cards-viewport .card-library-grid--scroll .urban-v0845-codex-card .urban-v0845-codex-art .urban-rarity-artwork{
+ width:clamp(20px,4.2dvh,36px);
+ height:clamp(20px,4.2dvh,36px);
+ max-width:100%;max-height:100%;
+ border-radius:6px;border-width:1px;
+}
+.cards-viewport .card-library-grid--scroll .urban-v0845-codex-card .urban-v0845-codex-art .urban-slot__icon{
+ font-size:clamp(14px,3.2dvh,23px);
+}
+.cards-viewport .card-library-grid--scroll .urban-v0845-codex-card.is-locked .urban-rarity-artwork{
+ filter:grayscale(1);opacity:.75;
+}
+/* Existing tile class is still the actual interactive button */
+.cards-viewport .card-library-grid--scroll .urban-v0845-codex-card:is(:hover,:focus-visible) .urban-rarity-artwork{
+ border-color:#e0dacd;
+}
+.cards-viewport .card-library-grid--scroll .urban-v0845-codex-card .urban-slot__rim::after{
+ animation-duration:8s;
+}
+/* SkillHand retains selection, affordability disabled state, deterministic
+ * scatter and pointer drag; reuse only the inner decorative square. */
+.skill-tile.urban-v0845-skill-tile .skill-tile__illustration.urban-v0845-skill-art{
+ position:relative;display:grid;place-items:center;
+ filter:none;padding:0!important;
+}
+.skill-tile.urban-v0845-skill-tile .urban-v0845-skill-art .urban-rarity-artwork{
+ height:min(45px,100%);width:min(45px,100%);
+ aspect-ratio:1/1;border-radius:6px;
+ border-width:1px;
+}
+.skill-tile.urban-v0845-skill-tile .urban-v0845-skill-art .urban-slot__icon{
+ font-size:clamp(19px,4vw,28px);line-height:1;
+}
+.skill-tile.urban-v0845-skill-tile .urban-v0845-skill-art .skill-tile__lock{
+ position:absolute;right:3px;top:3px;z-index:5;
+ color:#e9d3c6;filter:drop-shadow(0 1px 2px #000);
+}
+.skill-tile.urban-v0845-skill-tile.is-selected .urban-rarity-artwork{
+ border-color:#f0dcb9;box-shadow:0 0 8px #eccda342;
+}
+.skill-tile.urban-v0845-skill-tile:disabled .urban-rarity-artwork{
+ filter:grayscale(.85);opacity:.6;
+}
+/* HUD: subtle leading flare only, never change grid row heights,
+ * resource values, or the existing StatBar markup. */
+.hud--urban-v0845 .statbar--urban .statbar__track{
+ position:relative;
+ box-shadow:inset 0 1px 2px #020506ae,0 0 0 1px #7d91952b;
+}
+.hud--urban-v0845 .statbar--urban .statbar__fill{
+ position:relative;overflow:hidden;
+}
+.hud--urban-v0845 .statbar--urban .statbar__fill::after{
+ content:"";position:absolute;right:0;top:0;
+ width:7px;height:100%;background:linear-gradient(90deg,transparent,#ffefe9);
+ opacity:.58;filter:blur(1px);
+ animation:urban-v0845-hud-glint 3.4s ease-in-out infinite;
+}
+.hud--urban-v0845 .statbar--urban .statbar__fill--mint::after{background:linear-gradient(90deg,transparent,#d6fff0)}
+@keyframes urban-v0845-hud-glint{0%,100%{opacity:.32}50%{opacity:.8}}
+/* City: local restrained fog and subtle open-business beacon, overlaid on
+ * the unmodified 768x1376 art stage. Pure CSS, no fetches or video.
+ * Atmosphere never intercepts pointer, keyboard or accessible list access. */
+.city-district-page--live .city-district-scene__atmosphere{
+ position:absolute;inset:0;z-index:1;pointer-events:none;
+ opacity:.43;overflow:hidden;
+}
+.city-district-page--live .city-district-scene__atmosphere::before{
+ content:"";position:absolute;
+ left:-20%;bottom:-5%;width:140%;height:45%;
+ background:
+  radial-gradient(ellipse at 30% 76%,#b7d1e21b,transparent 57%),
+  radial-gradient(ellipse at 84% 62%,#b4d9ef13,transparent 56%);
+ filter:blur(14px);
+ animation:urban-v0845-fog 20s ease-in-out infinite alternate;
+}
+.city-district-page--live .city-district-scene__atmosphere--outer-ring::before{
+ background:radial-gradient(ellipse at 80% 42%,#a2d2f41c,transparent 72%);
+}
+.city-district-page--live .city-district-scene__atmosphere--steam-street::before{
+ background:
+  radial-gradient(ellipse at 20% 69%,#d4e1e53a,transparent 57%),
+  radial-gradient(ellipse at 78% 37%,#b8d4db25,transparent 56%);
+}
+.city-district-page--live .city-district-scene__atmosphere--old-core::before{
+ background:radial-gradient(ellipse at 37% 71%,#93b6de1b,transparent 65%);
+}
+@keyframes urban-v0845-fog{
+ 0%{opacity:.38;transform:translate3d(-1%,0,0) scale(1)}
+ 100%{opacity:.57;transform:translate3d(2%,-3%,0) scale(1.025)}
+}
+.city-district-page--live .city-district-hotspot.is-open .city-district-hotspot__beacon{
+ animation:urban-v0845-beacon 3.6s ease-in-out infinite;
+}
+@keyframes urban-v0845-beacon{
+ 0%,100%{box-shadow:0 0 0 2px #f6c58812,0 0 6px #fff2a766}
+ 50%{box-shadow:0 0 0 4px #f6c58814,0 0 10px #fff2a799}
+}
+.city-district-page--live .city-district-hotspot.is-closed .city-district-hotspot__beacon{animation:none}
+@media(max-width:375px),(max-height:590px){
+ .market-v13 .market-v081__catalog .market-v0822__product .market-v12__offer-icon.urban-v0845-market-art{
+  height:29px!important;min-height:29px!important;max-height:29px!important;flex-basis:29px!important;
+ }
+ .market-v13 .market-v081__catalog .market-v0822__product .urban-v0845-market-art .urban-rarity-artwork{
+  height:26px!important;width:26px!important;min-width:26px;
+ }
+ .cards-viewport .card-library-grid--scroll .urban-v0845-codex-card .urban-v0845-codex-art .urban-rarity-artwork{
+  height:22px;width:22px;
+ }
+ .skill-tile.urban-v0845-skill-tile .urban-v0845-skill-art .urban-rarity-artwork{
+  width:min(35px,100%);height:min(35px,100%);
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .city-district-page--live .city-district-scene__atmosphere::before,
+ .city-district-page--live .city-district-hotspot.is-open .city-district-hotspot__beacon,
+ .hud--urban-v0845 .statbar--urban .statbar__fill::after{
+  animation:none!important;
+ }
+ .city-district-page--live .city-district-scene__atmosphere{opacity:.26}
+ .urban-rarity-artwork .urban-slot__rim::after{animation:none!important;opacity:0!important}
+}

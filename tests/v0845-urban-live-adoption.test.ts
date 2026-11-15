@@ -116,8 +116,8 @@ describe('v0.8.45 — staged adoption in actual gameplay UI without new economy'
   expect(hud).toContain('飢餓 {p.hunger}');
   const bar=renderToStaticMarkup(createElement(StatBar,{value:12,max:8,color:'red',label:'生命',urban:true}));
   expect(bar).toContain('statbar--urban');
-  expect(bar).toContain('150%');
-  expect(bar).not.toContain('125%');
+  expect(bar).toContain('width:100%');
+  expect(bar).not.toContain('width:150%');
   const plain=renderToStaticMarkup(createElement(StatBar,{value:4,max:8,color:'mint',label:'測試'}));
   expect(plain).not.toContain('statbar--urban');
  });

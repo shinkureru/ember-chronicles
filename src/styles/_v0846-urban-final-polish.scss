@@ -1,0 +1,117 @@
+/* v0.8.46 final polish: scoped performance, reduced-motion, small-screen
+ * and usable focus. No global skin replacement or game-state side effects.
+ */
+
+/* Live lists often show dozens of rare slots. Do not run an infinite
+ * sheen animation on every invisible/offscreen card. Keep the dormant grade
+ * color and wake the small highlight only on deliberate interaction. */
+.market-v13 .urban-v0845-market-art .urban-rarity-artwork .urban-slot__rim::after,
+.cards-viewport .urban-v0845-codex-art .urban-rarity-artwork .urban-slot__rim::after,
+.skill-tile.urban-v0845-skill-tile .urban-rarity-artwork .urban-slot__rim::after{
+ animation:none;
+ opacity:.1;
+ transform:translateX(-45%) rotate(12deg);
+}
+@media(hover:hover) and (pointer:fine){
+ .market-v13 .urban-v0845-market-product:hover .urban-rarity-artwork .urban-slot__rim::after,
+ .cards-viewport .urban-v0845-codex-card:hover .urban-rarity-artwork .urban-slot__rim::after,
+ .skill-tile.urban-v0845-skill-tile:hover .urban-rarity-artwork .urban-slot__rim::after{
+  animation:urban-rarity-flow 6.8s ease-in-out infinite;
+ }
+}
+.market-v13 .urban-v0845-market-product:focus-visible .urban-rarity-artwork .urban-slot__rim::after,
+.cards-viewport .urban-v0845-codex-card:focus-visible .urban-rarity-artwork .urban-slot__rim::after,
+.skill-tile.urban-v0845-skill-tile:focus-visible .urban-rarity-artwork .urban-slot__rim::after,
+.skill-tile.urban-v0845-skill-tile.is-selected .urban-rarity-artwork .urban-slot__rim::after{
+ animation:urban-rarity-flow 6.8s ease-in-out infinite;
+}
+
+/* The underlying reusable square has a fixed 1:1 aspect. Prevent the
+ * decorative square from stealing scroll/hover gestures on mobile. */
+.market-v13 .urban-v0845-market-art .urban-rarity-artwork,
+.cards-viewport .urban-v0845-codex-art .urban-rarity-artwork,
+.skill-tile.urban-v0845-skill-tile .urban-rarity-artwork{
+ pointer-events:none;max-width:100%;aspect-ratio:1/1;
+}
+.cards-viewport .card-library-grid--scroll .urban-v0845-codex-card,
+.market-v13 .market-v081__catalog .urban-v0845-market-product{
+ min-width:0;touch-action:manipulation;
+}
+.market-v13 .market-v081__catalog .urban-v0845-market-product:focus-visible,
+.cards-viewport .card-library-grid--scroll .urban-v0845-codex-card:focus-visible,
+.skill-tile.urban-v0845-skill-tile:focus-visible{
+ outline:2px solid #f0dbb5;outline-offset:-2px;
+}
+
+/* Semi-transparent radial gradients already have soft falloff; a huge
+ * live filter:blur across 140% of a 768x1376 image is unnecessary.
+ * Removing it avoids repeated offscreen blur compositing on mobile. */
+.city-district-page--live .city-district-scene__atmosphere::before{
+ filter:none;
+}
+.city-district-page--live .city-district-scene__atmosphere{
+ contain:paint;
+}
+@media(update:slow){
+ .city-district-page--live .city-district-scene__atmosphere::before,
+ .city-district-page--live .city-district-hotspot.is-open .city-district-hotspot__beacon,
+ .hud--urban-v0845 .statbar--urban .statbar__fill::after{
+  animation:none!important;
+ }
+}
+
+/* Keep all real zone nav targets and fallback facility-list controls usable.
+ * A 42/36px beacon at short viewport heights was below our 44px goal. */
+@media(max-width:390px){
+ .city-district-page--live .city-district-hotspot{min-height:44px}
+}
+@media(max-height:600px){
+ .city-district-page--live .city-district-hotspot{min-height:44px}
+ .city-district-page--live .city-district-service--live{min-height:44px}
+}
+@media(max-height:560px){
+ .shelter-home-page--compact .shelter-home-quicknav>a,
+ .shelter-home-page--compact .shelter-home-quicknav>button{min-height:44px}
+}
+
+/* Only inner lists/drawers scroll. Never release the app's full-viewport
+ * mission/warehouse lock. Preserve vertical touch pan inside services. */
+.city-district-page--live .city-district-services--live{
+ overflow-x:hidden;
+ -webkit-overflow-scrolling:touch;
+ overscroll-behavior-y:contain;
+}
+.shelter-home-page--compact .shelter-drawer__content{
+ overscroll-behavior-y:contain;
+ -webkit-overflow-scrolling:touch;
+}
+.city-overview-zone:focus-visible .city-overview-glass{
+ outline:2px solid #f0dbb5;outline-offset:-3px;
+}
+/* Reduced motion overrides ALL interactive re-enabling selectors above. */
+@media(prefers-reduced-motion:reduce){
+ .market-v13 .urban-v0845-market-art .urban-rarity-artwork .urban-slot__rim::after,
+ .cards-viewport .urban-v0845-codex-art .urban-rarity-artwork .urban-slot__rim::after,
+ .skill-tile.urban-v0845-skill-tile .urban-rarity-artwork .urban-slot__rim::after,
+ .city-district-page--live .city-district-scene__atmosphere::before,
+ .city-district-page--live .city-district-hotspot__beacon,
+ .hud--urban-v0845 .statbar--urban .statbar__fill::after{
+  animation:none!important;transition:none!important;
+ }
+ .market-v13 .urban-v0845-market-art .urban-rarity-artwork .urban-slot__rim::after,
+ .cards-viewport .urban-v0845-codex-art .urban-rarity-artwork .urban-slot__rim::after,
+ .skill-tile.urban-v0845-skill-tile .urban-rarity-artwork .urban-slot__rim::after{
+  opacity:0!important;
+ }
+}
+/* Forced colors users need an outline even when gradient fills disappear. */
+@media(forced-colors:active){
+ .market-v13 .urban-v0845-market-product:focus-visible,
+ .cards-viewport .urban-v0845-codex-card:focus-visible,
+ .skill-tile.urban-v0845-skill-tile:focus-visible,
+ .city-district-page--live .city-district-hotspot:focus-visible,
+ .city-overview-zone:focus-visible{
+  outline:2px solid Highlight!important;outline-offset:0;
+ }
+ .urban-rarity-artwork{border-color:CanvasText}
+}

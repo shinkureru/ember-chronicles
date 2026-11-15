@@ -1,0 +1,116 @@
+/* v0.8.43: true eight-service hotspots on three full-frame art scenes.
+ * Isolated to city-district-page--live, never touches fixed home or combat HUD.
+ * Image and percent hotspots share the same 768x1376 coordinate system.
+ */
+.city-district-page--live .city-district-live-status{
+ display:flex;align-items:center;justify-content:space-between;gap:8px;
+ min-width:0;flex:none;flex-wrap:wrap;padding:1px 3px 3px;
+ font-size:10px;line-height:1.45;color:#b7c9cb;
+}
+.city-district-live-status>span,.city-district-live-status>strong{
+ display:inline-flex;align-items:center;gap:5px;
+}
+.city-district-live-status>strong{font-weight:700;color:#efdbb3}
+.city-district-page--live .city-district-scene{
+ display:flex;align-items:center;justify-content:center;
+ position:relative;min-height:105px;flex:1 1 auto;max-height:100%;
+ overflow:hidden;isolation:isolate;padding:0;
+ background:linear-gradient(160deg,#172b3a,#08131a);
+}
+.city-district-scene__stage{
+ position:relative;display:block;flex:none;
+ aspect-ratio:768 / 1376;
+ width:min(100%,250px);max-height:100%;max-width:100%;
+ overflow:hidden;isolation:isolate;
+ box-shadow:0 0 0 1px #8ea4a135,0 5px 24px #0006;
+}
+.city-district-scene__image{
+ position:absolute;inset:0;width:100%;height:100%;
+ object-fit:fill;pointer-events:none;user-select:none;
+}
+.city-district-page--live .city-district-scene__kicker{
+ position:absolute;z-index:2;top:5px;left:5px;
+ padding:4px 7px;font-size:8px;pointer-events:none;
+}
+.city-district-hotspot{
+ position:absolute;z-index:3;display:inline-flex;align-items:center;
+ justify-content:center;gap:5px;min-width:0;min-height:44px;
+ max-width:58%;padding:5px 7px 5px 6px;
+ border:1px solid #b6dfdb9f;border-radius:9px;
+ background:linear-gradient(115deg,#061a25e8,#24434bcc);
+ -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+ color:#f4efe4;box-shadow:0 3px 13px #000b,inset 0 1px #d8f8e01c;
+ font:600 10px/1.3 'Noto Sans TC',sans-serif;
+ cursor:pointer;text-align:center;touch-action:manipulation;
+ transition:background .2s,border-color .2s,box-shadow .2s;
+}
+.city-district-hotspot--right{transform:translate(-6%,-50%)}
+.city-district-hotspot--left{transform:translate(-94%,-50%)}
+.city-district-hotspot__beacon{
+ flex:none;display:block;width:8px;height:8px;border:1px solid #ecf4d7;
+ border-radius:50%;background:#eabf80;
+ box-shadow:0 0 0 3px #f6c5881a,0 0 12px #fff2a799;
+}
+.city-district-hotspot__text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.city-district-hotspot__text strong{font-size:inherit;font-weight:750;white-space:nowrap}
+.city-district-hotspot__text small{font-size:8px;color:#bad1c8}
+.city-district-hotspot__lock{flex:none;color:#e0a79b}
+.city-district-hotspot.is-closed{background:#16242bdb;color:#bec9c9;border-color:#9d9a9675}
+.city-district-hotspot.is-closed .city-district-hotspot__beacon{background:#6f8288;box-shadow:none}
+.city-district-hotspot:hover,.city-district-hotspot:focus-visible,
+.city-district-hotspot[aria-expanded="true"]{
+ z-index:5;outline:2px solid #fff6d5;outline-offset:2px;
+ background:linear-gradient(110deg,#203e4af5,#435b5aec);
+ border-color:#f7d9ab;box-shadow:0 3px 17px #000b,0 0 15px #eec38c66;
+}
+.city-district-services--live{
+ display:flex;flex-direction:column;
+ flex:0 1 auto;max-height:42%;min-height:0;
+ overflow-y:auto;overscroll-behavior:contain;
+ touch-action:pan-y;-webkit-overflow-scrolling:touch;
+ scrollbar-width:thin;scrollbar-color:#6c8388 transparent;
+}
+.city-district-services--live .city-district-services__list{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;
+}
+.city-district-service--live{
+ width:100%;min-height:48px;padding:8px 7px;
+ text-align:left;cursor:pointer;touch-action:manipulation;color:#e3e5dc;
+ font:600 11px/1.4 'Noto Sans TC',sans-serif;
+ display:flex;align-items:center;gap:7px;
+}
+.city-district-service__details{display:flex;min-width:0;flex:1;flex-direction:column;gap:3px}
+.city-district-service__details strong{
+ font-weight:700;white-space:normal;overflow-wrap:anywhere
+}
+.city-district-service__details small{font-size:9px;color:#a7c2c8;font-weight:400}
+.city-district-service--live>svg{flex:none;color:#c4c6be}
+.city-district-service--live:hover,.city-district-service--live:focus-visible,
+.city-district-service--live[aria-expanded="true"]{
+ border-color:#e5bf95;background:#253943;outline-offset:2px
+}
+.city-district-service--pending{
+ opacity:.65;cursor:not-allowed;min-height:44px;
+}
+.city-district-services--live .city-district-service__pending{display:block;margin-left:auto;color:#cfb19c;font-size:9px}
+.city-district-page--live .city-district-services__notice{line-height:1.6;flex:none}
+.city-district-page--live .city-district-services__notice svg{flex:none}
+.city-district-page--live .city-district-footer{flex:none}
+.city-district-page--live .city-district-footer a{min-height:44px}
+@media(max-width:390px){
+ .city-district-services--live{max-height:45%}
+ .city-district-services--live .city-district-services__list{grid-template-columns:1fr}
+ .city-district-page--live .city-district-services__notice{font-size:9px}
+ .city-district-hotspot{font-size:9px;min-height:42px;padding:5px}
+ .city-district-hotspot__text small{font-size:8px}
+}
+@media(max-height:600px){
+ .city-district-services--live{max-height:37%}
+ .city-district-page--live .city-district-scene{min-height:90px}
+ .city-district-live-status{font-size:9px}
+ .city-district-hotspot{min-height:36px;padding:3px 5px;font-size:9px}
+ .city-district-hotspot__text small{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+ .city-district-hotspot{transition:none!important}
+}

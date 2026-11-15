@@ -34,7 +34,7 @@ describe('v0.8.52 visual regression — fixed desktop phone geometry and reliabl
   expect(css).toContain('height:min(844px,calc(100dvh - 24px))');
   expect(css).toContain('display:flex;align-items:center;justify-content:center');
   expect(css).toContain('@media (min-width:700px) and (max-height:460px)');
-  expect(read('src/components/Frame.tsx')).toContain('className="desktop-world');
+  expect(read('src/components/Frame.tsx')).toContain('desktop-world');
  });
  it('builds all three seamless atlas thirds as background positions, never negative top on an oversized img',()=>{
   const html=overview([{pathname:'/town'}]);

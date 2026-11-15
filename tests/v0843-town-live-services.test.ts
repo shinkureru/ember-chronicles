@@ -156,7 +156,8 @@ describe('v0.8.43 — playable city facility access and district interactions',(
  it('preserves 768x1376 full-art dimensions with no cover-crop and no broken alignment',()=>{
   const src=read('src/features/town/TownDistrictPage.tsx');
   const css=read('src/styles/_v0843-town-district-live.scss');
-  expect(src).toContain('const width=Math.min(w,h*768/1376),height=width*1376/768');
+  expect(src).toContain('fitPortraitStage(element.clientWidth,element.clientHeight)');
+  expect(read('src/components/ui/portraitStageFit.ts')).toContain('const scale=Math.min(containerWidth/artWidth,containerHeight/artHeight)');
   expect(src).toContain('new ResizeObserver(measure)');
   expect(src).toContain('city-district-scene__stage');
   expect(src).toContain('city-district-scene__image');

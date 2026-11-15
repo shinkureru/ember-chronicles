@@ -31,8 +31,8 @@ describe('v0.8.41 regression contract, updated for v0.8.42 fixed single-screen s
  it('the 768×1376 scene is resized to fit its visible frame, never flex-shrunk to zero',()=>{
   expect(home).toContain('function ShelterStageFit(');
   expect(home).toContain('new ResizeObserver(measure)');
-  expect(home).toContain('Math.min(availableWidth,availableHeight*768/1376)');
-  expect(home).toContain('const height=width*1376/768');
+  expect(home).toContain('fitPortraitStage(node.clientWidth,node.clientHeight)');
+  expect(read('src/components/ui/portraitStageFit.ts')).toContain('const scale=Math.min(containerWidth/artWidth,containerHeight/artHeight)');
   expect(current).toContain('.shelter-home-scene-panel--compact');
   expect(current).toContain('flex:1 1 auto');
   expect(current).toContain('.shelter-stage-fit__content .shelter-scene{');

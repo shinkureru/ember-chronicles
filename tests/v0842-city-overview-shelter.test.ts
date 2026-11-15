@@ -104,8 +104,8 @@ describe('v0.8.42 batch 1 — town visual overview and one-viewport safehouse',(
  it('fits the safehouse 768:1376 stage into available width AND height, without changing image coordinates',()=>{
   const home=read('src/features/shelter/ShelterHomePage.tsx');
   expect(home).toContain('function ShelterStageFit(');
-  expect(home).toContain('const width=Math.min(availableWidth,availableHeight*768/1376)');
-  expect(home).toContain('const height=width*1376/768');
+  expect(home).toContain('fitPortraitStage(node.clientWidth,node.clientHeight)');
+  expect(read('src/components/ui/portraitStageFit.ts')).toContain('const scale=Math.min(containerWidth/artWidth,containerHeight/artHeight)');
   expect(home).toContain('new ResizeObserver(measure)');
   expect(home).not.toContain('useVerticalDragScroll');
   expect(home).toContain('shelter-home-page--compact viewport-page');

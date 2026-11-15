@@ -124,7 +124,8 @@ describe('v0.8.46 — last-batch full integration and visual performance',()=>{
   const source=read('src/features/town/TownDistrictPage.tsx');
   expect(source).toContain('getTownServiceLock(s,serviceId)');
   expect(source).toContain("dispatch({type:'TOWN_SERVICE',serviceId})");
-  expect(source).toContain('pointer');
+  expect(source).toContain('onClick={event=>openFacility(h.facility,event)}');
+  expect(source).toContain('data-town-list-facility={id}');
  });
  it('keeps gold preview-only, existing market levels and single interactive buttons',()=>{
   expect(MARKET_TO_URBAN_RARITY).toEqual({scrap:'gray',field:'green',special:'blue',forbidden:'purple'});

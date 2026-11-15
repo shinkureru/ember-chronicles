@@ -45,3 +45,12 @@
 - 原創靜態 128×128 拉絲／磨點可平鋪 SVG 存 `src/assets/brushed-silver-v0851.svg`，三層 `MetalFrame` 的框環主 6px、次 4px、輕 3px（窄手機縮減），採專用 SCSS `src/styles/_v0851-brushed-metal-final.scss` 最後匯入；局部加在真實城鎮設施、黑市詳情、卡牌詳情 dialog。不改全域商品格或 HUD。
 - 新測試 `tests/v0851-silver-metal-final-integration.test.ts` 覆蓋紋理與三級框、v0847 轉場／v0848 七處熱點／v0849 PNG／v0850 選取與金色 preview、真實交易/委託和 v1 存檔。歷史 14 個原始圖片 SHA256 測試保留。
 - 完整人工驗收在 `docs/V0851_FINAL_VISUAL_QA.md`，iOS Safari／Android FPS、實際光影質感仍需要使用者部署後確認。這是第七輪第 5／5 批：只有一個 PR，使用者自行 Merge；不得無授權自行開始 v0.8.52。
+
+
+## v0.8.52｜第七輪實測視覺修復
+
+- PR #79 已由使用者合併，基準 main 17742eb4479234b47e728dbc18a4e5f3b4b699aa。本批唯一分支 feat/v0.8.52-viewport-town-transitions-visual-audit，僅一個 PR。
+- 桌機強制 390×844 直式容器；總覽 atlas 由三段背景 0/50/100% 裁切，詳頁 useLayoutEffect 首幀完成 cover-fit，避免中間空白與尺寸二跳。
+- 首頁進總覽三段分別滑入、詳頁返回總覽採左右分割滑入／分開，進詳頁 1050ms iOS 類柔和曲線與局部光影。
+- 未選商品灰綠藍紫、暗金各自有低飽和底盤但不帶彩框；金色仍只展示。三級金屬框精確縮至 70%（4.2 / 2.8 / 2.1px），紋理不變。
+- 第七輪 v0847～v0851 程式與回歸測試逐項核對；測試 tests/v0852-viewport-town-cinematic-audit.test.ts，人工驗收 docs/V0852_VISUAL_REGRESSION_QA.md。CI 不能取代真機 FPS／畫面驗收。

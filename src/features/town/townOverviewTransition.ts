@@ -1,5 +1,5 @@
 import type {TownDistrictId} from './townDistricts';
-export const TOWN_OVERVIEW_TRANSITION_MS=900;
+export const TOWN_OVERVIEW_TRANSITION_MS=1050;
 export const TOWN_OVERVIEW_ORDER:readonly TownDistrictId[]=['outer-ring','steam-street','old-core'] as const;
 /** In tile heights: target enters center, other images exit away. */
 export function getTownOverviewShiftRows(selectedIndex:number,tileIndex:number):number{

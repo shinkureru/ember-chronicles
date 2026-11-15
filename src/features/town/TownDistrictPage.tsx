@@ -1,7 +1,7 @@
-import {useCallback,useEffect,useRef,useState,type ReactNode} from 'react';
+import {useCallback,useEffect,useLayoutEffect,useRef,useState,type ReactNode} from 'react';
 import type {MouseEvent as ReactMouseEvent} from 'react';
 import {ArrowLeft,ChevronRight,Clock3,Coins,Home,Info,LockKeyhole,MapPinned} from 'lucide-react';
-import {Link,useParams} from 'react-router-dom';
+import {Link,useNavigate,useParams} from 'react-router-dom';
 import {useGame} from '../../app/GameContext';
 import {playCue} from '../../audio/sound';
 import {getTownFacility,isTownOpen} from '../../game/data/town';
@@ -15,7 +15,7 @@ import ClinicDialog from './ClinicDialog';
 import WorkshopDialog from './WorkshopDialog';
 import TownFacilityDialog,{type SecondaryTownFacility} from './TownFacilityDialog';
 import type {RestServiceId} from '../../game/engine/innRest';
-import {getTownDistrict,townAsset} from './townDistricts';
+import {CITY_OVERVIEW_IMAGE,getTownDistrict,townAsset} from './townDistricts';
 import {getTownDistrictHotspots} from './townDistrictHotspots';
 import {fitPortraitStage} from '../../components/ui/portraitStageFit';
 import {coverTownStage} from './townStageCover';
@@ -29,7 +29,7 @@ import {TOWN_DISTRICT_LIGHTS} from './townDistrictLights';
 function DistrictStage({children}:{children:ReactNode}){
  const host=useRef<HTMLDivElement>(null);
  const [dimensions,setDimensions]=useState<{width:number;height:number}|null>(null);
- useEffect(()=>{
+ useLayoutEffect(()=>{
   const element=host.current;
   if(!element)return;
   const measure=()=>{
@@ -47,7 +47,7 @@ function DistrictStage({children}:{children:ReactNode}){
  },[]);
  return <div className="city-district-scene" ref={host} role="group" aria-label="街區滿版背景與互動設施">
   <div className="city-district-scene__stage"
-   style={dimensions?{width:dimensions.width,height:dimensions.height}:undefined}>
+   style={dimensions?{width:dimensions.width,height:dimensions.height}:{visibility:'hidden'}}>
    {children}
   </div>
  </div>;
@@ -58,12 +58,26 @@ function DistrictStage({children}:{children:ReactNode}){
  */
 export default function TownDistrictPage(){
  const {districtId}=useParams<{districtId:string}>();
+ const navigate=useNavigate();
  const district=getTownDistrict(districtId??'');
  const {state:s,dispatch}=useGame();
  const [active,setActive]=useState<TownFacilityId|null>(null);
  const [listOpen,setListOpen]=useState(false);
+ const [isReturning,setIsReturning]=useState(false);
+ const returnTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
  const [restCinematic,setRestCinematic]=useState<RestServiceId|null>(null);
  const trigger=useRef<HTMLButtonElement|null>(null);
+ useEffect(()=>()=>{if(returnTimer.current!==null)clearTimeout(returnTimer.current)},[]);
+ const returnToOverview=(event:ReactMouseEvent<HTMLAnchorElement>)=>{
+  if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||!district)return;
+  event.preventDefault();
+  if(isReturning)return;
+  const navigateBack=()=>navigate('/town',{state:{fromDistrict:district.id}});
+  if(typeof window==='undefined'||(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches||window.matchMedia?.('(update: slow)').matches)){navigateBack();return}
+  setIsReturning(true);
+  returnTimer.current=setTimeout(navigateBack,640);
+ };
+
  const restCommitting=useRef(false);
  const restoreFocus=useCallback(()=>{
   window.requestAnimationFrame(()=>trigger.current?.focus({preventScroll:true}));
@@ -119,7 +133,7 @@ export default function TownDistrictPage(){
   <h1>找不到這個街區</h1><Link to="/town">返回城鎮總覽</Link>
  </section>;
  const hotspots=getTownDistrictHotspots(district.id);
- return <div className={`city-district-page city-district-page--${district.lighting} city-district-page--live city-district-page--v0848 viewport-page`}
+ return <div className={`city-district-page city-district-page--${district.lighting} city-district-page--live city-district-page--v0848 city-district-page--v0852 viewport-page${isReturning?' is-returning':''}`}
   data-town-district-page={district.id} data-fullbleed-district="true">
   <DistrictStage>
    <img className="city-district-scene__image" src={townAsset(district.image)}
@@ -150,7 +164,7 @@ export default function TownDistrictPage(){
    })}
   </DistrictStage>
   <header className="city-district-heading">
-   <Link to="/town" className="city-district-back" aria-label="返回城鎮總覽"><ArrowLeft size={18}/></Link>
+   <Link to="/town" onClick={returnToOverview} className="city-district-back" aria-label="返回城鎮總覽"><ArrowLeft size={18}/></Link>
    <div><span className="eyebrow">{district.number} / {district.english}</span><h1>{district.title}</h1></div>
    <Link to="/" className="city-district-home" aria-label="返回避難所"><Home size={17}/></Link>
   </header>
@@ -196,9 +210,15 @@ export default function TownDistrictPage(){
    <Link to="/town/classic" className="city-district-services__legacy">前往原有城鎮功能 <ChevronRight size={16}/></Link>
   </section>
   <nav className="city-district-footer" aria-label="城鎮快速導覽">
-   <Link to="/town"><MapPinned size={14}/> 三區總覽</Link>
+   <Link to="/town" onClick={returnToOverview}><MapPinned size={14}/> 三區總覽</Link>
    <Link to="/"><Home size={14}/> 返回避難所</Link>
   </nav>
+  <div className="city-district-return-curtain" aria-hidden="true">
+    <span className="city-district-return-curtain__half city-district-return-curtain__half--left"
+     style={{backgroundImage:'url("'+townAsset(CITY_OVERVIEW_IMAGE)+'")'}}/>
+    <span className="city-district-return-curtain__half city-district-return-curtain__half--right"
+     style={{backgroundImage:'url("'+townAsset(CITY_OVERVIEW_IMAGE)+'")'}}/>
+   </div>
   {active==='inn'&&<InnRestDialog serviceId="rest_cot" onClose={closeDialog} onConfirm={confirmRest}/>}
   {active==='clinic'&&<ClinicDialog onClose={closeDialog}/>}
   {active==='workshop'&&<WorkshopDialog onClose={closeDialog} backLabel={`返回${district.title}`}/>}

@@ -1,4 +1,5 @@
 import {useEffect,useRef,useState,type MouseEvent} from 'react';
+import {useLocation} from 'react-router-dom';
 import {ChevronRight,Home,MapPinned,Route} from 'lucide-react';
 import {Link,useNavigate} from 'react-router-dom';
 import {useGame} from '../../app/GameContext';
@@ -12,6 +13,9 @@ import {getTownOverviewShiftRows,TOWN_OVERVIEW_TRANSITION_MS} from './townOvervi
 export default function TownOverviewPage(){
  const {state}=useGame();
  const navigate=useNavigate();
+ const location=useLocation();
+ const fromDistrict=(location.state as {fromDistrict?:TownDistrictId}|null)?.fromDistrict;
+ const arrivingFromDistrict=!!fromDistrict&&TOWN_DISTRICTS.some(d=>d.id===fromDistrict);
  const [selected,setSelected]=useState<TownDistrictId|null>(null);
  const timer=useRef<ReturnType<typeof setTimeout>|null>(null);
  const selectedIndex=TOWN_DISTRICTS.findIndex(item=>item.id===selected);
@@ -23,14 +27,14 @@ export default function TownOverviewPage(){
  const openDistrict=(event:MouseEvent<HTMLAnchorElement>,district:TownDistrict)=>{
   if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
   if(selected){event.preventDefault();return}
-  if(typeof window==='undefined'||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+  if(typeof window==='undefined'||(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches||window.matchMedia?.('(update: slow)').matches))return;
   event.preventDefault();
   preload(district.image);
   setSelected(district.id);
   timer.current=setTimeout(()=>navigate('/town/'+district.id),TOWN_OVERVIEW_TRANSITION_MS);
  };
  const chosen=selected?TOWN_DISTRICTS.find(item=>item.id===selected):undefined;
- return <div className={'city-overview-page city-overview-page--v0847 viewport-page'+(selected?' is-transitioning':'')}
+ return <div className={'city-overview-page city-overview-page--v0847 city-overview-page--v0852 viewport-page'+(selected?' is-transitioning':'')+(arrivingFromDistrict?' is-return-arrival':' is-opening-town')}
   aria-label="城鎮設施總覽" data-town-overview-version="0.8.47">
   <header className="city-overview-heading">
    <div><span className="eyebrow">EMBER CHRONICLES / CITY DISTRICTS</span><h1>城鎮設施</h1></div>
@@ -51,8 +55,9 @@ export default function TownOverviewPage(){
        transform:'translateY('+(getTownOverviewShiftRows(selectedIndex,index)*100)+'%)',
        opacity:selected===d.id?1:0,
       }: {})}}>
-     <img className="city-overview-zone__composite" src={townAsset(CITY_OVERVIEW_IMAGE)} alt=""
-      style={{top:(-index*100)+'%'}} draggable={false} aria-hidden="true"/>
+     <span className="city-overview-zone__composite" aria-hidden="true"
+      style={{backgroundImage:'url("'+townAsset(CITY_OVERVIEW_IMAGE)+'")',
+       backgroundPosition:'center '+(index*50)+'%'}}/>
      <span className={'city-overview-zone__lights city-overview-zone__lights--'+d.lighting} aria-hidden="true"/>
      <span className="city-overview-zone__blur" aria-hidden="true"/>
      <div className="city-overview-glass">
@@ -64,6 +69,13 @@ export default function TownOverviewPage(){
    )}
    {chosen&&<div className="city-overview-reveal" aria-hidden="true" data-transition-destination={chosen.id}>
     <img src={townAsset(chosen.image)} alt="" draggable={false}/>
+    <span className="city-overview-reveal__light"/>
+   </div>}
+   {arrivingFromDistrict&&<div className="city-overview-return-curtain" aria-hidden="true">
+    <span className="city-overview-return-curtain__half city-overview-return-curtain__half--left"
+     style={{backgroundImage:'url("'+townAsset(CITY_OVERVIEW_IMAGE)+'")'}}/>
+    <span className="city-overview-return-curtain__half city-overview-return-curtain__half--right"
+     style={{backgroundImage:'url("'+townAsset(CITY_OVERVIEW_IMAGE)+'")'}}/>
    </div>}
   </section>
   <footer className="city-overview-footer">

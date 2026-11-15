@@ -98,7 +98,7 @@ describe('v0.8.44 — reusable cinematic urban UI, isolated visual laboratory',(
   expect(src).not.toContain('dispatch(');
   expect(src).not.toContain('saveGame');
   const markup=html(createElement(MemoryRouter,{children:createElement(UiShowcasePage)}));
-  expect(markup).toContain('data-ui-showcase="v0.8.44"');
+  expect(markup).toContain('data-ui-showcase="v0.8.52"');
   expect(markup).toContain('金屬・微光設計實驗室');
   expect(markup).toContain('UI 元件展示區');
   expect(markup).toContain('生命 HP');
@@ -129,7 +129,7 @@ describe('v0.8.44 — reusable cinematic urban UI, isolated visual laboratory',(
   expect(css).toContain('@media(max-height:560px)');
   expect(css).not.toContain('canvas');
   const root=read('src/styles/main.scss');
-  expect(root.trimEnd()).toMatch(/@import "v0851-brushed-metal-final";$/);
+  expect(root.trimEnd()).toMatch(/@import "v0852-viewport-town-cinematic-audit";$/);
   expect(root.indexOf('@import "v0843-town-district-live";'))
    .toBeLessThan(root.indexOf('@import "v0844-urban-ui-showcase";'));
  });
@@ -141,8 +141,8 @@ describe('v0.8.44 — reusable cinematic urban UI, isolated visual laboratory',(
   expect(app).toContain('<Route path="/cards" element={<CardsPage/>}/>');
   expect(read('src/features/market/marketProductPresentation.ts')).toContain('UI-only display grades');
   expect(read('src/features/shelter/ShelterScene.tsx')).toContain('background_empty.jpg');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.51');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.51');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.52');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.52');
   expect(read('src/game/state/storage.ts')).toContain('localStorage');
  });
 });

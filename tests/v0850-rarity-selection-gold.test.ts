@@ -67,7 +67,7 @@ describe('v0.8.50 — selected-only rarity and gold display-only glimmer',()=>{
    '.urban-slot.is-selected > .urban-slot__square',
    'border-color:var(--urban-slot-edge)!important'
   ])expect(css).toContain(s);
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0850-rarity-selection-gold";$/);
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0851-brushed-metal-final";$/);
  });
  it('runs sparse selected gold ripple, starbursts and sheen with low-motion protection',()=>{
   const css=read('src/styles/_v0850-rarity-selection-gold.scss');
@@ -91,7 +91,7 @@ describe('v0.8.50 — selected-only rarity and gold display-only glimmer',()=>{
   expect(read('tests/v0846-urban-final-integration.test.ts')).toContain('c11ea263d83d5f933b76b937b178ecee');
   expect(read('tests/v0849-hud-liquid-particles.test.ts')).toContain('108eb1e5f1c3f45f');
   expect(read('src/game/state/storage.ts')).toContain('ember-chronicles-prototype-v1');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.50');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.50');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.51');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.51');
  });
 });

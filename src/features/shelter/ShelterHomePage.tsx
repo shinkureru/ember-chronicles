@@ -178,7 +178,7 @@ export default function ShelterHomePage(){
      {shelterId!=='warehouse'&&<div className="shelter-build-demo-preview" data-prototype-only="true">
       <span>倉庫配置預覽不會變更你選擇的避難所。</span>
       <button type="button" aria-pressed={previewWarehouse} onClick={()=>{setPreviewWarehouse(v=>!v);setSelectedId(null)}}>
-       {previewWarehouse?'返回我的避難所':'預覽倉庫建設'}
+       {previewWarehouse?'返回我的避難所':'預覽倉庫家具建設'}
       </button>
      </div>}
      {showWarehouse&&<p className="shelter-scene-access-tip">點擊主場景家具、小型標記，或下方設施清單查看資訊。</p>}

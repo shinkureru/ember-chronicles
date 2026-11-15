@@ -57,7 +57,7 @@ export default function UiShowcasePage(){
     </div>
    </MetalFrame>
    <MetalFrame level="secondary" eyebrow="02 / SQUARE INVENTORY" title="正方形商品格・稀有度提案">
-    <p className="urban-showcase__description">背景圖與圖示限制在正方形內，名稱與價格等資訊則在方格外呈現。此處只有視覺提案，金色並未加入遊戲掉落表。</p>
+    <p className="urban-showcase__description">未選取時只顯示深色底盤，點選後才顯示該稀有度的彩色外框。金色選取時會偶發星芒與微弱水紋；金色仍未加入正式掉落表。</p>
     <div className="urban-showcase__rarities" aria-label="選擇 UI 稀有度樣式">
      {URBAN_RARITIES.map(r=>{
       const sample=SLOT_EXAMPLES[r.id],Icon=sample.Icon;
@@ -69,7 +69,7 @@ export default function UiShowcasePage(){
      <span><Sparkles size={15}/>目前選取：<strong>{chosen.label}</strong></span>
      <p>{chosen.description}</p>
     </div>
-    <p className="urban-showcase__hint">灰／綠／藍／紫可與既有商人展示分級做視覺映射；原始商品價格、數量、卡牌 rarity 與角色牌組不受影響。</p>
+    <p className="urban-showcase__hint">灰／綠／藍／紫只改選取視覺；金色維持展示預留。原始商品價格、數量、卡牌 rarity 與角色牌組不受影響。</p>
    </MetalFrame>
    <MetalFrame level="light" eyebrow="03 / SURFACE HIERARCHY" title="銀色金屬邊框・三級">
     <p className="urban-showcase__description">厚重主框只給關鍵介面，次框放常用面板，輕框給次要元件，避免整個遊戲都像銀色相框。</p>

@@ -1,0 +1,169 @@
+/* v0.8.50 / Batch 4: rarity outline exists ONLY for an actual selection.
+ * Real selectable surfaces stay their existing buttons; showcase gold stays
+ * preview-only. Do not touch item drops, market pricing or saved game data. */
+
+/* All idle artwork uses one dark, neutral base plate with zero visible rarity
+ * border. Keep an allocated transparent border to prevent layout shifts. */
+.urban-rarity-artwork.urban-slot__square,
+.urban-showcase__rarities .urban-slot:not(.is-selected) > .urban-slot__square{
+ border-color:transparent!important;
+ background:linear-gradient(143deg,#323a42 0%,#1b252b 58%,#101820 100%);
+ box-shadow:inset 0 1px 2px #f5eee41a,inset 0 -4px 7px #000b,0 3px 8px #0009!important;
+}
+.urban-rarity-artwork.urban-slot__square::before,
+.urban-showcase__rarities .urban-slot:not(.is-selected) > .urban-slot__square::before{
+ border-color:transparent;
+}
+.urban-rarity-artwork .urban-slot__rim,
+.urban-showcase__rarities .urban-slot:not(.is-selected) .urban-slot__rim{
+ box-shadow:inset 0 0 11px #0009,inset 0 0 0 1px #f5f2e509;
+}
+.urban-rarity-artwork .urban-slot__rim::after,
+.urban-showcase__rarities .urban-slot:not(.is-selected) .urban-slot__rim::after{
+ animation:none!important;opacity:0!important;
+}
+/* Without an actual selection, mouse-hover and focus MUST NOT reveal a
+ * colored rarity frame. Keyboard focus uses a separate accessible outline. */
+.market-v13 .market-v081__catalog .urban-v0845-market-product:not(.is-selected) .urban-rarity-artwork,
+.market-v13 .market-v081__catalog .urban-v0845-market-product:not(.is-selected):is(:hover,:focus-visible) .urban-rarity-artwork,
+.cards-viewport .card-library-grid--scroll .urban-v0845-codex-card:not(.is-selected) .urban-rarity-artwork,
+.cards-viewport .card-library-grid--scroll .urban-v0845-codex-card:not(.is-selected):is(:hover,:focus-visible) .urban-rarity-artwork,
+.skill-tile.urban-v0845-skill-tile:not(.is-selected) .urban-rarity-artwork,
+.skill-tile.urban-v0845-skill-tile:not(.is-selected):is(:hover,:focus-visible) .urban-rarity-artwork,
+.urban-showcase__rarities .urban-slot:not(.is-selected):is(:hover,:focus-visible) > .urban-slot__square{
+ border-color:transparent!important;
+ box-shadow:inset 0 1px 2px #f5eee41a,inset 0 -4px 7px #000b,0 3px 8px #0009!important;
+}
+/* Even inactive outer merchandise cards must not retain a grade-colored rim:
+ * v0.8.22 + v0.8.45 used the tier color on the entire product button. */
+.market-v13 .market-v081__catalog .market-v0822__product.urban-v0845-market-product,
+.market-v13 .market-v081__catalog .market-v0822__product.urban-v0845-market-product:not(.is-selected):is(:hover,:focus-visible){
+ border-color:#78879061!important;
+ box-shadow:inset 0 1px #edf8f015,0 2px 9px #0009!important;
+}
+.market-v13 .market-v081__catalog .market-v0822__product.urban-v0845-market-product.is-selected{
+ border-color:var(--market-product-edge)!important;
+ box-shadow:0 0 0 1px var(--market-product-edge),inset 0 1px 2px #fff3,0 0 16px color-mix(in srgb,var(--market-product-glow) 46%,transparent)!important;
+}
+/* Explicit selection is also reflected on the real card archive & skill
+ * action button; each reuses only the original nested decorative artwork. */
+.urban-showcase__rarities .urban-slot.is-selected > .urban-slot__square,
+.market-v13 .market-v081__catalog .urban-v0845-market-product.is-selected .urban-rarity-artwork,
+.cards-viewport .card-library-grid--scroll .urban-v0845-codex-card.is-selected .urban-rarity-artwork,
+.skill-tile.urban-v0845-skill-tile.is-selected:not(:disabled) .urban-rarity-artwork{
+ border-color:var(--urban-slot-edge)!important;
+ box-shadow:0 0 0 1px color-mix(in srgb,var(--urban-slot-edge) 70%,transparent),
+  inset 0 0 0 1px color-mix(in srgb,var(--urban-slot-edge) 67%,transparent),
+  0 0 14px color-mix(in srgb,var(--urban-slot-glow) 56%,transparent)!important;
+}
+.urban-showcase__rarities .urban-slot.is-selected > .urban-slot__square::before,
+.market-v13 .urban-v0845-market-product.is-selected .urban-rarity-artwork::before,
+.cards-viewport .urban-v0845-codex-card.is-selected .urban-rarity-artwork::before,
+.skill-tile.urban-v0845-skill-tile.is-selected:not(:disabled) .urban-rarity-artwork::before{
+ border-color:color-mix(in srgb,var(--urban-slot-edge) 44%,transparent);
+}
+.urban-showcase__rarities .urban-slot.is-selected .urban-slot__rim,
+.market-v13 .urban-v0845-market-product.is-selected .urban-slot__rim,
+.cards-viewport .urban-v0845-codex-card.is-selected .urban-slot__rim,
+.skill-tile.urban-v0845-skill-tile.is-selected:not(:disabled) .urban-slot__rim{
+ box-shadow:inset 0 0 11px #0008,inset 0 0 0 1px color-mix(in srgb,var(--urban-slot-edge) 80%,transparent);
+}
+.urban-showcase__rarities .urban-slot.is-selected .urban-slot__rim::after,
+.market-v13 .urban-v0845-market-product.is-selected .urban-slot__rim::after,
+.cards-viewport .urban-v0845-codex-card.is-selected .urban-slot__rim::after,
+.skill-tile.urban-v0845-skill-tile.is-selected:not(:disabled) .urban-slot__rim::after{
+ animation:urban-rarity-flow 7.4s ease-in-out -1.8s infinite!important;
+ opacity:.34!important;
+}
+/* Gold is strictly a selected UI laboratory preview; only rare, brief
+ * highlights rather than a continuously blazing border. */
+.urban-showcase__rarities .urban-slot--gold:not(.is-selected) > .urban-slot__square{
+ background:linear-gradient(145deg,#343128,#242622 58%,#151d1f 100%);
+}
+.urban-showcase__rarities .urban-slot--gold.is-selected > .urban-slot__square{
+ background:
+  radial-gradient(ellipse at 35% 19%,#ffdf8745,transparent 57%),
+  linear-gradient(145deg,#5e4b25,#332c1a 57%,#151b1f);
+}
+.urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__brushed-metal{
+ opacity:.62;isolation:isolate;
+}
+.urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__brushed-metal::before,
+.urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__brushed-metal::after{
+ content:"";position:absolute;inset:-55%;pointer-events:none;border-radius:50%;
+ border:1px solid #ffe1a752;
+ background:repeating-radial-gradient(ellipse at 48% 52%,
+  transparent 0 13px,#e3c57819 15px 16px,transparent 19px 33px);
+ opacity:0;mix-blend-mode:screen;
+ animation:v0850-gold-ripple 11.3s ease-in-out -3.9s infinite;
+}
+.urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__brushed-metal::after{
+ animation-duration:13.7s;animation-delay:-9.1s;
+}
+@keyframes v0850-gold-ripple{
+ 0%,16%,96%,100%{opacity:0;transform:scale(.65) rotate(-8deg)}
+ 28%{opacity:.33}
+ 43%{opacity:.58;transform:scale(1.13) rotate(7deg)}
+ 75%{opacity:.15;transform:scale(1.38) rotate(10deg)}
+}
+.urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__rim::before{
+ content:"";position:absolute;z-index:4;right:3%;top:0;
+ width:17px;height:17px;pointer-events:none;opacity:0;
+ background:radial-gradient(circle at center,#fffefa 0 12%,#ffe4a9 20%,#ffb451 33%,transparent 63%);
+ clip-path:polygon(50% 0,58% 36%,100% 50%,58% 57%,50% 100%,42% 57%,0 50%,42% 36%);
+ filter:drop-shadow(0 0 4px #fff0c9);
+ animation:v0850-gold-star 10.7s ease-in-out -2.1s infinite;
+}
+@keyframes v0850-gold-star{
+ 0%,40%,49%,88%,100%{opacity:0;transform:scale(.2) rotate(-18deg)}
+ 42%{opacity:.95;transform:scale(1.08) rotate(12deg)}
+ 45%{opacity:1;transform:scale(.75) rotate(20deg)}
+ 47%{opacity:.2;transform:scale(1.25) rotate(35deg)}
+}
+/* The chosen gold shine happens once in a while, and only while selected. */
+.urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__rim::after{
+ animation:v0850-gold-sheen 11.9s ease-in-out -1.7s infinite!important;
+}
+@keyframes v0850-gold-sheen{
+ 0%,52%,77%,100%{opacity:0;transform:translateX(-55%) rotate(16deg)}
+ 59%{opacity:.85;transform:translateX(20%) rotate(16deg)}
+ 66%{opacity:.23;transform:translateX(58%) rotate(16deg)}
+}
+.urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__square{
+ overflow:hidden;
+}
+/* Disabled and locked cards stay legible without running decorative effects. */
+.skill-tile.urban-v0845-skill-tile:disabled .urban-rarity-artwork .urban-slot__rim::after,
+.cards-viewport .urban-v0845-codex-card.is-locked:not(.is-selected) .urban-rarity-artwork .urban-slot__rim::after{
+ animation:none!important;opacity:0!important;
+}
+/* Accessibility and low-powered devices: never animate multiple cards. */
+@media(prefers-reduced-motion:reduce),(update:slow){
+ .urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__rim::before,
+ .urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__rim::after,
+ .urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__brushed-metal::before,
+ .urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__brushed-metal::after,
+ .market-v13 .urban-v0845-market-product.is-selected .urban-slot__rim::after,
+ .cards-viewport .urban-v0845-codex-card.is-selected .urban-slot__rim::after,
+ .skill-tile.urban-v0845-skill-tile.is-selected .urban-slot__rim::after{
+  animation:none!important;transition:none!important;
+ }
+ .urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__rim::before,
+ .urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__brushed-metal::before,
+ .urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__brushed-metal::after{
+  opacity:0!important;
+ }
+}
+@media(forced-colors:active){
+ .urban-showcase__rarities .urban-slot.is-selected > .urban-slot__square,
+ .market-v13 .urban-v0845-market-product.is-selected .urban-rarity-artwork,
+ .cards-viewport .urban-v0845-codex-card.is-selected .urban-rarity-artwork,
+ .skill-tile.urban-v0845-skill-tile.is-selected .urban-rarity-artwork{
+  border-color:Highlight!important;outline:2px solid Highlight;outline-offset:1px;
+ }
+ .urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__rim::before,
+ .urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__brushed-metal::before,
+ .urban-showcase__rarities .urban-slot--gold.is-selected .urban-slot__brushed-metal::after{
+  display:none;
+ }
+}

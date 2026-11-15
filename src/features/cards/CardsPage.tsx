@@ -103,8 +103,9 @@ export default function CardsPage(){
     const weaponStatus=attackCard?attackStatus(s,attackCard.id):null;
     const requiredWeapon=attackCard?ITEMS[attackCard.requiredItemId]:null;
     return <button type="button" key={`${variant.id}-lv${variant.level}`}
-      className={`card-library-tile urban-v0845-codex-card card-library-tile--level-${variant.level} rarity-tile--${card.rarity} ${variant.locked?'is-locked':''} ${skillCard?'cards-v0820__skill-tile':'cards-v0821__attack-tile'}`}
+      className={`card-library-tile urban-v0845-codex-card card-library-tile--level-${variant.level} rarity-tile--${card.rarity} ${variant.locked?'is-locked':''} ${selectedId===variant.id&&selectedLevel===variant.level?'is-selected':''} ${skillCard?'cards-v0820__skill-tile':'cards-v0821__attack-tile'}`}
       onClick={()=>{setSelectedId(variant.id);setSelectedLevel(variant.level);playCue('card')}}
+      aria-pressed={selectedId===variant.id&&selectedLevel===variant.level} aria-haspopup="dialog"
       aria-label={`LV.${variant.level} ${card.name}，${variant.locked?'尚未取得':`已持有 ${variant.quantity} 張`}，開啟詳情`}>
      <span className="card-library-tile__rarity">{RARITY[card.rarity]}</span>
      <span className="card-library-tile__art urban-v0845-codex-art" aria-hidden="true"><RarityArtwork rarity={cardRarityToUrbanRarity(card.rarity)} icon={variant.locked?<LockKeyhole size={23}/>:card.emoji}/></span>

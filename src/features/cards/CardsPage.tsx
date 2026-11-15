@@ -3,6 +3,8 @@ import { ArrowUpCircle, BookOpenText, LockKeyhole, MapPin, Package, Sparkles, Sw
 import { Link } from 'react-router-dom';
 import { useGame } from '../../app/GameContext';
 import { CARDS, getUpgradeRequirement } from '../../game/data/cards';
+import RarityArtwork from '../../components/ui/RarityArtwork';
+import {cardRarityToUrbanRarity} from '../../components/ui/urbanUiAdapters';
 import { ATTACK_CARDS, attackStatus, getAttackDamage } from '../../game/data/attacks';
 import { CARD_LORE } from '../../game/data/cardLore';
 import { ITEMS } from '../../game/data/items';
@@ -101,11 +103,11 @@ export default function CardsPage(){
     const weaponStatus=attackCard?attackStatus(s,attackCard.id):null;
     const requiredWeapon=attackCard?ITEMS[attackCard.requiredItemId]:null;
     return <button type="button" key={`${variant.id}-lv${variant.level}`}
-      className={`card-library-tile card-library-tile--level-${variant.level} rarity-tile--${card.rarity} ${variant.locked?'is-locked':''} ${skillCard?'cards-v0820__skill-tile':'cards-v0821__attack-tile'}`}
+      className={`card-library-tile urban-v0845-codex-card card-library-tile--level-${variant.level} rarity-tile--${card.rarity} ${variant.locked?'is-locked':''} ${skillCard?'cards-v0820__skill-tile':'cards-v0821__attack-tile'}`}
       onClick={()=>{setSelectedId(variant.id);setSelectedLevel(variant.level);playCue('card')}}
       aria-label={`LV.${variant.level} ${card.name}，${variant.locked?'尚未取得':`已持有 ${variant.quantity} 張`}，開啟詳情`}>
      <span className="card-library-tile__rarity">{RARITY[card.rarity]}</span>
-     <span className="card-library-tile__art" aria-hidden="true">{variant.locked?<LockKeyhole size={23}/>:card.emoji}</span>
+     <span className="card-library-tile__art urban-v0845-codex-art" aria-hidden="true"><RarityArtwork rarity={cardRarityToUrbanRarity(card.rarity)} icon={variant.locked?<LockKeyhole size={23}/>:card.emoji}/></span>
      {skillCard&&<span className="cards-v0820__skill-effect">
       <b>成功率 +{skillCard.chanceBonus}%</b><small>資源 -{skillCard.resourceCost}</small>
      </span>}

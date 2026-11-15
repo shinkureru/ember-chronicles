@@ -170,8 +170,8 @@ describe('v0.8.37 first-launch story, forced-defeat placeholder and chosen shelt
   expect(css).toContain('max-width:390px');
   expect(css).toContain('max-height:560px');
   expect(css).toContain('prefers-reduced-motion:reduce');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0845-urban-selective-adoption";$/);
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.45');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.45');
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0846-urban-final-polish";$/);
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.46');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.46');
  });
 });

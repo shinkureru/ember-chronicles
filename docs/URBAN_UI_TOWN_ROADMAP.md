@@ -34,6 +34,16 @@
 - 以 `src/styles/_v0845-urban-selective-adoption.scss` 最後匯入，處理窄手機、短高、視覺層級與降低動態。詳細專項測試 `tests/v0845-urban-live-adoption.test.ts` 和人工 QA `docs/V0845_URBAN_LIVE_ADOPTION_QA.md`。
 - **完成就停**：第5批 `v0.8.46` 僅在使用者 Merge 並通知後進行；本次不碰新劇情、金色掉落、HUD 重建與額外商品階級。
 
+## 第5批 v0.8.46（2026-11-15：最後整合收尾，本 PR 待使用者 Merge）
+
+**起點已核對**：第4批 PR #73 已 Merge，main `0d2584570453f900d05f72fcda6e492d8f42ddf9`，開發時無未合併 PR；本批唯一分支 `feat/v0.8.46-urban-final-integration`。原定五批在此結束，不自行建立第6批。
+
+- 共用 `fitPortraitStage` 算出城鎮/避難所雙向等比縮放，取代原有重複 768×1376 數學，不改用戶家具對位 JSON 或百分比熱點；HUD 用安全 `meterPercent`，無效數值不產生 NaN/Infinity CSS。
+- 正式黑市/卡牌/手牌的紫階稀有度美術正常顯示，但不再所有列表項目常駐動畫，只有 hover/focus/技能選中時啟動；`prefers-reduced-motion` 與 `update:slow` 關掉動態。城鎮霧氣取消大型 blur、保留透明漸層、八設施點擊仍可觸控，短高/窄寬恢復44px熱點；避難所四快捷44px且 Drawer 可內捲。
+- 新 `tests/v0846-urban-final-integration.test.ts` 綜合驗證 14 張用戶原圖 SHA256、三區8店、倉庫空/部分/8件滿切圖、真實城鎮/市場 reducer、保存/重開、版本與沒有額外正式金色階。原前批測試不得被刪除。最後 HEAD 必需 GitHub Actions build + tests 全綠。
+- 新 `docs/V0846_URBAN_FINAL_QA.md` 作為人工驗收 checklist；實測前不得把手機流暢度/FPS、位置或 touch 表現標示為已驗收。
+- **完成就停止**：無第6批；由使用者自行 Merge 本 PR 之後，任何新遊戲內容都應進入新的規劃，不自行增加功能。
+
 ## 批次與停止條件
 | 批次 | 版本 | 可交付範圍 | 明確不做 |
 |---|---|---|---|

@@ -24,10 +24,10 @@ export default function UiShowcasePage(){
  const [particles,setParticles]=useState(true);
  const [picked,setPicked]=useState<UrbanRarity>('purple');
  const chosen=URBAN_RARITIES.find(x=>x.id===picked)!;
- return <div className="urban-showcase-page viewport-page" data-ui-showcase="v0.8.44">
+ return <div className="urban-showcase-page viewport-page" data-ui-showcase="v0.8.52">
   <header className="urban-showcase__heading">
    <Link to="/settings" aria-label="返回遊戲設定"><ArrowLeft size={18}/></Link>
-   <div><span className="eyebrow">EMBER CHRONICLES / UI LAB · 0.8.44</span><h1>金屬・微光設計實驗室</h1></div>
+   <div><span className="eyebrow">EMBER CHRONICLES / UI LAB · 0.8.52</span><h1>金屬・微光設計實驗室</h1></div>
    <Link to="/" aria-label="返回避難所"><Home size={17}/></Link>
   </header>
   <p className="urban-showcase__disclaimer">視覺原型展示：你可以調整數值、切換特效與點選卡格；所有操作都不修改遊戲存檔或商店資料。</p>
@@ -57,7 +57,7 @@ export default function UiShowcasePage(){
     </div>
    </MetalFrame>
    <MetalFrame level="secondary" eyebrow="02 / SQUARE INVENTORY" title="正方形商品格・稀有度提案">
-    <p className="urban-showcase__description">未選取時只顯示深色底盤，點選後才顯示該稀有度的彩色外框。金色選取時會偶發星芒與微弱水紋；金色仍未加入正式掉落表。</p>
+    <p className="urban-showcase__description">未選取時保留分級底色但不顯示彩框，點選後才顯示稀有度的彩色外框。金色選取時會偶發星芒與微弱水紋；金色仍未加入正式掉落表。</p>
     <div className="urban-showcase__rarities" aria-label="選擇 UI 稀有度樣式">
      {URBAN_RARITIES.map(r=>{
       const sample=SLOT_EXAMPLES[r.id],Icon=sample.Icon;
@@ -72,7 +72,7 @@ export default function UiShowcasePage(){
     <p className="urban-showcase__hint">灰／綠／藍／紫只改選取視覺；金色維持展示預留。原始商品價格、數量、卡牌 rarity 與角色牌組不受影響。</p>
    </MetalFrame>
    <MetalFrame level="light" eyebrow="03 / SURFACE HIERARCHY" title="銀色金屬邊框・三級">
-    <p className="urban-showcase__description">銀色拉絲金屬加上細微刮痕、凹點與厚薄不同的立體框緣。主框 6px、次框 4px、輕框 3px；僅重點介面套用，維持窄螢幕空間。</p>
+    <p className="urban-showcase__description">銀色拉絲金屬保留細微刮痕與凹點，框體已縮至原厚度的 70%：主框 4.2px、次框 2.8px、輕框 2.1px。</p>
     <div className="urban-showcase__frame-samples">
      {URBAN_FRAME_LEVELS.map(level=><MetalFrame level={level.id} eyebrow={level.id.toUpperCase()}
        title={level.label} key={level.id}>

@@ -12,7 +12,7 @@ export default function StatBar({value,max,color,label,showValue=true,urban=fals
  const fluid=liquid&&urban&&(color==='red'||color==='mint');
  const field=color==='red'?HUD_HEALTH_SPARKS:HUD_STAMINA_SPARKS;
  const frameStyle=fluid?{'--v0849-frame-image':`url("${import.meta.env.BASE_URL}assets/ui/hud-frames-v0849.png")`} as CSSProperties:undefined;
- return <div className={`statbar ${urban?'statbar--urban':''} ${fluid?'statbar--v0849-liquid statbar--v0849-'+color+' statbar--v0853-live:''}`.trim()}
+ return <div className={`statbar ${urban?'statbar--urban':''} ${fluid?'statbar--v0849-liquid statbar--v0849-'+color+' statbar--v0853-live':''}`.trim()}
   data-hud-meter={fluid?color:undefined} data-hud-percent={fluid?pct:undefined}>
   <div className="statbar__label"><span>{label}</span>{showValue&&<strong>{value} <span className="statbar__divider">/ {max}</span></strong>}</div>
   <div className="statbar__track" style={frameStyle} role={fluid?'progressbar':undefined}

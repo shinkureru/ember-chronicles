@@ -148,7 +148,7 @@ describe('v0.8.45 — staged adoption in actual gameplay UI without new economy'
   expect(css).not.toMatch(/\bcanvas\s*\{|<canvas/);
   expect(css).not.toContain('position:fixed');
   const imports=read('src/styles/main.scss');
-  expect(imports.trimEnd()).toMatch(/@import "v0845-urban-selective-adoption";$/);
+  expect(imports.trimEnd()).toMatch(/@import "v0846-urban-final-polish";$/);
   expect(imports.indexOf('@import "v0844-urban-ui-showcase";'))
    .toBeLessThan(imports.indexOf('@import "v0845-urban-selective-adoption";'));
  });
@@ -160,8 +160,8 @@ describe('v0.8.45 — staged adoption in actual gameplay UI without new economy'
   expect(post.economy.coins).toBe(state.economy.coins-90);
   expect(post.bag.bandage).toBe((state.bag.bandage??0)+1);
   expect(state).toEqual(pre);
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.45');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.45');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.46');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.46');
   expect(read('src/game/state/storage.ts')).toContain('localStorage');
  });
 });

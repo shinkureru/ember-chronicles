@@ -8,6 +8,7 @@ import {normalizeShelterOwned,getWarehouseVisualMode,SHELTER_FURNITURE_IDS} from
 import type {ProfessionId,ShelterId} from '../../game/types';
 import GameUtilities from '../../components/GameUtilities';
 import ShelterScene from './ShelterScene';
+import {fitPortraitStage} from '../../components/ui/portraitStageFit';
 import ShelterBuildDemoPanel from './ShelterBuildDemoPanel';
 import ShelterFacilityPanel from './ShelterFacilityPanel';
 import ShelterAttentionPanel from './ShelterAttentionPanel';
@@ -54,11 +55,9 @@ function ShelterStageFit({children}:{children:ReactNode}){
   const node=host.current;
   if(!node)return;
   const measure=()=>{
-   const availableWidth=node.clientWidth,availableHeight=node.clientHeight;
-   if(availableWidth<=0||availableHeight<=0)return;
-   const width=Math.min(availableWidth,availableHeight*768/1376);
-   const height=width*1376/768;
-   setDimensions(previous=>previous&&Math.abs(previous.width-width)<.1&&Math.abs(previous.height-height)<.1?previous:{width,height});
+   const fit=fitPortraitStage(node.clientWidth,node.clientHeight);
+   if(!fit)return;
+   setDimensions(previous=>previous&&Math.abs(previous.width-fit.width)<.1&&Math.abs(previous.height-fit.height)<.1?previous:fit);
   };
   measure();
   const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(measure):null;

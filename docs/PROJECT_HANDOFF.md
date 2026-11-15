@@ -1,5 +1,21 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-15｜第六輪第5批（**最後一批**）v0.8.46：都市科幻 UI／城鎮／避難所完整整合收尾（本 PR 待自行 Merge）
+
+- **最新 GitHub 狀態**：第4批 PR #73 已由使用者 Merge，起點 main `0d2584570453f900d05f72fcda6e492d8f42ddf9`；開工時 Open PR 0。此批唯一分支 `feat/v0.8.46-urban-final-integration`，專注於原定 v0.8.42～v0.8.46 的第5批；提交後交由使用者自行 Merge。**此五批計畫在此正式收尾，不自行建立第6批或額外 PR。**
+- **實作範圍：真實整合與效能**：新增 `src/components/ui/portraitStageFit.ts` 的純計算 `fitPortraitStage()`，原始標準場景 768×1376，以雙向 `min(containerWidth/artWidth,containerHeight/artHeight)` 等比例縮放。將原 `ShelterHomePage.tsx` 的 `ShelterStageFit` 及 `TownDistrictPage.tsx` 的 `DistrictStage` 改用同一函式，既有 ResizeObserver / window resize / 階段座標／所有家具 JSON x/y/z 百分比維持；修正重複邏輯，支援 320–430 手機、寬桌機與短高頁面。無測量／非有限值時保持預設或上次有效尺寸，不會產生 NaN CSS。
+- **HUD 防呆**：`src/components/StatBar.tsx` 使用上一批共用 `meterPercent()`，在 NaN、Infinity、負值、max≤0 時保證 CSS 填充率回 0；超額仍最大 100%。原數值標示、原 CSS class `statbar`、頁面 HUD 生命/體力 opt-in 光澤保持不變，**不改真正角色 HP 或 STA**。
+- **已套用之美術效能**：新增 `src/styles/_v0846-urban-final-polish.scss`，列在 `main.scss` 最後。黑市、卡牌庫、關卡技能卡大量紫階正方格仍維持一眼可辨的顏色/外框，*不再每張常駐動畫*：只在滑鼠 hover（真支援 hover+fine pointer）、鍵盤 focus-visible 或技能選取時啟動柔和流光；沒操作時將裝飾流光保持低亮靜止。這避免使用者在大型可捲動清單上一開畫面就同時驅動大量無限動畫。
+- **城鎮與小裝置**：取消街區霧氣那層巨大 `filter:blur(14px)`（徑向漸層已經柔焦），保留慢速 CSS 霧氣與營業中 beacon；全部仍 `pointer-events:none` / backdrop 圖不更動。低更新率 `@media(update:slow)` 停止氛圍循環、reduced motion 全停止，包括互動流光；`@media(forced-colors:active)` 補鍵盤高對比 focus。對 ≤390px 或 ≤600px 高的城鎮觸控熱點恢復至少44px（上一批有縮成42/36px），對 ≤560px 高避難所四快捷也至少44px。保留城鎮清單和避難所 Drawer 各自可上下滾動，**不釋放全頁 lock**。
+- **不變的規則**：黑市原四展示 tier `scrap,field,special,forbidden`→灰綠藍紫；卡牌原 `normal,rare,chaos`→灰藍紫，**沒有正式金色掉落**。不修改商品價格／庫存、五商人換班、卡牌傷害/升級、職業資源、手機手牌拖曳；城鎮 3 區/8 個原服務 dialog、金錢/飢餓/台北真實時間與每日限額都未動。避難所三選一、首次故事強制流程/任務防跳、空屋→獨立PNG層→8/8改高畫質完整 JPG 與圖層 JSON 也未動。
+- **原始用戶圖資真正 SHA-256 保護**：本次新增 `tests/v0846-urban-final-integration.test.ts` 明列四張城鎮原 WebP 和倉庫 **兩張 JPG + 八件 PNG** 一共14項固定 SHA-256；持續保護 `public/assets/town/*` 與 `public/assets/shelter/warehouse/*`。圖資未經重新壓縮、更名、覆蓋或修改。
+- **自動整合驗證**：新增 v0846 專項測試，包含 320/360/390/430/468/桌機比例無裁切，0/partial/8件家具 SSR、原三區各真實設施 SSR、物品稀有度非金色映射、CSS 動畫低動態/細部介面，使用真正 reducer 檢查食堂熱食以及黑市買繃帶舊幣/飢餓/背包，`saveGame()/loadGame()` 回存房屋/家具/貨幣/卡牌/飢餓，再使用 `resetPrototypeAndReload()` 驗只清遊戲的 localStorage key。另舊版 v0832–v0845 全部回歸測試仍在，最新版本 `package.json/package-lock.json=0.8.46`；需待最後 PR head `npm run build` 及 `npm test` 全綠。
+- **UI Lab 與正式版分隔**：原 `#/settings`→「UI 實驗室」→`#/ui-lab` 可繼續比較5色、三級銀框與純 CSS 小火花；正式畫面只套局部方形底盤和輕量 HUD/城鎮氛圍。此輪正式版尚無新傳說金階系統、金色掉落、任何新任務／電腦隱藏支線或實作的公寓／地下防空室背景美術。舊版原型「刪除本機存檔並重啟」按鈕仍為測試用途，正式發行必經產品決策移除。
+- **交付驗收界線**：詳細自動與手動 QA 記錄在 `docs/V0846_URBAN_FINAL_QA.md`。我們有 GitHub Actions 和 SSR／資料測試，**無法由 CI 自動聲稱已在 iPhone Safari/Android Chrome 真機檢驗動畫 FPS、字距、熱點位置與手指感受**；這些都應保留為使用者手動驗收。**PR 請由使用者 Merge**。此輪 v0.8.42→v0.8.46 五批已完結；後續新需求須重新規劃獨立批次，禁止自行延長。
+
+---
+
+
 ## 2026-11-15｜第六輪第4批 v0.8.45：正式場景小範圍採用金屬方格與微動態（本 PR 待自行 Merge）
 
 - **起點與合併界線**：v0.8.44 第3批 PR **#72** 已由使用者 Merge，`main` 起點 `2630331ab8f0ea0532d327deb2ac16605f91c06d`，起工時 Open PR 0。第4批唯一分支 `feat/v0.8.45-urban-ui-selective-adoption`；package/lock `0.8.45`。只做第4批；**不得自行 Merge**，不得做第5批 `v0.8.46`。

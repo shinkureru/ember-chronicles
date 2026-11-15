@@ -107,7 +107,6 @@ export default function TownDistrictPage(){
     alt={district.title+'城市場景'} draggable={false}/>
    <span className="city-district-scene__kicker" aria-hidden="true"><MapPinned size={13}/> CITY SECTOR / {district.number}</span>
    {hotspots.map(h=>{
-    const facility=getTownFacility(h.facility);
     const open=isTownOpen(h.facility,s.world.minute);
     return <button type="button" key={h.facility}
      className={`city-district-hotspot city-district-hotspot--${h.side} ${open?'is-open':'is-closed'}`}

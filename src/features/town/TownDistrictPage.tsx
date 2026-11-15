@@ -57,18 +57,20 @@ export default function TownDistrictPage(){
  const [active,setActive]=useState<TownFacilityId|null>(null);
  const [restCinematic,setRestCinematic]=useState<RestServiceId|null>(null);
  const trigger=useRef<HTMLButtonElement|null>(null);
+ const restCommitting=useRef(false);
  const restoreFocus=useCallback(()=>{
   window.requestAnimationFrame(()=>trigger.current?.focus({preventScroll:true}));
  },[]);
  const closeDialog=useCallback(()=>{setActive(null);restoreFocus()},[restoreFocus]);
  const openFacility=(id:TownFacilityId,event:ReactMouseEvent<HTMLButtonElement>)=>{
   trigger.current=event.currentTarget;
+  restCommitting.current=false;
   setActive(id);
   playCue('select');
  };
  // Navigating between /town/:districtId paths must never retain a different
  // district's previously opened modal / cinematic.
- useEffect(()=>{setActive(null);setRestCinematic(null)},[districtId]);
+ useEffect(()=>{setActive(null);setRestCinematic(null);restCommitting.current=false},[districtId]);
  useEffect(()=>{
   if(!active)return;
   const frame=window.requestAnimationFrame(()=>{
@@ -76,12 +78,31 @@ export default function TownDistrictPage(){
    const dialog=dialogs[dialogs.length-1];
    dialog?.querySelector<HTMLElement>('button')?.focus({preventScroll:true});
   });
-  return()=>window.cancelAnimationFrame(frame);
+  // The legacy dialogs are portals. Keep keyboard focus inside their real
+  // service forms until a close or successful rest releases the modal.
+  const trapFocus=(event:KeyboardEvent)=>{
+   if(event.key!=='Tab')return;
+   const dialogs=document.querySelectorAll<HTMLElement>('[role="dialog"][aria-modal="true"]');
+   const dialog=dialogs[dialogs.length-1];if(!dialog)return;
+   const items=Array.from(dialog.querySelectorAll<HTMLElement>(
+    'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
+   )).filter(el=>el.getClientRects().length>0);
+   if(!items.length){event.preventDefault();dialog.focus();return}
+   const first=items[0],last=items[items.length-1],current=document.activeElement;
+   if(event.shiftKey&&(current===first||!dialog.contains(current))){
+    event.preventDefault();last.focus();
+   }else if(!event.shiftKey&&(current===last||!dialog.contains(current))){
+    event.preventDefault();first.focus();
+   }
+  };
+  document.addEventListener('keydown',trapFocus,true);
+  return()=>{window.cancelAnimationFrame(frame);document.removeEventListener('keydown',trapFocus,true)};
  },[active]);
  const confirmRest=(serviceId:RestServiceId)=>{
   // The existing engine lock is authoritative: blocked/closed/full daily quota
   // must never charge a player or start the cinematic.
-  if(getTownServiceLock(s,serviceId))return;
+  if(restCommitting.current||getTownServiceLock(s,serviceId))return;
+  restCommitting.current=true;
   dispatch({type:'TOWN_SERVICE',serviceId});
   playCue('confirm');
   setActive(null);
@@ -158,6 +179,6 @@ export default function TownDistrictPage(){
   {active==='workshop'&&<WorkshopDialog onClose={closeDialog} backLabel={`返回${district.title}`}/>}
   {active&&active!=='inn'&&active!=='clinic'&&active!=='workshop'&&
    <TownFacilityDialog facility={active as SecondaryTownFacility} onClose={closeDialog} backLabel={`返回${district.title}`}/>}
-  {restCinematic&&<RestCinematic kind={restCinematic} onFinish={()=>{setRestCinematic(null);restoreFocus()}}/>}
+  {restCinematic&&<RestCinematic kind={restCinematic} onFinish={()=>{restCommitting.current=false;setRestCinematic(null);restoreFocus()}}/>}
  </div>;
 }

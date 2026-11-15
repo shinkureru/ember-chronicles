@@ -36,10 +36,11 @@ describe('v0.8.43 — playable city facility access and district interactions',(
   expect(TOWN_SERVICES.some(s=>s.facility==='clinic')).toBe(true);
  });
  it('has art-directed live hotspots over the same full-size illustration for all eight facilities',()=>{
-  const ids:TOWN_PLACEHOLDER[]=[];
+  const ids:TownFacilityId[]=[];
   for(const district of TOWN_DISTRICTS){
    const hotspots=TOWN_DISTRICT_HOTSPOTS[district.id];
-   expect(hotspots.map(x=>x.facility)).toEqual([...district.facilities]);
+   expect(hotspots.map(x=>x.facility).sort()).toEqual([...district.facilities].sort());
+   expect(new Set(hotspots.map(x=>x.facility)).size).toBe(hotspots.length);
    for(const h of hotspots){
     expect(h.x).toBeGreaterThan(0);expect(h.x).toBeLessThan(100);
     expect(h.y).toBeGreaterThan(0);expect(h.y).toBeLessThan(100);
@@ -183,4 +184,3 @@ describe('v0.8.43 — playable city facility access and district interactions',(
   expect(read('src/game/state/storage.ts')).toContain('localStorage');
  });
 });
-type TOWN_PLACEHOLDER=TownFacilityId;

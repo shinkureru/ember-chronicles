@@ -1,0 +1,218 @@
+/* v0.8.53: direct live game use; UI Lab routes are retired. */
+
+/* iPhone 13 Pro portrait layout is 390×844 CSS px at DPR 3.
+ * Desktop preserves exactly that CSS viewport when its browser window fits.
+ * The actual phone retains visualViewport and dynamic Safari toolbar sizing. */
+@media(min-width:700px){
+ .desktop-world>.game-frame{
+  width:390px;min-width:390px;max-width:390px;
+  height:min(844px,100dvh);
+  max-height:min(844px,100dvh);
+  min-height:0;
+ }
+}
+@media(min-width:700px) and (max-height:460px){
+ .desktop-world>.game-frame{height:100dvh;max-height:100dvh}
+}
+
+/* Live actual HP / STA, never the removed laboratory. Keep the original
+ * user-provided red-copper/silver-blue PNG plus independent 9+9 sparks. */
+.hud--v0853-real-meter .hud__bars{gap:9px}
+.hud--v0853-real-meter .statbar--v0853-live .statbar__label{
+ margin-bottom:7px;min-height:14px;font-size:10px;line-height:1.3;
+ color:#e0dcd2;
+}
+.hud--v0853-real-meter .statbar--v0853-live .statbar__label strong{
+ font-size:11px;color:#f3f1e9;font-variant-numeric:tabular-nums;
+}
+.hud--v0853-real-meter .statbar--v0853-live .statbar__track{
+ height:clamp(14px,2.25vw,18px);
+ margin:0 5px;
+ background:linear-gradient(180deg,#070c12,#111e26 53%,#060d14);
+ box-shadow:inset 0 2px 4px #000d,0 0 0 1px #7b858645;
+}
+.hud--v0853-real-meter .statbar--v0853-live .statbar__fill{
+ top:3px;bottom:3px;border-radius:2px;
+ background:
+  linear-gradient(180deg,#ffbe8b8f 0%,transparent 37%,#07090a89 87%),
+  linear-gradient(90deg,#501713,#a73d27 42%,#f27e43 78%,#ffc386 100%);
+ box-shadow:inset 0 1px 2px #ffe9bd9c,inset 0 -2px 4px #190506,0 0 8px #e4562790;
+}
+.hud--v0853-real-meter .statbar--v0849-mint .statbar__fill{
+ background:
+  linear-gradient(180deg,#e0fffca3 0%,transparent 34%,#031b268a 87%),
+  linear-gradient(90deg,#073945,#097a84 38%,#40c5b3 80%,#bbffee 100%);
+ box-shadow:inset 0 1px 2px #d6ffffb8,inset 0 -2px 4px #001922,0 0 8px #2dcbbda1;
+}
+.hud--v0853-real-meter .statbar--v0853-live .statbar__fill::before{
+ opacity:.86;
+ background:
+  radial-gradient(ellipse 21% 62% at 11% 42%,#000b0bd9,transparent 79%),
+  radial-gradient(ellipse 23% 70% at 39% 62%,#071018cb,transparent 82%),
+  radial-gradient(ellipse 18% 54% at 66% 29%,#06090ba8,transparent 82%),
+  radial-gradient(ellipse 27% 70% at 93% 71%,#0b1014b9,transparent 81%);
+ background-size:67% 138%;
+}
+.hud--v0853-real-meter .statbar--v0853-live .statbar__front{
+ position:absolute;z-index:4;top:50%;height:30px;width:25px;
+ transform:translate(-50%,-50%);pointer-events:none;
+ background:radial-gradient(ellipse at center,#fff2ceba 0%,#ffbd896f 23%,transparent 73%);
+ filter:drop-shadow(0 0 4px #f0ae80);
+ animation:v0853-front-hp 3.7s ease-in-out -1.2s infinite alternate;
+}
+.hud--v0853-real-meter .statbar--v0849-mint .statbar__front{
+ background:radial-gradient(ellipse at center,#d8ffefc9 0%,#8affe46f 24%,transparent 75%);
+ filter:drop-shadow(0 0 5px #75f1dc);
+ animation:v0853-front-st 5.3s ease-in-out -3.1s infinite alternate-reverse;
+}
+.hud--v0853-real-meter .statbar--v0853-live .statbar__front::after{
+ content:"";position:absolute;left:calc(50% - 1px);top:2px;bottom:2px;
+ width:2px;border-radius:50%;
+ background:linear-gradient(180deg,transparent,#fff6e9 42%,#fffefa 53%,transparent);
+ box-shadow:0 0 4px #ffbe85,0 0 8px #eb8b52;
+}
+.hud--v0853-real-meter .statbar--v0849-mint .statbar__front::after{
+ box-shadow:0 0 4px #bbffee,0 0 8px #60e3d1;
+}
+@keyframes v0853-front-hp{
+ from{opacity:.45;scale:.82}to{opacity:.95;scale:1.08}
+}
+@keyframes v0853-front-st{
+ from{opacity:.95;scale:1.05}to{opacity:.48;scale:.85}
+}
+.hud--v0853-real-meter .statbar--v0853-live .statbar__finial{
+ position:absolute;top:50%;z-index:7;width:10px;height:25px;
+ transform:translateY(-50%);
+ pointer-events:none;
+ clip-path:polygon(48% 0,100% 34%,100% 70%,52% 100%,0 69%,0 32%);
+ border-radius:2px;
+ background:linear-gradient(115deg,#0d121a,#a6b7b9 27%,#eef9ee 43%,#46515d 68%,#070b11 96%);
+ box-shadow:inset 0 0 0 1px #f5fffb,0 2px 5px #000;
+}
+.hud--v0853-real-meter .statbar--v0853-live .statbar__finial--start{left:-5px}
+.hud--v0853-real-meter .statbar--v0853-live .statbar__finial--end{right:-5px;transform:translateY(-50%) scaleX(-1)}
+.hud--v0853-real-meter .statbar--v0853-live .statbar__particle{
+ box-shadow:0 0 5px #ffd39b,0 0 8px #d65d35;
+}
+.hud--v0853-real-meter .statbar--v0849-mint .statbar__particle{
+ box-shadow:0 0 5px #bffff1,0 0 8px #2bb9b4;
+}
+@media(max-width:390px),(max-height:620px){
+ .hud--v0853-real-meter .hud__bars{gap:6px}
+ .hud--v0853-real-meter .statbar--v0853-live .statbar__track{height:14px}
+ .hud--v0853-real-meter .statbar--v0853-live .statbar__label{font-size:9px;margin-bottom:5px}
+}
+
+/* Live market sample remains a single existing button per item. Gold is
+ * exclusive to selectable read-only preview, not actual game loot. */
+.market-v13 .market-v081__catalog .market-v0822__product.market-v0853-gold{
+ --market-product-back:#332513;
+ --market-product-edge:#f5ca74;
+ --market-product-glow:#ffe0a5;
+}
+.market-v13 .market-v081__catalog .market-v0822__product.market-v0853-purple{
+ --market-product-back:#402249;
+ --market-product-edge:#b46cda;
+ --market-product-glow:#d0a5f2;
+}
+/* Selected and unselected square keep visible corresponding grade-colored
+ * material, even while the selected decorative frame shines. */
+.market-v13 .market-v081__catalog .urban-v0845-market-product.is-selected .urban-rarity-artwork,
+.cards-viewport .card-library-grid--scroll .urban-v0845-codex-card.is-selected .urban-rarity-artwork,
+.skill-tile.urban-v0845-skill-tile.is-selected .urban-rarity-artwork{
+ background:
+  radial-gradient(ellipse at 41% 24%,color-mix(in srgb,var(--urban-slot-glow) 26%,transparent),transparent 70%),
+  linear-gradient(137deg,color-mix(in srgb,var(--urban-slot-face) 90%,#cbd2cc 10%),var(--urban-slot-face) 63%,#0c1520 100%)!important;
+}
+.market-v13 .market-v081__catalog .market-v0822__product.urban-v0845-market-product.market-v0853-gold.is-selected{
+ position:relative;isolation:isolate;overflow:visible!important;
+ border-color:#ffe6a0!important;
+ background:
+  radial-gradient(ellipse at 45% 39%,#a482404d,transparent 73%),
+  linear-gradient(155deg,#4b3823,#292217 56%,#131b20)!important;
+ box-shadow:0 0 0 1px #ffe39c,0 0 18px #e4b55891,
+  inset 0 0 17px #fff0c829,0 5px 13px #000b!important;
+}
+.market-v13 .market-v081__catalog .market-v0853-gold.is-selected .urban-rarity-artwork{
+ background:
+  radial-gradient(ellipse at 45% 21%,#ffefb46b,transparent 71%),
+  linear-gradient(150deg,#67512c,#51391a 54%,#181b20)!important;
+ border-color:#ffe5a5!important;
+ box-shadow:0 0 0 1px #eac779,0 0 13px #ffe2a18a,
+  inset 0 1px 3px #fff4c346!important;
+}
+.market-v13 .market-v081__catalog .market-v0853-gold .market-v0822__product-top,
+.market-v13 .market-v081__catalog .market-v0853-gold .market-v12__offer-icon,
+.market-v13 .market-v081__catalog .market-v0853-gold .market-v0822__product-name,
+.market-v13 .market-v081__catalog .market-v0853-gold .market-v0822__product-footer{
+ position:relative;z-index:2;
+}
+/* Two clearly visible dark-amber radial ripples with phase offsets;
+ * sparkle silhouettes do not replace those water layers. */
+.market-v13 .market-v081__catalog .market-v0853-gold .market-gold-sparks{
+ position:absolute;inset:0;display:block;z-index:4;
+ overflow:visible;pointer-events:none;
+}
+.market-v13 .market-v081__catalog .market-v0853-gold .market-gold-ripple{
+ position:absolute;inset:3px;z-index:0;display:block;
+ border-radius:10px;overflow:hidden;pointer-events:none;
+ background:
+  repeating-radial-gradient(circle at 49% 52%,transparent 0 9px,
+   #fff3b363 11px 13px,#ffce6835 14px 16px,transparent 18px 29px);
+ mix-blend-mode:screen;opacity:0;
+ animation:v0853-gold-water 6.1s ease-in-out -1.3s infinite;
+}
+.market-v13 .market-v081__catalog .market-v0853-gold .market-gold-ripple--two{
+ animation-duration:8.3s;animation-delay:-4.6s;
+ background:
+  repeating-radial-gradient(ellipse at 51% 48%,transparent 0 17px,
+   #ffeab26b 20px 23px,transparent 25px 39px);
+}
+@keyframes v0853-gold-water{
+ 0%,9%{opacity:0;transform:scale(.52)}
+ 22%{opacity:.84}
+ 51%{opacity:.7;transform:scale(1.08)}
+ 82%{opacity:.22;transform:scale(1.43)}
+ 100%{opacity:0;transform:scale(1.6)}
+}
+.market-v13 .market-v081__catalog .market-v0853-gold .market-gold-spark{
+ position:absolute;display:block;pointer-events:none;z-index:6;
+ left:var(--spark-x);top:var(--spark-y);
+ width:var(--spark-size);height:var(--spark-size);
+ border:0;opacity:0;
+ background:linear-gradient(135deg,#fff9d3 7%,#fff0af 33%,#f5be5a 69%,#bc792b);
+ -webkit-mask-image:url('../assets/v0853-gold-sparkle-a.svg');
+ mask-image:url('../assets/v0853-gold-sparkle-a.svg');
+ -webkit-mask-size:contain;mask-size:contain;
+ -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+ filter:drop-shadow(0 0 4px #ffe2a1);
+ animation:v0853-gold-spark var(--spark-duration) cubic-bezier(.22,1,.36,1) var(--spark-delay) infinite;
+}
+.market-v13 .market-v081__catalog .market-v0853-gold .market-gold-spark--b{
+ -webkit-mask-image:url('../assets/v0853-gold-sparkle-b.svg');
+ mask-image:url('../assets/v0853-gold-sparkle-b.svg');
+}
+@keyframes v0853-gold-spark{
+ 0%,57%,100%{opacity:0;transform:translate(-50%,-50%) scale(.18)}
+ 63%{opacity:.9;transform:translate(calc(-50% + var(--spark-dx) * .25),calc(-50% + var(--spark-dy) * .25)) scale(.9)}
+ 67%{opacity:1;transform:translate(calc(-50% + var(--spark-dx) * .42),calc(-50% + var(--spark-dy) * .42)) scale(1)}
+ 73%{opacity:.45;transform:translate(calc(-50% + var(--spark-dx) * .85),calc(-50% + var(--spark-dy) * .85)) scale(.65)}
+ 82%{opacity:0;transform:translate(calc(-50% + var(--spark-dx)),calc(-50% + var(--spark-dy))) scale(.22)}
+}
+@media(prefers-reduced-motion:reduce),(update:slow){
+ .hud--v0853-real-meter .statbar--v0853-live .statbar__front,
+ .market-v13 .market-v081__catalog .market-v0853-gold .market-gold-spark,
+ .market-v13 .market-v081__catalog .market-v0853-gold .market-gold-ripple{
+  animation:none!important;transition:none!important;
+ }
+ .market-v13 .market-v081__catalog .market-v0853-gold .market-gold-spark,
+ .market-v13 .market-v081__catalog .market-v0853-gold .market-gold-ripple{
+  opacity:0!important;
+ }
+}
+@media(forced-colors:active){
+ .market-v13 .market-v081__catalog .market-v0853-gold.is-selected{outline:2px solid Highlight!important}
+ .market-v13 .market-v081__catalog .market-v0853-gold .market-gold-sparks{display:none!important}
+ .hud--v0853-real-meter .statbar--v0853-live .statbar__front,
+ .hud--v0853-real-meter .statbar--v0853-live .statbar__finial{display:none!important}
+}

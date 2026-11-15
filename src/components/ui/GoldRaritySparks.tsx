@@ -14,6 +14,8 @@ const particles=[
 ] as const;
 export default function GoldRaritySparks(){
  return <span className="market-gold-sparks" aria-hidden="true">
+  <span className="market-gold-ripple market-gold-ripple--one"/>
+  <span className="market-gold-ripple market-gold-ripple--two"/>
   {particles.map((p,i)=><i key={i} className={'market-gold-spark market-gold-spark--'+(i%2?'b':'a')}
    style={{
     '--spark-x':p.x+'%','--spark-y':p.y+'%',

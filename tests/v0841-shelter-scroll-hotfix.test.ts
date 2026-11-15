@@ -16,7 +16,7 @@ describe('v0.8.41 regression contract, updated for v0.8.42 fixed single-screen s
   expect(oldRepair).toContain('flex-shrink:0');
   expect(oldRepair).toContain('overflow-y:auto!important');
   expect(main.indexOf('@import "v0841-shelter-scroll-hotfix"')).toBeLessThan(main.indexOf('@import "v0842-city-shelter"'));
-  expect(main.trimEnd()).toMatch(/@import "v0845-urban-selective-adoption";$/);
+  expect(main.trimEnd()).toMatch(/@import "v0846-urban-final-polish";$/);
  });
  it('user-requested one-screen home replaces vertical dragging with its own high-priority CSS',()=>{
   expect(home).toContain('className="shelter-home-page shelter-home-page--compact viewport-page"');
@@ -58,7 +58,7 @@ describe('v0.8.41 regression contract, updated for v0.8.42 fixed single-screen s
   expect(read('src/components/useVerticalDragScroll.ts')).toContain('suppressClick.current=true');
  });
  it('keeps the former art-layout and save version unchanged except for deliberate v0.8.42 bump',()=>{
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.45');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.46');
   expect(read('src/game/data/shelter/warehouse-layout.json')).toContain('"width": 768');
   expect(read('src/game/data/shelter/warehouse-layout.json')).toContain('"height": 1376');
   expect(current).toContain('@media(prefers-reduced-motion:reduce)');

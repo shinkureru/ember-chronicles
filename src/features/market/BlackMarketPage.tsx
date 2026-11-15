@@ -218,7 +218,7 @@ export default function BlackMarketPage(){
         <button type="button"
         className={`market-v12__offer market-v0822__product market-v0822__product--${appearance.tier} urban-v0845-market-product ${offer.previewRarity==='gold'?'market-v0853-gold':''} ${offer.previewRarity==='purple'?'market-v0853-purple':''} ${selectedId===offer.id?'is-selected':''} ${offer.canTrade?'':'is-unavailable'}`}
         onClick={()=>{setSelectedId(offer.id);playCue('select')}}
-        aria-pressed={selectedId===offer.id} aria-haspopup="dialog"
+        aria-pressed={selectedId===offer.id} aria-haspopup={offer.previewRarity?undefined:'dialog'}
         title={offer.canTrade?'點擊查看交易資訊':offer.reason}
         aria-label={`${offer.name}，${appearance.name}階，${appearance.isDisplayOnly?'展示級別':'卡牌等級'} ${appearance.level}，${mode==='buy'?'庫存':'持有'} ${count}，${offer.price} 舊幣${offer.canTrade?'':`，無法交易：${offer.reason}`}`}>
         <span className="market-v0822__product-top">
@@ -246,7 +246,7 @@ export default function BlackMarketPage(){
    <GameUtilities className="game-utilities--market"/>
    <ReturnMainLink className="return-main-link--market"/>
   </footer>
-  {selected&&mode&&<div className="market-v10__overlay" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)setSelectedId(null);}}>
+  {selected&&mode&&!selected.previewRarity&&<div className="market-v10__overlay" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)setSelectedId(null);}}>
    <section className="market-v10__detail urban-metal-surface--v0851 urban-metal-surface--primary" role="dialog" aria-modal="true" aria-label={selected.name+'交易資訊'}>
     <button className="market-v10__close" type="button" aria-label="關閉商品資訊" onClick={()=>setSelectedId(null)}><X size={20}/></button>
     <span className="market-v10__detail-kicker">BLACK MARKET / {selected.type==='card'?'CARD':'SUPPLY'}</span>

@@ -64,6 +64,8 @@ describe('v0.8.53 — actual HUD, precious gold preview and iPhone 13 Pro produc
   expect(page).toContain('market-v0853-purple');
   expect(page).toContain('<GoldRaritySparks/>');
   expect(page).toContain('disabled={!selected.canTrade}');
+  expect(page).toContain('selected&&mode&&!selected.previewRarity');
+  expect(page).toContain("aria-haspopup={offer.previewRarity?undefined:'dialog'}");
   expect(page).toContain('marketVisualTestPresentation(selected.previewRarity)');
  });
  it('actually uses both uploaded star silhouettes traced into gold icons, with radial random-like staggered glow',()=>{

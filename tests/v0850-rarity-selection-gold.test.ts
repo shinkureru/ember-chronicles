@@ -41,7 +41,7 @@ describe('v0.8.50 — selected-only rarity and gold display-only glimmer',()=>{
   const skill=read('src/features/chapter/SkillHand.tsx');
   expect(market).toContain("selectedId===offer.id?'is-selected':''");
   expect(market).toContain('aria-pressed={selectedId===offer.id}');
-  expect(market).toContain('aria-haspopup="dialog"');
+  expect(market).toContain("aria-haspopup={offer.previewRarity?undefined:'dialog'}");
   expect(market).toContain("onClick={()=>{setSelectedId(offer.id);playCue('select')}}");
   expect(codex).toContain("selectedId===variant.id&&selectedLevel===variant.level?'is-selected':''");
   expect(codex).toContain('aria-pressed={selectedId===variant.id&&selectedLevel===variant.level}');

@@ -106,11 +106,13 @@
 /* Live market sample remains a single existing button per item. Gold is
  * exclusive to selectable read-only preview, not actual game loot. */
 .market-v13 .market-v081__catalog .market-v0822__product.market-v0853-gold{
+ opacity:1!important; /* Preview is intentionally read-only, not visually disabled. */
  --market-product-back:#332513;
  --market-product-edge:#f5ca74;
  --market-product-glow:#ffe0a5;
 }
 .market-v13 .market-v081__catalog .market-v0822__product.market-v0853-purple{
+ opacity:1!important;
  --market-product-back:#402249;
  --market-product-edge:#b46cda;
  --market-product-glow:#d0a5f2;
@@ -215,4 +217,16 @@
  .market-v13 .market-v081__catalog .market-v0853-gold .market-gold-sparks{display:none!important}
  .hud--v0853-real-meter .statbar--v0853-live .statbar__front,
  .hud--v0853-real-meter .statbar--v0853-live .statbar__finial{display:none!important}
+}
+
+/* Container width (390px) rather than desktop window width determines
+   mobile-specific refinements. CSS @media remains desktop-wide on a PC. */
+.game-frame{container-name:iphone-viewport;container-type:inline-size}
+@container iphone-viewport (max-width:420px){
+ .hud--v0853-real-meter .statbar--v0853-live .statbar__track{height:14px}
+ .hud--v0853-real-meter .statbar--v0853-live .statbar__label{font-size:9px}
+ .market-v13 .market-v081__catalog .market-v0853-gold .market-gold-spark{
+  width:var(--spark-size);height:var(--spark-size);
+ }
+ .market-v13 .market-v081__catalog .market-v12__offer{min-width:0}
 }

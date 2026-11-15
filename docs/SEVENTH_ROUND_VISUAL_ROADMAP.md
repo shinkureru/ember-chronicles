@@ -54,3 +54,12 @@
 - 首頁進總覽三段分別滑入、詳頁返回總覽採左右分割滑入／分開，進詳頁 1050ms iOS 類柔和曲線與局部光影。
 - 未選商品灰綠藍紫、暗金各自有低飽和底盤但不帶彩框；金色仍只展示。三級金屬框精確縮至 70%（4.2 / 2.8 / 2.1px），紋理不變。
 - 第七輪 v0847～v0851 程式與回歸測試逐項核對；測試 tests/v0852-viewport-town-cinematic-audit.test.ts，人工驗收 docs/V0852_VISUAL_REGRESSION_QA.md。CI 不能取代真機 FPS／畫面驗收。
+
+
+## v0.8.53｜真實 HUD 與永久紫／金黑市展示修復
+
+- 前批 PR #80 已由使用者 Merge，起點 main 67dc520ffde090785e008ffd39d0325c1b819bdf。分支 feat/v0.8.53-live-hud-gold-market-dev-smoke；一個 PR 待使用者 Merge。
+- 真正 Hud/StatBar 對齊 UI Lab 的金屬端點、前緣柔光與液流；原雙色 PNG、9+9 獨立粒子和原數值保留。
+- 黑市每位商人購買清單永久加紫禁忌/金傳說 2 件不可交易、不可進正式庫存的展示測試品。金色選中後有兩層更明顯同心水紋和 8 顆使用者圖3/圖4輪廓描繪金色星芒，位置與動畫相位不同。選中方格仍保留原分級底色。
+- 重設或全新存檔初始舊幣 9,999，舊存檔幣值不改；移除 UI Lab 設定入口/公開路由，保留未公開歷史測試元件。
+- PC 強制 390×844 CSS px iPhone 13 Pro 直式 frame，補 @container 確保桌機內部手機寬度可套用局部 RWD。專項 tests/v0853-live-hud-gold-market.test.ts、人工 docs/V0853_REAL_HUD_MARKET_QA.md 與永久 docs/PROJECT_HANDOFF.md。

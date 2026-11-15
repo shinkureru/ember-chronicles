@@ -48,7 +48,7 @@ export default function TownFacilityDialog({facility,onClose,backLabel='返回�
   playCue(serviceId==='train'?'reward':'confirm');
  };
  return createPortal(<div className="town-facility-overlay" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)onClose()}} onPointerDown={event=>event.stopPropagation()} onPointerMove={event=>event.stopPropagation()} onPointerUp={event=>event.stopPropagation()}>
-  <section className="town-facility-dialog" role="dialog" aria-modal="true" aria-label={active.name}>
+  <section className="town-facility-dialog urban-metal-surface--v0851 urban-metal-surface--secondary" role="dialog" aria-modal="true" aria-label={active.name}>
    <header className="town-facility-dialog__head">
     <span className="town-v15__scene-icon"><Icon size={27}/></span>
     <div className="town-facility-dialog__heading">

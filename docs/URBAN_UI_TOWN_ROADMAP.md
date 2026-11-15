@@ -9,6 +9,14 @@
 - 商品槽：通用方形 icon 底盤 + 外部名稱/價格資訊；灰/白、綠、藍、紫、金。紫少量邊框微光，金僅保留視覺樣式，**金色稀有度系統規則尚未實裝**，不得改掉落表。
 - 城鎮：總覽一張拼接圖（使用者附圖1）上下等分三區，每區中央毛玻璃卡。詳細圖1外環高架區=原圖4；圖2蒸霧商街=原圖3；圖3舊城核心=原圖2。下批詳頁連回既有服務/對話，不複製其邏輯。
 
+## 第2批 v0.8.43（2026-11-15 已開發，PR #71 待 Merge）
+
+- 前批 PR #70 已 Merge，main `8206a9f3bbbf8435157a3d62fdaa4cc3e203db79`。本批單一 PR #71：`feat/v0.8.43-town-district-live-services`。
+- 直接在三區各自原畫面放真正可點的設施標記，對應 2+2+4 共8個舊 TownFacility ID；另有可從任何比例選到的完整設施清單作觸控/鍵盤 fallback。外環公告欄保留，其他未開放點無實際入口。
+- 直接重用五種原 dialog + RestCinematic 與原 `getTownServiceLock`、`TOWN_SERVICE`、`TOWN_QUESTS`、`CLINIC_*`，價格/飢餓/每日限額/台北時鐘同舊城鎮、不得自行改平衡。閉店可打開閱讀，但服務仍原有鎖定。
+- 原 768×1376 全圖改用 ResizeObserver 等比例顯示與共用定位座標，修復上一批 cover 裁切場景；熱點位置為**初步視覺定位**，真機與美術仍需人工校正。新增 `src/styles/_v0843-town-district-live.scss` 最後匯入、焦點/響應式/營業狀態/已到訪數量。
+- 詳細驗收 `docs/V0843_TOWN_LIVE_SERVICES_QA.md`，永久更新 `docs/PROJECT_HANDOFF.md`。只有 CI build/test 在最新 head 全綠才能告知用戶 Merge；**在 PR 合併前絕不啟動第3批**。
+
 ## 批次與停止條件
 | 批次 | 版本 | 可交付範圍 | 明確不做 |
 |---|---|---|---|

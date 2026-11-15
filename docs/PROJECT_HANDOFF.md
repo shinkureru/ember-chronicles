@@ -1,5 +1,20 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-15｜第六輪第2批 v0.8.43：城鎮 3 個街區直接操作原有 8 設施（本 PR 待使用者 Merge）
+
+- **基準核對**：使用者已 Merge 第1批 PR #70（v0.8.42），最新 main `8206a9f3bbbf8435157a3d62fdaa4cc3e203db79`，開工時 open PR 0。第2批唯一分支 `feat/v0.8.43-town-district-live-services`，本次唯一 PR **#71**；不自動 Merge，也不擅自做第3批 `v0.8.44`。
+- **真正可操作的 8 入口**：`#/town/outer-ring` 可點旅店 (`inn`) 與公告欄 (`noticeboard`)；`#/town/steam-street` 可點公共澡堂/洗衣店 (`laundry`) 與公共食堂 (`canteen`)；`#/town/old-core` 可點地下診所 (`clinic`)、修理工坊 (`workshop`)、情報酒館 (`tavern`)、訓練場 (`training`)。三區合起來恰為 `TOWN_FACILITIES` 原8 IDs，沒有新增/替換功能；外環「尚未開放」僅供顯示，不可點擊。
+- **沿用既有真實功能而非假互動**：`TownDistrictPage.tsx` 直接掛載原本 `InnRestDialog`/`RestCinematic`/`ClinicDialog`/`WorkshopDialog`/`TownFacilityDialog`，沒有複製價格、治療、屬性或 NPC 規則。選擇休息方案時先再次檢查 `getTownServiceLock` 才 dispatch `TOWN_SERVICE`，絕不可在服務鎖住時付錢或播放已成功的休息動畫。其他視窗原有 `getTownServiceLock`、`TOWN_QUESTS`、`CLINIC_BUY_ITEM` 等判定保持不動。營業/打烊皆可打開查閱，但關店會依既有引擎禁用購買。原 `#/town/classic` 所有功能仍原封不動。
+- **場景熱點與真正清單**：新增 `src/features/town/townDistrictHotspots.ts`。美術圖目前是設計者提供、按 768×1376 設計的 3 張 WebP；依實際場景地點定比例熱點 x/y，不修改原圖。每設施在原圖上有可點毛玻璃標記，同時在下方有完整至少44px的可用清單，讓小螢幕與輔助科技不必只靠點圖片定位。這是視覺錨點的**初版人工估位**，不是設計師像倉庫家具那樣確認過的最終 JSON；需依人工 QA 和實際截圖調整。
+- **修正上批整圖裁切風險**：前一版 `.city-district-scene` `background-size:cover` 可能裁掉上下建築，現改為 `DistrictStage` 搭 `ResizeObserver`，計算 `width=min(availableWidth,availableHeight*768/1376)`，背景 PNG/WebP 僅在等比的 stage 範圍內作 `<img>` 全幅，不再使用 cover 裁切；熱點與圖片同一個座標空間，避免各裝置偏移。
+- **原有 UI/資料不回歸**：`src/styles/_v0843-town-district-live.scss` 只作用 `city-district-page--live`，`main.scss` 最後 import。保留前批城鎮總覽三等分、避難所一頁式主畫面及可捲動測試抽屜；保留 mission lock、台北真實時間、玩家的幣/飢餓/生命/物資/裝備/NPC與原舊存檔格式。新版街區顯示台北真實日期、階段與時鐘、幣、每個店家營業狀態與到訪次數，避免「看起來可以買」但其實關店。
+- **焦點／互動**：所有標記與清單按鈕可 Tab/Enter/觸控、擁有 `aria-haspopup=dialog` 與 `aria-expanded`；開啟原視窗時將焦點移到視窗首顆按鈕，關閉時返回原本開啟的按鈕，避免使用者須從頁面頭部重新導航。休息動畫完成或跳過也返回原按鈕。店家原視窗新增 optional `backLabel`，新街區可顯示「返回{街區名}」，舊城鎮預設文字維持「返回避難所」。局部圖層不強制帶動大影片，尊重 `prefers-reduced-motion`。
+- **測試與驗收**：`tests/v0843-town-live-services.test.ts` 覆蓋 3 路線×8設施的實際 SSR DOM 、8個熱點唯一性與位置、既有服務真 reducer 結算及 lock（購買熱食、休息每日2次、酒館情報每日一次、永久屬性訓練、非營業時間拒絕）、老城鎮路由仍在、500 舊幣測試情境下幣與飢餓變動。已保留 `v0842` 四張 user 原圖 SHA256 與 `v0838` 倉庫全部素材 checksum。實機 Chrome/iOS/Android 可點性與熱點藝術位置仍需依 `docs/V0843_TOWN_LIVE_SERVICES_QA.md` 人工確認，不可僅憑 CI 宣稱已實機測試。CI 最新分支必須 `npm run build` 與 `npm test` 全綠才能交付。
+- **下一批切點**：由使用者 Merge PR #71 並通知後，才開始 `v0.8.44` 共用元件 Showroom：CSS/SVG 小粒子進度條、正方形稀有度商品框（灰/綠/藍/紫/預留金）與銀灰金屬框主/次/輕三層，先展示再選擇性導入。**不要**在第2批偷做素材外觀與稀有度業務邏輯。
+
+---
+
+
 ## 2026-11-15｜第六輪：寫實都市科幻／三區城鎮入口與共用 UI 五批規劃（已執行第 1 批 v0.8.42，PR 待使用者 Merge）
 
 - **基準核對**：PR #69 `fix/v0.8.41-shelter-scroll-collapse` 已 Merge，main `d917a8c1a0b7d2693f3fc86a4dadb8da681fb800`，開工未合併 PR 數為 0。**曾因對話中斷預先建立的第1批分支 `feat/v0.8.42-city-overview-shelter-hub` 已包含多筆真正程式/圖片 commits；恢復工作必須延續同分支，禁止重開重複 PR/重壓分支。** 使用者說「開始」代表只做第1批，後4批一律等 Merge 與使用者再說繼續。

@@ -54,12 +54,12 @@ describe('v0.8.47 — town glass atlas and directional reveal',()=>{
    'prefers-reduced-motion:reduce','update:slow','forced-colors:active',
    ':focus-visible','pointer-events:none','@supports not'])expect(css).toContain(part);
   expect(css).not.toContain('.city-district-page--live');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0850-rarity-selection-gold";$/);
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0851-brushed-metal-final";$/);
  });
  it('does not change old routes, playable eight services or content version',()=>{
   expect(TOWN_DISTRICTS.flatMap(d=>d.facilities)).toHaveLength(7);
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.50');
-  expect(JSON.parse(read('package-lock.json')).version).toBe('0.8.50');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.51');
+  expect(JSON.parse(read('package-lock.json')).version).toBe('0.8.51');
   expect(read('src/app/App.tsx')).toContain('<Route path="/town/:districtId" element={<TownDistrictPage/>}/>');
  });
 });

@@ -239,7 +239,7 @@ export default function BlackMarketPage(){
    <ReturnMainLink className="return-main-link--market"/>
   </footer>
   {selected&&mode&&<div className="market-v10__overlay" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)setSelectedId(null);}}>
-   <section className="market-v10__detail" role="dialog" aria-modal="true" aria-label={selected.name+'交易資訊'}>
+   <section className="market-v10__detail urban-metal-surface--v0851 urban-metal-surface--primary" role="dialog" aria-modal="true" aria-label={selected.name+'交易資訊'}>
     <button className="market-v10__close" type="button" aria-label="關閉商品資訊" onClick={()=>setSelectedId(null)}><X size={20}/></button>
     <span className="market-v10__detail-kicker">BLACK MARKET / {selected.type==='card'?'CARD':'SUPPLY'}</span>
     <span className="market-v10__detail-art" aria-hidden="true">{selected.type==='item'?<ItemArt id={selected.id}/>:selected.emoji}</span>

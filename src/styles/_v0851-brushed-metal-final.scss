@@ -1,0 +1,113 @@
+/* v0.8.51 — seventh round final silver metal material.
+ * The 128px original tiled SVG is STATIC; expensive SVG noise filters,
+ * backdrop-filter, RAF, videos and continuous animations are unnecessary.
+ * Rarity-colored selected borders & the original HUD PNG stay untouched. */
+.urban-frame,
+.urban-metal-surface--v0851{
+ --v0851-metal-rim:4px;
+ --v0851-metal-outer:#a3b5be;
+ position:relative;
+ box-sizing:border-box;
+ border:2px solid var(--v0851-metal-outer);
+ box-shadow:inset 0 1px 1px #f5fcff4b,
+  inset 0 0 0 1px #080e15,
+  inset 0 0 0 3px #687a8452,
+  0 6px 23px #0009;
+}
+.urban-frame{
+ --v0851-metal-rim:4px;
+ --v0851-metal-outer:#91a5af;
+}
+.urban-frame--primary,
+.urban-metal-surface--primary{
+ --v0851-metal-rim:6px;
+ --v0851-metal-outer:#bac7c9;
+ border-width:2px;
+ box-shadow:inset 0 1px 2px #f4ffff70,inset 0 0 0 1px #0a1118,
+  inset 0 0 0 4px #70818877,0 10px 30px #000a,0 0 13px #92b2c32e;
+}
+.urban-frame--secondary,
+.urban-metal-surface--secondary{
+ --v0851-metal-rim:4px;
+ --v0851-metal-outer:#91a5af;
+ border-width:2px;
+}
+.urban-frame--light{
+ --v0851-metal-rim:3px;
+ --v0851-metal-outer:#7f939d;
+ border-width:1px;
+ box-shadow:inset 0 1px #eff8ff40,inset 0 0 0 2px #7a8b9240,0 3px 12px #0007;
+}
+/* Compose a thin metallic ring with textured scratches/pits, keeping the
+ * inside entirely clear for buttons, paragraphs and scrollable dialogs.
+ * -webkit-mask-composite:xor is the WebKit equivalent of standard exclude. */
+.urban-frame::after,
+.urban-metal-surface--v0851::after{
+ content:"";position:absolute;inset:0;z-index:9;pointer-events:none;
+ box-sizing:border-box;border-radius:inherit;padding:var(--v0851-metal-rim);
+ background-image:
+  linear-gradient(135deg,#f1ffffc2 0%,#576b75b0 13%,#cad9daab 26%,#324450cc 47%,#d5e3e6c9 67%,#435664d0 84%,#effbffe3 100%),
+  url('../assets/brushed-silver-v0851.svg'),
+  repeating-linear-gradient(98deg,#fff5 0 1px,#0b17232e 1px 2px,#dcebef23 2px 3px,transparent 3px 6px);
+ background-size:100% 100%,128px 128px,100% 100%;
+ background-repeat:no-repeat,repeat,repeat;
+ background-blend-mode:normal,overlay,screen;
+ -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+ -webkit-mask-composite:xor;
+ mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+ mask-composite:exclude;
+ opacity:.96;
+}
+/* Each level has its own thickness and warmth, but no full-panel chrome. */
+.urban-frame--primary::after,
+.urban-metal-surface--primary::after{
+ background-image:
+  linear-gradient(130deg,#ecfaff 0%,#738994 15%,#d5e5e4 34%,#3a4c56 54%,#b9cbd1 78%,#f7ffff 100%),
+  url('../assets/brushed-silver-v0851.svg'),
+  repeating-linear-gradient(102deg,#e0fbff5e 0 1px,#10233161 2px 3px,transparent 4px 7px);
+}
+.urban-frame--light::after{opacity:.72}
+.urban-frame--primary::before{z-index:0;border-width:1px;inset:6px}
+/* Static interior steel has fine cross-brushing and a slight upper edge glint.
+ * Keep text/background high contrast, never repaint the center with texture. */
+.urban-frame{
+ background:
+  linear-gradient(120deg,#d7e8f410,transparent 26%),
+  repeating-linear-gradient(106deg,#f7ffff04 0 1px,transparent 1px 5px,#030b130a 6px 8px),
+  linear-gradient(160deg,#1a2931,#0b151d 92%);
+}
+.urban-frame--light{
+ background:linear-gradient(140deg,#20343db9,#0b1720dc);
+}
+/* Choose only three real dialogs; don't chrome all gameplay cards.
+ * Existing modal widths, scroll regions, headers, and actions remain intact. */
+.town-facility-dialog.urban-metal-surface--v0851,
+.market-v10__detail.urban-metal-surface--v0851,
+.card-detail-dialog.urban-metal-surface--v0851{
+ border-color:var(--v0851-metal-outer);
+}
+.town-facility-dialog.urban-metal-surface--v0851{position:relative}
+.market-v10__detail.urban-metal-surface--v0851{position:relative;scrollbar-gutter:stable}
+.card-detail-dialog.urban-metal-surface--v0851{position:relative}
+/* The ring is painted above the shell but remains non-interactive. */
+.urban-frame__header,.urban-frame__body{position:relative;z-index:1;min-width:0}
+/* Small screens retain the steel surface but trim ring thickness one step. */
+@media(max-width:390px),(max-height:560px){
+ .urban-frame--primary,.urban-metal-surface--primary{--v0851-metal-rim:4px}
+ .urban-frame--secondary,.urban-metal-surface--secondary{--v0851-metal-rim:3px}
+ .urban-frame--light{--v0851-metal-rim:2px}
+ .urban-showcase__scroll>.urban-frame{max-width:100%;min-width:0}
+ .town-facility-dialog.urban-metal-surface--v0851,
+ .market-v10__detail.urban-metal-surface--v0851,
+ .card-detail-dialog.urban-metal-surface--v0851{max-width:100%;min-width:0}
+}
+/* Decorative rings never need motion; reduced-motion keeps all metal intact. */
+@media(prefers-reduced-motion:reduce),(update:slow){
+ .urban-frame::after,.urban-metal-surface--v0851::after{animation:none!important;transition:none!important}
+}
+@media(forced-colors:active){
+ .urban-frame,.urban-metal-surface--v0851{
+  border:2px solid CanvasText!important;box-shadow:none!important;background:Canvas!important;color:CanvasText;
+ }
+ .urban-frame::after,.urban-metal-surface--v0851::after{display:none!important}
+}

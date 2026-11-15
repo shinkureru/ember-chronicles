@@ -72,7 +72,7 @@ export default function UiShowcasePage(){
     <p className="urban-showcase__hint">灰／綠／藍／紫只改選取視覺；金色維持展示預留。原始商品價格、數量、卡牌 rarity 與角色牌組不受影響。</p>
    </MetalFrame>
    <MetalFrame level="light" eyebrow="03 / SURFACE HIERARCHY" title="銀色金屬邊框・三級">
-    <p className="urban-showcase__description">厚重主框只給關鍵介面，次框放常用面板，輕框給次要元件，避免整個遊戲都像銀色相框。</p>
+    <p className="urban-showcase__description">銀色拉絲金屬加上細微刮痕、凹點與厚薄不同的立體框緣。主框 6px、次框 4px、輕框 3px；僅重點介面套用，維持窄螢幕空間。</p>
     <div className="urban-showcase__frame-samples">
      {URBAN_FRAME_LEVELS.map(level=><MetalFrame level={level.id} eyebrow={level.id.toUpperCase()}
        title={level.label} key={level.id}>
@@ -82,7 +82,7 @@ export default function UiShowcasePage(){
     </div>
    </MetalFrame>
    <div className="urban-showcase__footer">
-    <span><Sparkles size={14}/>本頁是設計校對工具；第 4 批才會選擇性套用到黑市、卡牌與既有 HUD。</span>
+    <span><Sparkles size={14}/>本頁是設計校對工具；城鎮設施、交易詳情與卡牌詳情採用材質化金屬框，商品稀有度仍依選取狀態顯示。</span>
     <Link to="/settings"><ArrowLeft size={15}/>返回遊戲設定</Link>
    </div>
   </div>

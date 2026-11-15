@@ -24,7 +24,7 @@ describe('v0.8.49 — actual original-PNG HUD, liquid smoke and separate fine pa
   expect(image.readUInt32BE(20)).toBe(70);
   expect(sha(path)).toBe('108eb1e5f1c3f45f6c3670b390e576b5aff5a73588ce652843a041bdb260b196');
  });
- it('generates 12 stable separately seeded tiny sparks per meter and never changes seed during render',()=>{
+ it('generates 9 stable separately seeded tiny sparks per meter and never changes seed during render',()=>{
   expect(HUD_HEALTH_SPARKS).toHaveLength(9);
   expect(HUD_STAMINA_SPARKS).toHaveLength(9);
   expect(HUD_HEALTH_SPARKS).not.toEqual(HUD_STAMINA_SPARKS);
@@ -87,11 +87,11 @@ describe('v0.8.49 — actual original-PNG HUD, liquid smoke and separate fine pa
   ])expect(css).toContain(token);
   expect(css).not.toContain('requestAnimationFrame');
   expect(read('src/components/ui/hudParticles.ts')).not.toContain('Math.random(');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0850-rarity-selection-gold";$/);
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0851-brushed-metal-final";$/);
  });
  it('only updates package release and leaves 14 original town/warehouse assets and save schema intact',()=>{
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.50');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.50');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.51');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.51');
   const old=read('tests/v0846-urban-final-integration.test.ts');
   for(const token of ['city-overview.webp','outer-ring.webp','steam-street.webp','old-core.webp','background_full.jpg','bed.png'])expect(old).toContain(token);
   expect(read('src/game/state/storage.ts')).toContain('ember-chronicles-prototype-v1');

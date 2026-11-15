@@ -130,7 +130,7 @@ export default function CardsPage(){
   </div>
   <div className="card-library-footer"><span className="card-library-footer__hint"><Sparkles size={13}/>{category==='attack'?'攻擊牌必須有對應武器才可在關卡使用，請先前往事前準備檢查。':'同卡複本可升級至 V 階；已升級主卡與 LV.I 素材分開顯示。'}</span><GameUtilities className="game-utilities--cards"/><ReturnMainLink className="return-main-link--cards"/></div>
   {selected&&<div className="card-detail-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setSelectedId(null)}}>
-    <section className="card-detail-dialog" role="dialog" aria-modal="true" aria-label={`${selected.name}卡牌詳情`}>
+    <section className="card-detail-dialog urban-metal-surface--v0851 urban-metal-surface--secondary" role="dialog" aria-modal="true" aria-label={`${selected.name}卡牌詳情`}>
       <header className="card-detail-dialog__head"><span className="eyebrow">CARD ARCHIVE / {selected.id.toUpperCase()}</span><button type="button" onClick={()=>setSelectedId(null)} aria-label="關閉卡牌詳情"><X size={20}/></button></header>
       <div className="card-detail-dialog__hero"><div className="card-detail-dialog__icon">{selected.emoji}</div><div><span className={`rarity rarity--${selected.rarity}`}>{RARITY[selected.rarity]}</span><h2>LV.{selectedLevel} {selected.name}</h2>{selected.profession&&<small>{PROFESSIONS[selected.profession].name}專屬</small>}</div></div>
       <div className="card-detail-dialog__stats"><span>等級 <strong>LV.{selectedLevel}</strong></span><span>這個等級持有 <strong>{variantQuantity} 張</strong></span><span>可消耗複本 <strong>{owned?.copies??0} 張</strong></span></div>

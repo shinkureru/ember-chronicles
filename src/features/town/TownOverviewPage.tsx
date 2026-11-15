@@ -34,7 +34,7 @@ export default function TownOverviewPage(){
    )}
   </section>
   <footer className="city-overview-footer">
-   <span><Route size={13} aria-hidden="true"/> 三個街區 · 七處主要設施</span>
+   <span><Route size={13} aria-hidden="true"/> 三個街區 · 八處既有設施</span>
    <Link to="/town/classic">暫用舊版設施功能 <ChevronRight size={13}/></Link>
   </footer>
  </div>;

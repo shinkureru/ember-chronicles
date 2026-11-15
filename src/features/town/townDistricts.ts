@@ -11,8 +11,8 @@ export const TOWN_DISTRICTS:readonly TownDistrict[]=[
  {
   id:'outer-ring',number:'01',title:'外環高架區',english:'OUTER RING',
   tagline:'在城市邊緣，找一處可以撐過今晚的地方。',
-  summary:'客棧／旅店，以及暫時封閉的高架設施。',
-  facilities:['inn'],facilityNames:['客棧／旅店','未開放設施'],
+  summary:'客棧／旅店、原有城市公告欄，以及暫時封閉的高架設施。',
+  facilities:['inn','noticeboard'],facilityNames:['客棧／旅店','城市公告欄','尚未開放'],
   image:'assets/town/outer-ring.webp',lighting:'cool'
  },
  {

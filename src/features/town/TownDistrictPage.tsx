@@ -126,6 +126,7 @@ export default function TownDistrictPage(){
   <DistrictStage>
    <img className="city-district-scene__image" src={townAsset(district.image)}
     alt={district.title+'城市場景'} draggable={false}/>
+   <span className={`city-district-scene__atmosphere city-district-scene__atmosphere--${district.id}`} aria-hidden="true"/>
    <span className="city-district-scene__kicker" aria-hidden="true"><MapPinned size={13}/> CITY SECTOR / {district.number}</span>
    {hotspots.map(h=>{
     const open=isTownOpen(h.facility,s.world.minute);

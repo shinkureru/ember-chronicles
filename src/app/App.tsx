@@ -15,6 +15,8 @@ import WarehousePage from '../features/inventory/WarehousePage';
 import CharacterPage from '../features/player/CharacterPage';
 import DevPage from '../features/dev/DevPage';
 import TownPage from '../features/town/TownPage';
+import TownOverviewPage from '../features/town/TownOverviewPage';
+import TownDistrictPage from '../features/town/TownDistrictPage';
 import BlackMarketPage from '../features/market/BlackMarketPage';
 import OnboardingPage from '../features/onboarding/OnboardingPage';
 import ChapterMapPage from '../features/world-map/ChapterMapPage';
@@ -37,7 +39,9 @@ function GameRoutes(){
  return <Routes>
   <Route path="/" element={<HomePage/>}/>
   <Route path="/world-map" element={state.profession?<ChapterMapPage/>:<Navigate to="/" replace/>}/>
-  <Route path="/town" element={<TownPage/>}/>
+  <Route path="/town" element={<TownOverviewPage/>}/>
+  <Route path="/town/classic" element={<TownPage/>}/>
+  <Route path="/town/:districtId" element={<TownDistrictPage/>}/>
   <Route path="/black-market" element={<BlackMarketPage/>}/>
   <Route path="/chapter" element={<ChapterPage/>}/>
   <Route path="/cards" element={<CardsPage/>}/>

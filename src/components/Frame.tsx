@@ -18,7 +18,7 @@ export default function Frame({children}:{children:ReactNode}){
   },[location.pathname,pauseClock]);
   useEffect(()=>{
     const scene:SoundscapeId=inMission?(state.mode==='result'?'result':state.stageId===2?`alley_${state.sceneId}` as SoundscapeId:state.sceneId):
-      location.pathname==='/town'?'town':location.pathname==='/black-market'?'market':
+      location.pathname.startsWith('/town')?'town':location.pathname==='/black-market'?'market':
       location.pathname==='/warehouse'?'warehouse':'map';
     setAudioScene(scene);
   },[location.pathname,inMission,state.mode,state.sceneId,state.stageId]);

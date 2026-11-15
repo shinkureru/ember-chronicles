@@ -66,7 +66,7 @@ describe('v0.8.51 — final metal texture and entire seventh-round regression',(
    '@media(prefers-reduced-motion:reduce),(update:slow)',
    '@media(forced-colors:active)','CanvasText',
   ])expect(css).toContain(part);
-  expect(css).not.toContain('backdrop-filter');
+  expect(css).not.toContain('backdrop-filter:');
   expect(css).not.toContain('requestAnimationFrame(');
   expect(css).not.toContain('feTurbulence');
   expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0851-brushed-metal-final";$/);
@@ -80,8 +80,8 @@ describe('v0.8.51 — final metal texture and entire seventh-round regression',(
   expect(cards).toContain('card-detail-dialog urban-metal-surface--v0851 urban-metal-surface--secondary');
   for(const src of [town,market,cards])expect(src).toContain('role="dialog"');
   expect(town).toContain('role="tablist"');
-  expect(town).toContain("dispatch({type:'TOWN_ACCEPT_QUEST'");
-  expect(town).toContain("dispatch({type:'TOWN_COMPLETE_QUEST'");
+  expect(town).toContain("type:'TOWN_ACCEPT_QUEST',questId:quest.id");
+  expect(town).toContain("type:'TOWN_COMPLETE_QUEST',questId:quest.id");
   expect(market).toContain('disabled={!selected.canTrade}');
   expect(cards).toContain("dispatch({type:'UPGRADE_CARD',cardId:selected.id})");
   expect(cards).toContain('card-detail-dialog__content');

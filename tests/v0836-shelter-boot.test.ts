@@ -24,7 +24,7 @@ describe('v0.8.36: boot cover and prototype full-restart',()=>{
   expect(css).toContain('position:fixed;inset:0');
   expect(css).toContain('100svh');
   expect(css).toContain('prefers-reduced-motion:reduce');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0852-viewport-town-cinematic-audit";$/);
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0853-live-hud-gold-market";$/);
  });
  it('deletes only this game save then calls full-page reload instead of RESET',()=>{
   const original=makeInitialState('journalist');
@@ -48,7 +48,7 @@ describe('v0.8.36: boot cover and prototype full-restart',()=>{
   expect(entries.get('unrelated-preference')).toBe('keep');
   const fresh=loadGame();
   expect(fresh.profession).toBeNull();
-  expect(fresh.economy.coins).toBe(120);
+  expect(fresh.economy.coins).toBe(9999);
   expect(fresh.warehouse.wrench).toBe(1);
  });
  it('refuses reload when browser storage removal is rejected',()=>{
@@ -70,8 +70,8 @@ describe('v0.8.36: boot cover and prototype full-restart',()=>{
   expect(read('src/app/App.tsx')).toContain('resetPrototypeAndReload()');
  });
  it('updates both package versions and does not add new UI or world clock rules',()=>{
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.52');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.52');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.53');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.53');
   expect(read('src/app/GameContext.tsx')).toContain("type:'WORLD_CLOCK_SYNC'");
   expect(read('src/app/App.tsx')).toContain('<Route path="/chapter" element={<ChapterPage/>}/>');
   expect(read('src/app/App.tsx')).toContain('<Route path="/black-market" element={<BlackMarketPage/>}/>');

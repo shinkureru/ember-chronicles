@@ -23,7 +23,7 @@ describe('黑市與裝備',()=>{
   const s=makeInitialState('journalist');s.world.minute=16*60;s.ownedCards.question!.copies=2;
   const result=gameReducer(s,{type:'MARKET_SELL',vendorId:'broker',cardId:'question'});
   expect(result.ownedCards.question!.copies).toBe(1);
-  expect(result.economy.coins).toBe(138);
+  expect(result.economy.coins).toBe(s.economy.coins+18);
   expect(result.economy.blackMarketFavor).toBe(2);
  });
  it('買不到超過持有金錢的卡牌',()=>{

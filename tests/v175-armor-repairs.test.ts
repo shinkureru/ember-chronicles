@@ -139,7 +139,7 @@ describe('v1.7.5: workshop quote, same-charge repair, perfect buff lifecycle',()
   expect(PERFECT_REPAIR_CHANCE).toBe(.25);
   const fee=getTownServiceFee(s,'workshop_repair',undefined,'vest');expect(fee).toBe(40);
   const result=gameReducer(s,{type:'TOWN_SERVICE',serviceId:'workshop_repair',itemId:'vest'});
-  expect(result.economy.coins).toBe(120-fee);
+  expect(result.economy.coins).toBe(s.economy.coins-fee);
   expect(result.town?.wear.vest).toBe(100);
   expect(result.town?.armorHits?.vest).toBe(0);
   expect(result.town?.perfectRepairs?.vest?.bonus).toBe(1);

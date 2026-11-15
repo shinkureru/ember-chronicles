@@ -69,7 +69,7 @@ describe('v0.8.51 — final metal texture and entire seventh-round regression',(
   expect(css).not.toContain('backdrop-filter:');
   expect(css).not.toContain('requestAnimationFrame(');
   expect(css).not.toContain('feTurbulence');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0852-viewport-town-cinematic-audit";$/);
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0853-live-hud-gold-market";$/);
  });
  it('opts into only three real dialogs, preserving original dialog roles, actions and scroll containers',()=>{
   const town=read('src/features/town/TownFacilityDialog.tsx');
@@ -184,7 +184,7 @@ describe('v0.8.51 — final metal texture and entire seventh-round regression',(
   const old=read('tests/v0846-urban-final-integration.test.ts');
   for(const file of ['city-overview.webp','outer-ring.webp','steam-street.webp','old-core.webp',
    'background_empty.jpg','background_full.jpg','bed.png','computer.png'])expect(old).toContain(file);
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.52');
-  expect(JSON.parse(read('package-lock.json')).version).toBe('0.8.52');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.53');
+  expect(JSON.parse(read('package-lock.json')).version).toBe('0.8.53');
  });
 });

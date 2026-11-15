@@ -175,10 +175,10 @@ describe('v0.8.43 — playable city facility access and district interactions',(
   expect(app).toContain('<Route path="/town/classic" element={<TownPage/>}/>');
   expect(app).toContain('<Route path="/town/:districtId" element={<TownDistrictPage/>}/>');
   expect(app).toContain("if(state.mode!=='home'&&location.pathname!=='/chapter')");
-  expect(css.trimEnd()).toMatch(/@import "v0852-viewport-town-cinematic-audit";$/);
+  expect(css.trimEnd()).toMatch(/@import "v0853-live-hud-gold-market";$/);
   expect(read('src/styles/_v0842-city-shelter.scss')).toContain('.shelter-stage-fit');
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.52');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.52');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.53');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.53');
   expect(read('src/game/state/storage.ts')).toContain('localStorage');
  });
 });

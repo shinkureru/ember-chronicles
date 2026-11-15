@@ -162,9 +162,9 @@ describe('v0.8.52 visual regression — fixed desktop phone geometry and reliabl
   expect(read('tests/v0846-urban-final-integration.test.ts')).toContain('city-overview.webp');
   expect(read('tests/v0849-hud-liquid-particles.test.ts')).toContain('108eb1e5f1c3f45f');
   expect(read('src/game/state/storage.ts')).toContain('ember-chronicles-prototype-v1');
-  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0852-viewport-town-cinematic-audit";$/);
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.52');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.52');
+  expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0853-live-hud-gold-market";$/);
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.53');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.53');
  });
  it('renders a truthful current UI Lab release identifier and reports the smaller metal dimensions',()=>{
   const ui=render(createElement(MemoryRouter,null,createElement(UiShowcasePage)));

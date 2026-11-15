@@ -169,7 +169,7 @@ describe('v0.8.46 — last-batch full integration and visual performance',()=>{
   ])expect(css).toContain(x);
   expect(css).not.toContain('position:fixed');
   const root=read('src/styles/main.scss');
-  expect(root.trimEnd()).toMatch(/@import "v0852-viewport-town-cinematic-audit";$/);
+  expect(root.trimEnd()).toMatch(/@import "v0853-live-hud-gold-market";$/);
   expect(root.indexOf('@import "v0845-urban-selective-adoption";'))
    .toBeLessThan(root.indexOf('@import "v0846-urban-final-polish";'));
  });
@@ -218,8 +218,8 @@ describe('v0.8.46 — last-batch full integration and visual performance',()=>{
   expect(memory.has('ember-chronicles-prototype-v1')).toBe(false);
  });
  it('finishes with synchronized version and unchanged v1 save schema / story lock',()=>{
-  expect(JSON.parse(read('package.json')).version).toBe('0.8.52');
-  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.52');
+  expect(JSON.parse(read('package.json')).version).toBe('0.8.53');
+  expect(JSON.parse(read('package-lock.json')).packages[''].version).toBe('0.8.53');
   const storage=read('src/game/state/storage.ts');
   expect(storage).toContain("const KEY='ember-chronicles-prototype-v1'");
   expect(storage).toContain('state.version!==1');

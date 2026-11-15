@@ -1,5 +1,19 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-16｜v0.8.53 實際 HUD 與金色測試品：永久交接（待使用者自行 Merge）
+
+- **基準**：前批 PR #80 已由使用者合併；開工時 main `67dc520ffde090785e008ffd39d0325c1b819bdf`，沒有其他 Open PR。此次只使用分支 `feat/v0.8.53-live-hud-gold-market-dev-smoke` 並建立單一 PR，不能自行 Merge。
+- **問題根因**：UI Lab 使用 `LuminousProgressBar.tsx`，真正玩家 HUD (`Hud.tsx`) 則使用另一個小型 `StatBar.tsx`，導致前一輪 UI Lab 截圖的金屬端點、前緣高亮及液體流動層未直接套用正式 HUD。v0.8.50 的已選取商品被全球的統一灰黑背景覆蓋，Gold 的特效選擇器也限縮於 UI Lab，實際黑市從來沒有 Gold 商品可選；本批修正兩個實際斷層。
+- **正式 HUD**：`Hud.tsx` 新增 `hud--v0853-real-meter`，現有兩條 `StatBar` 保持舊 API 和 `liquid=true`；在 `StatBar.tsx` 真實進度條增加左右金屬端飾、前緣光暈 DOM 及 progressbar ARIA，樣式位於最後匯入 `src/styles/_v0853-live-hud-gold-market.scss`。每條沿用原使用者雙色透明 PNG、不同週期的黑煙/液流以及 9+9 隨機種子粒子，現有 `meterPercent` 與 health/stamina 數值完全不修改。進度條仍控制高度 14～18px，不能回到先前 UI Lab 的 25px 厚條。
+- **真實黑市實作**：新增 `src/features/market/marketVisualTestOffers.ts`，永遠列出恰好兩件唯讀開發測試商品：`dev_visual_purple`（禁忌紫）和 `dev_visual_gold`（傳說金）。這兩件放進所有五位商人的購買模式清單、無輪班時間限制、庫存展示為 1，點擊後只選取亮框與光效，**不彈出交易覆蓋視窗**，因此能完整看到金色星芒／水紋；`canTrade=false`、沒有買入按鈕。**兩項不加入 `MARKET_VENDORS.sellItems`、`ITEMS`、掉落池或存檔 `marketStock`**；永久是「可見性」，不是玩家無限買賣或真實金階交易機制。任何真實市集交易、購卡與價格維持原有 engine。
+- **金色商品底色與動畫**：已選取的灰／綠／藍／紫／金方形商品格繼續顯示各自級別的彩色底盤；只有被選中的商品亮起相應彩框。金色測試品在選取時，透過 `GoldRaritySparks.tsx` 新增雙層明顯的暗金同心水紋與 8 個不共節奏的邊緣星芒。星芒採用使用者此次上傳的 `sparkle.png`、`sparkling (1).png` 的透明形狀輪廓，簡化向量曲線後重新上金色層，分別入庫 `src/assets/v0853-gold-sparkle-a.svg` / `...-b.svg`，使用 CSS mask、隨機種子固定方位、不同延遲與速度的短距離向外位移，漸顯漸隱。無 JS 每影格亂數、RAF、interval；reduced-motion/update:slow 會停止動態。
+- **起始金額 9,999**：`makeInitialState()` 的新存檔 coins 改成 `9999`，因此每次在設定按「刪除本機存檔」重新載入後會獲得 9,999 舊幣。原有舊存檔的 coins 會繼續從 localStorage 還原，**不會重置或補發**。屬於開發期間起始錢的暫時規則，並不是永久經濟平衡設計。
+- **UI Lab 正式下線**：從 `App.tsx` 移除 `/ui-lab` 路由、顯示元件 import、遊戲設定視覺 tab 與進入 UI Lab 的連結。原 UI 美術 SCSS 與 `UiShowcasePage.tsx` 仍作為**不公開、不可導航的歷史測試 fixture** 保留，避免丟失其他共用 UI 樣式和既有回歸測試；正式視覺已直接套進 HUD 與黑市，使用者無法再透過遊戲選單進入 UI Lab。
+- **iPhone 13 Pro**：標準直式 CSS viewport 為 `390×844`、DPR 約 3。桌機維持 `min-width:700px` 專用置中寬 390px、高 `min(844px,100dvh)`；視窗小於 844px 時縮高，不讓模擬器超出螢幕。真實 iPhone 本身維持流動 `100dvh`，不是對其鎖死 844px。新增 `container-name:iphone-viewport` / `@container ... (max-width:420px)`，避免桌機 390px 機框仍套用 1920px window media-query 的問題；無法將桌機實際 DPR 偽裝為 3，字體與裝置 Safari 差異需實機驗收。
+- **測試與停止點**：專項 `tests/v0853-live-hud-gold-market.test.ts` 覆蓋真 HUD SSR 光暈、9+9 粒子、使用者星芒向量輪廓、唯讀紫/金常駐、購買禁止、新舊存檔幣值、UI Lab 路由移除與 iPhone 13 Pro frame。原歷史測試保留，僅更新版號/最後 import、起始 9,999 與 UI Lab 取消入口的契約；全部最新 HEAD `npm run build`＋`npm test` 全綠後才讓使用者自行 Merge。人工 QA 在 `docs/V0853_REAL_HUD_MARKET_QA.md`，CI 綠燈不代表真實瀏覽器 GPU/FPS 已驗證。
+
+---
+
 ## 2026-11-16｜v0.8.52 第七輪全項目視覺驗收修正（PR 待使用者自行 Merge）
 
 - **基準**：前批 PR #79 已由使用者 Merge，main 17742eb4479234b47e728dbc18a4e5f3b4b699aa。工作開始時 Open PR 0。本批唯一分支 feat/v0.8.52-viewport-town-transitions-visual-audit，僅一個 PR，嚴禁自行 Merge。

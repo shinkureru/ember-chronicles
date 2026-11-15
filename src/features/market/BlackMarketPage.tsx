@@ -207,7 +207,7 @@ export default function BlackMarketPage(){
        onClickCapture={offersScroll.onClickCapture}>
       {filteredOffers.map((offer,index)=>{
        const appearance=offer.previewRarity?marketVisualTestPresentation(offer.previewRarity):getMarketProductPresentation(offer.type,offer.id);
-       const rarity=offer.previewRarity??marketTierToUrbanRarity(getMarketProductPresentation(offer.type,offer.id).tier);
+       const rarity=appearance.tier==='gold'?'gold':marketTierToUrbanRarity(appearance.tier);
        const count=formatMarketOfferQuantity(offer.type,mode,offer.available);
        return <div key={`${waveEpoch}:${offer.type}:${offer.id}`}
         className="market-v0831__wave-slot"

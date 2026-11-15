@@ -16,7 +16,7 @@ describe('v1.7.3 enemy loot requires an actual combat takedown',()=>{
    expect(actions.some(x=>x.lootSource&&!['pockets','npcGear','alley_pockets'].includes(x.lootSource))).toBe(true);
    const target=stage===1?'loot_pockets':'alley_loot_pockets';
    expect(gameReducer(s,{type:'CHOOSE',choiceId:target,skillId:null})).toBe(s);
-   expect(s.economy.coins).toBe(120);
+   expect(s.economy.coins).toBe(9999); // Development-stage fresh save; blocked loot cannot charge coins
    expect(remainingSearches(s,stage===1?'pockets':'alley_pockets')).toBe(0);
    s.flags.push('won_by_combat');s.enemy.health=0;
    expect(maySearchSource(s,stage===1?'pockets':'alley_pockets')).toBe(true);

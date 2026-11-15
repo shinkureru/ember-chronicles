@@ -1,5 +1,19 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-15｜第六輪第3批 v0.8.44：都市寫實 UI 共用元件庫與互動實驗室（待使用者 Merge）
+
+- **真實基準**：第2批 PR #71（`v0.8.43`）已由使用者 Merge，最新 main = `a29f8aeec50b4b7e8e5c47949ae0737ceff698fc`，起工時 Open PR = 0。本批唯一分支 `feat/v0.8.44-ui-showcase-tokens`，只做五批規劃中的第3批；新版本 package/lock `0.8.44`。禁止擅自 Merge、禁止開始第4批 `v0.8.45`。
+- **原則：先展示、再全域導入**：此批提供一套實際可用的 React 元件及隔離 UI 實驗室，**不會**改寫舊商人、卡牌、戰鬥 HUD、城鎮/倉庫頁；不修改 `GameState`、物品稀有度或存檔 schema，玩家現有主畫面、城鎮三分區及8店真實服務照舊。第4批待使用者看完元件並 Merge 後，才逐步套用；不得一次把整個遊戲按鈕套銀色重框。
+- **可使用的遊戲頁面**：`#/settings`→第三分頁「UI 實驗室」→「進入 UI 設計實驗室」→`#/ui-lab`。不需要 GitHub 開發者連結，即使 Pages 測試環境也可點；仍在原有 `GameRoutes` onboarding 強制介紹與 mission route-lock 之下，任務進行中無法改址繞過防護。此為純展示頁，不取用 `useGame`、不 dispatch、改動滑桿/卡格不會更動角色狀態/貨幣/存檔。
+- **共用 React 元件**：`src/components/ui/urbanUiTokens.ts`（色階/三級邊框/純計算 `meterPercent` 安全限縮），`LuminousProgressBar.tsx`（max和實際 current、反映>上限 `1250/1000` 和百分比最多100、`aria-valuenow` 限縮且 `aria-valuetext` 保留實際數字、tone`health|stamina|neutral`、動畫開關/粒子開關），`SquareRaritySlot.tsx`（真正 `button`、正方形底板 `aspect-ratio:1/1`、名稱與副文字在底板外、selected/disabled/aria-pressed），`MetalFrame.tsx`（主框primary、次框secondary、輕框light，視覺重量分級）。
+- **五色皆為視覺提案**：`URBAN_RARITIES` 定義 gray 灰/一般、green 綠/精良、blue 藍/稀有、purple 紫/禁忌、gold 金/傳說（預留）；**未**更動 `src/features/market/marketProductPresentation.ts` 舊四階 `scrap|field|special|forbidden`，正式金色階級與掉落規則未開發，絕不可讓 Preview 選擇驅動商城物品價格、抽卡機率、角色能力。
+- **純 CSS 微粒子**：`src/styles/_v0844-urban-ui-showcase.scss` 使用金屬漸層圖條、前端 flare、三個輕量小火花透過 `opacity`+`transform` keyframes，無動畫影片、RAF、Canvas、音訊、網路圖層。紫/金 square 只在底層有非常柔和滑動波紋。全套元件尊重 `@media(prefers-reduced-motion:reduce)`，禁止動畫；UI Lab 提供滑桿測試 health 0..1500/max1000、stamina 0..900/max900，動畫與粒子可獨立開關。CSS 限定在 `.urban-* / .settings-visual-lab`，`main.scss` 最後 import，**不能覆蓋既有 v0.8.43 城鎮與 v0.8.42 一頁式避難所 CSS**。
+- **驗證**：`tests/v0844-urban-ui-showcase.test.ts` 驗米條安全範圍、超上限 ARIA、禁動畫/禁粒子、五色與選取、三級框、React SSR/UI Lab 路由、未有遊戲 state writes、CSS 動效/reduced-motion/窄螢幕，以及原城鎮/黑市/卡牌/倉庫/版本回歸；前批既有測試保持，更新歷史版號和最後 CSS import 斷言。由 GitHub Actions 於最後 head 跑 `npm run build` + `npm test` 全綠，手動桌機/手機/低動態真實視覺以 `docs/V0844_URBAN_UI_SHOWCASE_QA.md` 為準；CI 不等於真機驗收。
+- **後續停止點**：第4批 `v0.8.45` 才把使用者認可的元件**局部套用**到黑市、卡牌、關卡選技與城市微動畫；第5批 `v0.8.46` 再做視覺、效能與全回歸驗收。必須先讓使用者自行 Merge 第3批並告知「繼續」，不得自行跨批。
+
+---
+
+
 ## 2026-11-15｜第六輪第2批 v0.8.43：城鎮 3 個街區直接操作原有 8 設施（本 PR 待使用者 Merge）
 
 - **基準核對**：使用者已 Merge 第1批 PR #70（v0.8.42），最新 main `8206a9f3bbbf8435157a3d62fdaa4cc3e203db79`，開工時 open PR 0。第2批唯一分支 `feat/v0.8.43-town-district-live-services`，本次唯一 PR **#71**；不自動 Merge，也不擅自做第3批 `v0.8.44`。

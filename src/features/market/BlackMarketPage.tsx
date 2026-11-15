@@ -20,6 +20,8 @@ import {getBackpackMarketItemIds,doesVendorAcceptMarketItem} from './marketSellI
 import ItemArt from '../../components/ItemArt';
 import {getMarketProductPresentation,formatMarketOfferQuantity} from './marketProductPresentation';
 import RarityArtwork from '../../components/ui/RarityArtwork';
+import GoldRaritySparks from '../../components/ui/GoldRaritySparks';
+import {MARKET_VISUAL_TEST_OFFERS,marketVisualTestPresentation} from './marketVisualTestOffers';
 import {marketTierToUrbanRarity} from '../../components/ui/urbanUiAdapters';
 import GameUtilities from '../../components/GameUtilities';
 import ReturnMainLink from '../../components/ReturnMainLink';
@@ -31,6 +33,7 @@ type Narrow='any'|'owned'|'tradable'|'supply'|'tools';
 interface Offer {
  id:string;name:string;emoji:string;description:string;type:'item'|'card';category:string;
  price:number;available:number;owned:number;canTrade:boolean;reason:string;
+ previewRarity?:'purple'|'gold';
 }
 const CARD_PRICES={normal:{buy:360,sell:18},rare:{buy:980,sell:55},chaos:{buy:4000,sell:120}} as const;
 
@@ -84,7 +87,10 @@ export default function BlackMarketPage(){
    return [{id:item.id,name:item.name,emoji:item.emoji,description:item.description,type:'item' as const,category:item.type,
     price,available,owned:mode==='sell'?available:totalOwned(item.id),canTrade,reason}];
   });
-  return [...itemOffers,...cardOffers];
+  // The two permanent TEST previews stay available across all vendor shifts.
+  // They cannot be purchased or saved, so no economy/drop migration occurs.
+  const previews:Offer[]=mode==='buy'?MARKET_VISUAL_TEST_OFFERS.map(x=>({...x})):[];
+  return [...previews,...itemOffers,...cardOffers];
  },[mode,vendor.id,s]);
  const filteredOffers=useMemo(()=>offers.filter(o=>{
   if(kind!=='all'&&o.type!==kind)return false;
@@ -200,7 +206,8 @@ export default function BlackMarketPage(){
        onPointerUp={offersScroll.onPointerUp} onPointerCancel={offersScroll.onPointerCancel}
        onClickCapture={offersScroll.onClickCapture}>
       {filteredOffers.map((offer,index)=>{
-       const appearance=getMarketProductPresentation(offer.type,offer.id);
+       const appearance=offer.previewRarity?marketVisualTestPresentation(offer.previewRarity):getMarketProductPresentation(offer.type,offer.id);
+       const rarity=offer.previewRarity??marketTierToUrbanRarity(getMarketProductPresentation(offer.type,offer.id).tier);
        const count=formatMarketOfferQuantity(offer.type,mode,offer.available);
        return <div key={`${waveEpoch}:${offer.type}:${offer.id}`}
         className="market-v0831__wave-slot"
@@ -209,7 +216,7 @@ export default function BlackMarketPage(){
          '--market-wave-delay-two':`${marketWaveDelay(index,2)}ms`,
         } as CSSProperties}>
         <button type="button"
-        className={`market-v12__offer market-v0822__product market-v0822__product--${appearance.tier} urban-v0845-market-product ${selectedId===offer.id?'is-selected':''} ${offer.canTrade?'':'is-unavailable'}`}
+        className={`market-v12__offer market-v0822__product market-v0822__product--${appearance.tier} urban-v0845-market-product ${offer.previewRarity==='gold'?'market-v0853-gold':''} ${offer.previewRarity==='purple'?'market-v0853-purple':''} ${selectedId===offer.id?'is-selected':''} ${offer.canTrade?'':'is-unavailable'}`}
         onClick={()=>{setSelectedId(offer.id);playCue('select')}}
         aria-pressed={selectedId===offer.id} aria-haspopup="dialog"
         title={offer.canTrade?'點擊查看交易資訊':offer.reason}
@@ -218,7 +225,8 @@ export default function BlackMarketPage(){
          <span className="market-v0822__level" title={appearance.isDisplayOnly?'商品展示級別，不改變物品效果':'交易的是 Lv.1 升級複本'}>Lv.{appearance.level}</span>
          <span className="market-v12__offer-type">{appearance.name}</span>
         </span>
-        <span className="market-v12__offer-icon urban-v0845-market-art" aria-hidden="true"><RarityArtwork rarity={marketTierToUrbanRarity(appearance.tier)} icon={offer.type==='item'?<ItemArt id={offer.id}/>:offer.emoji}/></span>
+        <span className="market-v12__offer-icon urban-v0845-market-art" aria-hidden="true"><RarityArtwork rarity={rarity} icon={offer.previewRarity?offer.emoji:offer.type==='item'?<ItemArt id={offer.id}/>:offer.emoji}/></span>
+        {offer.previewRarity==='gold'&&selectedId===offer.id&&<GoldRaritySparks/>}
         <strong className="market-v0822__product-name" title={offer.name}>{offer.name}</strong>
         <span className="market-v0822__product-footer">
          <small><Coins size={11}/>{offer.price}</small>
@@ -242,9 +250,9 @@ export default function BlackMarketPage(){
    <section className="market-v10__detail urban-metal-surface--v0851 urban-metal-surface--primary" role="dialog" aria-modal="true" aria-label={selected.name+'交易資訊'}>
     <button className="market-v10__close" type="button" aria-label="關閉商品資訊" onClick={()=>setSelectedId(null)}><X size={20}/></button>
     <span className="market-v10__detail-kicker">BLACK MARKET / {selected.type==='card'?'CARD':'SUPPLY'}</span>
-    <span className="market-v10__detail-art" aria-hidden="true">{selected.type==='item'?<ItemArt id={selected.id}/>:selected.emoji}</span>
+    <span className="market-v10__detail-art" aria-hidden="true">{selected.previewRarity?selected.emoji:selected.type==='item'?<ItemArt id={selected.id}/>:selected.emoji}</span>
     <h2>{selected.name}</h2>
-    <p className="market-v0822__detail-grade">{getMarketProductPresentation(selected.type,selected.id).name}階 · Lv.{getMarketProductPresentation(selected.type,selected.id).level}{selected.type==='item'?'（展示級別，不影響裝備能力）':'（交易 Lv.1 升級複本）'}</p>
+    <p className="market-v0822__detail-grade">{selected.previewRarity?marketVisualTestPresentation(selected.previewRarity).name:getMarketProductPresentation(selected.type,selected.id).name}階 · Lv.{selected.previewRarity?marketVisualTestPresentation(selected.previewRarity).level:getMarketProductPresentation(selected.type,selected.id).level}{selected.previewRarity?'（開發展示品，不可交易）':selected.type==='item'?'（展示級別，不影響裝備能力）':'（交易 Lv.1 升級複本）'}</p>
     <p>{selected.description}</p>
     <div className="market-v10__detail-facts">
      <span>交易價格 <strong>{selected.price} 舊幣</strong></span>

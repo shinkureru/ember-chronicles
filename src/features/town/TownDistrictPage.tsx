@@ -213,10 +213,11 @@ export default function TownDistrictPage(){
    <Link to="/town" onClick={returnToOverview}><MapPinned size={14}/> 三區總覽</Link>
    <Link to="/"><Home size={14}/> 返回避難所</Link>
   </nav>
-  <div className="city-district-return-curtain" aria-hidden="true"
-    style={{backgroundImage:'url("'+townAsset(CITY_OVERVIEW_IMAGE)+'")'}}>
-    <span className="city-district-return-curtain__half city-district-return-curtain__half--left"/>
-    <span className="city-district-return-curtain__half city-district-return-curtain__half--right"/>
+  <div className="city-district-return-curtain" aria-hidden="true">
+    <span className="city-district-return-curtain__half city-district-return-curtain__half--left"
+     style={{backgroundImage:'url("'+townAsset(CITY_OVERVIEW_IMAGE)+'")'}}/>
+    <span className="city-district-return-curtain__half city-district-return-curtain__half--right"
+     style={{backgroundImage:'url("'+townAsset(CITY_OVERVIEW_IMAGE)+'")'}}/>
    </div>
   {active==='inn'&&<InnRestDialog serviceId="rest_cot" onClose={closeDialog} onConfirm={confirmRest}/>}
   {active==='clinic'&&<ClinicDialog onClose={closeDialog}/>}

@@ -1,5 +1,21 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-15｜第六輪：寫實都市科幻／三區城鎮入口與共用 UI 五批規劃（已執行第 1 批 v0.8.42，PR 待使用者 Merge）
+
+- **基準核對**：PR #69 `fix/v0.8.41-shelter-scroll-collapse` 已 Merge，main `d917a8c1a0b7d2693f3fc86a4dadb8da681fb800`，開工未合併 PR 數為 0。**曾因對話中斷預先建立的第1批分支 `feat/v0.8.42-city-overview-shelter-hub` 已包含多筆真正程式/圖片 commits；恢復工作必須延續同分支，禁止重開重複 PR/重壓分支。** 使用者說「開始」代表只做第1批，後4批一律等 Merge 與使用者再說繼續。
+- **用戶已定案區域與圖資**：總覽圖原圖 `Remove_text_from_buildings_f0a30ee0.png` 是三個場景上下合成；第1區 `外環高架區` 對應 `Future_technology_style_painting_0cfe0599.jpg`（客棧+現有公告欄+開發中），第2區 `蒸霧商街` 對應 `Future_technology_style_painting_380051dc.jpg`（公共澡堂+公共食堂），第3區 `舊城核心` 對應 `Editing_sci-fi_image_prompt_8c0172e6.jpg`（地下診所+修理工坊+情報酒館+訓練場）。三區總共涵蓋原有8種 town facilities，**不丟掉原 noticeboard 公告欄**；新增未開放設施不偷改數值。
+- **真實美術上傳**：四張圖按原用戶圖片壓成高品質 webp，已真正以 GitHub 原始 binary blobs 放進 `public/assets/town/{city-overview,outer-ring,steam-street,old-core}.webp`。尺寸：總覽 768×1366，三個詳頁皆 768×1376。SHA256 由 `tests/v0842-city-overview-shelter.test.ts` 逐件校驗，避免只有占位空圖／CSS 背景假裝素材。路徑使用 `import.meta.env.BASE_URL`，兼容 GitHub Pages project subpath。未改用戶避難所原兩JPG、八PNG與版型JSON。
+- **第1批結構**：`#/town` 預設三等分總覽圖，每段中央毛玻璃資訊卡，分別連到 `#/town/outer-ring`、`#/town/steam-street`、`#/town/old-core`；三個真實場景詳頁先顯示圖片、設施清單與返回總覽/避難所的導覽。**原城鎮服務、診所/工作台/客棧/澡堂/食堂等所有原功能仍在 `#/town/classic` 可操作**；下一批才把各場景的命中區與現有真實互動 dialog 串起來，不在第1批造假的服務按鈕。
+- **避難所一頁式**：完全取代先前 v0.8.41「主場景長圖要整頁滾動」策略；新 `ShelterStageFit` 用 ResizeObserver 計算 `width=min(containerWidth,containerHeight*768/1376)`，按 768:1376 縮放**完整畫面**，不能 crop/拉扁/壓成零。首頁一頁不垂直捲動/拖曳；下方 4個快速入口=城鎮、倉庫、黑市、開發工具；家具場景照常點擊。原本所有已購家具清單、詳情、3類手動高亮提示、隨機/自動建造/重洗工具集中於**預設收起的內部可上下滾動 Drawer**，含 Escape、焦點返回，原存檔資料/角色/戰鬥引擎無變。
+- **必須注意 CSS cascade**：`src/styles/_v0841-shelter-scroll-hotfix.scss` 本來對 `.app-main > .shelter-home-page.viewport-page` 有 `overflow-y:auto!important`。新專用 `src/styles/_v0842-city-shelter.scss` **最後 import**，用 `.app-main > .shelter-home-page.shelter-home-page--compact.viewport-page` 覆蓋，只對新避難所首頁 `overflow:hidden!important`。注意這不能改壞章節 HUD、舊城鎮、黑市捲動；開發 Drawer 自己需要 scroll 並保留手機 safe-area-inset。
+- **第1批範圍鎖定**：僅新圖資、入口路由、三區詳頁骨架、首頁一頁式與開發抽屜、全部回歸及交接；**不實作**新 HUD/生命條粒子、正方商品格稀有度、全域銀框替換、蒸氣/動畫、正式設施按圖直接點擊與對話串接、不改存檔 schema。這些分別在後續批次實作。
+- **測試與交接**：GitHub Actions `npm run build` + `npm test` 必須基於最終 PR head 取得全綠；`tests/v0842-city-overview-shelter.test.ts` 驗 4真實圖資 checksum、3區順序/映射/8既有設施、路由、原城鎮保留、一頁畫面縮放與抽屜、原HUD/角色/存檔不變。人工測試必看 `docs/V0842_CITY_OVERVIEW_QA.md`，CI 不能代替 Safari/Android 的真實圖片/手勢驗收。
+- **五批停止點**：v0.8.42 **城鎮總覽+首頁收合**；v0.8.43 **三個區域場景內的實際服務入口與返回/狀態**；v0.8.44 **共用進度條 CSS/SVG 粒子 + 正方稀有度商品槽 + 銀灰框三層設計元件示範**；v0.8.45 **將已審核元件有選擇地導入既有商店/卡牌/避難所，城鎮熱點提示輕動態與響應式優化**；v0.8.46 **完整整合回歸、視覺效能與手動 QA、永久文件**。每一批只允許一個 PR，由使用者自行 Merge，才可下批。
+- **開放設計問題**：正式 HUD 不應被本輪擅自重做；稀有度金色尚未正式有規則，v0.8.44 僅視覺預留；設施圖像哪裡閃爍、電腦隱藏支線、工作台關卡解鎖尚未定規則。正式開發測試購買面板仍需公開發行前移除/權限控管。
+
+---
+
+
 ## 2026-11-15｜v0.8.41 緊急修正：倉庫主畫面被壓扁、無法上下滑動（待 Merge）
 
 - **使用者真實回報**：已 Merge PR #68 的 v0.8.41、main `8e4f1e7943ad3e912579484fbf3eb4b5dbd60ff9`。使用者手機長截圖能看到「廢棄倉庫」標題、已建設8件清單、設施提示與 DEVELOPMENT ONLY 面板，**卻完全看不到應有的滿配置 JPG，亦無法手指／滑鼠向下拖曳頁面**。這是主畫面佈局錯誤，**並非玩家卡在開場／新手教學或有壞存檔**；不可要求使用者刪存檔以「修復」。

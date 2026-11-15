@@ -1,13 +1,12 @@
-import {Archive,Building2,ChevronRight,Fingerprint,Info,Map,Shield,Skull,Warehouse} from 'lucide-react';
+import {Archive,Building2,ChevronDown,ChevronRight,Fingerprint,Home,Map,Shield,Skull,Warehouse,X,SlidersHorizontal} from 'lucide-react';
 import {Link} from 'react-router-dom';
-import {useCallback,useEffect,useRef,useState} from 'react';
+import {useCallback,useEffect,useRef,useState,type ReactNode} from 'react';
 import {useGame} from '../../app/GameContext';
 import {PROFESSIONS} from '../../game/data/professions';
 import {SHELTER_OPTIONS} from '../../game/engine/onboarding';
 import {normalizeShelterOwned,getWarehouseVisualMode,SHELTER_FURNITURE_IDS} from '../../game/engine/shelterVisuals';
 import type {ProfessionId,ShelterId} from '../../game/types';
 import GameUtilities from '../../components/GameUtilities';
-import {useVerticalDragScroll} from '../../components/useVerticalDragScroll';
 import ShelterScene from './ShelterScene';
 import ShelterBuildDemoPanel from './ShelterBuildDemoPanel';
 import ShelterFacilityPanel from './ShelterFacilityPanel';
@@ -45,124 +44,178 @@ function ProfessionSetup(){
    </button>)}</div>
  </section>;
 }
+/** The artwork must fit completely inside ONE available viewport. Never crop,
+ * overflow or stretch the original 768 x 1376 coordinate system.
+ */
+function ShelterStageFit({children}:{children:ReactNode}){
+ const host=useRef<HTMLDivElement>(null);
+ const [dimensions,setDimensions]=useState<{width:number;height:number}|null>(null);
+ useEffect(()=>{
+  const node=host.current;
+  if(!node)return;
+  const measure=()=>{
+   const availableWidth=node.clientWidth,availableHeight=node.clientHeight;
+   if(availableWidth<=0||availableHeight<=0)return;
+   const width=Math.min(availableWidth,availableHeight*768/1376);
+   const height=width*1376/768;
+   setDimensions(previous=>previous&&Math.abs(previous.width-width)<.1&&Math.abs(previous.height-height)<.1?previous:{width,height});
+  };
+  measure();
+  const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(measure):null;
+  observer?.observe(node);
+  window.addEventListener('resize',measure);
+  return()=>{observer?.disconnect();window.removeEventListener('resize',measure)};
+ },[]);
+ return <div ref={host} className="shelter-stage-fit" aria-label="自適應避難所場景">
+  <div className="shelter-stage-fit__content"
+   style={dimensions?{width:dimensions.width,height:dimensions.height}:undefined}>
+   {children}
+  </div>
+ </div>;
+}
+
 export default function ShelterHomePage(){
  const {state}=useGame();
- // The safehouse contains a full portrait scene and many build tools. Use the
- // existing robust mouse-drag helper; touch, wheel and keyboard scroll natively.
- const shelterScroll=useVerticalDragScroll();
  const [previewWarehouse,setPreviewWarehouse]=useState(false);
+ const [toolsOpen,setToolsOpen]=useState(false);
  const [selectedId,setSelectedId]=useState<ShelterFurnitureId|null>(null);
- const detailRef=useRef<HTMLDivElement>(null);
  const [queue,setQueue]=useState<ShelterAttention[]>([]);
- const selectFurniture=useCallback((id:ShelterFurnitureId)=>setSelectedId(id),[]);
+ const detailRef=useRef<HTMLDivElement>(null);
+ const openButtonRef=useRef<HTMLButtonElement>(null);
+ const closeButtonRef=useRef<HTMLButtonElement>(null);
+ const wasOpen=useRef(false);
  const shelterId=state.onboarding.shelter;
  const showWarehouse=shelterId==='warehouse'||previewWarehouse;
- const option=SHELTER_OPTIONS.find(s=>s.id===shelterId);
+ const option=SHELTER_OPTIONS.find(item=>item.id===shelterId);
  const owned=normalizeShelterOwned(state.shelterOwned);
- const mode=getWarehouseVisualMode(owned);
  const ownedKey=owned.join('|');
+ const mode=getWarehouseVisualMode(owned);
  const activeSelected=selectedId&&owned.includes(selectedId)?selectedId:null;
- // The portrait image can be taller than a mobile viewport. Without this, tapping
- // a marker appears to do nothing because the new information is below the fold.
- useEffect(()=>{
-  if(!activeSelected||!showWarehouse)return;
-  const detail=detailRef.current;
-  if(!detail)return;
-  detail.focus({preventScroll:true});
-  detail.scrollIntoView({block:'nearest',behavior:'auto'});
- },[activeSelected,showWarehouse]);
  const pending=availableShelterAttention(queue,owned);
  const attention=pending[0]??null;
+ const selectFurniture=useCallback((id:ShelterFurnitureId)=>{
+  setSelectedId(id);
+  setQueue(previous=>previous.filter(item=>item.targetId!==id));
+  setToolsOpen(true);
+ },[]);
  useEffect(()=>{
   const installed=new Set(ownedKey.split('|'));
-  // Removing a facility must invalidate both its active panel and temporary notifications.
-  // Otherwise re-buying that furniture could unexpectedly reopen an old panel.
   setSelectedId(previous=>previous&&!installed.has(previous)?null:previous);
   setQueue(previous=>{
-   const next=previous.filter(alert=>installed.has(alert.targetId));
+   const next=previous.filter(item=>installed.has(item.targetId));
    return next.length===previous.length?previous:next;
   });
  },[ownedKey]);
+ useEffect(()=>{
+  if(toolsOpen){
+   wasOpen.current=true;
+   closeButtonRef.current?.focus({preventScroll:true});
+   const handleEscape=(event:KeyboardEvent)=>{if(event.key==='Escape')setToolsOpen(false)};
+   window.addEventListener('keydown',handleEscape);
+   return()=>window.removeEventListener('keydown',handleEscape);
+  }
+  if(wasOpen.current){
+   wasOpen.current=false;
+   openButtonRef.current?.focus({preventScroll:true});
+  }
+ },[toolsOpen]);
+ useEffect(()=>{
+  if(!toolsOpen||!activeSelected||!showWarehouse)return;
+  const detail=detailRef.current;
+  if(detail){
+   detail.focus({preventScroll:true});
+   detail.scrollIntoView({block:'nearest',behavior:'auto'});
+  }
+ },[toolsOpen,activeSelected,showWarehouse]);
  const onTrigger=(kind:ShelterAttentionKind)=>{
   const alert=makeDemoShelterAttention(kind);
   if(!owned.includes(alert.targetId))return;
   setQueue(previous=>enqueueShelterAttention(previous,alert));
  };
- const onInspect=(id:ShelterFurnitureId)=>{
-  setSelectedId(id);
-  setQueue(previous=>previous.filter(alert=>alert.targetId!==id));
- };
- return <div className="page-stack shelter-home-page viewport-page"
-  ref={shelterScroll.scrollRef} tabIndex={0} aria-label="避難所主畫面，可上下捲動"
-  onPointerDown={shelterScroll.onPointerDown}
-  onPointerMove={shelterScroll.onPointerMove}
-  onPointerUp={shelterScroll.onPointerUp}
-  onPointerCancel={shelterScroll.onPointerCancel}
-  onClickCapture={shelterScroll.onClickCapture}>
+ return <div className="shelter-home-page shelter-home-page--compact viewport-page" aria-label="避難所主畫面">
   <header className="shelter-home-heading">
-   <div><span className="eyebrow">EMBER CHRONICLES / SAFEHOUSE</span><h1>{option?.name??'尚未指定據點'}</h1><p>{option?.short??'選擇避難所後即可在此建立家園'} · 你的生存據點</p></div>
+   <div><span className="eyebrow">EMBER CHRONICLES / SAFEHOUSE</span>
+    <h1>{option?.name??'尚未指定據點'}</h1>
+    <p>{option?.short??'你的生存據點'} · {showWarehouse?`${owned.length} / 8 件家具`:'等待美術配置'}</p>
+   </div>
    <GameUtilities className="game-utilities--shelter"/>
   </header>
-  {shelterId!=='warehouse'&&<div className="shelter-build-demo-preview" data-prototype-only="true">
-   <span>家具美術測試：已選據點不會更改。可以暫時預覽倉庫建設系統。</span>
-   <button type="button" aria-pressed={previewWarehouse} onClick={()=>{setPreviewWarehouse(v=>!v);setSelectedId(null)}}>
-    {previewWarehouse?'返回我的避難所':'預覽倉庫家具建設'}
-   </button>
-  </div>}
-  <section className="shelter-home-scene-panel" aria-label="避難所場景">
-   {showWarehouse
-    ? <ShelterScene owned={owned} selectedId={activeSelected} attentionId={attention?.targetId??null} onSelect={selectFurniture}/>
-    :shelterId==='apartment'||shelterId==='bunker'
-     ?<ShelterPlaceholder shelterId={shelterId}/>
-     :<div className="shelter-placeholder" role="status"><Skull size={38}/><p>尚未選擇避難所</p></div>}
+  <section className="shelter-home-scene-panel shelter-home-scene-panel--compact" aria-label="避難所場景">
+   <ShelterStageFit>
+    {showWarehouse
+     ?<ShelterScene owned={owned} selectedId={activeSelected} attentionId={attention?.targetId??null} onSelect={selectFurniture}/>
+     :shelterId==='apartment'||shelterId==='bunker'
+      ?<ShelterPlaceholder shelterId={shelterId}/>
+      :<div className="shelter-placeholder" role="status"><Skull size={38}/><p>尚未選擇避難所</p></div>}
+   </ShelterStageFit>
    <div className="shelter-home-scene-caption">
     <span>{showWarehouse
-     ?mode==='full'?'FULLY EQUIPPED / 高品質滿配原圖':mode==='empty'?'EMPTY SHELTER / 空屋':`FURNITURE LAYERS / ${owned.length} 件`
-     :'SCENE PLACEHOLDER / 圖片預留'}</span>
-    {showWarehouse&&<strong>{owned.length} / {SHELTER_FURNITURE_IDS.length}</strong>}
+      ?mode==='full'?'FULLY EQUIPPED':mode==='empty'?'EMPTY SHELTER':'FURNITURE LAYERS'
+      :'SCENE PLACEHOLDER'}</span>
+    {showWarehouse&&<strong>{owned.length} / 8</strong>}
    </div>
   </section>
-  {showWarehouse&&<p className="shelter-scene-access-tip">點擊家具或圓形標記即可查看資訊。手機也可使用下方的設施清單。</p>}
-  {showWarehouse&&owned.length>0&&<section className="shelter-facility-index surface-card" aria-label="已建設家具操作清單">
-   <header className="shelter-facility-index__header">
-    <span>已建設設施 · 點選開啟</span>
-    <small>滑鼠 / 觸控 / Tab + Enter</small>
-   </header>
-   <div className="shelter-facility-index__list">
-    {SHELTER_FURNITURE_IDS.filter(id=>owned.includes(id)).map(id=>
-     <button type="button" key={id} data-facility-access={id}
-      aria-pressed={activeSelected===id}
-      className={activeSelected===id?'is-selected':''}
-      onClick={()=>onInspect(id)}>
-      {SHELTER_FACILITIES[id].name}
-      {attention?.targetId===id&&<span className="shelter-facility-index__unread" aria-label="有待處理提示" />}
-     </button>
-    )}
-   </div>
-  </section>}
-  {showWarehouse&&activeSelected&&<div ref={detailRef} className="shelter-facility-detail-anchor" tabIndex={-1}
-   id="shelter-facility-detail" aria-live="polite" aria-label="目前選取的家具設施">
-   <ShelterFacilityPanel id={activeSelected} onClose={()=>setSelectedId(null)}/>
+  {!state.profession&&<button type="button" className="shelter-profession-notice" onClick={()=>setToolsOpen(true)}>
+   尚未選擇職業 · 點此設定 <ChevronRight size={14}/>
+  </button>}
+  <nav className="shelter-home-quicknav" aria-label="避難所快速功能">
+   <Link to="/town"><Building2 size={16} aria-hidden="true"/><span>城鎮設施</span></Link>
+   <Link to="/warehouse"><Archive size={16} aria-hidden="true"/><span>物資倉庫</span></Link>
+   <Link to="/black-market"><Shield size={16} aria-hidden="true"/><span>黑市</span></Link>
+   <button type="button" ref={openButtonRef} aria-expanded={toolsOpen} aria-controls="shelter-development-drawer"
+    onClick={()=>setToolsOpen(true)} data-prototype-only="true">
+    <SlidersHorizontal size={16} aria-hidden="true"/><span>建設測試</span>
+   </button>
+  </nav>
+  {toolsOpen&&<div className="shelter-drawer-backdrop" role="presentation" onPointerDown={event=>{if(event.target===event.currentTarget)setToolsOpen(false)}}>
+   <section id="shelter-development-drawer" className="shelter-drawer" role="dialog" aria-modal="true"
+    aria-label="避難所建設與測試功能">
+    <header className="shelter-drawer__header">
+     <div><span className="eyebrow">DEVELOPMENT / SAFEHOUSE</span><strong>建設與設施管理</strong></div>
+     <button type="button" ref={closeButtonRef} onClick={()=>setToolsOpen(false)} aria-label="關閉建設工具"><X size={20}/></button>
+    </header>
+    <div className="shelter-drawer__content">
+     {shelterId!=='warehouse'&&<div className="shelter-build-demo-preview" data-prototype-only="true">
+      <span>倉庫配置預覽不會變更你選擇的避難所。</span>
+      <button type="button" aria-pressed={previewWarehouse} onClick={()=>{setPreviewWarehouse(v=>!v);setSelectedId(null)}}>
+       {previewWarehouse?'返回我的避難所':'預覽倉庫家具建設'}
+      </button>
+     </div>}
+     {showWarehouse&&<p className="shelter-scene-access-tip">點擊主場景家具、小型標記，或下方設施清單查看資訊。</p>}
+     {showWarehouse&&owned.length>0&&<section className="shelter-facility-index surface-card" aria-label="已建設家具操作清單">
+      <header className="shelter-facility-index__header"><span>已建設設施</span><small>點擊查看</small></header>
+      <div className="shelter-facility-index__list">
+       {SHELTER_FURNITURE_IDS.filter(id=>owned.includes(id)).map(id=>
+        <button type="button" key={id} data-facility-access={id} aria-pressed={activeSelected===id}
+         className={activeSelected===id?'is-selected':''} onClick={()=>selectFurniture(id)}>
+         {SHELTER_FACILITIES[id].name}
+         {attention?.targetId===id&&<span className="shelter-facility-index__unread" aria-label="有待處理提示"/>}
+        </button>)}
+      </div>
+     </section>}
+     {showWarehouse&&activeSelected&&<div ref={detailRef} className="shelter-facility-detail-anchor" tabIndex={-1}
+       id="shelter-facility-detail" aria-live="polite" aria-label="目前選取的家具設施">
+       <ShelterFacilityPanel id={activeSelected} onClose={()=>setSelectedId(null)}/>
+      </div>}
+     {showWarehouse&&<ShelterAttentionPanel owned={owned} queue={queue} onTrigger={onTrigger}
+       onInspect={selectFurniture} onDismiss={id=>setQueue(previous=>dismissShelterAttention(previous,id))}/>}
+     {showWarehouse&&<ShelterBuildDemoPanel/>}
+     <section className="shelter-home-intro surface-card">
+      <span className="eyebrow">SHELTER CONSTRUCTION</span><h2>這裡會慢慢成為你的家。</h2>
+      <p>{showWarehouse?'測試版可以任意建造、重洗順序或清空家具；八件購入後顯示原始高品質滿配圖。':'這座避難所的專屬空屋和家具美術尚待製作。'}</p>
+      <div className="shelter-home-footnote"><ChevronDown size={15}/><span>這裡是原型測試工具；正式遊戲將另行設計家具經濟。</span></div>
+     </section>
+     {!state.profession&&<ProfessionSetup/>}
+     {import.meta.env.DEV&&state.profession&&<Link className="shelter-map-test-link" to="/world-map">
+      <Map size={17}/> 開發測試：原關卡路線圖 <ChevronRight size={17}/>
+     </Link>}
+     <div className="shelter-home-footer-links">
+      <Link to="/town"><Building2 size={15}/> 城鎮設施</Link>
+      <Link to="/warehouse"><Archive size={15}/> 物資倉庫</Link>
+      <Link to="/black-market"><Home size={15}/> 黑市</Link>
+     </div>
+    </div>
+   </section>
   </div>}
-  {showWarehouse&&<ShelterAttentionPanel owned={owned} queue={queue} onTrigger={onTrigger}
-   onInspect={onInspect} onDismiss={id=>setQueue(previous=>dismissShelterAttention(previous,id))}/>}
-  {showWarehouse&&<ShelterBuildDemoPanel/>}
-  <section className="shelter-home-intro surface-card">
-   <span className="eyebrow">SHELTER CONSTRUCTION</span>
-   <h2>這裡會慢慢成為你的家。</h2>
-   <p>{showWarehouse
-    ?'家具建設測試已啟用：你可以逐件購入、隨機產生配置或自動建設。完成全部八件家具時，場景自動使用高品質滿配置原圖。'
-    :'這座避難所的室內主畫面仍在美術製作階段。已保留未來的空屋、家具與互動系統位置。'}</p>
-   <div className="shelter-home-footnote"><Info size={15} aria-hidden="true"/><span>可直接點擊場景家具或小型標記查看功能預留；提示特效目前僅供演示，真正事件觸發時機尚未定案。</span></div>
-  </section>
-  {!state.profession&&<ProfessionSetup/>}
-  {import.meta.env.DEV&&state.profession&&<Link className="shelter-map-test-link" to="/world-map">
-   <Map size={17} aria-hidden="true"/> 開發測試：開啟原關卡路線圖 <ChevronRight size={17}/>
-  </Link>}
-  <div className="shelter-home-footer-links">
-   <Link to="/warehouse"><Archive size={15}/> 物資倉庫</Link>
-   <Link to="/town">城鎮設施</Link>
-   <Link to="/black-market">黑市</Link>
-  </div>
  </div>;
 }

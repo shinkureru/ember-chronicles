@@ -5,7 +5,7 @@ import type {UrbanRarity} from './urbanUiTokens';
  * multipliers, owned card levels or saved character progression.
  * Gold is intentionally excluded until a gameplay tier is designed.
  */
-export const MARKET_TO_URBAN_RARITY:ReadOnly<Record<MarketProductTier,UrbanRarity>>={
+export const MARKET_TO_URBAN_RARITY:Readonly<Record<MarketProductTier,UrbanRarity>>={
  scrap:'gray',field:'green',special:'blue',forbidden:'purple',
 };
 export type ExistingCardRarity='normal'|'rare'|'chaos';

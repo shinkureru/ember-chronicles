@@ -1,8 +1,8 @@
 /** Stable seeded scattering: visually non-repeating bursts without timers,
  * Math.random during render or hydration drift. Independent HP/ST fields.
- * Former UI laboratory: three tiny sparks. Live HUD: twelve per bar. */
+ * Former UI laboratory: three tiny sparks. Live HUD: nine per bar. */
 export interface HudSpark{dx:number;dy:number;turn:number;size:number;duration:number;delay:number}
-export function makeHudSparks(seed:number,count=12):readonly HudSpark[]{
+export function makeHudSparks(seed:number,count=9):readonly HudSpark[]{
  let value=seed>>>0;
  const rand=()=>{
   value^=value<<13;value^=value>>>17;value^=value<<5;

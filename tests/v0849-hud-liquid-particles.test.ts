@@ -25,8 +25,8 @@ describe('v0.8.49 — actual original-PNG HUD, liquid smoke and separate fine pa
   expect(sha(path)).toBe('108eb1e5f1c3f45f6c3670b390e576b5aff5a73588ce652843a041bdb260b196');
  });
  it('generates 12 stable separately seeded tiny sparks per meter and never changes seed during render',()=>{
-  expect(HUD_HEALTH_SPARKS).toHaveLength(12);
-  expect(HUD_STAMINA_SPARKS).toHaveLength(12);
+  expect(HUD_HEALTH_SPARKS).toHaveLength(9);
+  expect(HUD_STAMINA_SPARKS).toHaveLength(9);
   expect(HUD_HEALTH_SPARKS).not.toEqual(HUD_STAMINA_SPARKS);
   expect(makeHudSparks(0x49ba1938)).toEqual(HUD_HEALTH_SPARKS);
   expect(makeHudSparks(0xc0219e73)).toEqual(HUD_STAMINA_SPARKS);
@@ -44,7 +44,7 @@ describe('v0.8.49 — actual original-PNG HUD, liquid smoke and separate fine pa
   const st=render(createElement(StatBar,{value:5,max:10,color:'mint',label:'體力',urban:true,liquid:true}));
   for(const markup of [hp,st]){
    expect(markup).toContain('width:50%');
-   expect((markup.match(/class="statbar__particle"/g)??[])).toHaveLength(12);
+   expect((markup.match(/class="statbar__particle"/g)??[])).toHaveLength(9);
    expect(markup).toContain('assets/ui/hud-frames-v0849.png');
    expect(markup).toContain('statbar--v0849-liquid');
    expect(markup).toContain('aria-hidden="true"');

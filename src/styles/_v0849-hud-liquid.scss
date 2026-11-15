@@ -1,0 +1,135 @@
+/* v0.8.49: opt-in native HUD skin using the user-provided two-tone PNG
+ * (top: health, lower: stamina), optimized for transparent sprite upload.
+ * A smaller fill height plus a preserved ornate metal frame.
+ * CSS-only animations: no RAF, no intervals or gameplay state changes. */
+.hud--v0849-fluid .hud__bars{gap:8px}
+.hud--v0849-fluid .statbar--v0849-liquid{position:relative;min-width:0}
+.hud--v0849-fluid .statbar--v0849-liquid .statbar__label{
+ margin-bottom:2px;line-height:1.2;min-height:10px;font-size:9px;
+}
+.hud--v0849-fluid .statbar--v0849-liquid .statbar__label strong{
+ font-size:10px;font-variant-numeric:tabular-nums;
+}
+.hud--v0849-fluid .statbar--v0849-liquid .statbar__track{
+ position:relative;height:clamp(13px,3.1vw,17px);
+ border:0;border-radius:0;overflow:visible;isolation:isolate;
+ background:linear-gradient(180deg,#010407,#102027 50%,#030a0d);
+ box-shadow:inset 0 1px 3px #000b,0 0 0 1px #18252d;
+}
+/* Draw the actual two-tone PNG as the uppermost frame (no fake CSS frame).
+   Top half of source = reddish HP, bottom half = blue-silver STA. */
+.hud--v0849-fluid .statbar--v0849-liquid .statbar__track::after{
+ content:"";pointer-events:none;position:absolute;z-index:5;
+ inset:-1px -2px;background-image:var(--v0849-frame-image);
+ background-repeat:no-repeat;background-size:100% 200%;
+ background-position:center top;
+}
+.hud--v0849-fluid .statbar--v0849-mint .statbar__track::after{background-position:center bottom}
+.hud--v0849-fluid .statbar--v0849-liquid .statbar__fill{
+ position:absolute;z-index:1;left:0;top:3px;bottom:3px;
+ height:auto;min-width:0;overflow:hidden;border-radius:2px;
+ background:linear-gradient(180deg,#c02b25 0%,#651511 48%,#220b0c 95%);
+ box-shadow:inset 0 1px 2px #fff6,0 0 7px #d72d2859;
+ transition:width 300ms ease;
+}
+.hud--v0849-fluid .statbar--v0849-mint .statbar__fill{
+ background:linear-gradient(180deg,#1c9c9c 0%,#075155 55%,#04252e 100%);
+ box-shadow:inset 0 1px 2px #d4ffff70,0 0 6px #22a5b45d;
+}
+/* Smoky dark filaments drift across a colored transparent-looking liquid.
+   Two different keyframes, rates, offsets and directions: never in sync. */
+.hud--v0849-fluid .statbar--v0849-liquid .statbar__fill::before{
+ content:"";pointer-events:none;position:absolute;inset:-50% -60%;
+ opacity:.8;
+ background:
+  radial-gradient(ellipse 25% 48% at 12% 42%,#040508d4,transparent 78%),
+  radial-gradient(ellipse 19% 42% at 35% 67%,#05070bbf,transparent 80%),
+  radial-gradient(ellipse 32% 61% at 68% 38%,#07070cc4,transparent 78%),
+  radial-gradient(ellipse 21% 42% at 95% 65%,#05070c8e,transparent 75%);
+ background-size:65% 130%;
+ animation:v0849-hp-smoke 8.7s ease-in-out -2.3s infinite alternate;
+}
+.hud--v0849-fluid .statbar--v0849-mint .statbar__fill::before{
+ opacity:.7;background-size:77% 140%;
+ animation:v0849-st-smoke 11.9s cubic-bezier(.42,0,.4,1) -5.7s infinite alternate-reverse;
+}
+.hud--v0849-fluid .statbar--v0849-liquid .statbar__fill::after{
+ content:"";position:absolute;left:-45%;right:-45%;top:0;bottom:0;
+ width:auto;height:auto;filter:none;opacity:.5;
+ background:
+  radial-gradient(ellipse 24% 100% at 35% 55%,#ffc4b247,transparent 85%),
+  linear-gradient(180deg,#fff5 0%,transparent 34%,#04030744 73%,#ffd2c328 100%);
+ animation:v0849-hp-current 6.9s ease-in-out -.8s infinite alternate;
+}
+.hud--v0849-fluid .statbar--v0849-mint .statbar__fill::after{
+ background:
+  radial-gradient(ellipse 25% 100% at 37% 48%,#b8ffff53,transparent 85%),
+  linear-gradient(180deg,#dafaff48 0%,transparent 38%,#020f123d 75%,#b8ffff21 100%);
+ animation:v0849-st-current 10.3s ease-in-out -4.5s infinite alternate-reverse;
+}
+@keyframes v0849-hp-smoke{
+ from{transform:translate3d(-15%,7%,0) skewX(-6deg) scale(1.02)}
+ to{transform:translate3d(21%,-9%,0) skewX(7deg) scale(1.17)}
+}
+@keyframes v0849-st-smoke{
+ from{transform:translate3d(17%,-10%,0) skewX(8deg) scale(1.05)}
+ to{transform:translate3d(-18%,9%,0) skewX(-7deg) scale(1.2)}
+}
+@keyframes v0849-hp-current{
+ from{transform:translate3d(-19%,0,0);opacity:.3}
+ to{transform:translate3d(17%,0,0);opacity:.65}
+}
+@keyframes v0849-st-current{
+ from{transform:translate3d(14%,0,0);opacity:.47}
+ to{transform:translate3d(-22%,0,0);opacity:.27}
+}
+/* Twelve fine pseudo-random sprays per meter, all unique phase and vectors.
+   The particles follow the measured fill edge and never change the number. */
+.hud--v0849-fluid .statbar--v0849-liquid .statbar__particle-field{
+ position:absolute;z-index:4;top:50%;width:0;height:0;
+ overflow:visible;pointer-events:none;transform:translateY(-50%);
+ transition:left 300ms ease,opacity .22s;
+}
+.hud--v0849-fluid .statbar--v0849-liquid .statbar__particle{
+ position:absolute;top:0;left:0;display:block;pointer-events:none;
+ width:var(--v0849-size);height:var(--v0849-size);
+ border-radius:100%;opacity:0;
+ background:#fff0dc;box-shadow:0 0 3px #ffe3b3cc;
+ animation:v0849-hp-spray var(--v0849-duration) ease-out var(--v0849-delay) infinite;
+}
+.hud--v0849-fluid .statbar--v0849-mint .statbar__particle{
+ background:#d5fffa;box-shadow:0 0 3px #87faedb9;
+ animation-name:v0849-st-spray;
+}
+@keyframes v0849-hp-spray{
+ 0%,7%{opacity:0;transform:translate3d(0,0,0) scale(.25) rotate(0)}
+ 18%{opacity:.8}
+ 46%{opacity:.7;transform:translate3d(calc(var(--v0849-dx) * .38),calc(var(--v0849-dy) * .55),0) scale(.9) rotate(calc(var(--v0849-turn) * .5))}
+ 88%,100%{opacity:0;transform:translate3d(var(--v0849-dx),var(--v0849-dy),0) scale(.12) rotate(var(--v0849-turn))}
+}
+@keyframes v0849-st-spray{
+ 0%,16%{opacity:0;transform:translate3d(0,0,0) scale(.3)}
+ 29%{opacity:.82}
+ 60%{opacity:.5;transform:translate3d(calc(var(--v0849-dx) * -.5),calc(var(--v0849-dy) * 1.3),0) scale(1)}
+ 90%,100%{opacity:0;transform:translate3d(calc(var(--v0849-dx) * -1.1),calc(var(--v0849-dy) * -.55),0) scale(.1)}
+}
+@media(max-width:390px),(max-height:620px){
+ .hud--v0849-fluid .hud__bars{gap:6px}
+ .hud--v0849-fluid .statbar--v0849-liquid .statbar__track{height:13px}
+ .hud--v0849-fluid .statbar--v0849-liquid .statbar__label{font-size:8px}
+}
+@media(prefers-reduced-motion:reduce),(update:slow){
+ .hud--v0849-fluid .statbar--v0849-liquid .statbar__fill::before,
+ .hud--v0849-fluid .statbar--v0849-liquid .statbar__fill::after,
+ .hud--v0849-fluid .statbar--v0849-liquid .statbar__particle{
+  animation:none!important;transition:none!important;
+ }
+ .hud--v0849-fluid .statbar--v0849-liquid .statbar__particle{opacity:0!important}
+}
+@media(forced-colors:active){
+ .hud--v0849-fluid .statbar--v0849-liquid .statbar__track{border:1px solid CanvasText}
+ .hud--v0849-fluid .statbar--v0849-liquid .statbar__fill{
+  background:Highlight!important;box-shadow:none!important;
+ }
+ .hud--v0849-fluid .statbar--v0849-liquid .statbar__track::after{display:none}
+}

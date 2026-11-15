@@ -21,3 +21,11 @@
 - 三街區原圖滿版 cover-fit，圖片與熱點同比例放大並在中心裁邊。七處校正點依使用者附圖黃點位置；酒館內新增公告欄委託分頁，原八設施和原任務資料完整保留。
 - 舊設施列表改為預設收合的輔助抽屜；新增局部霓虹光點，支援 reduced-motion / update:slow。原圖 SHA256 和存檔 schema 不變。
 - 測試 `tests/v0848-town-fullbleed-services.test.ts`；人工 QA `docs/V0848_FULLBLEED_DISTRICT_QA.md`。使用者 Merge 並告知後，才做第 3 批 v0.8.49。
+
+
+## 第 3 批 v0.8.49（PR 待使用者 Merge）
+
+- 起點：PR #76 已合併，main `503846b410ae020f52c3011404647ab1ee68467e`，唯一分支 `feat/v0.8.49-hud-liquid-particles`。
+- 使用者原始 PNG 雙色框已轉 512×70 透明精簡 PNG 保存於 `public/assets/ui/hud-frames-v0849.png`，HP=上半部紅銅金屬，STA=下半部藍銀金屬；此批新增檔、不覆蓋任何舊圖片。
+- 正式 HUD opt-in 液流，原 `StatBar` 維持預設邏輯；每條9顆固定不同粒子軌跡/相位，HP/STA分別動畫，黑煙液流 2 組不同週期。低動態與 update:slow 禁用動畫，保留實際數值和安全比例。
+- 測試 `tests/v0849-hud-liquid-particles.test.ts`；人工 QA `docs/V0849_HUD_LIQUID_QA.md`。使用者 Merge 後才繼續 v0.8.50。

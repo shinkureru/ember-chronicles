@@ -1,5 +1,20 @@
 # 餘燼紀事｜永久跨對話開發交接（PROJECT_HANDOFF）
 
+## 2026-11-16｜v0.8.52 第七輪全項目視覺驗收修正（PR 待使用者自行 Merge）
+
+- **基準**：前批 PR #79 已由使用者 Merge，main 17742eb4479234b47e728dbc18a4e5f3b4b699aa。工作開始時 Open PR 0。本批唯一分支 feat/v0.8.52-viewport-town-transitions-visual-audit，僅一個 PR，嚴禁自行 Merge。
+- **實測問題/原因**：上一批截圖顯示城鎮三分總覽中間區塊出現大片黑空白；原 v0847 使用 img height=300%、負 top 位移以 % 切割，遇到裁切/動畫時組合不可靠。v0848 進詳頁首次呈現 width/height 100% 且 object-fit:fill，隨 useEffect/ResizeObserver 得到 cover-fit 後改尺寸，造成第二次跳圖。v0850 把五種未選底色全覆蓋成灰黑；v0851 金屬 6/4/3px 太粗；UI Lab 頁首仍寫 0.8.44。
+- **桌機強制手機比例**：新 src/styles/_v0852-viewport-town-cinematic-audit.scss 在 min-width:700px 把主遊戲容器置中固定寬 390px、高最多 844px（視窗較矮時縮高）；真手機仍使用裝置自身大小，不需桌機 DevTools 模擬。
+- **分區總覽切片**：TownOverviewPage.tsx 移除原 img 300% height + top:-100% 定位，三個區塊改為使用同一張未修改 city-overview.webp，以 background-size:100% 300%、background-position-y:0/50/100% 填滿，保留毛玻璃與場景動態光影。
+- **進詳頁單一縮放幾何**：總覽展開圖與詳頁都使用中心 cover 裁切；DistrictStage 改 useLayoutEffect 在首幀 paint 前量出原圖與熱點共同的 coverTownStage，未量到先 visibility:hidden，修掉先拉伸後再次改尺寸。
+- **iOS 風格過場**：外環/蒸霧/舊城點擊後進詳頁總時長 1050ms，cubic-bezier(.22,1,.36,1) 越近 keyframe 越慢，另有極淡光晕、圖片微縮放 1.024→1；進場文字不跟整個容器一起 blur。從主頁點城鎮設施進總覽，三段圖片分別從左/右/下方漸顯；從街區返回總覽，原城市 atlas 左右分割先滑入覆蓋詳頁 640ms，再在總覽滑出 750ms。reduced-motion/update:slow 直接導航並停止裝飾動畫。
+- **級別底色**：黑市/卡牌/技能卡/UI Lab 未選取保留各自 --urban-slot-face 低飽和灰/綠/藍/紫底盤及暗金預留展示底色，仍不帶稀有度外框；選取才依 v0850 顯示彩框，Gold 仍只 UI Lab 視覺樣例，沒有真實金階掉落。
+- **金屬框 ×0.7**：維持 v0851 原創 brushed-silver-v0851.svg 拉絲紋理；主框由 6px→4.2px、次框 4px→2.8px、輕框 3px→2.1px，小手機 4/3/2px→2.8/2.1/1.4px，普通 border-width 同步縮至 70%。城鎮設施、黑市交易詳情、卡牌詳情均保留。
+- **第七輪完整稽核**：v0847 三街區毛玻璃、v0848 1+2+4 可點設施與酒館委託、v0849 原 PNG/9+9 異步粒子/黑煙流、v0850 selected-only 輪廓與 Gold 展示、v0851 三級 SVG 金屬框皆按源碼與回歸測試核對。不修改遊戲數值/物品/任務/角色/存檔格式，不覆蓋任何場景圖片。
+- **實際驗收**：新 tests/v0852-viewport-town-cinematic-audit.test.ts 覆蓋 CSS/SSR/共用 cover 幾何/雙向轉場與跨版功能； docs/V0852_VISUAL_REGRESSION_QA.md 有逐項人工 QA。CI build/test 綠燈不代表 Chrome/iOS/Android 真實逐幀畫面已驗證。PR 完成後仍交由使用者 Merge，不自行進入 v0.8.53。
+
+---
+
 ## 2026-11-16｜第七輪第 5／5 批 v0.8.51：拉絲粗糙銀色框材質＋全輪最終整合 QA（本 PR 待使用者 Merge）
 
 - **GitHub 基準**：PR #78 已由使用者合併，main `246c69228ced5ae17260b726cb065e765d381c07`；無其他 Open PR。只建立一個分支 `feat/v0.8.51-silver-metal-final-qa`、一個 PR，**絕不自行 Merge**。本批結束代表第七輪功能開發完成，部署後的人工視覺驗收與手機效能仍需使用者確認。

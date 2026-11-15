@@ -205,8 +205,8 @@ describe('v0.8.39 — prototype furniture purchase, animations and persistence',
   expect(styles).toContain('shelter-furniture-reveal');
   expect(styles).toContain('prefers-reduced-motion:reduce');
   expect(styles).toContain('max-width:360px');
-  expect(source('src/styles/main.scss').trimEnd()).toMatch(/@import "v0852-viewport-town-cinematic-audit";$/);
-  expect(JSON.parse(source('package.json')).version).toBe('0.8.52');
-  expect(JSON.parse(source('package-lock.json')).packages[''].version).toBe('0.8.52');
+  expect(source('src/styles/main.scss').trimEnd()).toMatch(/@import "v0853-live-hud-gold-market";$/);
+  expect(JSON.parse(source('package.json')).version).toBe('0.8.53');
+  expect(JSON.parse(source('package-lock.json')).packages[''].version).toBe('0.8.53');
  });
 });

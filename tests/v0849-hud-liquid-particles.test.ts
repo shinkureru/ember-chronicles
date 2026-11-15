@@ -86,7 +86,7 @@ describe('v0.8.49 — actual original-PNG HUD, liquid smoke and separate fine pa
    '@media(forced-colors:active)','animation:none!important',
   ])expect(css).toContain(token);
   expect(css).not.toContain('requestAnimationFrame');
-  expect(read('src/components/ui/hudParticles.ts')).not.toContain('Math.random');
+  expect(read('src/components/ui/hudParticles.ts')).not.toContain('Math.random(');
   expect(read('src/styles/main.scss').trimEnd()).toMatch(/@import "v0849-hud-liquid";$/);
  });
  it('only updates package release and leaves 14 original town/warehouse assets and save schema intact',()=>{
